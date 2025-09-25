@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>app/example.png</file>
+        <file>style/dark-style.qss</file>
+        <file>style/light-style.qss</file>
+        <file>window-bar/close_dark.svg</file>
+        <file>window-bar/close_light.svg</file>
+        <file>window-bar/fullscreen_dark.svg</file>
+        <file>window-bar/fullscreen_light.svg</file>
+        <file>window-bar/maximize_dark.svg</file>
+        <file>window-bar/maximize_light.svg</file>
+        <file>window-bar/minimize_dark.svg</file>
+        <file>window-bar/minimize_light.svg</file>
+        <file>window-bar/more-line_dark.svg</file>
+        <file>window-bar/more-line_light.svg</file>
+        <file>window-bar/pin_dark.svg</file>
+        <file>window-bar/pin_light.svg</file>
+        <file>window-bar/pin-fill_dark.svg</file>
+        <file>window-bar/pin-fill_light.svg</file>
+        <file>window-bar/restore_dark.svg</file>
+        <file>window-bar/restore_light.svg</file>
+        <file>window-bar/dark_mode.svg</file>
+        <file>window-bar/light_mode.svg</file>
+        <file>app/head.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,72 @@
+﻿FluentTitleBar[bar-active=true] {
+    background-color: transparent;
+}
+
+FluentTitleBar[bar-active=false] {
+    background-color: transparent;
+}
+
+
+/* Title label */
+
+FluentTitleBar>QLabel#win-title-label {
+    padding: 0;
+    border: none;
+    color: #ECECEC;
+    background-color: transparent;
+    min-height: 28px;
+}
+
+
+/* System buttons */
+
+FluentTitleBar>QAbstractButton[system-button=true] {
+    qproperty-iconSize: 12px 12px;
+    min-width: 40px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+}
+
+FluentTitleBar>QAbstractButton#back-button:hover {
+    background-color: rgba(255, 255, 255, 10);
+    border-radius: 5px;
+}
+FluentTitleBar>QAbstractButton#back-button:pressed {
+    background-color: rgba(255, 255, 255, 7);
+    border-radius: 5px;
+}
+
+
+
+FluentTitleBar>QAbstractButton#theme-button:hover,
+FluentTitleBar>QAbstractButton#theme-button:pressed {
+    background-color: rgba(255, 255, 255, 15%);
+}
+
+FluentTitleBar>QAbstractButton#min-button:hover,
+FluentTitleBar>QAbstractButton#min-button:pressed {
+    background-color: rgba(255, 255, 255, 15%);
+}
+
+FluentTitleBar>QAbstractButton#max-button:hover,
+FluentTitleBar>QAbstractButton#max-button:pressed {
+    background-color: rgba(255, 255, 255, 15%);
+}
+
+FluentTitleBar>QAbstractButton#close-button:hover,
+FluentTitleBar>QAbstractButton#close-button:pressed {
+    background-color: #e81123;
+}
+
+
+/* Icon button */
+
+FluentTitleBar>QAbstractButton#icon-button {
+    qproperty-iconSize: 18px 18px;
+    min-width: 40px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
