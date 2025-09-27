@@ -9,7 +9,9 @@
 
 #include "Theme.h"
 #include "../scrollbar/ScrollBar.h"
-#include "../RoundMenu.h"
+#include "QFluent/menu/RoundMenu.h"
+#include "QFluent/menu/MenuActionListWidget.h"
+
 
 NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     : QFrame(parent), m_parent(parent), m_isMenuButtonVisible(true),

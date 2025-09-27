@@ -4,6 +4,8 @@
 #include <QActionGroup>
 #include <QDebug>
 
+#include "menu/MenuActionListWidget.h"
+
 
 EditableComboBox::EditableComboBox(QWidget *parent)
     : LineEdit(parent)

@@ -9,6 +9,8 @@
 
 #include "Theme.h"
 #include "Icon.h"
+#include "menu/MenuItemDelegate.h"
+#include "menu/MenuActionListWidget.h"
 
 LineEditButton::LineEditButton(const QIcon& icon, QWidget* parent)
     : QToolButton(parent), m_icon(icon) {
@@ -435,25 +437,25 @@ void CompleterMenu::popup()
     //int x = -width() / 2 + layout()->contentsMargins().left() + p->width() / 2;
     int y_drop = p->height() - layout()->contentsMargins().top() + 2;
     QPoint pos_drop = p->mapToGlobal(QPoint(x, y_drop));
-    int height_drop = view()->heightForAnimation(pos_drop, MenuAnimationType::DROP_DOWN);
+    int height_drop = view()->heightForAnimation(pos_drop, MenuAnimationType::MenuAnimation::DROP_DOWN);
 
     QPoint pos_up(x, 7);
     pos_up = p->mapToGlobal(pos_up);
-    int height_up = view()->heightForAnimation(pos_up, MenuAnimationType::PULL_UP);
+    int height_up = view()->heightForAnimation(pos_up, MenuAnimationType::MenuAnimation::PULL_UP);
 
     QPoint finalPos;
-    MenuAnimationType aniType;
+    MenuAnimationType::MenuAnimation aniType;
 
     if (height_drop >= height_up) {
         finalPos = pos_drop;
-        aniType = MenuAnimationType::DROP_DOWN;
+        aniType = MenuAnimationType::MenuAnimation::DROP_DOWN;
     } else {
         finalPos = pos_up;
-        aniType = MenuAnimationType::PULL_UP;
+        aniType = MenuAnimationType::MenuAnimation::PULL_UP;
     }
 
     view()->adjustSize(finalPos, aniType);
-    view()->setProperty("dropDown", aniType == MenuAnimationType::DROP_DOWN);
+    view()->setProperty("dropDown", aniType == MenuAnimationType::MenuAnimation::DROP_DOWN);
     view()->setStyle(QApplication::style());
     view()->update();
     adjustSize();

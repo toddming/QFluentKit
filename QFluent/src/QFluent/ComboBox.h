@@ -11,8 +11,8 @@
 
 #include "Theme.h"
 #include "Icon.h"
-#include "RoundMenu.h"
-#include "Property.h"
+#include "menu/RoundMenu.h"
+#include "Define.h"
 #include "Animation.h"
 
 /////////////////ComboBoxMenu//////////////////////
@@ -22,7 +22,7 @@ public:
     explicit ComboBoxMenu(const QString& title = "", QWidget *parent = nullptr);
 
     void exec(const QPoint& pos, bool animate = true,
-              MenuAnimationType aniType = MenuAnimationType::DROP_DOWN);
+              MenuAnimationType::MenuAnimation aniType = MenuAnimationType::MenuAnimation::DROP_DOWN);
 
 };
 

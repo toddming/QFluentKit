@@ -1,24 +1,23 @@
-﻿// menu_animation_manager.cpp
-#include "MenuAnimation.h"
-#include "RoundMenu.h"
-#include <QApplication>
+﻿#include "MenuAnimation.h"
+
 #include <QHoverEvent>
-#include <QScreen>
-#include <QGuiApplication>
+#include <QPropertyAnimation>
+
 #include "Screen.h"
+#include "RoundMenu.h"
+#include "MenuActionListWidget.h"
 
-
-QMap<MenuAnimationType, std::function<MenuAnimationManager*(RoundMenu*)>> MenuAnimationManager::managers;
+QMap<MenuAnimationType::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> MenuAnimationManager::managers;
 namespace {
     struct RegisterMenuAnimationManagers {
         RegisterMenuAnimationManagers() {
-            MenuAnimationManager::registerManager(MenuAnimationType::NONE,
+            MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation::NONE,
                 [](RoundMenu* menu) { return new DummyMenuAnimationManager(menu); });
 
-            MenuAnimationManager::registerManager(MenuAnimationType::DROP_DOWN,
+            MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation::DROP_DOWN,
                 [](RoundMenu* menu) { return new DropDownMenuAnimationManager(menu); });
 
-            MenuAnimationManager::registerManager(MenuAnimationType::PULL_UP,
+            MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation::PULL_UP,
                 [](RoundMenu* menu) { return new PullUpMenuAnimationManager(menu); });
         }
     };
@@ -38,13 +37,13 @@ MenuAnimationManager::MenuAnimationManager(RoundMenu* menu, QObject* parent)
     connect(m_ani, &QPropertyAnimation::valueChanged, this, &MenuAnimationManager::_updateMenuViewport);
 }
 
-void MenuAnimationManager::registerManager(MenuAnimationType type,
+void MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation type,
                                            std::function<MenuAnimationManager*(RoundMenu*)> creator)
 {
     managers[type] = creator;
 }
 
-MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, MenuAnimationType aniType)
+MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, MenuAnimationType::MenuAnimation aniType)
 {
     if (!managers.contains(aniType)) {
         qWarning() << "Invalid animation type:" << static_cast<int>(aniType);

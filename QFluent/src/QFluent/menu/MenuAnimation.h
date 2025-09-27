@@ -1,25 +1,12 @@
-﻿#ifndef MENUANIMATIONMANAGER_H
-#define MENUANIMATIONMANAGER_H
+﻿#pragma once
 
 #include <QObject>
-#include <QPropertyAnimation>
-#include <QRegion>
-#include <QPoint>
-#include <QMap>
-#include <functional>
-#include "Property.h"
+
+#include "Define.h"
 
 class RoundMenu;
-
-enum class MenuAnimationType {
-    NONE,
-    DROP_DOWN,
-    PULL_UP,
-    FADE_IN_DROP_DOWN,
-    FADE_IN_PULL_UP
-};
-
-class QFLUENT_EXPORT MenuAnimationManager : public QObject
+class QPropertyAnimation;
+class MenuAnimationManager : public QObject
 {
     Q_OBJECT
 
@@ -31,8 +18,8 @@ public:
 
     void _updateMenuViewport();
 
-    static void registerManager(MenuAnimationType type, std::function<MenuAnimationManager*(RoundMenu*)> creator);
-    static MenuAnimationManager* make(RoundMenu* menu, MenuAnimationType aniType);
+    static void registerManager(MenuAnimationType::MenuAnimation type, std::function<MenuAnimationManager*(RoundMenu*)> creator);
+    static MenuAnimationManager* make(RoundMenu* menu, MenuAnimationType::MenuAnimation aniType);
 
 protected:
     virtual QPoint _endPosition(const QPoint& pos) const;
@@ -46,11 +33,11 @@ private:
     RoundMenu* m_menu;
     QPropertyAnimation* m_ani;
 
-    static QMap<MenuAnimationType, std::function<MenuAnimationManager*(RoundMenu*)>> managers;
+    static QMap<MenuAnimationType::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> managers;
 };
 
 // Dummy Animation
-class QFLUENT_EXPORT DummyMenuAnimationManager : public MenuAnimationManager
+class DummyMenuAnimationManager : public MenuAnimationManager
 {
     Q_OBJECT
 public:
@@ -59,7 +46,7 @@ public:
 };
 
 // Drop Down Animation
-class QFLUENT_EXPORT DropDownMenuAnimationManager : public MenuAnimationManager
+class DropDownMenuAnimationManager : public MenuAnimationManager
 {
     Q_OBJECT
 public:
@@ -71,7 +58,7 @@ protected:
 };
 
 // Pull Up Animation
-class QFLUENT_EXPORT PullUpMenuAnimationManager : public MenuAnimationManager
+class PullUpMenuAnimationManager : public MenuAnimationManager
 {
     Q_OBJECT
 public:
@@ -82,4 +69,3 @@ protected:
     QPoint _endPosition(const QPoint& pos) const override;
 };
 
-#endif // MENUANIMATIONMANAGER_H

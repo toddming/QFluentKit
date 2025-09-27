@@ -12,7 +12,7 @@
 #include <QTimer>
 #include <QPointer>
 
-#include "RoundMenu.h"
+#include "menu/RoundMenu.h"
 #include "Property.h"
 
 class LineEditButton;

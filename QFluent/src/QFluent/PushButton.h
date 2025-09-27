@@ -10,7 +10,7 @@
 #include <QPointer>
 
 #include "Theme.h"
-#include "RoundMenu.h"
+#include "menu/RoundMenu.h"
 #include "Animation.h"
 #include "Property.h"
 

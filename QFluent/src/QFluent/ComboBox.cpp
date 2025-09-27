@@ -4,6 +4,9 @@
 #include <QActionGroup>
 #include <QDebug>
 
+#include "menu/MenuActionListWidget.h"
+#include "menu/MenuItemDelegate.h"
+
 ///////////////////ComboBoxMenu//////////////////////
 ComboBoxMenu::ComboBoxMenu(const QString& title, QWidget *parent) : RoundMenu(title, parent)
 {
@@ -11,7 +14,7 @@ ComboBoxMenu::ComboBoxMenu(const QString& title, QWidget *parent) : RoundMenu(ti
     view()->setObjectName("comboListWidget");
 }
 
-void ComboBoxMenu::exec(const QPoint& pos, bool animate, MenuAnimationType aniType)
+void ComboBoxMenu::exec(const QPoint& pos, bool animate, MenuAnimationType::MenuAnimation aniType)
 {
     view()->adjustSize(pos, aniType);
     adjustMenuSize();
@@ -301,17 +304,17 @@ void ComboBox::showComboMenu()
 
     int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + width() / 2;
     QPoint pd = mapToGlobal(QPoint(x, height()));
-    int hd = m_dropMenu->view()->heightForAnimation(pd, MenuAnimationType::DROP_DOWN);
+    int hd = m_dropMenu->view()->heightForAnimation(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
 
     QPoint pu = mapToGlobal(QPoint(x, 0));
-    int hu = m_dropMenu->view()->heightForAnimation(pu, MenuAnimationType::PULL_UP);
+    int hu = m_dropMenu->view()->heightForAnimation(pu, MenuAnimationType::MenuAnimation::PULL_UP);
 
     if (hd >= hu) {
-        m_dropMenu->view()->adjustSize(pd, MenuAnimationType::DROP_DOWN);
-        m_dropMenu->exec(pd, true, MenuAnimationType::DROP_DOWN);
+        m_dropMenu->view()->adjustSize(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
+        m_dropMenu->exec(pd, true, MenuAnimationType::MenuAnimation::DROP_DOWN);
     } else {
-        m_dropMenu->view()->adjustSize(pu, MenuAnimationType::PULL_UP);
-        m_dropMenu->exec(pu, true, MenuAnimationType::PULL_UP);
+        m_dropMenu->view()->adjustSize(pu, MenuAnimationType::MenuAnimation::PULL_UP);
+        m_dropMenu->exec(pu, true, MenuAnimationType::MenuAnimation::PULL_UP);
     }
 }
 

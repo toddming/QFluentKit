@@ -295,3 +295,18 @@ class QFLUENT_EXPORT CLASS : public QObject \
     Q_ENUM_CREATE(CheckBoxState)
     Q_END_ENUM_CREATE(CheckBoxType)
 
+
+
+
+    Q_BEGIN_ENUM_CREATE(MenuAnimationType)
+    enum MenuAnimation
+    {
+        NONE,
+        DROP_DOWN,
+        PULL_UP,
+        FADE_IN_DROP_DOWN,
+        FADE_IN_PULL_UP
+    };
+    Q_ENUM_CREATE(MenuAnimation)
+    Q_END_ENUM_CREATE(MenuAnimationType)
+
