@@ -1,5 +1,5 @@
 ﻿#include <QApplication>
-#include "components/FluentWindow.h"
+#include "QFluent/FluentWindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
     QApplication app(argc, argv);
-
     app.setStyle("Fusion");
 
     QFont font;

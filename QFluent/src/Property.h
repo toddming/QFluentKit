@@ -99,7 +99,6 @@ private:                                                         \
 #define Q_D_CREATE(CLASS) \
 protected:                \
     CLASS* q_ptr;         \
-                          \
 private:                  \
     Q_DECLARE_PUBLIC(CLASS);
 
