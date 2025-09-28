@@ -5,7 +5,7 @@
 #include "Define.h"
 
 class MenuAnimation;
-class MenuActionListWidget : public QListWidget {
+class QFLUENT_EXPORT MenuActionListWidget : public QListWidget {
     Q_OBJECT
 public:
     explicit MenuActionListWidget(QWidget* parent = nullptr);
@@ -21,8 +21,4 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent* e) override;
-
-private:
-    int m_itemHeight = 28;
-    int m_maxVisibleItems = -1;
 };

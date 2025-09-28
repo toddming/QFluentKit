@@ -9,6 +9,9 @@
 MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     : QListWidget(parent) {
 
+    this->setProperty("_itemHeight", 28);
+    this->setProperty("_maxVisibleItems", -1);
+
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -28,8 +31,9 @@ MenuActionListWidget::MenuActionListWidget(QWidget* parent)
 }
 
 void MenuActionListWidget::setItemHeight(int height) {
-    if (m_itemHeight == height) return;
-    m_itemHeight = height;
+    if (this->property("_itemHeight").toInt() == height) return;
+    this->setProperty("_itemHeight", height);
+
     for (int i = 0; i < count(); ++i) {
         QListWidgetItem* item = this->item(i);
         item->setSizeHint(QSize(item->sizeHint().width(), height));
@@ -38,12 +42,12 @@ void MenuActionListWidget::setItemHeight(int height) {
 }
 
 void MenuActionListWidget::setMaxVisibleItems(int num) {
-    m_maxVisibleItems = num;
+    this->setProperty("_maxVisibleItems", num);
     adjustSize();
 }
 
 int MenuActionListWidget::maxVisibleItems() const {
-    return m_maxVisibleItems;
+    return this->property("_maxVisibleItems").toInt();
 }
 
 void MenuActionListWidget::adjustSize(const QPoint& pos, MenuAnimationType::MenuAnimation aniType) {
@@ -66,8 +70,9 @@ void MenuActionListWidget::adjustSize(const QPoint& pos, MenuAnimationType::Menu
     size.setWidth(qMax(qMin(w, size.width()), minimumWidth()));
 
     // 限制最大可见项
-    if (m_maxVisibleItems > 0) {
-        int maxHeight = m_maxVisibleItems * m_itemHeight + m.top() + m.bottom() +  3;
+    if (this->property("_maxVisibleItems").toInt() > 0) {
+        int maxHeight = this->property("_maxVisibleItems").toInt() *
+                            this->property("_itemHeight").toInt() + m.top() + m.bottom() +  3;
 
         if (size.height() > maxHeight) {
             size.setHeight(maxHeight);
@@ -116,7 +121,7 @@ int MenuActionListWidget::heightForAnimation(const QPoint &pos, MenuAnimationTyp
 
 int MenuActionListWidget::itemHeight() const
 {
-    return m_itemHeight;
+    return this->property("_itemHeight").toInt();
 }
 
 int MenuActionListWidget::itemsHeight() const
