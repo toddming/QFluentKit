@@ -327,6 +327,7 @@ CompleterMenu::CompleterMenu(LineEdit* lineEdit, QWidget* parent)
     : RoundMenu("menu", parent)
     , m_lineEdit(lineEdit)
 {
+    setItemHeight(36);
     view()->setObjectName("completerListWidget");
     view()->setItemDelegate(new IndicatorMenuItemDelegate(this));
     view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);

@@ -50,6 +50,7 @@
 #include "navigation/NavigationBar.h"
 
 
+
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
     Q_OBJECT

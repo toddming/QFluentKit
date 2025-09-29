@@ -27,6 +27,7 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     connect(m_avatarWidget, &NavigationAvatarWidget::clicked, this, [=](){
         auto menu = new RoundMenu("menu", this);
         auto card = new ProfileCard(":/res/app/avatar.png", "硝子酱", "shokokawaii@outlook.com", menu);
+        menu->setItemHeight(36);
         menu->view()->setMaxVisibleItems(0);
         menu->addWidget(card);
         menu->addSeparator();

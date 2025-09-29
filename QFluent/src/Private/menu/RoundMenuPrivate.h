@@ -68,4 +68,6 @@ private:
     void setParentMenu(RoundMenu *parent, QListWidgetItem *item);
 
     void removeItem(QListWidgetItem *item);
+
+    void showSubMenu(QListWidgetItem *item);
 };

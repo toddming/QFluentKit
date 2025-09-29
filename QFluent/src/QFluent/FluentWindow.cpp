@@ -192,7 +192,36 @@ void FluentWindow::initUI()
     ToggleToolButton *tool = new ToggleToolButton(IconType::FLuentIcon::WIFI, this);
     lay->addWidget(tool);
 
-    lay->addWidget(new ToolButton(IconType::FLuentIcon::WIFI, this));
+
+    auto menuBtn = new ToolButton(IconType::FLuentIcon::WIFI, this);
+
+    connect(menuBtn, &ToolButton::clicked, this, [=](){
+        RoundMenu *am = new RoundMenu("menu", this);
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::COPY), "复制"));
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::CUT), "剪切"));
+
+        RoundMenu *bm = new RoundMenu("添加到", this);
+        bm->setIcon(Icon::FluentIcon(IconType::FLuentIcon::ADD));
+        bm->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::VIDEO), "视频"));
+        bm->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::MUSIC), "音乐"));
+        am->addMenu(bm);
+
+
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::PASTE), "粘贴"));
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::CANCEL), "撤回"));
+        am->addSeparator();
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::SETTING), "设置"));
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::HELP), "帮助"));
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::FEEDBACK), "反馈"));
+
+        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::NONE), "全选"));
+
+
+
+        am->exec(QCursor::pos());
+    });
+
+    lay->addWidget(menuBtn);
     lay->addWidget(new ToggleButton("8", this));
     lay->addWidget(new HyperlinkButton("PushButton", this));
     lay->addWidget(new CheckBox("CheckBox", this));
@@ -216,6 +245,7 @@ void FluentWindow::initUI()
     lay->addWidget(editCombo);
 
     RoundMenu *menu = new RoundMenu("menu", this);
+    menu->setItemHeight(36);
     menu->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::SEND), "Send"));
     menu->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::EDUCATION), "Exit"));
 
@@ -227,6 +257,7 @@ void FluentWindow::initUI()
 
 
     RoundMenu *textMenu = new RoundMenu("menu", this);
+    textMenu->setItemHeight(36);
     textMenu->addAction(new Action("Send"));
     textMenu->addAction(new Action("Exit"));
     TransparentDropDownPushButton *transBtn = new TransparentDropDownPushButton("Menu", this);

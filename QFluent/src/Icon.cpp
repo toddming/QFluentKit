@@ -189,7 +189,7 @@ QString toString(IconType::FLuentIcon icon) {
         {IconType::CHEVRON_DOWN_MED, "ChevronDownMed"},
         {IconType::CHEVRON_RIGHT_MED, "ChevronRightMed"},
         {IconType::EMOJI_TAB_SYMBOLS, "EmojiTabSymbols"},
-        {IconType::EXPRESSIVE_INPUT_ENTRY, "ExpressiveInputEntry"}
+        {IconType::EXPRESSIVE_INPUT_ENTRY, "ExpressiveInputEntry"},
     };
     return map.value(icon, "Unknown");
 }

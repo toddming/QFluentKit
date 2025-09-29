@@ -7,11 +7,16 @@
 #include <QHoverEvent>
 #include <QFontMetrics>
 #include <QApplication>
+#include <QFontMetrics>
 #include <QListWidgetItem>
 #include <QGraphicsDropShadowEffect>
 
+#include <QDebug>
+
+#include "Screen.h"
 #include "QFluent/menu/RoundMenu.h"
 #include "QFluent/menu/MenuActionListWidget.h"
+#include "QFluent/menu/SubMenuItemWidget.h"
 
 RoundMenuPrivate::RoundMenuPrivate(QObject* parent) : QObject{parent}
 {
@@ -60,28 +65,13 @@ int RoundMenuPrivate::adjustItemText(QListWidgetItem *item, QAction *action)
     if (!hasIcon) {
         width = 40 + fm.horizontalAdvance(text) + shortcutWidth;
     } else {
-        // 添加空格以分隔图标和文本
         text = " " + text;
         int space = 4 - fm.horizontalAdvance(" ");
         width = 60 + fm.horizontalAdvance(text) + shortcutWidth + space;
+        item->setText(text);
     }
 
-
     return width;
-}
-
-void RoundMenuPrivate::createSubMenuItem(RoundMenu* menu) {
-
-    QListWidgetItem* item = new QListWidgetItem(menu->icon(), menu->title());
-    item->setData(Qt::UserRole, QVariant::fromValue(menu));
-    // 同样使用固定的项目高度
-    item->setSizeHint(QSize(120, _view->itemHeight()));
-    _view->addItem(item);
-
-    // 设置父子关系
-    // menu->m_parentMenu = this;
-    // menu->m_menuItem = item;
-    // menu->m_isSubMenu = true;
 }
 
 
@@ -106,10 +96,9 @@ void RoundMenuPrivate::handleItemClicked(QListWidgetItem* item) {
     } else if (v.canConvert<RoundMenu*>()) {
         RoundMenu* subMenu = v.value<RoundMenu*>();
         if (subMenu && !subMenu->isVisible()) {
-            QPoint globalPos = _view->visualItemRect(item)
-                    .bottomRight() + QPoint(5, 0);
-            globalPos = _view->mapToGlobal(globalPos);
-            subMenu->exec(globalPos);
+            _lastHoverSubMenuItem = item;
+            _lastHoverItem = item;
+            _showTimer->start(0);
         }
     }
 }
@@ -140,6 +129,34 @@ QListWidgetItem* RoundMenuPrivate::createActionItem(QAction* action, QAction* be
     return item;
 }
 
+void RoundMenuPrivate::createSubMenuItem(RoundMenu* menu)
+{
+    Q_Q(RoundMenu);
+    _subMenus.append(menu);
+    QListWidgetItem* item = new QListWidgetItem(menu->icon(), menu->title());
+    item->setData(Qt::UserRole, QVariant::fromValue(menu));
+
+    QFontMetricsF fontMetrics(_view->font());
+    qreal w = 120;
+    if (!hasItemIcon()) {
+        w = 60 + fontMetrics.horizontalAdvance(menu->title());
+    } else {
+        // 添加空格增加图标和文字间距
+        QString displayText = " " + item->text();
+        item->setText(displayText);  // 更新显示文本
+        w = 72 + fontMetrics.horizontalAdvance(displayText);
+    }
+
+    menu->d_ptr->setParentMenu(q, item);
+    item->setSizeHint(QSize(w, _view->itemHeight()));
+    _view->addItem(item);
+
+    // 创建子菜单项小部件
+    SubMenuItemWidget* widget = new SubMenuItemWidget(menu, item, _view);
+    // widget->showMenuSig.connect(this, &RoundMenuPrivate::showSubMenu);
+    _view->setItemWidget(item, widget);
+}
+
 void RoundMenuPrivate::onActionChanged()
 {
     Q_Q(RoundMenu);
@@ -157,26 +174,50 @@ void RoundMenuPrivate::onActionChanged()
     q->adjustSize();
 }
 
-void RoundMenuPrivate::onShowMenuTimeout() {
-    if (_lastHoverItem) return;
 
-    if (QVariant v = _lastHoverItem->data(Qt::UserRole);
-            v.canConvert<RoundMenu*>()) {
+void RoundMenuPrivate::onShowMenuTimeout()
+{
+    if (_lastHoverSubMenuItem == nullptr || _lastHoverItem != _lastHoverSubMenuItem) {
+        return;
+    }
+
+    if (QVariant v = _lastHoverItem->data(Qt::UserRole); v.canConvert<RoundMenu*>()) {
         RoundMenu* subMenu = v.value<RoundMenu*>();
         if (subMenu && !subMenu->isVisible()) {
-            QRect itemRect = _view->visualItemRect(_lastHoverItem);
-            QPoint globalPos = itemRect.topRight() + QPoint(5, 0);
-            globalPos = _view->mapToGlobal(globalPos);
-            subMenu->exec(globalPos);
+            QWidget* widget = _view->itemWidget(_lastHoverItem);
+            if (!widget) return;
+
+            QRect widgetRect = QRect(widget->mapToGlobal(QPoint(0, 0)), widget->size());
+
+            int x = widgetRect.right() + 5;
+            int y = widgetRect.top() - 5;  // 对齐顶部，略上移
+
+            QRect screenRect = Screen::getCurrentScreenGeometry();
+            QSize subMenuSize = subMenu->sizeHint();
+
+            // 右边界检测
+            if ((x + subMenuSize.width()) > screenRect.right()) {
+                x = qMax(widgetRect.left() - subMenuSize.width() - 5, screenRect.left());
+            }
+
+            // 下边界检测
+            if ((y + subMenuSize.height()) > screenRect.bottom()) {
+                y = screenRect.bottom() - subMenuSize.height();
+            }
+
+            // 上边界限制
+            y = qMax(y, screenRect.top());
+
+            subMenu->exec(QPoint(x, y));
         }
     }
 }
 
 void RoundMenuPrivate::handleItemEntered(QListWidgetItem* item) {
     _lastHoverItem = item;
-    if (item->data(Qt::UserRole).canConvert<RoundMenu*>()) {
-        _showTimer->start();
-    }
+    // if (item->data(Qt::UserRole).canConvert<RoundMenu*>()) {
+    //     _showTimer->start();
+    // }
 }
 
 void RoundMenuPrivate::setShadowEffect(int blurRadius, QPointF offset, QColor color)
@@ -193,6 +234,7 @@ void RoundMenuPrivate::setParentMenu(RoundMenu *parent, QListWidgetItem *item)
     _parentMenu = parent;
     _menuItem = item;
     _isSubMenu = (parent != nullptr);
+
 }
 
 void RoundMenuPrivate::removeItem(QListWidgetItem *item)
@@ -202,4 +244,13 @@ void RoundMenuPrivate::removeItem(QListWidgetItem *item)
     QWidget *widget = _view->itemWidget(item);
     if (widget)
         widget->deleteLater();
+}
+
+
+void RoundMenuPrivate::showSubMenu(QListWidgetItem *item)
+{
+    _lastHoverItem = item;
+    _lastHoverSubMenuItem = item;
+    _showTimer->stop();
+    _showTimer->start();
 }

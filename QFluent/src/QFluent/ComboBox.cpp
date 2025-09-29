@@ -10,6 +10,7 @@
 ///////////////////ComboBoxMenu//////////////////////
 ComboBoxMenu::ComboBoxMenu(const QString& title, QWidget *parent) : RoundMenu(title, parent)
 {
+    setItemHeight(36);
     view()->setItemDelegate(new IndicatorMenuItemDelegate(this));
     view()->setObjectName("comboListWidget");
 }

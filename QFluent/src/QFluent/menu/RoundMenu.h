@@ -22,13 +22,14 @@ public:
     void insertAction(QAction* before, QAction* action);
     void removeAction(QAction* action);
     void addMenu(RoundMenu* menu);
+    void insertMenu(QAction *before, RoundMenu *menu);
     void removeMenu(RoundMenu* menu);
     void addSeparator();
     void clear();
     QList<QAction *> menuActions();
     void setDefaultAction(QAction *action);
 
-    void setIcon(const QIcon& icon);
+    // void setIcon(const QIcon& icon);
 
     MenuActionListWidget* view();
     void adjustMenuSize();

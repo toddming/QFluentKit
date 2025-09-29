@@ -9,6 +9,8 @@
 #include <QHBoxLayout>
 #include <QGraphicsDropShadowEffect>
 
+#include <QDebug>
+
 #include "Theme.h"
 #include "MenuAnimation.h"
 #include "Private/menu/RoundMenuPrivate.h"
@@ -36,9 +38,6 @@ RoundMenu::RoundMenu(const QString& title, QWidget* parent)
     setLayout(d->_layout);
 
     d->setShadowEffect();
-
-    setItemHeight(36);
-    setMaxVisibleItems(5);
 
     Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::MENU);
 
@@ -117,6 +116,24 @@ void RoundMenu::addMenu(RoundMenu* menu) {
     adjustMenuSize();
 }
 
+void RoundMenu::insertMenu(QAction *before, RoundMenu *menu)
+{
+    Q_D(RoundMenu);
+
+    if (!menu)
+        return;
+
+    if (!d->_actions.contains(before))
+        return;
+
+    d->createSubMenuItem(menu);
+    auto beforeItem = before->property("item").value<QListWidgetItem*>();
+    int index = d->_view->row(beforeItem);
+    d->_view->insertItem(index, menu->d_ptr->_menuItem);
+    // d->_view->setItemWidget(menu->d_ptr->_menuItem, menu->m_menuItemWidget);
+    adjustMenuSize();
+}
+
 void RoundMenu::removeMenu(RoundMenu *menu)
 {
     Q_D(RoundMenu);
@@ -186,9 +203,9 @@ void RoundMenu::closeEvent(QCloseEvent* e) {
     Q_D(RoundMenu);
 
     emit closed();
-    // if (m_parentMenu) {
-    //     m_parentMenu->close();
-    // }
+    if (d->_parentMenu) {
+        d->_parentMenu->close();
+    }
     d->_view->clearSelection();
     d->_view->setCurrentItem(nullptr);
     d->_view->clearFocus();
