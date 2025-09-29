@@ -103,3 +103,11 @@ private:                  \
     Q_DECLARE_PUBLIC(CLASS);
 
 #endif // PROPERTY_H
+
+#ifndef Q_D_CONST
+#define Q_D_CONST(Class) const Class##Private * const d = d_func()
+#endif
+
+#ifndef Q_Q_CONST
+#define Q_Q_CONST(Class) const Class * const q = q_func()
+#endif
