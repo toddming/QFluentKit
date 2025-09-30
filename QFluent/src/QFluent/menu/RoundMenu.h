@@ -28,9 +28,6 @@ public:
     void clear();
     QList<QAction *> menuActions();
     void setDefaultAction(QAction *action);
-
-    // void setIcon(const QIcon& icon);
-
     MenuActionListWidget* view();
     void adjustMenuSize();
 

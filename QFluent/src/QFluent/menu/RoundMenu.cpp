@@ -170,13 +170,14 @@ void RoundMenu::clear() {
 void RoundMenu::exec(const QPoint& pos, bool animate, MenuAnimationType::MenuAnimation aniType) {
     Q_D(RoundMenu);
 
-    if (!animate) aniType = MenuAnimationType::MenuAnimation::NONE;
-
     d->_view->adjustSize(pos, aniType);
+    if (!animate) aniType = MenuAnimationType::MenuAnimation::NONE;
+    MenuAnimationManager::make(this, aniType)->exec(pos);
     adjustMenuSize();
 
     show();
-    MenuAnimationManager::make(this, aniType)->exec(pos);
+    if (d->_pIsSubMenu)
+        d->_menuItem->setSelected(true);
 }
 
 
@@ -209,6 +210,7 @@ void RoundMenu::closeEvent(QCloseEvent* e) {
     d->_view->clearSelection();
     d->_view->setCurrentItem(nullptr);
     d->_view->clearFocus();
+    d->_isHideBySystem = true;
 }
 
 QList<QAction*> RoundMenu::menuActions()
@@ -240,7 +242,7 @@ void RoundMenu::paintEvent(QPaintEvent *)
 void RoundMenu::hideMenu(bool isHideBySystem)
 {
     Q_D(RoundMenu);
-
+    d->_isHideBySystem = isHideBySystem;
     d->_view->clearSelection();
     if (d->_pIsSubMenu) {
         hide();
@@ -249,22 +251,48 @@ void RoundMenu::hideMenu(bool isHideBySystem)
     }
 }
 
+// void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
+//     Q_D(RoundMenu);
+
+//     if (!d->_pIsSubMenu) {
+//         return;
+//     }
+
+//     QPoint pos = e->globalPosition().toPoint();
+
+//     // get the rect of menu item
+//     QMargins margin = d->_view->contentsMargins();
+//     QRect rect = d->_view->visualItemRect(nullptr)
+//                      .translated(d->_view->mapToGlobal(QPoint(0, 0)));
+//     rect.translate(margin.left(), margin.top() + 2);
+
+//     if (d->_view->geometry().contains(pos) &&
+//         !rect.contains(pos) &&
+//         !this->geometry().contains(pos)) {
+//         d->_view->clearSelection();
+//         hideMenu(false);
+//     }
+// }
+
 void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
     Q_D(RoundMenu);
-
+    qDebug() << d->_pIsSubMenu;
     if (!d->_pIsSubMenu) {
         return;
     }
 
+    // 获取鼠标全局位置
     QPoint pos = e->globalPosition().toPoint();
 
-    // get the rect of menu item
+    // 获取当前菜单项的矩形区域
     QMargins margin = d->_view->contentsMargins();
-    QRect rect = d->_view->visualItemRect(nullptr)
-                     .translated(d->_view->mapToGlobal(QPoint(0, 0)));
+    QRect rect = d->_view->visualItemRect(d->_menuItem).translated(d->_view->mapToGlobal(QPoint(0, 0)));
+    qDebug() << d->_menuItem << d->_view->visualItemRect(d->_menuItem) << pos;
+
     rect.translate(margin.left(), margin.top() + 2);
 
-    if (d->_view->geometry().contains(pos) &&
+    // 检查鼠标是否在父菜单区域内，但不在当前菜单项矩形区域内，且也不在当前子菜单区域内
+    if (d->_parentMenu && d->_parentMenu->geometry().contains(pos) &&
         !rect.contains(pos) &&
         !this->geometry().contains(pos)) {
         d->_view->clearSelection();

@@ -93,13 +93,6 @@ void RoundMenuPrivate::handleItemClicked(QListWidgetItem* item) {
             }
             q->close();
         }
-    } else if (v.canConvert<RoundMenu*>()) {
-        RoundMenu* subMenu = v.value<RoundMenu*>();
-        if (subMenu && !subMenu->isVisible()) {
-            _lastHoverSubMenuItem = item;
-            _lastHoverItem = item;
-            _showTimer->start(0);
-        }
     }
 }
 
@@ -154,6 +147,7 @@ void RoundMenuPrivate::createSubMenuItem(RoundMenu* menu)
     // 创建子菜单项小部件
     SubMenuItemWidget* widget = new SubMenuItemWidget(menu, item, _view);
     // widget->showMenuSig.connect(this, &RoundMenuPrivate::showSubMenu);
+    connect(widget, &SubMenuItemWidget::showMenuSig, this, &RoundMenuPrivate::showSubMenu);
     _view->setItemWidget(item, widget);
 }
 
@@ -215,9 +209,10 @@ void RoundMenuPrivate::onShowMenuTimeout()
 
 void RoundMenuPrivate::handleItemEntered(QListWidgetItem* item) {
     _lastHoverItem = item;
-    // if (item->data(Qt::UserRole).canConvert<RoundMenu*>()) {
-    //     _showTimer->start();
-    // }
+    if (item->data(Qt::UserRole).canConvert<RoundMenu*>()) {
+        _lastHoverSubMenuItem = item;
+        _showTimer->start();
+    }
 }
 
 void RoundMenuPrivate::setShadowEffect(int blurRadius, QPointF offset, QColor color)
@@ -233,7 +228,7 @@ void RoundMenuPrivate::setParentMenu(RoundMenu *parent, QListWidgetItem *item)
 {
     _parentMenu = parent;
     _menuItem = item;
-    _isSubMenu = (parent != nullptr);
+    _pIsSubMenu = (parent != nullptr);
 
 }
 

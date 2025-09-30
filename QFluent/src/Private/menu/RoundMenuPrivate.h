@@ -49,8 +49,6 @@ private:
 
     bool _isHideBySystem = true;
 
-    bool _isSubMenu = false;
-
     QList<RoundMenu *> _subMenus;
 
     bool hasItemIcon() const;
