@@ -1,4 +1,4 @@
-#include "MenuActionListWidget.h"
+﻿#include "MenuActionListWidget.h"
 
 #include <QWheelEvent>
 
@@ -167,3 +167,4 @@ QPoint MenuActionListWidget::availableViewSize(const QPoint &pos, MenuAnimationT
     }
     return point;
 }
+

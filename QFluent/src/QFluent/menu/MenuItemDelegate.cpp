@@ -1,4 +1,4 @@
-#include "MenuItemDelegate.h"
+﻿#include "MenuItemDelegate.h"
 
 #include <QPainter>
 #include <QModelIndex>

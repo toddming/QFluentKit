@@ -214,9 +214,9 @@ void FluentWindow::initUI()
         am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::HELP), "帮助"));
         am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::FEEDBACK), "反馈"));
 
-        am->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::NONE), "全选"));
-
-
+        auto ac = new Action(Icon::FluentIcon(IconType::FLuentIcon::NONE), "全选");
+        // ac->setShortcut(QKeySequence("Ctrl+A"));
+        am->addAction(ac);
 
         am->exec(QCursor::pos());
     });

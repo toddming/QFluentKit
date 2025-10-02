@@ -11,8 +11,6 @@
 #include <QListWidgetItem>
 #include <QGraphicsDropShadowEffect>
 
-#include <QDebug>
-
 #include "Screen.h"
 #include "QFluent/menu/RoundMenu.h"
 #include "QFluent/menu/MenuActionListWidget.h"
@@ -146,7 +144,6 @@ void RoundMenuPrivate::createSubMenuItem(RoundMenu* menu)
 
     // 创建子菜单项小部件
     SubMenuItemWidget* widget = new SubMenuItemWidget(menu, item, _view);
-    // widget->showMenuSig.connect(this, &RoundMenuPrivate::showSubMenu);
     connect(widget, &SubMenuItemWidget::showMenuSig, this, &RoundMenuPrivate::showSubMenu);
     _view->setItemWidget(item, widget);
 }

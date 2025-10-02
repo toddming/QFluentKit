@@ -9,8 +9,6 @@
 #include <QHBoxLayout>
 #include <QGraphicsDropShadowEffect>
 
-#include <QDebug>
-
 #include "Theme.h"
 #include "MenuAnimation.h"
 #include "Private/menu/RoundMenuPrivate.h"
@@ -189,7 +187,7 @@ void RoundMenu::adjustMenuSize() {
     setFixedSize(viewSize.width() + d->_layout->contentsMargins().left() +
                  d->_layout->contentsMargins().right(),
                  viewSize.height() + d->_layout->contentsMargins().top() +
-                 d->_layout->contentsMargins().bottom());
+                 d->_layout->contentsMargins().bottom()+12);
 }
 
 MenuActionListWidget* RoundMenu::view()
@@ -241,6 +239,7 @@ void RoundMenu::paintEvent(QPaintEvent *)
 
 void RoundMenu::hideMenu(bool isHideBySystem)
 {
+    qDebug() << "hideMenu";
     Q_D(RoundMenu);
     d->_isHideBySystem = isHideBySystem;
     d->_view->clearSelection();
@@ -276,7 +275,6 @@ void RoundMenu::hideMenu(bool isHideBySystem)
 
 void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
     Q_D(RoundMenu);
-    qDebug() << d->_pIsSubMenu;
     if (!d->_pIsSubMenu) {
         return;
     }
@@ -284,10 +282,10 @@ void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
     // 获取鼠标全局位置
     QPoint pos = e->globalPosition().toPoint();
 
+    auto view = d->_parentMenu->view();
     // 获取当前菜单项的矩形区域
-    QMargins margin = d->_view->contentsMargins();
-    QRect rect = d->_view->visualItemRect(d->_menuItem).translated(d->_view->mapToGlobal(QPoint(0, 0)));
-    qDebug() << d->_menuItem << d->_view->visualItemRect(d->_menuItem) << pos;
+    QMargins margin = view->contentsMargins();
+    QRect rect = view->visualItemRect(d->_menuItem).translated(view->mapToGlobal(QPoint(0, 0)));
 
     rect.translate(margin.left(), margin.top() + 2);
 
@@ -295,7 +293,7 @@ void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
     if (d->_parentMenu && d->_parentMenu->geometry().contains(pos) &&
         !rect.contains(pos) &&
         !this->geometry().contains(pos)) {
-        d->_view->clearSelection();
+        view->clearSelection();
         hideMenu(false);
     }
 }
