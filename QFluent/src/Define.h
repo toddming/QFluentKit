@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 
@@ -309,4 +309,17 @@ class QFLUENT_EXPORT CLASS : public QObject \
     };
     Q_ENUM_CREATE(MenuAnimation)
     Q_END_ENUM_CREATE(MenuAnimationType)
+
+
+
+
+
+    Q_BEGIN_ENUM_CREATE(MenuIndicatorType)
+    enum MenuIndicator
+    {
+        CHECK = 0,
+        RADIO = 1
+    };
+    Q_ENUM_CREATE(MenuIndicator)
+    Q_END_ENUM_CREATE(MenuIndicatorType)
 

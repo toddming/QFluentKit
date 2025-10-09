@@ -30,6 +30,7 @@ public:
     void setDefaultAction(QAction *action);
     MenuActionListWidget* view();
     void adjustMenuSize();
+    int itemHeight() const;
 
     void hideMenu(bool isHideBySystem = false);
 
@@ -46,4 +47,6 @@ protected:
     void paintEvent(QPaintEvent *) override;
     void mouseMoveEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
+    virtual int adjustItemText(QListWidgetItem *item, QAction *action);
+
 };

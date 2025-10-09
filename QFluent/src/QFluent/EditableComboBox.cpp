@@ -4,7 +4,11 @@
 #include <QActionGroup>
 #include <QDebug>
 
+#include "menu/RoundMenu.h"
+#include "Theme.h"
+#include "Icon.h"
 #include "menu/MenuActionListWidget.h"
+#include "menu/ComboBoxMenu.h"
 
 
 EditableComboBox::EditableComboBox(QWidget *parent)

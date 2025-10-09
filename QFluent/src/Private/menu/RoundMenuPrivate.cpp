@@ -43,36 +43,6 @@ int RoundMenuPrivate::longestShortcutWidth() const
     return maxWidth;
 }
 
-
-int RoundMenuPrivate::adjustItemText(QListWidgetItem *item, QAction *action)
-{
-    if (!item || !action) return 0;
-
-    QString text = action->text();
-    text.remove('&');
-
-    QFontMetrics fm(item->font());
-    int shortcutWidth = longestShortcutWidth();
-    if (shortcutWidth > 0) {
-        shortcutWidth += 22; // 保留空间
-    }
-
-    int width;
-    bool hasIcon = hasItemIcon();
-
-    if (!hasIcon) {
-        width = 40 + fm.horizontalAdvance(text) + shortcutWidth;
-    } else {
-        text = " " + text;
-        int space = 4 - fm.horizontalAdvance(" ");
-        width = 60 + fm.horizontalAdvance(text) + shortcutWidth + space;
-        item->setText(text);
-    }
-
-    return width;
-}
-
-
 void RoundMenuPrivate::handleItemClicked(QListWidgetItem* item) {
     Q_Q(RoundMenu);
 
@@ -96,6 +66,8 @@ void RoundMenuPrivate::handleItemClicked(QListWidgetItem* item) {
 
 
 QListWidgetItem* RoundMenuPrivate::createActionItem(QAction* action, QAction* before) {
+    Q_Q(RoundMenu);
+
     if (!before) {
         _actions.append(action);
     } else if (_actions.contains(before)) {
@@ -106,7 +78,7 @@ QListWidgetItem* RoundMenuPrivate::createActionItem(QAction* action, QAction* be
     }
     QListWidgetItem* item = new QListWidgetItem(action->icon(), action->text());
 
-    item->setSizeHint(QSize(adjustItemText(item, action), _view->itemHeight()));
+    item->setSizeHint(QSize(q->adjustItemText(item, action), _view->itemHeight()));
     if (!action->isEnabled()) {
         item->setFlags(Qt::NoItemFlags);
     }
@@ -154,7 +126,7 @@ void RoundMenuPrivate::onActionChanged()
     QAction *action = qobject_cast<QAction *>(sender());
     QListWidgetItem* item = qvariant_cast<QListWidgetItem*>(action->property("item"));
 
-    adjustItemText(item, action);
+    q->adjustItemText(item, action);
 
     if (action->isEnabled()) {
         item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);

@@ -48,7 +48,7 @@
 
 #include "navigation/Pivot.h"
 #include "navigation/NavigationBar.h"
-
+#include "menu/CheckableMenu.h"
 
 
 class QFLUENT_EXPORT FluentWindow : public QMainWindow

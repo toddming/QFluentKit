@@ -187,7 +187,14 @@ void RoundMenu::adjustMenuSize() {
     setFixedSize(viewSize.width() + d->_layout->contentsMargins().left() +
                  d->_layout->contentsMargins().right(),
                  viewSize.height() + d->_layout->contentsMargins().top() +
-                 d->_layout->contentsMargins().bottom()+12);
+                 d->_layout->contentsMargins().bottom() + 2);
+}
+
+int RoundMenu::itemHeight() const
+{
+    Q_D_CONST(RoundMenu);
+
+    return d->_view->itemHeight();
 }
 
 MenuActionListWidget* RoundMenu::view()
@@ -328,4 +335,35 @@ void RoundMenu::addWidget(QWidget *widget, bool selectable)
 
     adjustMenuSize();
     adjustSize();
+}
+
+
+int RoundMenu::adjustItemText(QListWidgetItem *item, QAction *action)
+{
+    Q_D(RoundMenu);
+
+    if (!item || !action) return 0;
+
+    QString text = action->text();
+    text.remove('&');
+
+    QFontMetrics fm(item->font());
+    int shortcutWidth = d->longestShortcutWidth();
+    if (shortcutWidth > 0) {
+        shortcutWidth += 22; // 保留空间
+    }
+
+    int width;
+    bool hasIcon = d->hasItemIcon();
+
+    if (!hasIcon) {
+        width = 40 + fm.horizontalAdvance(text) + shortcutWidth;
+    } else {
+        text = " " + text;
+        int space = 4 - fm.horizontalAdvance(" ");
+        width = 60 + fm.horizontalAdvance(text) + shortcutWidth + space;
+        item->setText(text);
+    }
+
+    return width;
 }

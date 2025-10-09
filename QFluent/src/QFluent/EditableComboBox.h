@@ -11,6 +11,7 @@
 #include "ComboBox.h"
 #include "LineEdit.h"
 #include "Property.h"
+#include "Animation.h"
 
 class QFLUENT_EXPORT EditableComboBox : public LineEdit
 {

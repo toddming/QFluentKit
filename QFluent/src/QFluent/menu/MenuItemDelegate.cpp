@@ -3,8 +3,11 @@
 #include <QPainter>
 #include <QModelIndex>
 #include <QStyleOptionViewItem>
+#include <QAction>
 
+#include "Icon.h"
 #include "Theme.h"
+#include "Define.h"
 
 MenuItemDelegate::MenuItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
@@ -44,8 +47,6 @@ bool MenuItemDelegate::isSeparator(const QModelIndex &index) const
     QVariant data = index.data(Qt::DecorationRole);
     return data.isValid() && data.toString() == "separator";
 }
-
-
 
 ShortcutMenuItemDelegate::ShortcutMenuItemDelegate(QObject *parent)
     : MenuItemDelegate(parent)
@@ -94,18 +95,15 @@ void ShortcutMenuItemDelegate::paint(QPainter *painter,
     painter->restore();
 }
 
-
 IndicatorMenuItemDelegate::IndicatorMenuItemDelegate(QObject *parent)
     : MenuItemDelegate(parent)
 {
-
 }
 
 void IndicatorMenuItemDelegate::paint(QPainter *painter,
                                       const QStyleOptionViewItem &option,
                                       const QModelIndex &index) const
 {
-
     MenuItemDelegate::paint(painter, option, index);
     if (!(option.state & QStyle::State_Selected))
         return;
@@ -119,4 +117,75 @@ void IndicatorMenuItemDelegate::paint(QPainter *painter,
     painter->drawRoundedRect(6.0, option.rect.y() + y_offset, 3.0, 15.0, 1.5, 1.5);
 
     painter->restore();
+}
+
+CheckableMenuItemDelegate::CheckableMenuItemDelegate(QObject *parent)
+    : ShortcutMenuItemDelegate(parent)
+{
+}
+
+void CheckableMenuItemDelegate::paint(QPainter *painter,
+                                      const QStyleOptionViewItem &option,
+                                      const QModelIndex &index) const
+{
+    ShortcutMenuItemDelegate::paint(painter, option, index);
+
+    // draw indicator
+    QVariant actionData = index.data(Qt::UserRole);
+    if (!actionData.isValid())
+        return;
+
+    QAction *action = qvariant_cast<QAction*>(actionData);
+    if (!action || !action->isChecked())
+        return;
+
+    painter->save();
+    drawIndicator(painter, option, index);
+    painter->restore();
+}
+
+RadioIndicatorMenuItemDelegate::RadioIndicatorMenuItemDelegate(QObject *parent)
+    : CheckableMenuItemDelegate(parent)
+{
+}
+
+void RadioIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
+                                                   const QStyleOptionViewItem &option,
+                                                   const QModelIndex &index) const
+{
+    QRect rect = option.rect;
+    int r = 5;
+    int x = rect.x() + 22;
+    int y = rect.center().y() - r / 2;
+
+    painter->setRenderHints(QPainter::Antialiasing);
+    if (!(option.state & QStyle::State_MouseOver)) {
+        painter->setOpacity(Theme::instance()->isDarkMode() ? 0.75 : 0.65);
+    }
+
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    painter->drawEllipse(QRectF(x, y, r, r));
+}
+
+CheckIndicatorMenuItemDelegate::CheckIndicatorMenuItemDelegate(QObject *parent)
+    : CheckableMenuItemDelegate(parent)
+{
+}
+
+void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
+                                                   const QStyleOptionViewItem &option,
+                                                   const QModelIndex &index) const
+{
+    QRect rect = option.rect;
+    int s = 11;
+    int x = rect.x() + 19;
+    int y = rect.center().y() - s / 2;
+
+    painter->setRenderHints(QPainter::Antialiasing);
+    if (!(option.state & QStyle::State_MouseOver)) {
+        painter->setOpacity(0.75);
+    }
+
+    Icon::drawSvgIcon(painter, IconType::FLuentIcon::ACCEPT, QRectF(x, y, s, s));
 }

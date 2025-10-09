@@ -3,36 +3,36 @@
 #include <QScreen>
 #include <QActionGroup>
 #include <QDebug>
+#include <QPainter>
 
+#include "menu/RoundMenu.h"
+#include "menu/ComboBoxMenu.h"
 #include "menu/MenuActionListWidget.h"
-#include "menu/MenuItemDelegate.h"
 
-///////////////////ComboBoxMenu//////////////////////
-ComboBoxMenu::ComboBoxMenu(const QString& title, QWidget *parent) : RoundMenu(title, parent)
-{
-    setItemHeight(36);
-    view()->setItemDelegate(new IndicatorMenuItemDelegate(this));
-    view()->setObjectName("comboListWidget");
-}
+#include "Private/ComboBoxPrivate.h"
+#include "Animation.h"
+#include "Theme.h"
+#include "Icon.h"
 
-void ComboBoxMenu::exec(const QPoint& pos, bool animate, MenuAnimationType::MenuAnimation aniType)
-{
-    view()->adjustSize(pos, aniType);
-    adjustMenuSize();
-    RoundMenu::exec(pos, animate, aniType);
-}
-
-
-
-///////////////////ComboBox//////////////////////
+Q_PROPERTY_CREATE_Q_CPP(ComboBox, int, MaxVisibleItems)
 ComboBox::ComboBox(QWidget *parent)
-    : QPushButton(parent)
+    : QPushButton(parent), d_ptr(new ComboBoxPrivate())
 {
+    Q_D(ComboBox);
+    d->q_ptr = this;
+
+    setMaxVisibleItems(-1);
+
     installEventFilter(this);
 
     Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
 
-    arrowAni = new TranslateYAnimation(this);
+    d->_arrowAni = new TranslateYAnimation(this);
+}
+
+ComboBox::~ComboBox()
+{
+
 }
 
 void ComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
@@ -49,12 +49,13 @@ void ComboBox::addItems(const QStringList &texts)
 
 void ComboBox::insertItem(int index, const QString &text, const QIcon &icon, const QVariant &userData)
 {
+    Q_D(ComboBox);
     if (index < 0 || index > count()) index = count();
 
-    m_items.insert(index, ComboItem(text, icon, userData));
+    d->_items.insert(index, ComboItem(text, icon, userData));
 
-    if (index <= m_currentIndex) {
-        setCurrentIndex(m_currentIndex + 1);
+    if (index <= d->_pCurrentIndex) {
+        setCurrentIndex(d->_pCurrentIndex + 1);
     }
 }
 
@@ -67,15 +68,17 @@ void ComboBox::insertItems(int index, const QStringList &texts)
 
 void ComboBox::removeItem(int index)
 {
+    Q_D(ComboBox);
+
     if (index < 0 || index >= count()) return;
 
-    m_items.removeAt(index);
+    d->_items.removeAt(index);
 
-    if (index < m_currentIndex) {
-        setCurrentIndex(m_currentIndex - 1);
-    } else if (index == m_currentIndex) {
+    if (index < d->_pCurrentIndex) {
+        setCurrentIndex(d->_pCurrentIndex - 1);
+    } else if (index == d->_pCurrentIndex) {
         if (index > 0) {
-            setCurrentIndex(m_currentIndex - 1);
+            setCurrentIndex(d->_pCurrentIndex - 1);
         } else if (count() > 0) {
             setCurrentIndex(0);
         } else {
@@ -86,48 +89,57 @@ void ComboBox::removeItem(int index)
 
 void ComboBox::clear()
 {
-    if (m_currentIndex >= 0) {
+    Q_D(ComboBox);
+
+    if (d->_pCurrentIndex >= 0) {
         setText("");
-        m_currentIndex = -1;
+        d->_pCurrentIndex = -1;
     }
-    m_items.clear();
+    d->_items.clear();
 }
 
 int ComboBox::currentIndex() const
 {
-    return m_currentIndex;
+    Q_D_CONST(ComboBox);
+
+    return d->_pCurrentIndex;
 }
 
 QString ComboBox::currentText() const
 {
-    if (m_currentIndex >= 0 && m_currentIndex < count()) {
-        return m_items[m_currentIndex].text;
+    Q_D_CONST(ComboBox);
+
+    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
+        return d->_items[d->_pCurrentIndex].text;
     }
     return "";
 }
 
 QVariant ComboBox::currentData() const
 {
-    if (m_currentIndex >= 0 && m_currentIndex < count()) {
-        return m_items[m_currentIndex].userData;
+    Q_D_CONST(ComboBox);
+
+    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
+        return d->_items[d->_pCurrentIndex].userData;
     }
     return QVariant(NULL);
 }
 
 void ComboBox::setCurrentIndex(int index)
 {
-    if (index < -1 || index >= count() || index == m_currentIndex)
+    Q_D(ComboBox);
+    if (index < -1 || index >= count() || index == d->_pCurrentIndex)
         return;
 
     QString oldText = currentText();
 
     if (index == -1) {
-        m_currentIndex = -1;
-        setPlaceholderText(m_placeholderText);
+        d->_pCurrentIndex = -1;
+        setPlaceholderText(d->_pPlaceholderText);
     } else {
-        m_currentIndex = index;
-        setText(m_items[index].text);
-        updateTextState(false);
+        d->_pCurrentIndex = index;
+        setText(d->_items[index].text);
+        d->updateTextState(false);
     }
 
     if (oldText != currentText()) {
@@ -149,37 +161,44 @@ void ComboBox::setCurrentText(const QString &text)
 
 int ComboBox::count() const
 {
-    return m_items.size();
+    Q_D_CONST(ComboBox);
+    return d->_items.size();
 }
 
 QString ComboBox::itemText(int index) const
 {
+    Q_D_CONST(ComboBox);
     if (index >= 0 && index < count()) {
-        return m_items[index].text;
+        return d->_items[index].text;
     }
     return "";
 }
 
 QIcon ComboBox::itemIcon(int index) const
 {
+    Q_D_CONST(ComboBox);
     if (index >= 0 && index < count()) {
-        return m_items[index].icon;
+        return d->_items[index].icon;
     }
     return QIcon();
 }
 
 QVariant ComboBox::itemData(int index) const
 {
+    Q_D_CONST(ComboBox);
+
     if (index >= 0 && index < count()) {
-        return m_items[index].userData;
+        return d->_items[index].userData;
     }
     return QVariant(NULL);
 }
 
 int ComboBox::findText(const QString &text) const
 {
+    Q_D_CONST(ComboBox);
+
     for (int i = 0; i < count(); ++i) {
-        if (m_items[i].text == text) {
+        if (d->_items[i].text == text) {
             return i;
         }
     }
@@ -188,8 +207,10 @@ int ComboBox::findText(const QString &text) const
 
 int ComboBox::findData(const QVariant &data) const
 {
+    Q_D_CONST(ComboBox);
+
     for (int i = 0; i < count(); ++i) {
-        if (m_items[i].userData == data) {
+        if (d->_items[i].userData == data) {
             return i;
         }
     }
@@ -198,26 +219,18 @@ int ComboBox::findData(const QVariant &data) const
 
 void ComboBox::setPlaceholderText(const QString &text)
 {
-    m_placeholderText = text;
-    if (m_currentIndex == -1) {
+    Q_D(ComboBox);
+    d->_pPlaceholderText = text;
+    if (d->_pCurrentIndex == -1) {
         setText(text);
-        updateTextState(true);
+        d->updateTextState(true);
     }
 }
 
 QString ComboBox::placeholderText() const
 {
-    return m_placeholderText;
-}
-
-void ComboBox::setMaxVisibleItems(int max)
-{
-    m_maxVisibleItems = max;
-}
-
-int ComboBox::maxVisibleItems() const
-{
-    return m_maxVisibleItems;
+    Q_D_CONST(ComboBox);
+    return d->_pPlaceholderText;
 }
 
 void ComboBox::setText(const QString &text)
@@ -228,48 +241,51 @@ void ComboBox::setText(const QString &text)
 
 void ComboBox::paintEvent(QPaintEvent *event)
 {
+    Q_D(ComboBox);
     QPushButton::paintEvent(event);
 
     // 绘制下拉箭头
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_isHover) {
+    if (d->_pIsHover) {
         painter.setOpacity(0.8);
-    } else if (m_isPressed) {
+    } else if (d->_pIsPressed) {
         painter.setOpacity(0.7);
     }
 
-    QRectF rect = QRectF(width()-22, height()/2-5+arrowAni->y(), 10, 10);
+    QRectF rect = QRectF(width()-22, height()/2-5+d->_arrowAni->y(), 10, 10);
 
     Icon::drawSvgIcon(&painter, IconType::FLuentIcon::ARROW_DOWN, rect);
 }
 
 void ComboBox::mouseReleaseEvent(QMouseEvent *event)
 {
+    Q_D(ComboBox);
     QPushButton::mouseReleaseEvent(event);
-    toggleComboMenu();
+    d->toggleComboMenu();
 }
 
 
 bool ComboBox::eventFilter(QObject *watched, QEvent *event)
 {
+    Q_D(ComboBox);
     if (watched == this) {
         switch (event->type()) {
         case QEvent::MouseButtonPress:
-            m_isPressed = true;
+            d->_pIsPressed = true;
             update();
             break;
         case QEvent::MouseButtonRelease:
-            m_isPressed = false;
+            d->_pIsPressed = false;
             update();
             break;
         case QEvent::Enter:
-            m_isHover = true;
+            d->_pIsHover = true;
             update();
             break;
         case QEvent::Leave:
-            m_isHover = false;
+            d->_pIsHover = false;
             update();
             break;
         default:
@@ -279,100 +295,4 @@ bool ComboBox::eventFilter(QObject *watched, QEvent *event)
     return QPushButton::eventFilter(watched, event);
 }
 
-void ComboBox::toggleComboMenu()
-{
-    if (m_dropMenu != nullptr) {
-        closeComboMenu();
-    } else {
-        showComboMenu();
-    }
-}
 
-void ComboBox::showComboMenu()
-{
-    if (count() == 0) return;
-
-    m_dropMenu = createComboMenu();
-
-    if (m_dropMenu->view()->width() < this->width()) {
-        m_dropMenu->view()->setMinimumWidth(this->width());
-        m_dropMenu->adjustMenuSize();
-    }
-
-    if (currentIndex() >= 0 && currentIndex() < count()) {
-        m_dropMenu->setDefaultAction(m_dropMenu->menuActions().at(currentIndex()));
-    }
-
-    int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + width() / 2;
-    QPoint pd = mapToGlobal(QPoint(x, height()));
-    int hd = m_dropMenu->view()->heightForAnimation(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
-
-    QPoint pu = mapToGlobal(QPoint(x, 0));
-    int hu = m_dropMenu->view()->heightForAnimation(pu, MenuAnimationType::MenuAnimation::PULL_UP);
-
-    if (hd >= hu) {
-        m_dropMenu->view()->adjustSize(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
-        m_dropMenu->exec(pd, true, MenuAnimationType::MenuAnimation::DROP_DOWN);
-    } else {
-        m_dropMenu->view()->adjustSize(pu, MenuAnimationType::MenuAnimation::PULL_UP);
-        m_dropMenu->exec(pu, true, MenuAnimationType::MenuAnimation::PULL_UP);
-    }
-}
-
-void ComboBox::closeComboMenu()
-{
-    if (!m_dropMenu) return;
-    m_dropMenu = nullptr;
-}
-
-void ComboBox::updateTextState(bool isPlaceholder)
-{
-    if (this->property("isPlaceholderText").toBool() == isPlaceholder) return;
-
-    this->setProperty("isPlaceholderText", isPlaceholder);
-    style()->unpolish(this);
-    style()->polish(this);
-}
-
-ComboBoxMenu* ComboBox::createComboMenu()
-{
-    ComboBoxMenu *menu = new ComboBoxMenu("menu", this);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    for (int i = 0; i < count(); ++i) {
-        QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
-        action->setData(i);
-        action->setCheckable(true);
-        if (i == m_currentIndex) {
-            action->setChecked(true);
-        }
-        menu->addAction(action);
-        connect(action, &QAction::triggered, this, [=](){
-            int index = action->property("index").toInt();
-            if (index != m_currentIndex) {
-                setCurrentIndex(index);
-                emit activated(index);
-                emit textActivated(action->text());
-            }
-        });
-    }
-    connect(menu, &ComboBoxMenu::closed, this, [=](){
-        QPoint pos = mapFromGlobal(QCursor::pos());
-        if (!rect().contains(pos)) {
-            m_dropMenu = nullptr;
-        }
-    });
-    return menu;
-}
-
-void ComboBox::handleMenuAction(QAction *action)
-{
-    int index = action->data().toInt();
-    if (index < 0 || index >= count()) return;
-
-    if (index != m_currentIndex) {
-        setCurrentIndex(index);
-    }
-
-    emit activated(index);
-    emit textActivated(currentText());
-}

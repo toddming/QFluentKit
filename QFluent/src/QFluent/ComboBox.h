@@ -4,45 +4,19 @@
 #include <QPushButton>
 #include <QVector>
 #include <QIcon>
-#include <QEvent>
-#include <QPainter>
-#include <QPropertyAnimation>
-#include <QAction>
 
-#include "Theme.h"
-#include "Icon.h"
-#include "menu/RoundMenu.h"
-#include "Define.h"
-#include "Animation.h"
+#include "Property.h"
 
-/////////////////ComboBoxMenu//////////////////////
-class ComboBoxMenu : public RoundMenu
-{
-public:
-    explicit ComboBoxMenu(const QString& title = "", QWidget *parent = nullptr);
-
-    void exec(const QPoint& pos, bool animate = true,
-              MenuAnimationType::MenuAnimation aniType = MenuAnimationType::MenuAnimation::DROP_DOWN);
-
-};
-
-
+class ComboBoxMenu;
+class ComboBoxPrivate;
 class QFLUENT_EXPORT ComboBox : public QPushButton
 {
     Q_OBJECT
+    Q_Q_CREATE(ComboBox)
+    Q_PROPERTY_CREATE_Q_H(int, MaxVisibleItems)
 public:
-    struct ComboItem {
-        QString text;
-        QIcon icon;
-        QVariant userData;
-
-        ComboItem(const QString &text = "",
-                 const QIcon &icon = QIcon(),
-                 const QVariant &userData = QVariant(NULL))
-            : text(text), icon(icon), userData(userData) {}
-    };
-
     explicit ComboBox(QWidget *parent = nullptr);
+    ~ComboBox();
 
     // 添加项目
     void addItem(const QString &text,
@@ -83,10 +57,6 @@ public:
     void setPlaceholderText(const QString &text);
     QString placeholderText() const;
 
-    // 设置最大可见项目数
-    void setMaxVisibleItems(int max);
-    int maxVisibleItems() const;
-
     void setText(const QString &text);
 
 signals:
@@ -99,27 +69,6 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
-
-private slots:
-    void handleMenuAction(QAction *action);
-
-private:
-    void toggleComboMenu();
-    void showComboMenu();
-    void closeComboMenu();
-    void updateTextState(bool isPlaceholder);
-    ComboBoxMenu* createComboMenu();
-
-    QVector<ComboItem> m_items;
-    int m_currentIndex = -1;
-    int m_maxVisibleItems = -1;
-    QString m_placeholderText;
-    bool m_isHover = false;
-    bool m_isPressed = false;
-    ComboBoxMenu *m_dropMenu = nullptr;
-
-    TranslateYAnimation *arrowAni;
-
 };
 
 #endif // COMBOBOX_H

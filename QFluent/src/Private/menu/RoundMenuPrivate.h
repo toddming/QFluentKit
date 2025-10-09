@@ -55,8 +55,6 @@ private:
 
     int longestShortcutWidth() const;
 
-    int adjustItemText(QListWidgetItem *item, QAction *action);
-
     void createSubMenuItem(RoundMenu* menu);
 
     QListWidgetItem* createActionItem(QAction* action, QAction* before = nullptr);

@@ -12,6 +12,7 @@
 #include <QSettings>
 #include <QFrame>
 #include <QStandardItemModel>
+#include <QActionGroup>
 
 #include "QWKWidgets/widgetwindowagent.h"
 
@@ -189,7 +190,28 @@ void FluentWindow::initUI()
     });
     lay->addWidget(tbtn);
 
+    QActionGroup *actionGroup = new QActionGroup(this);
+    Action *up = new Action(Icon::FluentIcon(IconType::FLuentIcon::UP), "升序");
+    up->setCheckable(true);
+    Action *down = new Action(Icon::FluentIcon(IconType::FLuentIcon::DOWN), "降序");
+    down->setCheckable(true);
+    up->setChecked(true);
+    actionGroup->addAction(up);
+    actionGroup->addAction(down);
+
     ToggleToolButton *tool = new ToggleToolButton(IconType::FLuentIcon::WIFI, this);
+    connect(tool, &ToggleToolButton::clicked, this, [=](){
+        CheckableMenu *cm = new CheckableMenu("menu", this, MenuIndicatorType::MenuIndicator::RADIO);
+        cm->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::CALENDAR), "创建时间"));
+        cm->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::CAMERA), "拍摄时间"));
+        cm->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::EDIT), "修改时间"));
+        cm->addAction(new Action(Icon::FluentIcon(IconType::FLuentIcon::FONT), "名称"));
+        cm->addSeparator();
+
+        cm->addAction(up);
+        cm->addAction(down);
+        cm->exec(QCursor::pos());
+    });
     lay->addWidget(tool);
 
 
