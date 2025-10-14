@@ -3,32 +3,20 @@
 
 #include <QVector>
 #include <QIcon>
-#include <QEvent>
-#include <QPainter>
-#include <QPropertyAnimation>
-#include <QAction>
 
-#include "ComboBox.h"
 #include "LineEdit.h"
 #include "Property.h"
-#include "Animation.h"
 
+class ComboBoxMenu;
+class EditableComboBoxPrivate;
 class QFLUENT_EXPORT EditableComboBox : public LineEdit
 {
     Q_OBJECT
+    Q_Q_CREATE(EditableComboBox)
+    Q_PROPERTY_CREATE_Q_H(int, MaxVisibleItems)
 public:
-    struct ComboItem {
-        QString text;
-        QIcon icon;
-        QVariant userData;
-
-        ComboItem(const QString &text = "",
-                 const QIcon &icon = QIcon(),
-                 const QVariant &userData = QVariant(NULL))
-            : text(text), icon(icon), userData(userData) {}
-    };
-
     explicit EditableComboBox(QWidget *parent = nullptr);
+    ~EditableComboBox();
 
     // 添加项目
     void addItem(const QString &text,
@@ -69,10 +57,6 @@ public:
     void setPlaceholderText(const QString &text);
     QString placeholderText() const;
 
-    // 设置最大可见项目数
-    void setMaxVisibleItems(int max);
-    int maxVisibleItems() const;
-
     void setText(const QString &text);
 
     void setCompleterMenu(CompleterMenu *menu);
@@ -86,33 +70,7 @@ signals:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    bool eventFilter(QObject *watched, QEvent *event) override;
-
-private slots:
-    void handleMenuAction(QAction *action);
-    void onActivated(const QString &text);
-    void onReturnPressed();
-    void onComboTextChanged(const QString &text);
-    void onDropMenuClosed();
-    void onClearButtonClicked();
-
-private:
-    void toggleComboMenu();
-    void showComboMenu();
-    void closeComboMenu();
-    void updateTextState(bool isPlaceholder);
-    ComboBoxMenu* createComboMenu();
-
-    QVector<ComboItem> m_items;
-    int m_currentIndex = -1;
-    int m_maxVisibleItems = -1;
-    QString m_placeholderText;
-    bool m_isHover = false;
-    bool m_isPressed = false;
-    ComboBoxMenu *m_dropMenu = nullptr;
-
-    TranslateYAnimation *arrowAni;
-    LineEditButton *m_dropButton = nullptr;
+    bool eventFilter(QObject *watched, QEvent *event) override;    
 };
 
 #endif // EDITABLECOMBOBOX_H

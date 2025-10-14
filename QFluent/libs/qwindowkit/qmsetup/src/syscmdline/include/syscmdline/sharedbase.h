@@ -30,6 +30,7 @@
 #include <utility>
 
 #include <syscmdline/global.h>
+
 namespace SysCmdLine {
 
     class SharedBasePrivate;

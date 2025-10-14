@@ -9,28 +9,38 @@
 #include "Icon.h"
 #include "menu/MenuActionListWidget.h"
 #include "menu/ComboBoxMenu.h"
+#include "Private/EditableComboBoxPrivate.h"
+#include "Animation.h"
 
-
+Q_PROPERTY_CREATE_Q_CPP(EditableComboBox, int, MaxVisibleItems)
 EditableComboBox::EditableComboBox(QWidget *parent)
-    : LineEdit(parent)
+    : LineEdit(parent), d_ptr(new EditableComboBoxPrivate())
 {
+    Q_D(EditableComboBox);;
+    d->q_ptr = this;
+
     installEventFilter(this);
 
     Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
 
-    arrowAni = new TranslateYAnimation(this);
+    d->_arrowAni = new TranslateYAnimation(this);
 
-    m_dropButton = new LineEditButton(Icon::FluentIcon(IconType::FLuentIcon::ARROW_DOWN), this);
-    m_dropButton->setFixedSize(30, 25);
-    hBoxLayout()->addWidget(m_dropButton, 0, Qt::AlignRight);
+    d->_dropButton = new LineEditButton(Icon::FluentIcon(IconType::FLuentIcon::ARROW_DOWN), this);
+    d->_dropButton->setFixedSize(30, 25);
+    hBoxLayout()->addWidget(d->_dropButton, 0, Qt::AlignRight);
     setTextMargins(0, 0, 29, 0);
     setClearButtonEnabled(false);
 
-    connect(m_dropButton, &LineEditButton::clicked, this, [this]() { toggleComboMenu(); });
-    connect(this, &LineEdit::textChanged, this, &EditableComboBox::onComboTextChanged);
+    connect(d->_dropButton, &LineEditButton::clicked, d, &EditableComboBoxPrivate::toggleComboMenu);
+    connect(this, &LineEdit::textChanged, d, &EditableComboBoxPrivate::onComboTextChanged);
     getClearButton()->disconnect();
-    connect(getClearButton(), &LineEditButton::clicked, this, &EditableComboBox::onClearButtonClicked);
-    connect(this, &EditableComboBox::returnPressed, this, &EditableComboBox::onReturnPressed);
+    connect(getClearButton(), &LineEditButton::clicked, d, &EditableComboBoxPrivate::onClearButtonClicked);
+    connect(this, &EditableComboBox::returnPressed, d, &EditableComboBoxPrivate::onReturnPressed);
+}
+
+EditableComboBox::~EditableComboBox()
+{
+
 }
 
 void EditableComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
@@ -47,12 +57,13 @@ void EditableComboBox::addItems(const QStringList &texts)
 
 void EditableComboBox::insertItem(int index, const QString &text, const QIcon &icon, const QVariant &userData)
 {
+    Q_D(EditableComboBox);
     if (index < 0 || index > count()) index = count();
 
-    m_items.insert(index, ComboItem(text, icon, userData));
+    d->_items.insert(index, EditableComboBoxDetail::ComboItem(text, icon, userData));
 
-    if (index <= m_currentIndex) {
-        setCurrentIndex(m_currentIndex + 1);
+    if (index <= d->_pCurrentIndex) {
+        setCurrentIndex(d->_pCurrentIndex + 1);
     }
 }
 
@@ -65,15 +76,17 @@ void EditableComboBox::insertItems(int index, const QStringList &texts)
 
 void EditableComboBox::removeItem(int index)
 {
+    Q_D(EditableComboBox);
+
     if (index < 0 || index >= count()) return;
 
-    m_items.removeAt(index);
+    d->_items.removeAt(index);
 
-    if (index < m_currentIndex) {
-        setCurrentIndex(m_currentIndex - 1);
-    } else if (index == m_currentIndex) {
+    if (index < d->_pCurrentIndex) {
+        setCurrentIndex(d->_pCurrentIndex - 1);
+    } else if (index == d->_pCurrentIndex) {
         if (index > 0) {
-            setCurrentIndex(m_currentIndex - 1);
+            setCurrentIndex(d->_pCurrentIndex - 1);
         } else if (count() > 0) {
             setCurrentIndex(0);
         } else {
@@ -84,16 +97,20 @@ void EditableComboBox::removeItem(int index)
 
 void EditableComboBox::clear()
 {
-    if (m_currentIndex >= 0) {
+    Q_D(EditableComboBox);
+
+    if (d->_pCurrentIndex >= 0) {
         setText("");
-        m_currentIndex = -1;
+        d->_pCurrentIndex = -1;
     }
-    m_items.clear();
+    d->_items.clear();
 }
 
 int EditableComboBox::currentIndex() const
 {
-    return m_currentIndex;
+    Q_D_CONST(EditableComboBox);
+
+    return d->_pCurrentIndex;
 }
 
 QString EditableComboBox::currentText() const
@@ -103,24 +120,28 @@ QString EditableComboBox::currentText() const
 
 QVariant EditableComboBox::currentData() const
 {
-    if (m_currentIndex >= 0 && m_currentIndex < count()) {
-        return m_items[m_currentIndex].userData;
+    Q_D_CONST(EditableComboBox);
+
+    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
+        return d->_items[d->_pCurrentIndex].userData;
     }
     return QVariant(NULL);
 }
 
 void EditableComboBox::setCurrentIndex(int index)
 {
-    if (index >= count() || index == m_currentIndex)
+    Q_D(EditableComboBox);
+
+    if (index >= count() || index == d->_pCurrentIndex)
         return;
 
     if (index < 0) {
-        m_currentIndex = -1;
+        d->_pCurrentIndex = -1;
         setText("");
-        setPlaceholderText(m_placeholderText);
+        setPlaceholderText(d->_pPlaceholderText);
     } else {
-        m_currentIndex = index;
-        setText(m_items.at(index).text);
+        d->_pCurrentIndex = index;
+        setText(d->_items.at(index).text);
     }
 }
 
@@ -136,37 +157,47 @@ void EditableComboBox::setCurrentText(const QString &text)
 
 int EditableComboBox::count() const
 {
-    return m_items.size();
+    Q_D_CONST(EditableComboBox);
+
+    return d->_items.size();
 }
 
 QString EditableComboBox::itemText(int index) const
 {
+    Q_D_CONST(EditableComboBox);
+
     if (index >= 0 && index < count()) {
-        return m_items[index].text;
+        return d->_items[index].text;
     }
     return "";
 }
 
 QIcon EditableComboBox::itemIcon(int index) const
 {
+    Q_D_CONST(EditableComboBox);
+
     if (index >= 0 && index < count()) {
-        return m_items[index].icon;
+        return d->_items[index].icon;
     }
     return QIcon();
 }
 
 QVariant EditableComboBox::itemData(int index) const
 {
+    Q_D_CONST(EditableComboBox);
+
     if (index >= 0 && index < count()) {
-        return m_items[index].userData;
+        return d->_items[index].userData;
     }
     return QVariant(NULL);
 }
 
 int EditableComboBox::findText(const QString &text) const
 {
+    Q_D_CONST(EditableComboBox);
+
     for (int i = 0; i < count(); ++i) {
-        if (m_items[i].text == text) {
+        if (d->_items[i].text == text) {
             return i;
         }
     }
@@ -175,8 +206,10 @@ int EditableComboBox::findText(const QString &text) const
 
 int EditableComboBox::findData(const QVariant &data) const
 {
+    Q_D_CONST(EditableComboBox);
+
     for (int i = 0; i < count(); ++i) {
-        if (m_items[i].userData == data) {
+        if (d->_items[i].userData == data) {
             return i;
         }
     }
@@ -185,26 +218,20 @@ int EditableComboBox::findData(const QVariant &data) const
 
 void EditableComboBox::setPlaceholderText(const QString &text)
 {
-    m_placeholderText = text;
-    if (m_currentIndex == -1) {
+    Q_D(EditableComboBox);
+
+    d->_pPlaceholderText = text;
+    if (d->_pCurrentIndex == -1) {
         setText(text);
-        updateTextState(true);
+        d->updateTextState(true);
     }
 }
 
 QString EditableComboBox::placeholderText() const
 {
-    return m_placeholderText;
-}
+    Q_D_CONST(EditableComboBox);
 
-void EditableComboBox::setMaxVisibleItems(int max)
-{
-    m_maxVisibleItems = max;
-}
-
-int EditableComboBox::maxVisibleItems() const
-{
-    return m_maxVisibleItems;
+    return d->_pPlaceholderText;
 }
 
 void EditableComboBox::setText(const QString &text)
@@ -215,8 +242,10 @@ void EditableComboBox::setText(const QString &text)
 
 void EditableComboBox::setCompleterMenu(CompleterMenu *menu)
 {
+    Q_D(EditableComboBox);
+
     LineEdit::setCompleterMenu(menu);
-    connect(menu, &CompleterMenu::activated, this, &EditableComboBox::onActivated);
+    connect(menu, &CompleterMenu::activated, d, &EditableComboBoxPrivate::onActivated);
 }
 
 void EditableComboBox::paintEvent(QPaintEvent *event)
@@ -232,22 +261,24 @@ void EditableComboBox::mouseReleaseEvent(QMouseEvent *event)
 
 bool EditableComboBox::eventFilter(QObject *watched, QEvent *event)
 {
+    Q_D(EditableComboBox);
+
     if (watched == this) {
         switch (event->type()) {
         case QEvent::MouseButtonPress:
-            m_isPressed = true;
+            d->_pIsPressed = true;
             update();
             break;
         case QEvent::MouseButtonRelease:
-            m_isPressed = false;
+            d->_pIsPressed = false;
             update();
             break;
         case QEvent::Enter:
-            m_isHover = true;
+            d->_pIsHover = true;
             update();
             break;
         case QEvent::Leave:
-            m_isHover = false;
+            d->_pIsHover = false;
             update();
             break;
         default:
@@ -257,148 +288,5 @@ bool EditableComboBox::eventFilter(QObject *watched, QEvent *event)
     return LineEdit::eventFilter(watched, event);
 }
 
-void EditableComboBox::toggleComboMenu()
-{
-    if (m_dropMenu != nullptr) {
-        closeComboMenu();
-    } else {
-        showComboMenu();
-    }
-}
 
-void EditableComboBox::showComboMenu()
-{
-    if (count() == 0) return;
 
-    m_dropMenu = createComboMenu();
-
-    if (m_dropMenu->view()->width() < this->width()) {
-        m_dropMenu->view()->setMinimumWidth(this->width());
-        m_dropMenu->adjustMenuSize();
-    }
-
-    if (currentIndex() >= 0 && currentIndex() < count()) {
-        m_dropMenu->setDefaultAction(m_dropMenu->menuActions().at(currentIndex()));
-    }
-
-    int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + width() / 2;
-    QPoint pd = mapToGlobal(QPoint(x, height()));
-    int hd = m_dropMenu->view()->heightForAnimation(pd, MenuAnimationType::DROP_DOWN);
-
-    QPoint pu = mapToGlobal(QPoint(x, 0));
-    int hu = m_dropMenu->view()->heightForAnimation(pu, MenuAnimationType::PULL_UP);
-
-    if (hd >= hu) {
-        m_dropMenu->view()->adjustSize(pd, MenuAnimationType::DROP_DOWN);
-        m_dropMenu->exec(pd, true, MenuAnimationType::DROP_DOWN);
-    } else {
-        m_dropMenu->view()->adjustSize(pu, MenuAnimationType::PULL_UP);
-        m_dropMenu->exec(pu, true, MenuAnimationType::PULL_UP);
-    }
-}
-
-void EditableComboBox::closeComboMenu()
-{
-    if (!m_dropMenu) return;
-    m_dropMenu = nullptr;
-}
-
-void EditableComboBox::updateTextState(bool isPlaceholder)
-{
-    if (this->property("isPlaceholderText").toBool() == isPlaceholder) return;
-
-    this->setProperty("isPlaceholderText", isPlaceholder);
-    style()->unpolish(this);
-    style()->polish(this);
-}
-
-ComboBoxMenu* EditableComboBox::createComboMenu()
-{
-    ComboBoxMenu *menu = new ComboBoxMenu("menu", this);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    for (int i = 0; i < count(); ++i) {
-        QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
-        action->setData(i);
-        action->setCheckable(true);
-        if (i == m_currentIndex) {
-            action->setChecked(true);
-        }
-        menu->addAction(action);
-        connect(action, &QAction::triggered, this, [=](){
-            int index = action->property("index").toInt();
-            if (index != m_currentIndex) {
-                setCurrentIndex(index);
-                emit activated(index);
-                emit textActivated(action->text());
-            }
-        });
-    }
-    connect(menu, &ComboBoxMenu::closed, this, [=](){
-        QPoint pos = mapFromGlobal(QCursor::pos());
-        if (!rect().contains(pos)) {
-            m_dropMenu = nullptr;
-        }
-    });
-    return menu;
-}
-
-void EditableComboBox::handleMenuAction(QAction *action)
-{
-    int index = action->data().toInt();
-    if (index < 0 || index >= count()) return;
-
-    if (index != m_currentIndex) {
-        setCurrentIndex(index);
-    }
-
-    emit activated(index);
-    emit textActivated(currentText());
-}
-
-void EditableComboBox::onActivated(const QString &text)
-{
-    int index = findText(text);
-    if (index >= 0) {
-        setCurrentIndex(index);
-    }
-}
-
-void EditableComboBox::onReturnPressed()
-{
-    if (text().isEmpty()) {
-        return;
-    }
-    int index = findText(text());
-    if (index > 0 && index != m_currentIndex) {
-        m_currentIndex = index;
-        emit currentIndexChanged(index);
-    } else if (index == -1) {
-        addItem(text());
-        setCurrentIndex(count() - 1);
-    }
-}
-
-void EditableComboBox::onComboTextChanged(const QString &text)
-{
-    m_currentIndex = -1;
-    emit currentTextChanged(text);
-
-    for (int i = 0; i < m_items.size(); ++i) {
-        if (m_items[i].text == text) {
-            m_currentIndex = i;
-            emit currentIndexChanged(i);
-            return;
-        }
-    }
-}
-
-void EditableComboBox::onDropMenuClosed()
-{
-    m_dropMenu = nullptr;
-}
-
-void EditableComboBox::onClearButtonClicked()
-{
-    LineEdit::clear();
-    m_currentIndex = -1;
-}

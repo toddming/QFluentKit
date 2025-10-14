@@ -169,7 +169,7 @@ static void copyDirectory(const fs::path &srcRootDir, const fs::path &srcDir,
 
             // Copy if symlink points inside the source directory
             copyFile(entryPath, destDir,
-                     Utils::starts_with(linkPath.string(), srcRootDir.string())
+                     linkPath.string().starts_with(srcRootDir.string())
                          ? fs::relative(linkPath, fs::canonical(entryPath.parent_path())).string()
                          : std::string(),
                      force, verbose);
@@ -192,7 +192,7 @@ static std::string standardError(int code = errno) {
 
 #ifdef __APPLE__
 static inline bool isFramework(const fs::path &path) {
-    return Utils::toLower(path.extension().string()) == ".framework";
+    return path.extension() == ".framework";
 }
 
 static fs::path lib2framework(fs::path path, const fs::path &fallback = {}) {

@@ -123,9 +123,7 @@ void FluentWindow::initUI()
     w->setFocusPolicy(Qt::ClickFocus);
 
     QHBoxLayout *hlay = new QHBoxLayout(w);
-
     QVBoxLayout *vlay = new QVBoxLayout;
-
 
     QFrame *frame = new QFrame(this);
     vlay->addWidget(frame);
@@ -245,7 +243,21 @@ void FluentWindow::initUI()
 
     lay->addWidget(menuBtn);
     lay->addWidget(new ToggleButton("8", this));
-    lay->addWidget(new HyperlinkButton("PushButton", this));
+
+    auto hlbtn = new HyperlinkButton("PushButton", this);
+    connect(hlbtn, &HyperlinkButton::clicked, this, [=]() {
+
+        auto first = m_flay->itemAt(0)->widget();
+        auto last  = m_flay->itemAt(m_flay->count()-1)->widget();
+
+        first->hide();
+        last->show();
+
+        m_flay->removeWidget(first);
+        m_flay->addWidget(first);
+    });
+
+    lay->addWidget(hlbtn);
     lay->addWidget(new CheckBox("CheckBox", this));
 
 
@@ -515,6 +527,7 @@ void FluentWindow::initUI()
             agent->setWindowAttribute(name, false);
         }
         const QString data = btn->text();
+
         if (data == QStringLiteral("none")) {
             setProperty("custom-style", false);
         } else if (!data.isEmpty()) {
@@ -530,6 +543,22 @@ void FluentWindow::initUI()
     pivot->addItem("2", " 订阅", Icon::FluentIcon(IconType::FLuentIcon::BOOK_SHELF));
     pivot->addItem("3", " 历史", Icon::FluentIcon(IconType::FLuentIcon::HISTORY));
     vlay->addWidget(pivot);
+
+
+    QWidget *flow = new QWidget(this);
+    m_flay = new FlowLayout(flow, true);
+    m_flay->setContentsMargins(0, 0, 0, 0);
+    m_flay->setVerticalSpacing(20);
+    m_flay->setHorizontalSpacing(10);
+
+    int nl = 7;
+    for (int i=0; i < nl; i++) {
+        auto b = new PushButton(QString::number(10000000+i), flow);
+        m_flay->addWidget(b);
+        b->setHidden(i == nl-1);
+        m_btns.append(b);
+    }
+    vlay->addWidget(flow);
 
     setCentralWidget(w);
 

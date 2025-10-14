@@ -6,16 +6,18 @@
 
 #include "Define.h"
 
+namespace ComboBoxDetail {
 struct ComboItem {
     QString text;
     QIcon icon;
     QVariant userData;
 
     ComboItem(const QString &text = "",
-             const QIcon &icon = QIcon(),
-             const QVariant &userData = QVariant(NULL))
+              const QIcon &icon = QIcon(),
+              const QVariant &userData = QVariant(NULL))
         : text(text), icon(icon), userData(userData) {}
 };
+}
 
 class QAction;
 class ComboBox;
@@ -37,7 +39,7 @@ public:
 private:
     ComboBoxMenu *_dropMenu = nullptr;
     TranslateYAnimation *_arrowAni = nullptr;
-    QVector<ComboItem> _items;
+    QVector<ComboBoxDetail::ComboItem> _items;
 
     ComboBoxMenu* createComboMenu();
     void updateTextState(bool isPlaceholder);

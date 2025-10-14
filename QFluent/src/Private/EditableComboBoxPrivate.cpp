@@ -1,77 +1,181 @@
-#include "CheckBoxPrivate.h"
+﻿#include "EditableComboBoxPrivate.h"
+#include "QFluent/EditableComboBox.h"
+#include "QFluent/menu/ComboBoxMenu.h"
+#include "QFluent/menu/MenuActionListWidget.h"
 
-#include <QColor>
+#include <QStyle>
+#include <QCursor>
+#include <QAction>
 
-#include "Theme.h"
-#include "QFluent/CheckBox.h"
+EditableComboBoxPrivate::EditableComboBoxPrivate(QObject* parent) : QObject{parent}
+{
 
-QColor CheckBoxPrivate::borderColor()  {
-    if (Theme::instance()->isDarkMode()) {
-        switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(255, 255, 255, 141);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(255, 255, 255, 141);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(255, 255, 255, 40);
-        case CheckBoxType::CheckBoxState::CHECKED: return Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(255, 255, 255, 41);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 0);
-        }
-    } else {
-        switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 122);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(0, 0, 0, 143);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(0, 0, 0, 69);
-        case CheckBoxType::CheckBoxState::CHECKED: Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(0, 0, 0, 56);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 0);
-        }
-    }
-    return QColor();
 }
 
-QColor CheckBoxPrivate::backgroundColor() {
-    if (Theme::instance()->isDarkMode()) {
-        switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 26);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(255, 255, 255, 11);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(255, 255, 255, 18);
-        case CheckBoxType::CheckBoxState::CHECKED: Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(0, 0, 0, 0);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(255, 255, 255, 41);
+ComboBoxMenu* EditableComboBoxPrivate::createComboMenu()
+{
+    Q_Q(EditableComboBox);
+
+    ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    for (int i = 0; i < q->count(); ++i) {
+        QAction *action = new QAction(_items[i].icon, _items[i].text, menu);
+        action->setData(i);
+        action->setCheckable(true);
+        if (i == _pCurrentIndex) {
+            action->setChecked(true);
         }
-    } else {
-        switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 6);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(0, 0, 0, 13);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(0, 0, 0, 31);
-        case CheckBoxType::CheckBoxState::CHECKED: Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(0, 0, 0, 0);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 56);
-        }
+        menu->addAction(action);
+        connect(action, &QAction::triggered, q, [=](){
+            int index = action->property("index").toInt();
+            if (index != _pCurrentIndex) {
+                q->setCurrentIndex(index);
+                emit q->activated(index);
+                emit q->textActivated(action->text());
+            }
+        });
     }
-    return QColor();
+    connect(menu, &ComboBoxMenu::closed, q, [=](){
+        QPoint pos = q->mapFromGlobal(QCursor::pos());
+        if (!q->rect().contains(pos)) {
+            _dropMenu = nullptr;
+        }
+    });
+    return menu;
 }
 
-CheckBoxType::CheckBoxState CheckBoxPrivate::state() {
-    Q_Q(CheckBox);
-    if (!q->isEnabled()) {
-        return q->isChecked() ? CheckBoxType::CheckBoxState::CHECKED_DISABLED : CheckBoxType::CheckBoxState::DISABLED;
+void EditableComboBoxPrivate::updateTextState(bool isPlaceholder)
+{
+    Q_Q(EditableComboBox);
+
+    if (q->property("isPlaceholderText").toBool() == isPlaceholder) return;
+
+    q->setProperty("isPlaceholderText", isPlaceholder);
+    q->style()->unpolish(q);
+    q->style()->polish(q);
+}
+
+void EditableComboBoxPrivate::showComboMenu()
+{
+    Q_Q(EditableComboBox);
+
+    if (q->count() == 0) return;
+
+    _dropMenu = createComboMenu();
+
+    if (_dropMenu->view()->width() < q->width()) {
+        _dropMenu->view()->setMinimumWidth(q->width());
+        _dropMenu->adjustMenuSize();
     }
 
-    if (q->isChecked()) {
-        if (_isPressed) return CheckBoxType::CheckBoxState::CHECKED_PRESSED;
-        if (_isHover) return CheckBoxType::CheckBoxState::CHECKED_HOVER;
-        return CheckBoxType::CheckBoxState::CHECKED;
+    if (q->currentIndex() >= 0 && q->currentIndex() < q->count()) {
+        _dropMenu->setDefaultAction(_dropMenu->menuActions().at(q->currentIndex()));
+    }
+
+    int x = -_dropMenu->width() / 2 + _dropMenu->layout()->contentsMargins().left() + q->width() / 2;
+    QPoint pd = q->mapToGlobal(QPoint(x, q->height()));
+    int hd = _dropMenu->view()->heightForAnimation(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
+
+    QPoint pu = q->mapToGlobal(QPoint(x, 0));
+    int hu = _dropMenu->view()->heightForAnimation(pu, MenuAnimationType::MenuAnimation::PULL_UP);
+
+    if (hd >= hu) {
+        _dropMenu->view()->adjustSize(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
+        _dropMenu->exec(pd, true, MenuAnimationType::MenuAnimation::DROP_DOWN);
     } else {
-        if (_isPressed) return CheckBoxType::CheckBoxState::PRESSED;
-        if (_isHover) return CheckBoxType::CheckBoxState::HOVER;
-        return CheckBoxType::CheckBoxState::NORMAL;
+        _dropMenu->view()->adjustSize(pu, MenuAnimationType::MenuAnimation::PULL_UP);
+        _dropMenu->exec(pu, true, MenuAnimationType::MenuAnimation::PULL_UP);
+    }
+}
+
+void EditableComboBoxPrivate::closeComboMenu()
+{
+    Q_Q(EditableComboBox);
+
+    if (!_dropMenu) return;
+    _dropMenu = nullptr;
+}
+
+
+void EditableComboBoxPrivate::toggleComboMenu()
+{
+    Q_Q(EditableComboBox);
+
+    if (_dropMenu != nullptr) {
+        closeComboMenu();
+    } else {
+        showComboMenu();
+    }
+}
+
+void EditableComboBoxPrivate::handleMenuAction(QAction *action)
+{
+    Q_Q(EditableComboBox);
+
+    int index = action->data().toInt();
+    if (index < 0 || index >= q->count()) return;
+
+    if (index != _pCurrentIndex) {
+        q->setCurrentIndex(index);
+    }
+
+    emit q->activated(index);
+    emit q->textActivated(q->currentText());
+}
+
+void EditableComboBoxPrivate::onClearButtonClicked()
+{
+    Q_Q(EditableComboBox);
+
+    _pCurrentIndex = -1;
+    q->clear();
+}
+
+void EditableComboBoxPrivate::onDropMenuClosed()
+{
+    _dropMenu = nullptr;
+}
+
+
+void EditableComboBoxPrivate::onComboTextChanged(const QString &text)
+{
+    Q_Q(EditableComboBox);
+
+    _pCurrentIndex = -1;
+    emit q->currentTextChanged(text);
+
+    for (int i = 0; i < _items.size(); ++i) {
+        if (_items[i].text == text) {
+            _pCurrentIndex = i;
+            emit q->currentIndexChanged(i);
+            return;
+        }
+    }
+}
+
+void EditableComboBoxPrivate::onActivated(const QString &text)
+{
+    Q_Q(EditableComboBox);
+
+    int index = q->findText(text);
+    if (index >= 0) {
+        q->setCurrentIndex(index);
+    }
+}
+
+void EditableComboBoxPrivate::onReturnPressed()
+{
+    Q_Q(EditableComboBox);
+
+    if (q->text().isEmpty()) {
+        return;
+    }
+    int index = q->findText(q->text());
+    if (index > 0 && index != _pCurrentIndex) {
+        _pCurrentIndex = index;
+        emit q->currentIndexChanged(index);
+    } else if (index == -1) {
+        q->addItem(q->text());
+        q->setCurrentIndex(q->count() - 1);
     }
 }

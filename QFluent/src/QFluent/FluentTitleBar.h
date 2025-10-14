@@ -2,14 +2,17 @@
 #define FLUENTTITLEBAR_H
 
 #include <QFrame>
-#include <QPushButton>
-#include <QLabel>
-#include <QPointer>
+#include <QAbstractButton>
+#include "Define.h"
 
-#include "Property.h"
-
+class QEvent;
+class QLabel;
+class QWidget;
+class FluentTitleBarPrivate;
 class QFLUENT_EXPORT FluentTitleBar : public QFrame {
     Q_OBJECT
+    Q_Q_CREATE(FluentTitleBar)
+
 public:
     explicit FluentTitleBar(QWidget *parent = nullptr);
     ~FluentTitleBar();
@@ -25,6 +28,9 @@ public:
 
     QWidget *hostWidget() const;
     void setHostWidget(QWidget *w);
+    void setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable = true);
+    void setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags);
+    AppBarType::ButtonFlags getWindowButtonFlags() const;
 
 Q_SIGNALS:
     void backRequested();
@@ -38,18 +44,6 @@ protected:
 
     virtual void titleChanged(const QString &text);
     virtual void iconChanged(const QIcon &icon);
-
-private:
-    QPushButton *m_minButton;
-    QPushButton *m_maxButton;
-    QPushButton *m_closeButton;
-    QPushButton *m_themeButton;
-    QPushButton *m_backButton;
-    QPushButton *m_iconButton;
-    QLabel *m_titleLabel;
-    QPointer<QWidget> m_hostWidget;
-
-    void initWidgets();
 };
 
 

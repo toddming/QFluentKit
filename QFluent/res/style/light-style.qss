@@ -1,8 +1,9 @@
-﻿
+﻿FluentWidget,
 FluentWindow {
     background-color: #F0F4F9;
 }
 
+FluentWidget[custom-style=true],
 FluentWindow[custom-style=true] {
     background-color: transparent;
 }

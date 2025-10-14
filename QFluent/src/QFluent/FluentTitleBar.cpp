@@ -5,19 +5,12 @@
 #include <QtGui/QtEvents>
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QLabel>
+#include <QPushButton>
 
 #include "Theme.h"
 #include "Icon.h"
-
-
-FluentTitleBar::FluentTitleBar(QWidget *parent)
-    : QFrame(parent) {
-    initWidgets();
-}
-
-
-FluentTitleBar::~FluentTitleBar() = default;
-
+#include "Private/FluentTitleBarPrivate.h"
 
 static inline void emulateLeaveEvent(QWidget *widget) {
     Q_ASSERT(widget);
@@ -55,135 +48,157 @@ static inline void emulateLeaveEvent(QWidget *widget) {
     });
 }
 
-
-void FluentTitleBar::initWidgets()
+FluentTitleBar::FluentTitleBar(QWidget *parent)
+    : QFrame(parent)
+    , d_ptr(new FluentTitleBarPrivate())
 {
+    Q_D(FluentTitleBar);
+    d->q_ptr = this;
+
     setFixedHeight(48);
 
     QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
     hBoxLayout->setContentsMargins(5, 0, 0, 0);
     hBoxLayout->setSpacing(0);
 
-    m_titleLabel  = new QLabel(this);
-    m_backButton  = new QPushButton(this);
-    m_iconButton  = new QPushButton(this);
-    m_themeButton = new QPushButton(this);
-    m_minButton   = new QPushButton(this);
-    m_maxButton   = new QPushButton(this);
-    m_closeButton = new QPushButton(this);
-    m_maxButton->setCheckable(true);
-    m_themeButton->setCheckable(true);
-    m_backButton->hide();
+    d->_titleLabel  = new QLabel(this);
+    d->_backButton  = new QPushButton(this);
+    d->_iconButton  = new QPushButton(this);
+    d->_themeButton = new QPushButton(this);
+    d->_minButton   = new QPushButton(this);
+    d->_maxButton   = new QPushButton(this);
+    d->_closeButton = new QPushButton(this);
+    d->_maxButton->setCheckable(true);
+    d->_themeButton->setCheckable(true);
+    d->_backButton->hide();
 
-    m_backButton->setFixedSize(40, 36);
-    m_iconButton->setFixedSize(40, 36);
-    m_themeButton->setFixedSize(40, 36);
-    m_minButton->setFixedSize(40, 36);
-    m_maxButton->setFixedSize(40, 36);
-    m_closeButton->setFixedSize(40, 36);
+    d->_backButton->setFixedSize(40, 36);
+    d->_iconButton->setFixedSize(40, 36);
+    d->_themeButton->setFixedSize(40, 36);
+    d->_minButton->setFixedSize(40, 36);
+    d->_maxButton->setFixedSize(40, 36);
+    d->_closeButton->setFixedSize(40, 36);
 
-    m_backButton->setProperty("system-button", true);
-    m_themeButton->setProperty("system-button", true);
-    m_minButton->setProperty("system-button", true);
-    m_maxButton->setProperty("system-button", true);
-    m_closeButton->setProperty("system-button", true);
-    m_iconButton->setProperty("system-button", true);
+    d->_backButton->setProperty("system-button", true);
+    d->_themeButton->setProperty("system-button", true);
+    d->_minButton->setProperty("system-button", true);
+    d->_maxButton->setProperty("system-button", true);
+    d->_closeButton->setProperty("system-button", true);
+    d->_iconButton->setProperty("system-button", true);
 
-    m_backButton->setObjectName("back-button");
-    m_themeButton->setObjectName("theme-button");
-    m_minButton->setObjectName("min-button");
-    m_maxButton->setObjectName("max-button");
-    m_closeButton->setObjectName("close-button");
-    m_titleLabel->setObjectName("win-title-label");
-    m_iconButton->setObjectName("icon-button");
+    d->_backButton->setObjectName("back-button");
+    d->_themeButton->setObjectName("theme-button");
+    d->_minButton->setObjectName("min-button");
+    d->_maxButton->setObjectName("max-button");
+    d->_closeButton->setObjectName("close-button");
+    d->_titleLabel->setObjectName("win-title-label");
+    d->_iconButton->setObjectName("icon-button");
 
-    hBoxLayout->addWidget(m_backButton);
-    hBoxLayout->addWidget(m_iconButton);
-    hBoxLayout->addWidget(m_titleLabel);
-    hBoxLayout->addWidget(m_themeButton, 0, Qt::AlignTop);
-    hBoxLayout->addWidget(m_minButton, 0, Qt::AlignTop);
-    hBoxLayout->addWidget(m_maxButton, 0, Qt::AlignTop);
-    hBoxLayout->addWidget(m_closeButton, 0, Qt::AlignTop);
+    hBoxLayout->addWidget(d->_backButton);
+    hBoxLayout->addWidget(d->_iconButton);
+    hBoxLayout->addWidget(d->_titleLabel);
+    hBoxLayout->addStretch();
+    hBoxLayout->addWidget(d->_themeButton, 0, Qt::AlignTop);
+    hBoxLayout->addWidget(d->_minButton, 0, Qt::AlignTop);
+    hBoxLayout->addWidget(d->_maxButton, 0, Qt::AlignTop);
+    hBoxLayout->addWidget(d->_closeButton, 0, Qt::AlignTop);
 
-    m_titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    m_backButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_themeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_minButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_maxButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->_titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    d->_backButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->_iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->_themeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->_minButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->_maxButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->_closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    connect(m_backButton,  &QAbstractButton::clicked, this, &FluentTitleBar::backRequested);
-    connect(m_themeButton, &QAbstractButton::clicked, this, &FluentTitleBar::themeRequested);
-    connect(m_minButton,   &QAbstractButton::clicked, this, &FluentTitleBar::minimizeRequested);
-    connect(m_maxButton,   &QAbstractButton::clicked, this, &FluentTitleBar::maximizeRequested);
-    connect(m_closeButton, &QAbstractButton::clicked, this, &FluentTitleBar::closeRequested);
+    connect(d->_backButton,  &QAbstractButton::clicked, this, &FluentTitleBar::backRequested);
+    connect(d->_themeButton, &QAbstractButton::clicked, this, &FluentTitleBar::themeRequested);
+    connect(d->_minButton,   &QAbstractButton::clicked, this, &FluentTitleBar::minimizeRequested);
+    connect(d->_maxButton,   &QAbstractButton::clicked, this, &FluentTitleBar::maximizeRequested);
+    connect(d->_closeButton, &QAbstractButton::clicked, this, &FluentTitleBar::closeRequested);
 
     Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::TITLE_BAR);
 
     const QString fillPath = ":/res/images/window_bar/%1_%2.svg";
-    m_backButton->setIcon(Icon::FluentIcon(IconType::FLuentIcon::LEFT_ARROW));
-    m_themeButton->setIcon(Icon::SvgIcon(fillPath, "theme", "light", "dark"));
-    m_minButton->setIcon(Icon::SvgIcon(fillPath, "minimize", "light", "dark"));
-    m_maxButton->setIcon(Icon::SvgIcon(fillPath, "maximize", "light", "dark"));
-    m_closeButton->setIcon(Icon::SvgIcon(fillPath, "close", "light", "dark"));
+    d->_backButton->setIcon(Icon::FluentIcon(IconType::FLuentIcon::LEFT_ARROW));
+    d->_themeButton->setIcon(Icon::SvgIcon(fillPath, "theme", "light", "dark"));
+    d->_minButton->setIcon(Icon::SvgIcon(fillPath, "minimize", "light", "dark"));
+    d->_maxButton->setIcon(Icon::SvgIcon(fillPath, "maximize", "light", "dark"));
+    d->_closeButton->setIcon(Icon::SvgIcon(fillPath, "close", "light", "dark"));
 
-    connect(m_maxButton, &QAbstractButton::clicked, this, [=](bool max) {
-        m_maxButton->setIcon(Icon::SvgIcon(fillPath, max ? "restore" : "maximize", "light", "dark"));
-        emulateLeaveEvent(m_maxButton);
+    connect(d->_maxButton, &QAbstractButton::clicked, this, [=](bool max) {
+        d->_maxButton->setIcon(Icon::SvgIcon(fillPath, max ? "restore" : "maximize", "light", "dark"));
+        emulateLeaveEvent(d->_maxButton);
     });
+}
+
+
+FluentTitleBar::~FluentTitleBar()
+{
 
 }
 
 
 QLabel *FluentTitleBar::titleLabel() const {
-    return m_titleLabel;
+    Q_D_CONST(FluentTitleBar);
+    return d->_titleLabel;
 }
 
 QAbstractButton *FluentTitleBar::iconButton() const {
-    return m_iconButton;
+    Q_D_CONST(FluentTitleBar);
+    return d->_iconButton;
 }
 
 QAbstractButton *FluentTitleBar::backButton() const {
-    return m_backButton;
+    Q_D_CONST(FluentTitleBar);
+    return d->_backButton;
 }
 
 QAbstractButton *FluentTitleBar::themeButton() const {
-    return m_themeButton;
+    Q_D_CONST(FluentTitleBar);
+    return d->_themeButton;
 }
 
 QAbstractButton *FluentTitleBar::minButton() const {
-    return m_minButton;
+    Q_D_CONST(FluentTitleBar);
+    return d->_minButton;
 }
 
 QAbstractButton *FluentTitleBar::maxButton() const {
-    return m_maxButton;
+    Q_D_CONST(FluentTitleBar);
+    return d->_maxButton;
 }
 
 QAbstractButton *FluentTitleBar::closeButton() const {
-    return m_closeButton;
+    Q_D_CONST(FluentTitleBar);
+    return d->_closeButton;
 }
 
 
 QWidget *FluentTitleBar::hostWidget() const {
-    return m_hostWidget;
+    Q_D_CONST(FluentTitleBar);
+    return d->_hostWidget;
 }
 
 void FluentTitleBar::setHostWidget(QWidget *w) {
-    if (!m_hostWidget.isNull()) {
-        m_hostWidget->removeEventFilter(this);
+    Q_D(FluentTitleBar);
+
+    if (!d->_hostWidget.isNull()) {
+        d->_hostWidget->removeEventFilter(this);
     }
 
-    m_hostWidget = w;
+    d->_hostWidget = w;
 
-    if (!m_hostWidget.isNull()) {
-        m_hostWidget->installEventFilter(this);
+    if (!d->_hostWidget.isNull()) {
+        d->_hostWidget->installEventFilter(this);
     }
 }
 
 
 bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
-    auto w = m_hostWidget;
+    Q_D_CONST(FluentTitleBar);
+
+    auto w = d->_hostWidget;
     if (obj == w) {
         QAbstractButton *iconBtn = iconButton();
         QLabel *label = titleLabel();
@@ -222,3 +237,42 @@ void FluentTitleBar::titleChanged(const QString &text) {
 
 void FluentTitleBar::iconChanged(const QIcon &icon){Q_UNUSED(icon)}
 
+void FluentTitleBar::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
+{
+    Q_D(FluentTitleBar);
+    if (isEnable) {
+        setWindowButtonFlags(d->_buttonFlags | buttonFlag);
+    } else {
+        setWindowButtonFlags(d->_buttonFlags & ~buttonFlag);
+    }
+}
+
+void FluentTitleBar::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
+{
+    Q_D(FluentTitleBar);
+    d->_buttonFlags = buttonFlags;
+    if (d->_buttonFlags.testFlag(AppBarType::NoneButtonHint)) {
+        d->_backButton->setVisible(false);
+        d->_iconButton->setVisible(false);
+        d->_titleLabel->setVisible(false);
+        d->_themeButton->setVisible(false);
+        d->_minButton->setVisible(false);
+        d->_maxButton->setVisible(false);
+        d->_closeButton->setVisible(false);
+    }
+    else
+    {
+        d->_backButton->setVisible(d->_buttonFlags.testFlag(AppBarType::RouteBackButtonHint));
+        d->_iconButton->setVisible(d->_buttonFlags.testFlag(AppBarType::NavigationButtonHint));
+        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(AppBarType::StayTopButtonHint));
+        d->_themeButton->setVisible(d->_buttonFlags.testFlag(AppBarType::ThemeChangeButtonHint));
+        d->_minButton->setVisible(d->_buttonFlags.testFlag(AppBarType::MinimizeButtonHint));
+        d->_maxButton->setVisible(d->_buttonFlags.testFlag(AppBarType::MaximizeButtonHint));
+        d->_closeButton->setVisible(d->_buttonFlags.testFlag(AppBarType::CloseButtonHint));
+    }
+}
+
+AppBarType::ButtonFlags FluentTitleBar::getWindowButtonFlags() const
+{
+    return d_ptr->_buttonFlags;
+}

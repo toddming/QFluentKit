@@ -52,7 +52,7 @@ void ComboBox::insertItem(int index, const QString &text, const QIcon &icon, con
     Q_D(ComboBox);
     if (index < 0 || index > count()) index = count();
 
-    d->_items.insert(index, ComboItem(text, icon, userData));
+    d->_items.insert(index, ComboBoxDetail::ComboItem(text, icon, userData));
 
     if (index <= d->_pCurrentIndex) {
         setCurrentIndex(d->_pCurrentIndex + 1);

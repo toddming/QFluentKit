@@ -323,3 +323,33 @@ class QFLUENT_EXPORT CLASS : public QObject \
     Q_ENUM_CREATE(MenuIndicator)
     Q_END_ENUM_CREATE(MenuIndicatorType)
 
+
+    Q_BEGIN_ENUM_CREATE(ApplicationType)
+    enum WindowDisplayMode
+    {
+        Normal = 0x0000,
+        DWMBlur = 0x0001,
+        Acrylic,
+        Mica,
+        MicaAlt
+    };
+    Q_ENUM_CREATE(WindowDisplayMode)
+    Q_END_ENUM_CREATE(ApplicationType)
+
+
+    Q_BEGIN_ENUM_CREATE(AppBarType)
+    enum ButtonType
+    {
+        NoneButtonHint = 0x0000,
+        RouteBackButtonHint = 0x0001,
+        NavigationButtonHint = 0x0002,
+        StayTopButtonHint = 0x0004,
+        ThemeChangeButtonHint = 0x0008,
+        MinimizeButtonHint = 0x00010,
+        MaximizeButtonHint = 0x0020,
+        CloseButtonHint = 0x0040,
+    };
+    Q_ENUM_CREATE(ButtonType)
+    Q_DECLARE_FLAGS(ButtonFlags, ButtonType)
+    Q_END_ENUM_CREATE(AppBarType)
+    Q_DECLARE_OPERATORS_FOR_FLAGS(AppBarType::ButtonFlags)

@@ -50,6 +50,8 @@
 #include "navigation/NavigationBar.h"
 #include "menu/CheckableMenu.h"
 
+#include "layout/FlowLayout.h"
+
 
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
@@ -69,7 +71,6 @@ private:
 
     void loadStyleSheet(bool);
 
-    // QWK::WidgetWindowAgent *agent;
     QObject *windowAgent{nullptr};
 
     QStackedWidget *stackedWidget{nullptr};
@@ -77,5 +78,9 @@ private:
     void switchTo(QWidget *w);
 
     StackedWidget *stacked;
+
+    FlowLayout *m_flay;
+
+    QList<PushButton*> m_btns;
 };
 #endif // FLUENTWINDOW_H
