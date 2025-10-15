@@ -10,7 +10,9 @@ class QFLUENT_EXPORT ScrollArea : public QScrollArea
     Q_OBJECT
 
 public:
-    explicit ScrollArea(Qt::Orientation orientation = Qt::Vertical, QWidget *parent = nullptr);
+    explicit ScrollArea(QWidget *parent = nullptr);
+
+    explicit ScrollArea(Qt::Orientation orientation, QWidget *parent = nullptr);
 
     void enableTransparentBackground();
 };

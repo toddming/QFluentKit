@@ -3,17 +3,24 @@
 
 #include <QTimer>
 
-ScrollArea::ScrollArea(Qt::Orientation orientation, QWidget *parent)
+ScrollArea::ScrollArea(QWidget *parent)
     : QScrollArea(parent)
 {
     setWidgetResizable(true);
+
+    setViewportMargins(0, 0, 0, 20);
+}
+
+
+ScrollArea::ScrollArea(Qt::Orientation orientation, QWidget *parent)
+    : ScrollArea(parent)
+{
     if (orientation & Qt::Horizontal) {
         setHorizontalScrollBar(new ScrollBar(this));
     }
     if (orientation & Qt::Vertical) {
         setVerticalScrollBar(new ScrollBar(this));
     }
-    setViewportMargins(0, 0, 0, 20);
 }
 
 void ScrollArea::enableTransparentBackground()
