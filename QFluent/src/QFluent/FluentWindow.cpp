@@ -150,10 +150,10 @@ void FluentWindow::initUI()
     edit->setFixedWidth(100);
 
 
-    QPalette palette(this->palette());
-    palette.setColor(QPalette::Window, QColor("#202020"));
-    this->setAutoFillBackground(true);
-    this->setPalette(palette);
+    // QPalette palette(this->palette());
+    // palette.setColor(QPalette::Window, QColor("#202020"));
+    // this->setAutoFillBackground(true);
+    // this->setPalette(palette);
 
     lay->addWidget(edit, 1, 1);
 

@@ -11,8 +11,9 @@
 #include <QWidget>
 #include <QFrame>
 
+#include "Property.h"
 
-class MaskDialogBase : public QDialog
+class QFLUENT_EXPORT MaskDialogBase : public QDialog
 {
     Q_OBJECT
 
