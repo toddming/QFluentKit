@@ -246,7 +246,6 @@ void RoundMenu::paintEvent(QPaintEvent *)
 
 void RoundMenu::hideMenu(bool isHideBySystem)
 {
-    qDebug() << "hideMenu";
     Q_D(RoundMenu);
     d->_isHideBySystem = isHideBySystem;
     d->_view->clearSelection();
