@@ -17,6 +17,7 @@ private:
     QPushButton *_themeButton;
     QPushButton *_backButton;
     QPushButton *_iconButton;
+    QLabel *_iconLabel;
     QLabel *_titleLabel;
     QPointer<QWidget> _hostWidget;
     AppBarType::ButtonFlags _buttonFlags;

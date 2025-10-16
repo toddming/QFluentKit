@@ -62,6 +62,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     hBoxLayout->setSpacing(0);
 
     d->_titleLabel  = new QLabel(this);
+    d->_iconLabel   = new QLabel(this);
     d->_backButton  = new QPushButton(this);
     d->_iconButton  = new QPushButton(this);
     d->_themeButton = new QPushButton(this);
@@ -71,6 +72,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     d->_maxButton->setCheckable(true);
     d->_themeButton->setCheckable(true);
     d->_backButton->hide();
+    d->_iconLabel->setScaledContents(true);
 
     d->_backButton->setFixedSize(40, 36);
     d->_iconButton->setFixedSize(40, 36);
@@ -95,6 +97,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     d->_iconButton->setObjectName("icon-button");
 
     hBoxLayout->addWidget(d->_backButton);
+    hBoxLayout->addWidget(d->_iconLabel);
     hBoxLayout->addWidget(d->_iconButton);
     hBoxLayout->addWidget(d->_titleLabel);
     hBoxLayout->addStretch();
@@ -103,6 +106,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     hBoxLayout->addWidget(d->_maxButton, 0, Qt::AlignTop);
     hBoxLayout->addWidget(d->_closeButton, 0, Qt::AlignTop);
 
+    d->_iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->_titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     d->_backButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     d->_iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -142,6 +146,11 @@ FluentTitleBar::~FluentTitleBar()
 QLabel *FluentTitleBar::titleLabel() const {
     Q_D_CONST(FluentTitleBar);
     return d->_titleLabel;
+}
+
+QLabel *FluentTitleBar::iconLabel() const {
+    Q_D_CONST(FluentTitleBar);
+    return d->_iconLabel;
 }
 
 QAbstractButton *FluentTitleBar::iconButton() const {
@@ -263,8 +272,9 @@ void FluentTitleBar::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
     else
     {
         d->_backButton->setVisible(d->_buttonFlags.testFlag(AppBarType::RouteBackButtonHint));
-        d->_iconButton->setVisible(d->_buttonFlags.testFlag(AppBarType::NavigationButtonHint));
-        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(AppBarType::StayTopButtonHint));
+        d->_iconButton->setVisible(d->_buttonFlags.testFlag(AppBarType::IconButtonHint));
+        d->_iconLabel->setVisible(d->_buttonFlags.testFlag(AppBarType::IconLabelHint));
+        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(AppBarType::WindowTitleHint));
         d->_themeButton->setVisible(d->_buttonFlags.testFlag(AppBarType::ThemeChangeButtonHint));
         d->_minButton->setVisible(d->_buttonFlags.testFlag(AppBarType::MinimizeButtonHint));
         d->_maxButton->setVisible(d->_buttonFlags.testFlag(AppBarType::MaximizeButtonHint));
