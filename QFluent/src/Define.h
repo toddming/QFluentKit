@@ -342,12 +342,14 @@ class QFLUENT_EXPORT CLASS : public QObject \
     {
         NoneButtonHint = 0x0000,
         RouteBackButtonHint = 0x0001,
-        NavigationButtonHint = 0x0002,
-        StayTopButtonHint = 0x0004,
-        ThemeChangeButtonHint = 0x0008,
-        MinimizeButtonHint = 0x00010,
-        MaximizeButtonHint = 0x0020,
-        CloseButtonHint = 0x0040,
+        IconButtonHint = 0x0002,
+        IconLabelHint = 0x004,
+        StayTopButtonHint = 0x0008,
+        ThemeChangeButtonHint = 0x0010,
+        MinimizeButtonHint = 0x00020,
+        MaximizeButtonHint = 0x0040,
+        CloseButtonHint = 0x0080,
+        WindowTitleHint = 0x0100
     };
     Q_ENUM_CREATE(ButtonType)
     Q_DECLARE_FLAGS(ButtonFlags, ButtonType)

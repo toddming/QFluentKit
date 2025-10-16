@@ -2,6 +2,7 @@
 
 #include <QEvent>
 #include <QStyle>
+#include <QLabel>
 
 #include "Theme.h"
 #include "FluentTitleBar.h"
@@ -124,4 +125,12 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
         setProperty("custom-style", true);
     }
     style()->polish(this);
+}
+
+void FluentWidget::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
+{
+    Q_D(FluentWidget);
+
+    d->_windowBar->iconLabel()->setPixmap(pixmap);
+    d->_windowBar->iconLabel()->setFixedSize(size);
 }
