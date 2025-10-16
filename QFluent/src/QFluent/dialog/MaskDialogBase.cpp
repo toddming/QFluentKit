@@ -6,51 +6,51 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QDebug>
 #include <QTimer>
+#include <QFrame>
+#include <QResizeEvent>
 
-#include "Theme.h"
+#include "Private/dialog/MaskDialogBasePrivate.h"
 
 
+Q_PROPERTY_CREATE_Q_CPP(MaskDialogBase, bool, IsClosableOnMaskClicked)
 MaskDialogBase::MaskDialogBase(QWidget* parent)
     : QDialog(parent)
+, d_ptr(new MaskDialogBasePrivate())
 {
-    setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
-    if (parent) {
-        setGeometry(0, 0, parent->width(), parent->height());
-    }
-    QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
-    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    Q_D(MaskDialogBase);
+    d->q_ptr = this;
 
-    m_windowMask = new QWidget(this);
-    m_windowMask->installEventFilter(this);
+    d->init(parent);
+}
 
-    m_centerWidget = new QFrame(this);
-    m_centerWidget->setObjectName("centerWidget");
-    hBoxLayout->addWidget(m_centerWidget, 1, Qt::AlignCenter);
+// 在MaskDialogBase.cpp中
+MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
+    : QDialog(parent)
+    , d_ptr(&dd)
+{
+    Q_D(MaskDialogBase);
+    d->q_ptr = this;
 
-    m_windowMask->resize(size());
+    d->init(parent);
+}
 
-    int c = Theme::instance()->isDarkMode() ? 0 : 255;
-    m_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
+MaskDialogBase::~MaskDialogBase()
+{
 
-    setShadowEffect();
-
-    if (parent) {
-        parent->installEventFilter(this);
-    }
-    window()->installEventFilter(this);
 }
 
 QWidget* MaskDialogBase::centerWidget() const
 {
-    return m_centerWidget;
+    Q_D_CONST(MaskDialogBase);
+
+    return d->_centerWidget;
 }
 
 void MaskDialogBase::setMaskColor(const QColor& color)
 {
-    m_windowMask->setStyleSheet(QString(
+    Q_D(MaskDialogBase);
+    d->_windowMask->setStyleSheet(QString(
                                     "background: rgba(%1, %2, %3, %4);"
                                     ).arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha()));
     update();
@@ -58,23 +58,16 @@ void MaskDialogBase::setMaskColor(const QColor& color)
 
 void MaskDialogBase::setShadowEffect(int blurRadius, const QPoint& offset, const QColor& color)
 {
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(m_centerWidget);
+    Q_D(MaskDialogBase);
+
+    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(d->_centerWidget);
     shadowEffect->setBlurRadius(blurRadius);
     shadowEffect->setOffset(offset);
     shadowEffect->setColor(color);
-    m_centerWidget->setGraphicsEffect(nullptr);
-    m_centerWidget->setGraphicsEffect(shadowEffect);
+    d->_centerWidget->setGraphicsEffect(nullptr);
+    d->_centerWidget->setGraphicsEffect(shadowEffect);
 }
 
-bool MaskDialogBase::isClosableOnMaskClicked() const
-{
-    return m_isClosableOnMaskClicked;
-}
-
-void MaskDialogBase::setClosableOnMaskClicked(bool isClosable)
-{
-    m_isClosableOnMaskClicked = isClosable;
-}
 
 void MaskDialogBase::showEvent(QShowEvent* event)
 {
@@ -87,7 +80,7 @@ void MaskDialogBase::showEvent(QShowEvent* event)
     opacityAni->setDuration(200);
     opacityAni->setEasingCurve(QEasingCurve::InSine);
 
-    connect(opacityAni, &QPropertyAnimation::finished, this, [this, opacityEffect, opacityAni]() {
+    connect(opacityAni, &QPropertyAnimation::finished, this, [this, opacityAni]() {
         opacityAni->deleteLater();
         setGraphicsEffect(nullptr);
     });
@@ -99,7 +92,9 @@ void MaskDialogBase::showEvent(QShowEvent* event)
 
 void MaskDialogBase::done(int code)
 {
-    m_centerWidget->setGraphicsEffect(nullptr);
+    Q_D(MaskDialogBase);
+
+    d->_centerWidget->setGraphicsEffect(nullptr);
 
     auto* opacityEffect = new QGraphicsOpacityEffect(this);
     setGraphicsEffect(opacityEffect);
@@ -125,12 +120,15 @@ void MaskDialogBase::_onDone(int code)
 
 void MaskDialogBase::resizeEvent(QResizeEvent* event)
 {
-    m_windowMask->resize(size());
+    Q_D(MaskDialogBase);
+
+    d->_windowMask->resize(size());
     QDialog::resizeEvent(event);
 }
 
 bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
 {
+    Q_D(MaskDialogBase);
     if (obj == window() && event->type() == QEvent::Resize) {
         QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
         resize(resizeEvent->size());
@@ -139,9 +137,9 @@ bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
             QWidget *w = qobject_cast<QWidget*>(this->parent());
             setGeometry(0, 0, w->width(), w->height());
         });
-    } else if (obj == m_windowMask && event->type() == QEvent::MouseButtonRelease) {
+    } else if (obj == d->_windowMask && event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        if (mouseEvent->button() == Qt::LeftButton && m_isClosableOnMaskClicked) {
+        if (mouseEvent->button() == Qt::LeftButton && d->_pIsClosableOnMaskClicked) {
             reject();
         }
     }

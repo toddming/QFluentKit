@@ -6,7 +6,7 @@
 #include <QLabel>
 
 #include "Theme.h"
-#include "MaskDialogBase.h"
+#include "dialog/MaskDialogBase.h"
 #include "ProgressRing.h"
 #include "Property.h"
 

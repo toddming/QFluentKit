@@ -23,7 +23,7 @@ Loading::Loading(const QString &content, QWidget *parent)
     contentLabel->setText(content.isEmpty() ? "loading..." : content);
     lay->addWidget(contentLabel, 0, Qt::AlignHCenter);
 
-    setClosableOnMaskClicked(true);
+    setIsClosableOnMaskClicked(true);
 
     setShadowEffect(60, QPoint(0, 10), QColor(0, 0, 0, 50));
 

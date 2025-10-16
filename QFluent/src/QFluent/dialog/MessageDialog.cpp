@@ -1,15 +1,19 @@
-﻿#include "Dialog.h"
+﻿#include "MessageDialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGraphicsDropShadowEffect>
 #include <QApplication>
+#include "Theme.h"
+#include "TextWrap.h"
+
+#include "Private/dialog/MessageDialogPrivate.h"
 
 
 // ========================================
-// Ui_MessageBox 实现
+// Ui_MessageDialog 实现
 // ========================================
 
-void Ui_MessageBox::setupUi(const QString &title, const QString &content, QWidget *dialog)
+void Ui_MessageDialog::setupUi(const QString &title, const QString &content, QWidget *dialog)
 {
     if (!dialog) return;
     m_dialog = dialog;
@@ -55,7 +59,7 @@ void Ui_MessageBox::setupUi(const QString &title, const QString &content, QWidge
     dialog->installEventFilter(dialog);
 }
 
-void Ui_MessageBox::adjustText()
+void Ui_MessageDialog::adjustText()
 {
     if (!m_dialog || !titleLabel || !contentLabel) {
         return;
@@ -86,7 +90,7 @@ void Ui_MessageBox::adjustText()
     contentLabel->setText(TextWrap::wrap(m_content, chars, false).first);
 }
 
-void Ui_MessageBox::setQss()
+void Ui_MessageDialog::setQss()
 {
     titleLabel->setObjectName("titleLabel");
     contentLabel->setObjectName("contentLabel");
@@ -100,7 +104,7 @@ void Ui_MessageBox::setQss()
     cancelButton->adjustSize();
 }
 
-void Ui_MessageBox::setContentCopyable(bool isCopyable)
+void Ui_MessageDialog::setContentCopyable(bool isCopyable)
 {
     contentLabel->setTextInteractionFlags(
         isCopyable ?
@@ -110,10 +114,10 @@ void Ui_MessageBox::setContentCopyable(bool isCopyable)
 }
 
 // ========================================
-// MessageBox 实现
+// MessageDialog 实现
 // ===================
-MessageBox::MessageBox(const QString &title, const QString &content, QWidget *parent)
-    : MaskDialogBase(parent)
+MessageDialog::MessageDialog(const QString &title, const QString &content, QWidget *parent)
+    : MaskDialogBase(*new MessageDialogPrivate(), parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -131,7 +135,12 @@ MessageBox::MessageBox(const QString &title, const QString &content, QWidget *pa
     ui.setContentCopyable(true);
 }
 
-void MessageBox::connectButtons()
+MessageDialog::~MessageDialog()
+{
+
+}
+
+void MessageDialog::connectButtons()
 {
     connect(ui.yesButton, &QPushButton::clicked, this, [this]() {
         accept();
@@ -144,7 +153,7 @@ void MessageBox::connectButtons()
     });
 }
 
-bool MessageBox::eventFilter(QObject *watched, QEvent *event)
+bool MessageDialog::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == this && event->type() == QEvent::Resize) {
         ui.adjustText();

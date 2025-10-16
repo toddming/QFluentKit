@@ -1,25 +1,24 @@
 ﻿#pragma once
 
 #include <QDialog>
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
-#include <QGraphicsDropShadowEffect>
-#include <QEvent>
-#include <QResizeEvent>
-#include <QMouseEvent>
-#include <QColor>
-#include <QWidget>
-#include <QFrame>
 
 #include "Property.h"
 
+
+class QEvent;
+class QColor;
+class QWidget;
+class QResizeEvent;
+class MaskDialogBasePrivate;
 class QFLUENT_EXPORT MaskDialogBase : public QDialog
 {
     Q_OBJECT
+    Q_Q_CREATE(MaskDialogBase)
+    Q_PROPERTY_CREATE_Q_H(bool, IsClosableOnMaskClicked)
 
 public:
     explicit MaskDialogBase(QWidget* parent = nullptr);
-    ~MaskDialogBase() override = default;
+    ~MaskDialogBase();
 
     // 获取中心 widget，用于添加内容
     QWidget* centerWidget() const;
@@ -29,10 +28,6 @@ public:
 
     // 设置阴影效果
     void setShadowEffect(int blurRadius = 60, const QPoint& offset = QPoint(0, 10), const QColor& color = QColor(0, 0, 0, 100));
-
-    // 是否点击遮罩可关闭
-    bool isClosableOnMaskClicked() const;
-    void setClosableOnMaskClicked(bool isClosable);
 
     // 重写 showEvent 实现淡入动画
     void showEvent(QShowEvent* event) override;
@@ -48,11 +43,6 @@ public:
 
 protected:
     // 动画结束后调用，用于 clean up effect
+    explicit MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent = nullptr);
     void _onDone(int code);
-
-private:
-    QWidget* m_windowMask = nullptr;
-    QFrame* m_centerWidget = nullptr;
-
-    bool m_isClosableOnMaskClicked = false;
 };

@@ -181,9 +181,9 @@ void FluentWindow::initUI()
 
     TransparentPushButton *tbtn = new TransparentPushButton("PushButton", this);
     connect(tbtn, &TransparentPushButton::clicked, this, [=](){
-        auto box = new MessageBox("这是一个带有遮罩的对话框",
+        auto box = new MessageDialog("这是一个带有遮罩的对话框",
                                   "一生消えない傷でいいな，絆創膏の様にいつも包んでよ。貴方のそばでわがまま言いたいな，一分一秒刻み貴方を知り，あたしをあげる~", this);
-        box->setClosableOnMaskClicked(true);
+        box->setIsClosableOnMaskClicked(true);
         box->exec();
     });
     lay->addWidget(tbtn);

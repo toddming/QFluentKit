@@ -27,7 +27,7 @@
 #include "Label.h"
 #include "TableView.h"
 #include "InfoBar.h"
-#include "Dialog.h"
+#include "dialog/MessageDialog.h"
 #include "ProgressRing.h"
 #include "Loading.h"
 #include "ToolButton.h"

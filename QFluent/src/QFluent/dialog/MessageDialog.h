@@ -8,14 +8,13 @@
 #include <QHBoxLayout>
 #include <QEvent>
 
-#include "Theme.h"
 #include "MaskDialogBase.h"
-#include "PushButton.h"
-#include "TextWrap.h"
-#include "Label.h"
+#include "QFluent/PushButton.h"
+
+#include "QFluent/Label.h"
 #include "Property.h"
 
-class Ui_MessageBox
+class Ui_MessageDialog
 {
 public:
     void setupUi(const QString &title, const QString &content, QWidget *dialog);
@@ -36,12 +35,15 @@ private:
     void setQss();
 };
 
-class QFLUENT_EXPORT MessageBox : public MaskDialogBase
+class MessageDialogPrivate;
+class QFLUENT_EXPORT MessageDialog : public MaskDialogBase
 {
     Q_OBJECT
+    Q_Q_CREATE(MessageDialog)
 
 public:
-    explicit MessageBox(const QString &title, const QString &content, QWidget *parent = nullptr);
+    explicit MessageDialog(const QString &title, const QString &content, QWidget *parent = nullptr);
+    ~MessageDialog();
 
 signals:
     void yesClicked();
@@ -51,6 +53,6 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-    Ui_MessageBox ui;
+    Ui_MessageDialog ui;
     void connectButtons();
 };
