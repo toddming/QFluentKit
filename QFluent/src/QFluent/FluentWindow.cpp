@@ -317,6 +317,23 @@ void FluentWindow::initUI()
     CalendarPicker *picker = new CalendarPicker(this);
     lay->addWidget(picker);
 
+    // 进度条
+    auto progressBar = new ProgressBar(this);
+    progressBar->setValue(50);
+    progressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
+    lay->addWidget(progressBar);
+
+    auto indeterminateProgressBar = new IndeterminateProgressBar(this);
+    indeterminateProgressBar->setValue(50);
+    indeterminateProgressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
+    lay->addWidget(indeterminateProgressBar);
+
+    auto progressRing = new ProgressRing(this);
+    progressRing->setValue(50);
+    progressRing->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
+    lay->addWidget(progressRing);
+
+
     QCompleter *completer = new QCompleter({"qw", "qe", "qr", "hm", "hw"}, searchEdit);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setMaxVisibleItems(5);

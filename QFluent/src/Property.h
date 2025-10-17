@@ -89,7 +89,7 @@ private:                          \
 
 #define Q_Q_CREATE(CLASS)                                        \
 protected:                                                       \
-    explicit CLASS(CLASS##Private& dd, CLASS* parent = nullptr); \
+    explicit CLASS(CLASS##Private& dd, QWidget* parent = nullptr); \
     QScopedPointer<CLASS##Private> d_ptr;                        \
                                                                  \
 private:                                                         \

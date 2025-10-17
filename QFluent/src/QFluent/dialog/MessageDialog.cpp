@@ -1,138 +1,85 @@
 ﻿#include "MessageDialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGraphicsDropShadowEffect>
-#include <QApplication>
-#include "Theme.h"
-#include "TextWrap.h"
+#include <QEvent>
+#include <QLabel>
+#include <QPushButton>
+#include <QFrame>
 
+#include "Theme.h"
+#include "QFluent/Label.h"
+#include "QFluent/PushButton.h"
 #include "Private/dialog/MessageDialogPrivate.h"
 
 
-// ========================================
-// Ui_MessageDialog 实现
-// ========================================
-
-void Ui_MessageDialog::setupUi(const QString &title, const QString &content, QWidget *dialog)
+MessageDialog::MessageDialog(const QString &title, const QString &content, QWidget *parent)
+    : MaskDialogBase(*new MessageDialogPrivate(), parent)
 {
-    if (!dialog) return;
-    m_dialog = dialog;
-    m_content = content;
+    Q_D(MessageDialog);
+    d->q_ptr = this;
+
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    d->_dialog = this->centerWidget();
+    d->_content = content;
 
     // 创建控件
-    titleLabel = new QLabel(title, dialog);
-    contentLabel = new BodyLabel(dialog);
+    d->titleLabel = new QLabel(title, centerWidget());
+    d->contentLabel = new BodyLabel(centerWidget());
 
-    buttonGroup = new QFrame(dialog);
-    yesButton = new PrimaryPushButton(QObject::tr("OK"), buttonGroup);
-    cancelButton = new QPushButton(QObject::tr("Cancel"), buttonGroup);
-    yesButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
-    cancelButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
+    d->buttonGroup = new QFrame(centerWidget());
+    d->yesButton = new PrimaryPushButton(QObject::tr("OK"), d->buttonGroup);
+    d->cancelButton = new QPushButton(QObject::tr("Cancel"), d->buttonGroup);
+    d->yesButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
+    d->cancelButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
 
     // 布局
-    auto *vBoxLayout = new QVBoxLayout(dialog);
+    auto *vBoxLayout = new QVBoxLayout(centerWidget());
     auto *textLayout = new QVBoxLayout();
-    auto *buttonLayout = new QHBoxLayout(buttonGroup);
+    auto *buttonLayout = new QHBoxLayout(d->buttonGroup);
 
     textLayout->setSpacing(12);
     textLayout->setContentsMargins(24, 24, 24, 24);
-    textLayout->addWidget(titleLabel, 0, Qt::AlignTop);
-    textLayout->addWidget(contentLabel, 0, Qt::AlignTop);
+    textLayout->addWidget(d->titleLabel, 0, Qt::AlignTop);
+    textLayout->addWidget(d->contentLabel, 0, Qt::AlignTop);
 
     buttonLayout->setSpacing(12);
     buttonLayout->setContentsMargins(24, 24, 24, 24);
-    buttonLayout->addWidget(yesButton, 1, Qt::AlignTop);
-    buttonLayout->addWidget(cancelButton, 1, Qt::AlignTop);
-    buttonGroup->setFixedHeight(81);
+    buttonLayout->addWidget(d->yesButton, 1, Qt::AlignTop);
+    buttonLayout->addWidget(d->cancelButton, 1, Qt::AlignTop);
+    d->buttonGroup->setFixedHeight(81);
 
     vBoxLayout->setSpacing(0);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);
     vBoxLayout->addLayout(textLayout, 1);
-    vBoxLayout->addWidget(buttonGroup, 0, Qt::AlignBottom);
+    vBoxLayout->addWidget(d->buttonGroup, 0, Qt::AlignBottom);
     vBoxLayout->setSizeConstraint(QVBoxLayout::SetMinimumSize);
 
-    yesButton->setFocus();
+    d->yesButton->setFocus();
 
-    setQss();
-    adjustText();
+    d->setQss();
+    d->adjustText();
 
-    dialog->installEventFilter(dialog);
-}
-
-void Ui_MessageDialog::adjustText()
-{
-    if (!m_dialog || !titleLabel || !contentLabel) {
-        return;
-    }
-
-    int chars = 100;
-
-    bool isTopLevelWindow = m_dialog->isWindow();
-
-    if (isTopLevelWindow) {
-        QWidget *parentWidget = m_dialog->parentWidget(); // 获取父控件（QWidget 类型）
-        if (parentWidget) {
-            int w = qMax(titleLabel->width(), parentWidget->width());
-            chars = qMax(qMin(w / 9, 140), 30);
-        } else {
-            chars = 100;
-        }
-    } else {
-        QWidget *topWindow = m_dialog->window();
-        if (topWindow) {
-            int w = qMax(titleLabel->width(), topWindow->width());
-            chars = qMax(qMin(w / 9, 100), 30);
-        } else {
-            chars = 100;
-        }
-    }
-
-    contentLabel->setText(TextWrap::wrap(m_content, chars, false).first);
-}
-
-void Ui_MessageDialog::setQss()
-{
-    titleLabel->setObjectName("titleLabel");
-    contentLabel->setObjectName("contentLabel");
-    buttonGroup->setObjectName("buttonGroup");
-    cancelButton->setObjectName("cancelButton");
-
-    Theme::instance()->registerWidget(m_dialog, ThemeType::ThemeStyle::DIALOG);
-    Theme::instance()->registerWidget(contentLabel, ThemeType::ThemeStyle::DIALOG);
-
-    yesButton->adjustSize();
-    cancelButton->adjustSize();
-}
-
-void Ui_MessageDialog::setContentCopyable(bool isCopyable)
-{
-    contentLabel->setTextInteractionFlags(
-        isCopyable ?
-            (Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard) :
-            Qt::NoTextInteraction
-    );
-}
-
-// ========================================
-// MessageDialog 实现
-// ===================
-MessageDialog::MessageDialog(const QString &title, const QString &content, QWidget *parent)
-    : MaskDialogBase(*new MessageDialogPrivate(), parent)
-{
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    ui.setupUi(title, content, this->centerWidget());
+    centerWidget()->installEventFilter(centerWidget());
 
     setMaskColor(QColor(0, 0, 0, 76));
 
     setShadowEffect(60, QPoint(0, 10), QColor(0, 0, 0, 50));
 
-    connectButtons();
+    connect(d->yesButton, &QPushButton::clicked, this, [this]() {
+        accept();
+        emit yesClicked();
+    });
 
-    centerWidget()->setFixedSize(qMax(ui.contentLabel->width(), ui.titleLabel->width()) + 48,
-                                 ui.contentLabel->y() + ui.contentLabel->height() + 105);
+    connect(d->cancelButton, &QPushButton::clicked, this, [this]() {
+        reject();
+        emit cancelClicked();
+    });
 
-    ui.setContentCopyable(true);
+    centerWidget()->setFixedSize(qMax(d->contentLabel->width(), d->titleLabel->width()) + 48,
+                                 d->contentLabel->y() + d->contentLabel->height() + 105);
+
+    d->setContentCopyable(true);
 }
 
 MessageDialog::~MessageDialog()
@@ -140,23 +87,12 @@ MessageDialog::~MessageDialog()
 
 }
 
-void MessageDialog::connectButtons()
-{
-    connect(ui.yesButton, &QPushButton::clicked, this, [this]() {
-        accept();
-        emit yesClicked();
-    });
-
-    connect(ui.cancelButton, &QPushButton::clicked, this, [this]() {
-        reject();
-        emit cancelClicked();
-    });
-}
 
 bool MessageDialog::eventFilter(QObject *watched, QEvent *event)
 {
+    Q_D(MessageDialog);
     if (watched == this && event->type() == QEvent::Resize) {
-        ui.adjustText();
+        d->adjustText();
         return true;
     }
     return MaskDialogBase::eventFilter(watched, event);

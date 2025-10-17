@@ -42,7 +42,5 @@ public:
     bool eventFilter(QObject* obj, QEvent* event) override;
 
 protected:
-    // 动画结束后调用，用于 clean up effect
-    explicit MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent = nullptr);
-    void _onDone(int code);
+    void onDone(int code);
 };

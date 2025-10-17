@@ -9,7 +9,9 @@
 #include <QTimer>
 #include <QFrame>
 #include <QResizeEvent>
+#include <QDebug>
 
+#include "Theme.h"
 #include "Private/dialog/MaskDialogBasePrivate.h"
 
 
@@ -21,7 +23,34 @@ MaskDialogBase::MaskDialogBase(QWidget* parent)
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
-    d->init(parent);
+    d->_pIsClosableOnMaskClicked = false;
+
+    setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+    if (parent) {
+        setGeometry(0, 0, parent->width(), parent->height());
+    }
+    QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+
+    d->_windowMask = new QWidget(this);
+    d->_windowMask->installEventFilter(this);
+
+    d->_centerWidget = new QFrame(this);
+    d->_centerWidget->setObjectName("centerWidget");
+    hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
+
+    d->_windowMask->resize(size());
+
+    int c = Theme::instance()->isDarkMode() ? 0 : 255;
+    d->_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
+
+    setShadowEffect();
+
+    if (parent) {
+        parent->installEventFilter(this);
+    }
+    window()->installEventFilter(this);
 }
 
 // 在MaskDialogBase.cpp中
@@ -29,10 +58,43 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
     : QDialog(parent)
     , d_ptr(&dd)
 {
+    qDebug() << "MaskDialogBase constructor: d_ptr.data() =" << d_ptr.data();
+
+
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
-    d->init(parent);
+    d->_pIsClosableOnMaskClicked = false;
+
+    setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+    if (parent) {
+        setGeometry(0, 0, parent->width(), parent->height());
+    }
+    QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+
+    d->_windowMask = new QWidget(this);
+    d->_windowMask->installEventFilter(this);
+
+    d->_centerWidget = new QFrame(this);
+    d->_centerWidget->setObjectName("centerWidget");
+    hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
+
+    d->_windowMask->resize(size());
+
+    int c = Theme::instance()->isDarkMode() ? 0 : 255;
+    d->_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
+
+    setShadowEffect();
+
+    if (parent) {
+        parent->installEventFilter(this);
+    }
+    window()->installEventFilter(this);
+
+    qDebug() << "MaskDialogBase constructor: d_ptr.data() =222" << d_ptr.data();
+
 }
 
 MaskDialogBase::~MaskDialogBase()
@@ -106,13 +168,13 @@ void MaskDialogBase::done(int code)
 
     connect(opacityAni, &QPropertyAnimation::finished, this, [this, opacityAni, code]() {
         opacityAni->deleteLater();
-        _onDone(code);
+        onDone(code);
     });
 
     opacityAni->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
-void MaskDialogBase::_onDone(int code)
+void MaskDialogBase::onDone(int code)
 {
     setGraphicsEffect(nullptr);
     QDialog::done(code);

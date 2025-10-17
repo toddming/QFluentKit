@@ -28,7 +28,6 @@
 #include "TableView.h"
 #include "InfoBar.h"
 #include "dialog/MessageDialog.h"
-#include "ProgressRing.h"
 #include "Loading.h"
 #include "ToolButton.h"
 #include "PagiNation.h"
@@ -52,6 +51,9 @@
 
 #include "layout/FlowLayout.h"
 
+#include "progress/ProgressBar.h"
+#include "progress/ProgressRing.h"
+#include "progress/IndeterminateProgressBar.h"
 
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {

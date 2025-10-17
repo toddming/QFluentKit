@@ -1,4 +1,4 @@
-#include "ProgressRing.h"
+﻿#include "IndeterminateProgressRing.h"
 #include <QPainter>
 
 IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start)
