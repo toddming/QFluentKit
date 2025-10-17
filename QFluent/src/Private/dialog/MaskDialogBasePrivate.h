@@ -1,9 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include "Property.h"
 
 class QFrame;
 class QWidget;
+class QHBoxLayout;
 class MaskDialogBase;
 class MaskDialogBasePrivate
 {
@@ -16,6 +17,7 @@ public:
 private:
     void init(QWidget* parent);
 
+    QHBoxLayout *_hBoxLayout;
     QWidget* _windowMask = nullptr;
     QFrame* _centerWidget = nullptr;
 };

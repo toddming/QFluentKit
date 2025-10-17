@@ -9,6 +9,7 @@ class QEvent;
 class QColor;
 class QWidget;
 class QResizeEvent;
+class QHBoxLayout;
 class MaskDialogBasePrivate;
 class QFLUENT_EXPORT MaskDialogBase : public QDialog
 {
@@ -20,6 +21,7 @@ public:
     explicit MaskDialogBase(QWidget* parent = nullptr);
     ~MaskDialogBase();
 
+    QHBoxLayout* hBoxLayout();
     // 获取中心 widget，用于添加内容
     QWidget* centerWidget() const;
 

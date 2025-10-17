@@ -30,15 +30,15 @@ MaskDialogBase::MaskDialogBase(QWidget* parent)
     if (parent) {
         setGeometry(0, 0, parent->width(), parent->height());
     }
-    QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
-    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    d->_hBoxLayout = new QHBoxLayout(this);
+    d->_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 
     d->_windowMask = new QWidget(this);
     d->_windowMask->installEventFilter(this);
 
     d->_centerWidget = new QFrame(this);
     d->_centerWidget->setObjectName("centerWidget");
-    hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
+    d->_hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
 
     d->_windowMask->resize(size());
 
@@ -58,9 +58,6 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
     : QDialog(parent)
     , d_ptr(&dd)
 {
-    qDebug() << "MaskDialogBase constructor: d_ptr.data() =" << d_ptr.data();
-
-
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
@@ -71,15 +68,15 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
     if (parent) {
         setGeometry(0, 0, parent->width(), parent->height());
     }
-    QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
-    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    d->_hBoxLayout = new QHBoxLayout(this);
+    d->_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 
     d->_windowMask = new QWidget(this);
     d->_windowMask->installEventFilter(this);
 
     d->_centerWidget = new QFrame(this);
     d->_centerWidget->setObjectName("centerWidget");
-    hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
+    d->_hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
 
     d->_windowMask->resize(size());
 
@@ -100,6 +97,12 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
 MaskDialogBase::~MaskDialogBase()
 {
 
+}
+
+QHBoxLayout* MaskDialogBase::hBoxLayout()
+{
+    Q_D(MaskDialogBase);
+    return d->_hBoxLayout;
 }
 
 QWidget* MaskDialogBase::centerWidget() const

@@ -242,7 +242,13 @@ void FluentWindow::initUI()
     });
 
     lay->addWidget(menuBtn);
-    lay->addWidget(new ToggleButton("8", this));
+
+    auto tlbtn = new ToggleButton("8", this);
+    lay->addWidget(tlbtn);
+    connect(tlbtn, &ToggleButton::clicked, this, [=](){
+        static auto mesBox = new MessageBoxBase(this);
+        mesBox->exec();
+    });
 
     auto hlbtn = new HyperlinkButton("PushButton", this);
     connect(hlbtn, &HyperlinkButton::clicked, this, [=]() {

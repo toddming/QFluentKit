@@ -55,6 +55,8 @@
 #include "progress/ProgressRing.h"
 #include "progress/IndeterminateProgressBar.h"
 
+#include "dialog/MessageBoxBase.h"
+
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
     Q_OBJECT
