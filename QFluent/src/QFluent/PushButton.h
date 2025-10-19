@@ -1,23 +1,15 @@
 ﻿#ifndef PUSHBUTTON_H
 #define PUSHBUTTON_H
 
-#include <QPushButton>
-#include <QIcon>
-#include <QPainter>
-#include <QStyleOption>
-#include <QVariant>
-#include <QSize>
 #include <QPointer>
+#include <QPushButton>
+#include "Define.h"
 
-#include "Theme.h"
-#include "menu/RoundMenu.h"
-#include "Animation.h"
-#include "Property.h"
-
+class RoundMenu;
+class TranslateYAnimation;
 class QFLUENT_EXPORT PushButton : public QPushButton
 {
     Q_OBJECT
-    Q_PROPERTY(QIcon icon READ icon WRITE setIcon)
 
 public:
     explicit PushButton(QWidget *parent = nullptr);

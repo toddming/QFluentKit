@@ -1,5 +1,4 @@
-﻿// textwrap.h
-#ifndef TEXTWRAP_H
+﻿#ifndef TEXTWRAP_H
 #define TEXTWRAP_H
 
 #include <QString>
@@ -7,7 +6,6 @@
 #include <QCache>
 #include <QHash>
 #include <QChar>
-#include <utility> // std::pair
 
 class TextWrap
 {

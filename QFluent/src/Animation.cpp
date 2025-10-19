@@ -1,6 +1,9 @@
 ﻿#include "Animation.h"
-#include <QDebug>
 
+#include <QEvent>
+#include <QLineEdit>
+#include <QMouseEvent>
+#include <QGraphicsDropShadowEffect>
 
 QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>> FluentAnimationProperObject::objects;
 QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> FluentAnimation::animations;

@@ -2,11 +2,6 @@
 #define RADIOBUTTON_H
 
 #include <QRadioButton>
-#include <QColor>
-#include <QPainter>
-#include <QPoint>
-#include <QEvent>
-#include <QEnterEvent>
 
 #include "Property.h"
 

@@ -1,29 +1,12 @@
 ﻿#ifndef PAGINATION_H
 #define PAGINATION_H
 
-#include <cmath>
 
 #include <QFrame>
-#include <QLayout>
-#include <QPushButton>
-#include <QLabel>
-#include <QDebug>
-#include <QButtonGroup>
-#include <QMetaMethod>
-
-#include "Theme.h"
 #include "PushButton.h"
-#include "ToolButton.h"
-#include "Property.h"
+#include "Define.h"
 
 using namespace std;
-
-/** 水平对齐方式枚举 */
-enum AlignType {
-    Align_Left,
-    Align_Right,
-    Align_Center
-};
 
 struct __PagiNation_DATA {
     int type; // 1: 按钮  2: 点
@@ -43,16 +26,19 @@ class QFLUENT_EXPORT Button: public TransparentTogglePushButton {
         void handleClick ();
 };
 
+class QHBoxLayout;
+class QSpacerItem;
+class TransparentToolButton;
 class QFLUENT_EXPORT PagiNation: public QFrame {
     Q_OBJECT
     public:
-        PagiNation (QWidget *parent, AlignType align = AlignType::Align_Right, int buttonCount = 7);
-        PagiNation (QPoint point, QWidget *parent, AlignType align = AlignType::Align_Right, int buttonCount = 7);
-        PagiNation (QSize size, QWidget *parent, AlignType align = AlignType::Align_Right, int buttonCount = 7);
-        PagiNation (QRect rect, QWidget *parent, AlignType align = AlignType::Align_Right, int buttonCount = 7);
+        PagiNation (QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
+        PagiNation (QPoint point, QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
+        PagiNation (QSize size, QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
+        PagiNation (QRect rect, QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
 
     private:
-        AlignType _align;
+        PagiNationType::Alignment _align;
         int _buttonCount;
         int _height;
         QHBoxLayout *BJ, *BJ_main;
@@ -75,11 +61,11 @@ class QFLUENT_EXPORT PagiNation: public QFrame {
         /** 获取当前最大按钮数 pagesize */
         int buttonCount ();
         /** 获取当前对齐方式 pagesize */
-        AlignType alignment ();
+        PagiNationType::Alignment alignment ();
         /** 设置最大按钮数量 */
         void setButtonCount (int buttonCount, bool needEmit = false);
         /** 设置左右对齐方式 */
-        void setAlign (AlignType align, bool needEmit = false);
+        void setAlign (PagiNationType::Alignment align, bool needEmit = false);
         /** 设置每页条数 */
         void setPageSize (int pageSize, bool needEmit = false);
         /** 设置总条数(用于计算总页数) */

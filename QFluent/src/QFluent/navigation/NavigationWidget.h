@@ -2,35 +2,14 @@
 #define NAVIGATION_WIDGET_H
 
 #include <QWidget>
-#include <QPainter>
-#include <QPropertyAnimation>
-#include <QVBoxLayout>
 #include <QScrollArea>
-#include <QEvent>
 #include <QIcon>
-#include <QColor>
-#include <QMargins>
-#include <QFont>
-#include <QPoint>
-#include <QPixmap>
-#include <QImage>
-#include <vector>
 
-#include "AvatarWidget.h"
-#include "Icon.h"
+#include "Define.h"
 
-// 自定义模块占位符，原Python代码中的实现需要额外提供
-// #include "common/config.h"       // 包含 isDarkTheme() 函数
-// #include "common/style_sheet.h"  // 包含 themeColor() 函数
-// #include "common/icon.h"         // 包含 drawIcon() 和 toQIcon() 函数
-// #include "common/color.h"        // 包含 autoFallbackThemeColor() 函数
-// #include "common/font.h"         // 包含 setFont() 函数
-// #include "widgets/scroll_area.h" // 自定义滚动区域
-// #include "widgets/label.h"       // 包含 AvatarWidget
-// #include "widgets/info_badge.h"  // 包含 InfoBadgeManager 和 InfoBadgePosition
-
-
-
+class AvatarWidget;
+class QVBoxLayout;
+class QPropertyAnimation;
 class NavigationWidget : public QWidget {
     Q_OBJECT
 public:

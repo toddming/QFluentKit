@@ -4,7 +4,6 @@
 
 #include "Property.h"
 
-
 class QEvent;
 class QColor;
 class QWidget;

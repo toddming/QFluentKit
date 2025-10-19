@@ -1,5 +1,4 @@
-﻿// table_view.h
-#ifndef TABLE_VIEW_H
+﻿#ifndef TABLE_VIEW_H
 #define TABLE_VIEW_H
 
 #include <QStyledItemDelegate>
@@ -7,30 +6,18 @@
 #include <QTableWidget>
 #include <QKeyEvent>
 #include <QModelIndex>
-#include <QItemSelectionModel>
-#include <QRectF>
-#include <QPainter>
-#include <QColor>
-#include <QPalette>
-#include <QBrush>
-#include <QStyleOptionViewItem>
-#include <QStyleOptionButton>
-#include <QMargins>
 #include <QSet>
 #include <QWidget>
 #include <QApplication>
-#include <QStyle>
-#include <QScrollBar>
 #include <QHeaderView>
 #include <QEvent>
 #include <QResizeEvent>
 #include <QMouseEvent>
 
 #include "Theme.h"
-#include "LineEdit.h"
-#include "scrollbar/ScrollBar.h"
 #include "Property.h"
 
+class QPainter;
 class TableItemDelegate : public QStyledItemDelegate {
 public:
     explicit TableItemDelegate(QTableView* parent = nullptr);

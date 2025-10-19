@@ -1,12 +1,9 @@
-// screen.h
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <QScreen>
-#include <QPoint>
 #include <QRect>
-#include <QApplication>
 
+class QScreen;
 class Screen
 {
 public:

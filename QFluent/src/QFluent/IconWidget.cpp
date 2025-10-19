@@ -1,9 +1,19 @@
 #include "IconWidget.h"
 #include <QPainter>
+#include <QIcon>
+
+#include "Icon.h"
+#include "Private/IconWidgetPrivate.h"
 
 IconWidget::IconWidget(QWidget *parent)
     : QWidget(parent)
+    , d_ptr(new IconWidgetPrivate())
 {
+    Q_D(IconWidget);
+    d->q_ptr = this;
+
+    d->_pIsFluentIcon = false;
+
     setIcon(QIcon());
 }
 
@@ -25,11 +35,18 @@ IconWidget::IconWidget(IconType::FLuentIcon icon, QWidget *parent)
     setIcon(icon);
 }
 
+IconWidget::~IconWidget()
+{
+
+}
+
 void IconWidget::setIcon(const QIcon &icon)
 {
-    m_icon = icon;
-    m_isFluentIcon = false;
-    m_fluentIcon = IconType::FLuentIcon::NONE;
+    Q_D(IconWidget);
+
+    d->_pIcon = icon;
+    d->_pIsFluentIcon = false;
+    d->_pFluentIcon = IconType::FLuentIcon::NONE;
     update();
 }
 
@@ -40,15 +57,18 @@ void IconWidget::setIcon(const QString &iconPath)
 
 void IconWidget::setIcon(IconType::FLuentIcon icon)
 {
-    m_fluentIcon = icon;
-    m_isFluentIcon = true;
-    m_icon = QIcon();
+    Q_D(IconWidget);
+
+    d->_pFluentIcon = icon;
+    d->_pIsFluentIcon = true;
+    d->_pIcon = QIcon();
     update();
 }
 
 QIcon IconWidget::getIcon() const
 {
-    return m_icon;
+    Q_D_CONST(IconWidget);
+    return d->_pIcon;
 }
 
 QSize IconWidget::sizeHint() const
@@ -58,6 +78,8 @@ QSize IconWidget::sizeHint() const
 
 void IconWidget::paintEvent(QPaintEvent *event)
 {
+    Q_D(IconWidget);
+
     Q_UNUSED(event);
 
     QPainter painter(this);
@@ -65,11 +87,17 @@ void IconWidget::paintEvent(QPaintEvent *event)
 
     QRect rect = this->rect();
 
-    if (m_isFluentIcon && (m_fluentIcon != IconType::FLuentIcon::NONE)) {
-        Icon::drawSvgIcon(&painter, m_fluentIcon, rect);
+    if (d->_pIsFluentIcon && (d->_pFluentIcon != IconType::FLuentIcon::NONE)) {
+        Icon::drawSvgIcon(&painter, d->_pFluentIcon, rect);
     } else {
-        if (!m_icon.isNull()) {
-            m_icon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);
+        if (!d->_pIcon.isNull()) {
+            d->_pIcon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);
         }
     }
+}
+
+bool IconWidget::isFluentIcon()
+{
+    Q_D(IconWidget);
+    return d->_pIsFluentIcon;
 }

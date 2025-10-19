@@ -3,6 +3,7 @@
 #include <QPainterPath>
 #include <QFrame>
 #include <QPropertyAnimation>
+#include <QMouseEvent>
 
 #include "Theme.h"
 #include "Icon.h"

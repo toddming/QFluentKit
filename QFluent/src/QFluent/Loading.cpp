@@ -1,5 +1,12 @@
 ﻿#include "Loading.h"
 
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+
+#include "progress/IndeterminateProgressRing.h"
+
 
 Loading::Loading(const QString &content, QWidget *parent)
     : MaskDialogBase(parent)
@@ -11,13 +18,13 @@ Loading::Loading(const QString &content, QWidget *parent)
     QVBoxLayout *lay = new QVBoxLayout(w);
     lay->setSpacing(12);
 
-    progressRing = new IndeterminateProgressRing(w);
+    auto progressRing = new IndeterminateProgressRing(w);
     progressRing->setFixedSize(45, 45);
     progressRing->setStrokeWidth(4);
     progressRing->setCustomBarColor(Qt::white, Qt::white);
     lay->addWidget(progressRing, 0, Qt::AlignHCenter);
 
-    contentLabel = new QLabel(w);
+    auto contentLabel = new QLabel(w);
     contentLabel->setStyleSheet("QLabel{color: white; font-weight: bold; font-size: 16px;}");
     contentLabel->setAlignment(Qt::AlignHCenter);
     contentLabel->setText(content.isEmpty() ? "loading..." : content);
@@ -26,11 +33,5 @@ Loading::Loading(const QString &content, QWidget *parent)
     setIsClosableOnMaskClicked(true);
 
     setShadowEffect(60, QPoint(0, 10), QColor(0, 0, 0, 50));
-
-    connect(Theme::instance(), &Theme::themeModeChanged, this, &Loading::onThemeChanged);
 }
 
-void Loading::onThemeChanged(ThemeType::ThemeMode theme)
-{
-    Q_UNUSED(theme);
-}

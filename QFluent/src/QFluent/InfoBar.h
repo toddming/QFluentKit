@@ -21,50 +21,30 @@
 #include <QColor>
 #include <QObject>
 #include <QMap>
-#include <QPointer>  // 用于弱引用类似功能
-#include <functional>  // 用于 std::function
+#include <QPointer>
+#include <functional>
 #include <QCloseEvent>
 
-
-#include "Theme.h"
-#include "Icon.h"
 #include "ToolButton.h"
-#include "Property.h"
+#include "Define.h"
 
-
-enum class InfoBarType {
-    INFORMATION,
-    SUCCESS,
-    WARNING,
-    ERROR
-};
-
-enum class InfoBarPosition {
-    TOP = 0,
-    BOTTOM = 1,
-    TOP_LEFT = 2,
-    TOP_RIGHT = 3,
-    BOTTOM_LEFT = 4,
-    BOTTOM_RIGHT = 5,
-    NONE = 6
-};
 
 class QFLUENT_EXPORT InfoIconWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit InfoIconWidget(InfoBarType type, QWidget* parent = nullptr);
+    explicit InfoIconWidget(InfoBarType::BarType type, QWidget* parent = nullptr);
     void paintEvent(QPaintEvent* event) override;
 
 private:
-    InfoBarType m_type;
+    InfoBarType::BarType m_type;
 };
 
 class QFLUENT_EXPORT InfoBar : public QFrame {
     Q_OBJECT
 public:
-    explicit InfoBar(InfoBarType type, const QString& title, const QString& content,
+    explicit InfoBar(InfoBarType::BarType type, const QString& title, const QString& content,
                      Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                     int duration = 1000, InfoBarPosition position = InfoBarPosition::TOP_RIGHT,
+                     int duration = 1000, InfoBarType::BarPosition position = InfoBarType::BarPosition::TOP_RIGHT,
                      QWidget* parent = nullptr);
 
     void addWidget(QWidget* widget, int stretch = 0);
@@ -74,25 +54,25 @@ public:
     void showEvent(QShowEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
 
-    static InfoBar* newInfoBar(InfoBarType type, const QString& title, const QString& content,
+    static InfoBar* newInfoBar(InfoBarType::BarType type, const QString& title, const QString& content,
                                Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                               int duration = 1000, InfoBarPosition position = InfoBarPosition::TOP_RIGHT,
+                               int duration = 1000, InfoBarType::BarPosition position = InfoBarType::BarPosition::TOP_RIGHT,
                                QWidget* parent = nullptr);
     static InfoBar* info(const QString& title, const QString& content,
                          Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                         int duration = 1000, InfoBarPosition position = InfoBarPosition::TOP_RIGHT,
+                         int duration = 1000, InfoBarType::BarPosition position = InfoBarType::BarPosition::TOP_RIGHT,
                          QWidget* parent = nullptr);
     static InfoBar* success(const QString& title, const QString& content,
                             Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                            int duration = 1000, InfoBarPosition position = InfoBarPosition::TOP_RIGHT,
+                            int duration = 1000, InfoBarType::BarPosition position = InfoBarType::BarPosition::TOP_RIGHT,
                             QWidget* parent = nullptr);
     static InfoBar* warning(const QString& title, const QString& content,
                             Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                            int duration = 1000, InfoBarPosition position = InfoBarPosition::TOP_RIGHT,
+                            int duration = 1000, InfoBarType::BarPosition position = InfoBarType::BarPosition::TOP_RIGHT,
                             QWidget* parent = nullptr);
     static InfoBar* error(const QString& title, const QString& content,
                           Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                          int duration = 1000, InfoBarPosition position = InfoBarPosition::TOP_RIGHT,
+                          int duration = 1000, InfoBarType::BarPosition position = InfoBarType::BarPosition::TOP_RIGHT,
                           QWidget* parent = nullptr);
 
 signals:
@@ -108,18 +88,18 @@ private:
     QString m_title;
     QString m_content;
     Qt::Orientation m_orient;
-    InfoBarType m_type;
+    InfoBarType::BarType m_type;
     int m_duration;
     bool m_isClosable;
-    InfoBarPosition m_position;
+    InfoBarType::BarPosition m_position;
 
     QLabel* m_titleLabel;
     QLabel* m_contentLabel;
-    TransparentToolButton* m_closeButton;  // 使用 QToolButton，注释中提到 TransparentToolButton 为自定义
+    TransparentToolButton* m_closeButton;
     InfoIconWidget* m_iconWidget;
 
     QHBoxLayout* m_hBoxLayout;
-    QBoxLayout* m_textLayout;  // 根据 orient 动态为 QHBoxLayout 或 QVBoxLayout
+    QBoxLayout* m_textLayout;
     QBoxLayout* m_widgetLayout;
 
     QGraphicsOpacityEffect* m_opacityEffect;
@@ -136,9 +116,9 @@ public:
     void add(InfoBar* infoBar);
     void remove(InfoBar* infoBar);
 
-    static void registerManager(InfoBarPosition position, std::function<InfoBarManager*()> creator);
-    static InfoBarManager* make(InfoBarPosition position);
-    static QString toString(InfoBarType type);
+    static void registerManager(InfoBarType::BarPosition position, std::function<InfoBarManager*()> creator);
+    static InfoBarManager* make(InfoBarType::BarPosition position);
+    static QString toString(InfoBarType::BarType type);
 
 protected:
     explicit InfoBarManager(QObject* parent = nullptr);
@@ -152,12 +132,12 @@ protected:
 
     int m_spacing = 16;
     int m_margin = 24;
-    QMap<QWidget*, QList<QPointer<InfoBar>>> m_infoBars;  // 使用 QPointer 模拟 weakref
+    QMap<QWidget*, QList<QPointer<InfoBar>>> m_infoBars;
     QMap<QWidget*, QParallelAnimationGroup*> m_aniGroups;
     QList<QPropertyAnimation*> m_slideAnis;
     QList<QPropertyAnimation*> m_dropAnis;
 
-    static QMap<InfoBarPosition, std::function<InfoBarManager*()>> m_managers;
+    static QMap<InfoBarType::BarPosition, std::function<InfoBarManager*()>> m_managers;
 };
 
 class QFLUENT_EXPORT TopInfoBarManager : public InfoBarManager {

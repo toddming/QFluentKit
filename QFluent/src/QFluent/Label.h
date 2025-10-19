@@ -1,43 +1,27 @@
 ﻿#pragma once
 
 #include <QLabel>
-#include <QFont>
-#include <QColor>
-#include <QPixmap>
-#include <QMetaObject>
 
-#include "Theme.h"
 #include "Property.h"
 
 class QFLUENT_EXPORT FluentLabelBase : public QLabel {
     Q_OBJECT
-    Q_PROPERTY(int pixelFontSize READ pixelFontSize WRITE setPixelFontSize)
-    Q_PROPERTY(bool strikeOut READ strikeOut WRITE setStrikeOut)
-    Q_PROPERTY(bool underline READ underline WRITE setUnderline)
 
 public:
-    // 构造函数重载 (模拟 singledispatchmethod)
     explicit FluentLabelBase(int fontSize = 14, QFont::Weight weight = QFont::Normal, QWidget* parent = nullptr);
     explicit FluentLabelBase(const QString& text, int fontSize = 14, QFont::Weight weight = QFont::Normal,  QWidget* parent = nullptr);
 
-    // 字体属性访问器
     int pixelFontSize() const;
+
     bool strikeOut() const;
 
     bool underline() const;
 
-public slots:
-    // 设置文本颜色
     void setTextColor(const QColor& color);
 
-    // 字体属性设置器
     void setPixelFontSize(int size);
     void setStrikeOut(bool isStrikeOut);
     void setUnderline(bool isUnderline);
-
-
-protected:
-    void init(); // 初始化公共部分
 
 };
 

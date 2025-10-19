@@ -2,14 +2,13 @@
 
 #include <QWidget>
 #include <QToolButton>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QPropertyAnimation>
-#include <QColor>
-#include <QEvent>
+
 
 #include "Property.h"
 
+class QLabel;
+class QHBoxLayout;
+class QPropertyAnimation;
 class Indicator : public QToolButton {
     Q_OBJECT
     Q_PROPERTY(qreal sliderX READ sliderX WRITE setSliderX)

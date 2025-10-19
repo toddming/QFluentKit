@@ -1,6 +1,9 @@
-// screen.cpp
 #include "Screen.h"
 #include <QCursor>
+#include <QScreen>
+#include <QPoint>
+#include <QRect>
+#include <QApplication>
 
 QScreen* Screen::getCurrentScreen()
 {

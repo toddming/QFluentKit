@@ -1,21 +1,8 @@
 ﻿#ifndef STACKEDWIDGET_H
 #define STACKEDWIDGET_H
 
-#include <QFrame>
-#include <QHBoxLayout>
-#include <QAbstractScrollArea>
-#include <QPropertyAnimation>
-#include <QGraphicsOpacityEffect>
-#include <QEasingCurve>
-#include <QPoint>
-#include <QList>
-#include <QWidget>
-
-
 #include <QStackedWidget>
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
-#include <QSignalMapper>
+#include <QEasingCurve>
 
 #include "Property.h"
 
@@ -23,7 +10,8 @@ QT_BEGIN_NAMESPACE
 class QPropertyAnimation;
 QT_END_NAMESPACE
 
-// ============ OpacityAniStackedWidget ============
+class QHBoxLayout;
+class QGraphicsOpacityEffect;
 class OpacityAniStackedWidget : public QStackedWidget
 {
     Q_OBJECT

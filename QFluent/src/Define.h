@@ -355,3 +355,41 @@ class QFLUENT_EXPORT CLASS : public QObject \
     Q_DECLARE_FLAGS(ButtonFlags, ButtonType)
     Q_END_ENUM_CREATE(AppBarType)
     Q_DECLARE_OPERATORS_FOR_FLAGS(AppBarType::ButtonFlags)
+
+
+
+
+    Q_BEGIN_ENUM_CREATE(InfoBarType)
+    enum BarType
+    {
+        INFORMATION,
+        SUCCESS,
+        WARNING,
+        ERROR
+    };
+    Q_ENUM_CREATE(BarType)
+
+
+    enum BarPosition
+    {
+        TOP = 0,
+        BOTTOM = 1,
+        TOP_LEFT = 2,
+        TOP_RIGHT = 3,
+        BOTTOM_LEFT = 4,
+        BOTTOM_RIGHT = 5,
+        NONE = 6
+    };
+    Q_ENUM_CREATE(BarPosition)
+    Q_END_ENUM_CREATE(InfoBarType)
+
+
+    Q_BEGIN_ENUM_CREATE(PagiNationType)
+    enum Alignment
+    {
+        Align_Left,
+        Align_Right,
+        Align_Center
+    };
+    Q_ENUM_CREATE(Alignment)
+    Q_END_ENUM_CREATE(PagiNationType)

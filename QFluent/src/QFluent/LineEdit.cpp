@@ -6,6 +6,13 @@
 #include <QAbstractItemModel>
 #include <QMenu>
 #include <QContextMenuEvent>
+#include <QAction>
+#include <QHBoxLayout>
+#include <QEvent>
+#include <QCompleter>
+#include <QPainterPath>
+#include <QTimer>
+
 
 #include "Theme.h"
 #include "Icon.h"

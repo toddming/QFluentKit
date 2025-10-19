@@ -7,6 +7,7 @@
 #include <QResizeEvent>
 #include <QMouseEvent>
 
+#include "Icon.h"
 #include "Theme.h"
 #include "../scrollbar/ScrollBar.h"
 #include "QFluent/menu/RoundMenu.h"
@@ -174,12 +175,11 @@ void NavigationPanel::insertWidget(int index, const QString& routeKey, Navigatio
 
     registerWidget(routeKey, parentRouteKey, widget, onClick, tooltip);
 
-    // if (!parentRouteKey.isEmpty()) {
-    //     this->widget(parentRouteKey)->insertChild(index, widget);
-    // } else {
-    //     insertWidgetToLayout(index, widget, position);
-    // }
-    insertWidgetToLayout(index, widget, position);
+    if (!parentRouteKey.isEmpty()) {
+        // this->widget(parentRouteKey)->insertChild(index, widget);
+    } else {
+        insertWidgetToLayout(index, widget, position);
+    }
 }
 
 void NavigationPanel::addSeparator(NavigationItemPosition position) {

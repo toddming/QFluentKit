@@ -1,4 +1,4 @@
-﻿#include "pushbutton.h"
+﻿#include "PushButton.h"
 #include <QApplication>
 #include <QStyle>
 #include <QMouseEvent>
@@ -6,6 +6,9 @@
 #include <QStyleOptionButton>
 
 #include "Icon.h"
+#include "Theme.h"
+#include "Animation.h"
+#include "menu/RoundMenu.h"
 #include "menu/MenuActionListWidget.h"
 
 

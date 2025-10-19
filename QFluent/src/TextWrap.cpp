@@ -1,7 +1,5 @@
-﻿// textwrap.cpp
-#include "textwrap.h"
+﻿#include "textwrap.h"
 #include <QRegularExpression>
-#include <QDebug>
 
 // 静态成员定义
 QCache<TextWrap::WidthKey, int> TextWrap::m_widthCache;

@@ -89,9 +89,6 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
         parent->installEventFilter(this);
     }
     window()->installEventFilter(this);
-
-    qDebug() << "MaskDialogBase constructor: d_ptr.data() =222" << d_ptr.data();
-
 }
 
 MaskDialogBase::~MaskDialogBase()

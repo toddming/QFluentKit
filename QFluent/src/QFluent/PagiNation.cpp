@@ -1,11 +1,14 @@
 ﻿#include "PagiNation.h"
 #include "Label.h"
+#include "ToolButton.h"
+#include <QLayout>
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Button::Button (QString text, QWidget *parent): TransparentTogglePushButton(text, parent)
 {
+    setCheckable(false);
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
     setSizePolicy(CL);
 
@@ -14,19 +17,22 @@ Button::Button (QString text, QWidget *parent): TransparentTogglePushButton(text
 
 void Button::handleClick ()
 {
+    if (this->isCheckable()) {
+        this->setChecked(true);
+    }
     emit cClick(this);
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PagiNation::PagiNation (QWidget *parent, AlignType align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = 30;
     setFixedHeight(_height + 4);
     init();
 }
 
-PagiNation::PagiNation (QPoint point, QWidget *parent, AlignType align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QPoint point, QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = 30;
     setFixedHeight(_height + 4);
@@ -34,7 +40,7 @@ PagiNation::PagiNation (QPoint point, QWidget *parent, AlignType align, int butt
     init();
 }
 
-PagiNation::PagiNation (QSize size, QWidget *parent, AlignType align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QSize size, QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = size.height();
     resize(size);
@@ -43,7 +49,7 @@ PagiNation::PagiNation (QSize size, QWidget *parent, AlignType align, int button
     init();
 }
 
-PagiNation::PagiNation (QRect rect, QWidget *parent, AlignType align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QRect rect, QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = rect.height();
     move(rect.x(), rect.y());
@@ -256,7 +262,12 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list) {
             btn->setFixedHeight(_height);
             btn->setSizePolicy(CL);
             connect(btn, SIGNAL(cClick(Button*)), this, SLOT(handleClick(Button*)));
-            if (data.choosed) btn->setChecked(true);
+            if (data.choosed) {
+                btn->setCheckable(true);
+                btn->setChecked(true);
+            } else {
+                btn->setCheckable(false);
+            }
             btn->show();
             BJ_main->addWidget(btn);
         } else {
@@ -273,9 +284,9 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list) {
 void PagiNation::setWidgetAlign () {
     BJ->removeItem(TH_left);
     BJ->removeItem(TH_right);
-    if (_align == AlignType::Align_Left) {
+    if (_align == PagiNationType::Alignment::Align_Left) {
         BJ->addItem(TH_right);
-    } else if (_align == AlignType::Align_Right) {
+    } else if (_align == PagiNationType::Alignment::Align_Right) {
         BJ->insertItem(0, TH_left);
     } else {
         BJ->insertItem(0, TH_left);
@@ -344,7 +355,7 @@ int PagiNation::buttonCount () {
 }
 
 /** 获取当前对齐方式 pagesize */
-AlignType PagiNation::alignment () {
+PagiNationType::Alignment PagiNation::alignment () {
     return _align;
 }
 
@@ -357,7 +368,7 @@ void PagiNation::setButtonCount (int buttonCount, bool needEmit) {
 }
 
 /** 设置左右对齐方式 */
-void PagiNation::setAlign (AlignType align, bool needEmit) {
+void PagiNation::setAlign (PagiNationType::Alignment align, bool needEmit) {
     if (align == _align) return;
     _align = align;
     setWidgetAlign();

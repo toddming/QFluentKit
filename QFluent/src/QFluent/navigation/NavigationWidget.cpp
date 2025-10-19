@@ -2,8 +2,21 @@
 #include <QMouseEvent>
 #include <QEnterEvent>
 #include <QEasingCurve>
+#include <QPropertyAnimation>
+#include <QPainter>
+#include <QVBoxLayout>
+#include <QEvent>
+#include <QColor>
+#include <QMargins>
+#include <QFont>
+#include <QPoint>
+#include <QPixmap>
+#include <QImage>
+#include <vector>
 
+#include "Icon.h"
 #include "Theme.h"
+#include "AvatarWidget.h"
 
 NavigationWidget::NavigationWidget(bool isSelectable, QWidget* parent)
     : QWidget(parent), isCompacted(true), isSelected(false), isPressed(false),

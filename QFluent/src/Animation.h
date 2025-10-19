@@ -4,20 +4,9 @@
 #include <QObject>
 #include <QWidget>
 #include <QPropertyAnimation>
-#include <QEvent>
-#include <QMouseEvent>
-#include <QEnterEvent>
-#include <QColor>
-#include <QGraphicsDropShadowEffect>
 #include <QEasingCurve>
-#include <QPoint>
-#include <QPointF>
-#include <QMap>
-#include <functional>
-#include <QLineEdit>
-#include <QFocusEvent>
 
-
+class QGraphicsDropShadowEffect;
 class AnimationBase : public QObject {
     Q_OBJECT
 public:

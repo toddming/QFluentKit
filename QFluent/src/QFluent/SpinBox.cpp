@@ -2,6 +2,16 @@
 #include <QMenu>
 #include <QLineEdit>
 #include <QPainterPath>
+#include <QHBoxLayout>
+#include <QColor>
+#include <QStyleOption>
+#include <QContextMenuEvent>
+#include <QMouseEvent>
+#include <QApplication>
+
+#include "Theme.h"
+#include "Icon.h"
+
 
 template class InlineSpinBoxBase<QSpinBox>;
 template class InlineSpinBoxBase<QDoubleSpinBox>;

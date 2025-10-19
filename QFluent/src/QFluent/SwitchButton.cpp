@@ -2,6 +2,11 @@
 #include <QPainter>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QPropertyAnimation>
+#include <QColor>
+#include <QEvent>
 
 #include "Theme.h"
 

@@ -2,7 +2,7 @@
 
 #include <QHoverEvent>
 #include <QPropertyAnimation>
-
+#include <QApplication>
 #include "Screen.h"
 #include "RoundMenu.h"
 #include "MenuActionListWidget.h"

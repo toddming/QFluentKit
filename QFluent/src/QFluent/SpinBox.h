@@ -6,21 +6,12 @@
 #include <QDateEdit>
 #include <QDateTimeEdit>
 #include <QToolButton>
-#include <QHBoxLayout>
 #include <QPainter>
-#include <QColor>
-#include <QStyleOption>
-#include <QContextMenuEvent>
-#include <QMouseEvent>
-#include <QApplication>
 
-#include "Theme.h"
-#include "Icon.h"
-#include "Property.h"
 
-/**
- * @brief SpinButton - Custom up/down arrow button.
- */
+#include "Define.h"
+
+class QHBoxLayout;
 class SpinButton : public QToolButton {
     Q_OBJECT
 

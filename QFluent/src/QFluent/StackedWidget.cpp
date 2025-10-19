@@ -1,9 +1,10 @@
 #include "StackedWidget.h"
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
 #include <QAbstractAnimation>
-#include <QDebug>
 #include <QScrollBar>
+#include <QHBoxLayout>
+#include <QAbstractScrollArea>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
 
 // ==================== OpacityAniStackedWidget ====================
 

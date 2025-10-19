@@ -2,8 +2,12 @@
 
 #include <QMenu>
 #include <QLayout>
+#include <QIcon>
+#include <QPainter>
+#include <QStyleOption>
 
 #include "Define.h"
+
 
 class QListWidgetItem;
 class RoundMenuPrivate;

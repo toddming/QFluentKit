@@ -1,6 +1,11 @@
 ﻿#include "RadioButton.h"
 #include <QPainterPath>
 #include <QRectF>
+#include <QColor>
+#include <QPainter>
+#include <QPoint>
+#include <QEvent>
+#include <QEnterEvent>
 
 #include "Theme.h"
 

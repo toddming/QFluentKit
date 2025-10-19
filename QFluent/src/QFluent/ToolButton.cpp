@@ -2,8 +2,14 @@
 #include <QPainter>
 #include <QStyleOptionButton>
 #include <QApplication>
-#include <QDebug>
 #include <QTimer>
+#include <QSize>
+#include <QIcon>
+#include <QMouseEvent>
+#include <QPaintEvent>
+
+#include "Theme.h"
+#include "Icon.h"
 
 
 ToolButton::ToolButton(QWidget* parent)

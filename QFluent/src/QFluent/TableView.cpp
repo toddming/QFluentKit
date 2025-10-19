@@ -1,6 +1,8 @@
 ﻿#include "TableView.h"
+#include <QPainter>
 
-// TableItemDelegate 实现
+#include "scrollbar/ScrollBar.h"
+
 TableItemDelegate::TableItemDelegate(QTableView* parent) : QStyledItemDelegate(parent) {}
 
 void TableItemDelegate::setHoverRow(int row) {

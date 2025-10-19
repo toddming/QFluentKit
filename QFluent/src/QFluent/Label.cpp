@@ -1,33 +1,32 @@
-﻿// fluentlabel.cpp
-#include "Label.h"
+﻿#include "Label.h"
 #include <QApplication>
 #include <QPalette>
 #include <QMetaObject>
-
+#include "Theme.h"
 
 
 FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(parent) {
     setFont(Theme::instance()->getFont(fontSize, weight));
-    init();
+
+    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
+    setTextColor(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
+        setTextColor(theme == ThemeType::ThemeMode::DARK ? Qt::white : Qt::black);
+    });
 }
 
 FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(text, parent) {
     setFont(Theme::instance()->getFont(fontSize, weight));
-    init();
-}
 
-
-void FluentLabelBase::init() {
     Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
-
     setTextColor(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
-
     connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
         setTextColor(theme == ThemeType::ThemeMode::DARK ? Qt::white : Qt::black);
     });
 }
+
 
 void FluentLabelBase::setTextColor(const QColor& color) {
     QString colorStr = color.name(QColor::HexArgb);

@@ -2,25 +2,20 @@
 
 #include <QLineEdit>
 #include <QToolButton>
-#include <QAction>
-#include <QHBoxLayout>
-#include <QCompleter>
-#include <QEvent>
-#include <QPainter>
-#include <QPainterPath>
-#include <QStyleOption>
-#include <QTimer>
 #include <QPointer>
 
-#include "menu/RoundMenu.h"
 #include "Property.h"
+#include "menu/RoundMenu.h"
 
+class QAction;
+class QEvent;
+class QCompleter;
+class QHBoxLayout;
 class LineEditButton;
 class CompleterMenu;
-
+class QAbstractItemModel;
 class QFLUENT_EXPORT LineEdit : public QLineEdit {
     Q_OBJECT
-    Q_PROPERTY(bool clearButtonEnabled READ isClearButtonEnabled WRITE setClearButtonEnabled)
 
 public:
     explicit LineEdit(QWidget* parent = nullptr);

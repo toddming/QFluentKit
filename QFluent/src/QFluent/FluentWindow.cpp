@@ -1,6 +1,5 @@
 ﻿#include "FluentWindow.h"
 
-#include <QDebug>
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QComboBox>
@@ -13,6 +12,10 @@
 #include <QFrame>
 #include <QStandardItemModel>
 #include <QActionGroup>
+#include <QCompleter>
+#include <QStyleOption>
+#include <QPainter>
+
 
 #include "QWKWidgets/widgetwindowagent.h"
 
@@ -168,7 +171,7 @@ void FluentWindow::initUI()
     lay->addWidget(btn);
 
     connect(btn, &PushButton::clicked, this, [=](){
-        InfoBar::warning("警告", "我的名字是吉良吉影，年龄33岁，家住杜王町东北部别墅区，未婚。我在“龟友百货连锁公司”上班，每天最晚也是八点前回家，不吸烟，酒也是浅尝辄止，晚上十一点上床，保证八个小时的充足睡眠，睡前喝一杯热牛奶，再做二十分钟伸展运动暖身，然后再睡觉，基本可以熟睡到天亮。像婴儿一样不留下疲劳与压力，迎来第二天的早晨，健康检査结果也显示我很健康。我的意思是我是一个随时都想追求平静生活的人，不拘泥于胜负与烦恼，不树立令我夜不能寐的敌人，这就是我对于这个社会的生活态度，我也清楚这就是我的幸福。", Qt::Horizontal, false, 2000, InfoBarPosition::TOP, this);
+        InfoBar::warning("警告", "我的名字是吉良吉影，年龄33岁，家住杜王町东北部别墅区，未婚。我在“龟友百货连锁公司”上班，每天最晚也是八点前回家，不吸烟，酒也是浅尝辄止，晚上十一点上床，保证八个小时的充足睡眠，睡前喝一杯热牛奶，再做二十分钟伸展运动暖身，然后再睡觉，基本可以熟睡到天亮。像婴儿一样不留下疲劳与压力，迎来第二天的早晨，健康检査结果也显示我很健康。我的意思是我是一个随时都想追求平静生活的人，不拘泥于胜负与烦恼，不树立令我夜不能寐的敌人，这就是我对于这个社会的生活态度，我也清楚这就是我的幸福。", Qt::Horizontal, false, 2000, InfoBarType::BarPosition::TOP, this);
     });
 
     PrimaryPushButton *pbtn = new PrimaryPushButton("PushButton", this);
@@ -426,7 +429,7 @@ void FluentWindow::initUI()
 
 
     PagiNation *page = new PagiNation(this);
-    page->setAlign(Align_Center);
+    page->setAlign(PagiNationType::Alignment::Align_Center);
     page->setPageSize(10);
     page->setTotal(500);
     vlay->addWidget(page);
@@ -510,7 +513,9 @@ void FluentWindow::initUI()
     panel->addItem("1", IconType::FLuentIcon::HOME, "主页", [=](){switchTo(wids[0]);}, true, NavigationItemPosition::TOP);
     panel->addSeparator();
     panel->addItem("2", IconType::FLuentIcon::CHECKBOX, "基本输入", [=](){switchTo(wids[1]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期和时间", [=](){switchTo(wids[2]);}, true, NavigationItemPosition::SCROLL);
+    panel->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期和时间", [=](){}, true, NavigationItemPosition::SCROLL);
+    panel->addItem("3-1", IconType::FLuentIcon::DATE_TIME, "日期", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3");
+
     panel->addItem("4", IconType::FLuentIcon::MESSAGE, "弹出窗口", [=](){switchTo(wids[3]);}, true, NavigationItemPosition::SCROLL);
     panel->addItem("5", IconType::FLuentIcon::LAYOUT, "布局", [=](){switchTo(wids[4]);}, true, NavigationItemPosition::SCROLL);
     panel->addItem("6", IconType::FLuentIcon::PALETTE, "材料", [=](){switchTo(wids[5]);}, true, NavigationItemPosition::SCROLL);

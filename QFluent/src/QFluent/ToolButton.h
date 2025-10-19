@@ -1,18 +1,8 @@
 ﻿#pragma once
 
 #include <QToolButton>
-#include <QSize>
-#include <QIcon>
-#include <QPainter>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QStyleOptionButton>
-#include <QApplication>
-#include <memory>
 
-#include "Theme.h"
-#include "Icon.h"
-#include "Property.h"
+#include "Define.h"
 
 class QFLUENT_EXPORT ToolButton : public QToolButton
 {

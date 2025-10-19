@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <QFont>
 
+#include "Icon.h"
 #include "Theme.h"
 #include "../scrollbar/ScrollBar.h"
 
