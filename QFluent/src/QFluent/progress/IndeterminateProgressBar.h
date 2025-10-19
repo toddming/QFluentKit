@@ -17,7 +17,7 @@ class IndeterminateProgressBar : public QProgressBar
 
 public:
     explicit IndeterminateProgressBar(QWidget *parent = nullptr, bool start = true);
-    ~IndeterminateProgressBar() override = default;
+    ~IndeterminateProgressBar();
 
     bool isUseAni() const;
     void setUseAni(bool isUse);

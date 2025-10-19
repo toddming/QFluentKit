@@ -332,10 +332,10 @@ void FluentWindow::initUI()
     progressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
     lay->addWidget(progressBar);
 
-    auto indeterminateProgressBar = new IndeterminateProgressBar(this);
-    indeterminateProgressBar->setValue(50);
-    indeterminateProgressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
-    lay->addWidget(indeterminateProgressBar);
+    // auto indeterminateProgressBar = new IndeterminateProgressBar(this);
+    // indeterminateProgressBar->setValue(50);
+    // indeterminateProgressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
+    // lay->addWidget(indeterminateProgressBar);
 
     auto progressRing = new ProgressRing(this);
     progressRing->setValue(50);
@@ -515,6 +515,9 @@ void FluentWindow::initUI()
     panel->addItem("2", IconType::FLuentIcon::CHECKBOX, "基本输入", [=](){switchTo(wids[1]);}, true, NavigationItemPosition::SCROLL);
     panel->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期和时间", [=](){}, true, NavigationItemPosition::SCROLL);
     panel->addItem("3-1", IconType::FLuentIcon::DATE_TIME, "日期", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3");
+    panel->addItem("3-1-1", IconType::FLuentIcon::DATE_TIME, "AAAA", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3-1");
+    panel->addItem("3-1-2", IconType::FLuentIcon::DATE_TIME, "BBBB", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3-1");
+    panel->addItem("3-2", IconType::FLuentIcon::DATE_TIME, "时间", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3");
 
     panel->addItem("4", IconType::FLuentIcon::MESSAGE, "弹出窗口", [=](){switchTo(wids[3]);}, true, NavigationItemPosition::SCROLL);
     panel->addItem("5", IconType::FLuentIcon::LAYOUT, "布局", [=](){switchTo(wids[4]);}, true, NavigationItemPosition::SCROLL);

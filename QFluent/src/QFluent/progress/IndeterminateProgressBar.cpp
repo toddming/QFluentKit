@@ -40,6 +40,11 @@ IndeterminateProgressBar::IndeterminateProgressBar(QWidget *parent, bool start)
     if (start) this->start();
 }
 
+IndeterminateProgressBar::~IndeterminateProgressBar()
+{
+
+}
+
 bool IndeterminateProgressBar::isUseAni() const
 {
     return aniGroup.state() != QAbstractAnimation::Stopped;

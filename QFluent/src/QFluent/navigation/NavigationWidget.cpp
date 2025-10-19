@@ -13,6 +13,7 @@
 #include <QPixmap>
 #include <QImage>
 #include <vector>
+#include <deque>
 
 #include "Icon.h"
 #include "Theme.h"
@@ -23,6 +24,11 @@ NavigationWidget::NavigationWidget(bool isSelectable, QWidget* parent)
       isEnter(false), isSelectable(isSelectable), treeParent(nullptr), nodeDepth(0),
       lightTextColor(0, 0, 0), darkTextColor(255, 255, 255) {
     setFixedSize(40, 36);
+}
+
+void NavigationWidget::insertChild(int index, NavigationWidget* child)
+{
+
 }
 
 void NavigationWidget::enterEvent(QEnterEvent* e) {
@@ -407,9 +413,11 @@ void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
         index = static_cast<int>(treeChildren.size());
     }
 
-    index += 1;  // 项目小部件应始终是第一个
+    // 修正：在插入 treeChildren 时不要加1
     treeChildren.insert(treeChildren.begin() + index, treeChild);
-    vBoxLayout->insertWidget(index, treeChild, 0, Qt::AlignTop);
+
+    // 修正：在插入布局时要加1，因为itemWidget是布局中的第0个元素
+    vBoxLayout->insertWidget(index + 1, treeChild, 0, Qt::AlignTop);
 
     // 调整高度
     if (isExpanded) {
@@ -587,19 +595,19 @@ int NavigationFlyoutMenu::_suitableWidth() {
 
 std::vector<NavigationTreeWidget*> NavigationFlyoutMenu::visibleTreeNodes() {
     std::vector<NavigationTreeWidget*> nodes;
-    // std::deque<NavigationTreeWidget*> queue(treeChildren.begin(), treeChildren.end());
+    std::deque<NavigationTreeWidget*> queue(treeChildren.begin(), treeChildren.end());
 
-    // while (!queue.empty()) {
-    //     NavigationTreeWidget* node = queue.front();
-    //     queue.pop_front();
-    //     nodes.push_back(node);
+    while (!queue.empty()) {
+        NavigationTreeWidget* node = queue.front();
+        queue.pop_front();
+        nodes.push_back(node);
 
-    //     for (auto child : node->treeChildren) {
-    //         if (!child->isHidden()) {
-    //             queue.push_back(child);
-    //         }
-    //     }
-    // }
+        for (auto child : node->treeChildren) {
+            if (!child->isHidden()) {
+                queue.push_back(child);
+            }
+        }
+    }
 
     return nodes;
 }

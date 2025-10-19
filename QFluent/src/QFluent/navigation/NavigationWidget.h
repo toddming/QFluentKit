@@ -14,6 +14,7 @@ class NavigationWidget : public QWidget {
     Q_OBJECT
 public:
     explicit NavigationWidget(bool isSelectable, QWidget* parent = nullptr);
+    virtual void insertChild(int index, NavigationWidget* child);
 
     virtual void setCompacted(bool isCompacted);
     void setSelected(bool isSelected);
@@ -124,7 +125,6 @@ public:
         : NavigationWidget(isSelectable, parent) {}
 
     virtual void addChild(NavigationWidget* child) = 0;
-    virtual void insertChild(int index, NavigationWidget* child) = 0;
     virtual void removeChild(NavigationWidget* child) = 0;
     virtual bool isRoot() = 0;
     virtual bool isLeaf() = 0;
