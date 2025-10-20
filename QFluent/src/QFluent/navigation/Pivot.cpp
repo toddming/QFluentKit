@@ -2,7 +2,14 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QApplication>
-#include <QDebug>
+#include <QHBoxLayout>
+#include <QMap>
+#include <QColor>
+#include <QFont>
+#include <QPainter>
+#include <QEvent>
+
+#include "Animation.h"
 #include "Theme.h"
 
 PivotItem::PivotItem(const QString &text, QWidget *parent)

@@ -1,7 +1,11 @@
 ﻿#include"ProfileCard.h"
 #include <QColor>
+#include <QFont>
 
 #include "Theme.h"
+#include "AvatarWidget.h"
+#include "../Label.h"
+#include "../PushButton.h"
 
 ProfileCard::ProfileCard(const QString& avatarPath,
                          const QString& name,

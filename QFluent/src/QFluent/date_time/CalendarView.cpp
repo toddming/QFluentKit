@@ -1,9 +1,37 @@
 ﻿#include "CalendarView.h"
 #include <QLocale>
-#include <QDebug>
 #include <QTimer>
+#include <QApplication>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QListWidgetItem>
+#include <QStyle>
+#include <QStyleOptionViewItem>
+#include <QLabel>
+#include <QWidget>
+#include <QStackedWidget>
+#include <QGraphicsDropShadowEffect>
+#include <QListView>
+#include <QPainter>
+#include <QColor>
+#include <QCursor>
+#include <QRectF>
+#include <QModelIndex>
+#include <QCalendar>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <QPoint>
+#include <QRect>
+#include <QStringListModel>
+#include <QSize>
+#include <QtMath>
+#include <QWheelEvent>
+#include <QMouseEvent>
 
 #include "Screen.h"
+#include "Theme.h"
+#include "Icon.h"
 
 SmoothScrollBar::SmoothScrollBar(Qt::Orientation orientation, QWidget* parent)
     : QScrollBar(orientation, parent) {
@@ -28,6 +56,10 @@ void SmoothScrollBar::setForceHidden(bool hidden) {
     this->setVisible(!hidden);
 }
 
+QPropertyAnimation* SmoothScrollBar::ani() const
+{
+    return m_ani;
+}
 
 
 ScrollButton::ScrollButton(FIF icon, QWidget* parent)

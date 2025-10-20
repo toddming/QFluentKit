@@ -9,6 +9,9 @@
 #include <QParallelAnimationGroup>
 #include <QEvent>
 #include <QWidget>
+#include <QVector>
+#include <QObject>
+
 
 QT_BEGIN_NAMESPACE
 

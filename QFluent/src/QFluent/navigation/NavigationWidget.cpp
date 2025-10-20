@@ -20,10 +20,19 @@
 #include "AvatarWidget.h"
 
 NavigationWidget::NavigationWidget(bool isSelectable, QWidget* parent)
-    : QWidget(parent), isCompacted(true), isSelected(false), isPressed(false),
-      isEnter(false), isSelectable(isSelectable), treeParent(nullptr), nodeDepth(0),
-      lightTextColor(0, 0, 0), darkTextColor(255, 255, 255) {
+    : QWidget(parent)
+    , lightTextColor(0, 0, 0)
+    , darkTextColor(255, 255, 255)
+    , m_treeParent(nullptr)
+{
     setFixedSize(40, 36);
+
+    setProperty("nodeDepth", 0);
+    setProperty("isCompacted", true);
+    setProperty("isSelected", false);
+    setProperty("isPressed", false);
+    setProperty("isEnter", false);
+    setProperty("isSelectable", isSelectable);
 }
 
 void NavigationWidget::insertChild(int index, NavigationWidget* child)
@@ -32,27 +41,43 @@ void NavigationWidget::insertChild(int index, NavigationWidget* child)
 }
 
 void NavigationWidget::enterEvent(QEnterEvent* e) {
-    isEnter = true;
+    setProperty("isEnter", true);
     update();
 }
 
 void NavigationWidget::leaveEvent(QEvent* e) {
-    isEnter = false;
-    isPressed = false;
+    setProperty("isEnter", false);
+    setProperty("isPressed", false);
+
     update();
 }
 
 void NavigationWidget::mousePressEvent(QMouseEvent* e) {
     QWidget::mousePressEvent(e);
-    isPressed = true;
+    setProperty("isPressed", true);
     update();
 }
 
 void NavigationWidget::mouseReleaseEvent(QMouseEvent* e) {
     QWidget::mouseReleaseEvent(e);
-    isPressed = false;
+    setProperty("isPressed", false);
     update();
     emit clicked(true);
+}
+
+void NavigationWidget::setTreeParent(NavigationWidget* p)
+{
+    m_treeParent = p;
+}
+
+int NavigationWidget::expandWidth()
+{
+    return m_expandWidth;
+}
+
+NavigationWidget* NavigationWidget::treeParent()
+{
+    return m_treeParent;
 }
 
 void NavigationWidget::click() {
@@ -60,10 +85,10 @@ void NavigationWidget::click() {
 }
 
 void NavigationWidget::setCompacted(bool isCompacted) {
-    if (isCompacted == this->isCompacted)
+    if (isCompacted == property("isCompacted").toBool())
         return;
 
-    this->isCompacted = isCompacted;
+    setProperty("isCompacted", isCompacted);
     if (isCompacted) {
         setFixedSize(40, 36);
     } else {
@@ -74,10 +99,10 @@ void NavigationWidget::setCompacted(bool isCompacted) {
 }
 
 void NavigationWidget::setSelected(bool isSelected) {
-    if (!isSelectable)
+    if (!property("isSelectable").toBool())
         return;
 
-    this->isSelected = isSelected;
+    setProperty("isSelected", isSelected);
     update();
     emit selectedChanged(isSelected);
 }
@@ -145,7 +170,12 @@ QMargins NavigationPushButton::_margins() {
 }
 
 bool NavigationPushButton::_canDrawIndicator() {
-    return isSelected;
+    return property("isSelected").toBool();
+}
+
+IconType::FLuentIcon NavigationPushButton::fluentButton()
+{
+    return m_icon;
 }
 
 void NavigationPushButton::paintEvent(QPaintEvent* e) {
@@ -153,7 +183,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
     painter.setPen(Qt::NoPen);
 
-    if (isPressed)
+    if (property("isPressed").toBool())
         painter.setOpacity(0.7);
     if (!isEnabled())
         painter.setOpacity(0.4);
@@ -166,13 +196,13 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
     QRect globalRect(globalPos, size());
 
     if (_canDrawIndicator()) {
-        painter.setBrush(QColor(c, c, c, isEnter ? 6 : 10));
+        painter.setBrush(QColor(c, c, c, property("isEnter").toBool() ? 6 : 10));
         painter.drawRoundedRect(rect(), 5, 5);
 
         // 绘制指示器
         painter.setBrush(Theme::instance()->themeColor());
         painter.drawRoundedRect(pl, 10, 3, 16, 1.5, 1.5);
-    } else if (isEnter && isEnabled() && globalRect.contains(QCursor::pos())) {
+    } else if (property("isEnter").toBool() && isEnabled() && globalRect.contains(QCursor::pos())) {
         painter.setBrush(QColor(c, c, c, 10));
         painter.drawRoundedRect(rect(), 5, 5);
     }
@@ -180,7 +210,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
     Icon::drawSvgIcon(&painter, m_icon, QRectF(11.5 + pl, 10, 16, 16));
 
     // 绘制文本
-    if (isCompacted)
+    if (property("isCompacted").toBool())
         return;
 
     painter.setPen(textColor());
@@ -193,7 +223,8 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 NavigationToolButton::NavigationToolButton(IconType::FLuentIcon icon, QWidget* parent)
     : NavigationPushButton(icon, "", false, parent) {
     setFixedSize(40, 36);
-    isCompacted = false;
+
+    setProperty("isCompacted", false);
 }
 
 void NavigationToolButton::setCompacted(bool isCompacted) {
@@ -210,7 +241,7 @@ void NavigationSeparator::setCompacted(bool isCompacted) {
     if (isCompacted) {
         setFixedSize(48, 3);
     } else {
-        setFixedSize(m_expandWidth + 10, 3);
+        setFixedSize(expandWidth() + 10, 3);
     }
     update();
 }
@@ -251,8 +282,8 @@ void NavigationTreeItem::mouseReleaseEvent(QMouseEvent* e) {
 QMargins NavigationTreeItem::_margins() {
     NavigationTreeWidget* p = qobject_cast<NavigationTreeWidget*>(parent());
     if (p) {
-        int right = p->treeChildren.empty() ? 0 : 20;
-        return QMargins(p->nodeDepth * 28, 0, right, 0);
+        int right = p->treeChildren().empty() ? 0 : 20;
+        return QMargins(p->property("nodeDepth").toInt() * 28, 0, right, 0);
     }
     return QMargins(0, 0, 0, 0);
 }
@@ -261,11 +292,11 @@ bool NavigationTreeItem::_canDrawIndicator() {
     NavigationTreeWidget* p = qobject_cast<NavigationTreeWidget*>(parent());
     if (!p) return false;
 
-    if (p->isLeaf() || p->isSelected)
-        return p->isSelected;
+    if (p->isLeaf() || p->property("isSelected").toBool())
+        return p->property("isSelected").toBool();
 
-    for (auto child : p->treeChildren) {
-        if (child->itemWidget->_canDrawIndicator() && !child->isVisible())
+    for (auto child : p->treeChildren()) {
+        if (child->itemWidget()->_canDrawIndicator() && !child->isVisible())
             return true;
     }
 
@@ -276,14 +307,14 @@ void NavigationTreeItem::paintEvent(QPaintEvent* e) {
     NavigationPushButton::paintEvent(e);
 
     NavigationTreeWidget* p = qobject_cast<NavigationTreeWidget*>(parent());
-    if (!p || isCompacted || p->treeChildren.empty())
+    if (!p || property("isCompacted").toBool() || p->treeChildren().empty())
         return;
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    if (isPressed)
+    if (property("isPressed").toBool())
         painter.setOpacity(0.7);
     if (!isEnabled())
         painter.setOpacity(0.4);
@@ -308,7 +339,7 @@ void NavigationTreeItem::setArrowAngle(float angle) {
 NavigationTreeWidget::NavigationTreeWidget(IconType::FLuentIcon icon, const QString& text,
                                          bool isSelectable, QWidget* parent)
     : NavigationTreeWidgetBase(isSelectable, parent), isExpanded(false), m_icon(icon) {
-    itemWidget = new NavigationTreeItem(icon, text, isSelectable, this);
+    m_itemWidget = new NavigationTreeItem(icon, text, isSelectable, this);
     vBoxLayout = new QVBoxLayout(this);
     expandAni = new QPropertyAnimation(this, "geometry", this);
 
@@ -318,9 +349,9 @@ NavigationTreeWidget::NavigationTreeWidget(IconType::FLuentIcon icon, const QStr
 void NavigationTreeWidget::__initWidget() {
     vBoxLayout->setSpacing(4);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);
-    vBoxLayout->addWidget(itemWidget, 0, Qt::AlignTop);
+    vBoxLayout->addWidget(m_itemWidget, 0, Qt::AlignTop);
 
-    connect(itemWidget, &NavigationTreeItem::itemClicked, this, &NavigationTreeWidget::_onClicked);
+    connect(m_itemWidget, &NavigationTreeItem::itemClicked, this, &NavigationTreeWidget::_onClicked);
     setAttribute(Qt::WA_TranslucentBackground);
     connect(expandAni, &QPropertyAnimation::valueChanged, [this](const QVariant& value) {
         setFixedSize(value.toRect().size());
@@ -338,42 +369,40 @@ void NavigationTreeWidget::addChild(NavigationWidget* child) {
 }
 
 QString NavigationTreeWidget::text() const {
-    return itemWidget->text();
+    return m_itemWidget->text();
 }
 
 QIcon NavigationTreeWidget::icon() const {
-    return itemWidget->icon();
+    return m_itemWidget->icon();
 }
 
 void NavigationTreeWidget::setText(const QString& text) {
-    itemWidget->setText(text);
+    m_itemWidget->setText(text);
 }
 
 void NavigationTreeWidget::setIcon(IconType::FLuentIcon icon) {
-    itemWidget->setIcon(icon);
+    m_itemWidget->setIcon(icon);
 }
 
 void NavigationTreeWidget::setIndicatorColor(const QColor& light, const QColor& dark) {
-    itemWidget->setIndicatorColor(light, dark);
+    m_itemWidget->setIndicatorColor(light, dark);
 }
 
 void NavigationTreeWidget::setFont(const QFont& font) {
     QWidget::setFont(font);
-    itemWidget->setFont(font);
+    m_itemWidget->setFont(font);
 }
 
 NavigationTreeWidget* NavigationTreeWidget::clone() {
-    NavigationTreeWidget* root = new NavigationTreeWidget(m_icon, text(), isSelectable, parentWidget());
-    root->setSelected(isSelected);
+    NavigationTreeWidget* root = new NavigationTreeWidget(m_icon, text(), property("isSelectable").toBool(), parentWidget());
+    root->setSelected(property("isSelected").toBool());
     root->setFixedSize(size());
-    root->setTextColor(lightTextColor, darkTextColor);
-    // root->setIndicatorColor(itemWidget->lightIndicatorColor, itemWidget->darkIndicatorColor);
-    root->nodeDepth = nodeDepth;
+    root->setProperty("nodeDepth", property("nodeDepth").toInt());
 
     connect(this, &NavigationTreeWidget::clicked, root, &NavigationTreeWidget::clicked);
     connect(this, &NavigationTreeWidget::selectedChanged, root, &NavigationTreeWidget::setSelected);
 
-    for (auto child : treeChildren) {
+    for (auto child : m_treeChildren) {
         root->addChild(child->clone());
     }
 
@@ -381,19 +410,19 @@ NavigationTreeWidget* NavigationTreeWidget::clone() {
 }
 
 int NavigationTreeWidget::suitableWidth() {
-    QMargins m = itemWidget->_margins();
+    QMargins m = m_itemWidget->_margins();
     int left = icon().isNull() ? m.left() + 29 : 57 + m.left();
-    int tw = itemWidget->fontMetrics().boundingRect(text()).width();
+    int tw = m_itemWidget->fontMetrics().boundingRect(text()).width();
     return left + tw + m.right();
 }
 
 void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
     NavigationTreeWidget* treeChild = dynamic_cast<NavigationTreeWidget*>(child);
-    if (!treeChild || std::find(treeChildren.begin(), treeChildren.end(), treeChild) != treeChildren.end())
+    if (!treeChild || std::find(m_treeChildren.begin(), m_treeChildren.end(), treeChild) != m_treeChildren.end())
         return;
 
-    treeChild->treeParent = this;
-    treeChild->nodeDepth = nodeDepth + 1;
+    treeChild->setTreeParent(this);
+    treeChild->setProperty("nodeDepth", property("nodeDepth").toInt() + 1);
     treeChild->setVisible(isExpanded);
     connect(treeChild->expandAni, &QPropertyAnimation::valueChanged, [this]() {
         setFixedSize(sizeHint());
@@ -401,20 +430,19 @@ void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
     connect(treeChild->expandAni, &QPropertyAnimation::valueChanged, this, &NavigationTreeWidget::expanded);
 
     // 递归连接高度变化信号到父级
-    NavigationTreeWidget* p = dynamic_cast<NavigationTreeWidget*>(treeParent);
+    NavigationTreeWidget* p = dynamic_cast<NavigationTreeWidget*>(treeParent());
     while (p) {
         connect(treeChild->expandAni, &QPropertyAnimation::valueChanged, [p]() {
             p->setFixedSize(p->sizeHint());
         });
-        p = dynamic_cast<NavigationTreeWidget*>(p->treeParent);
+        p = dynamic_cast<NavigationTreeWidget*>(p->treeParent());
     }
 
     if (index < 0) {
-        index = static_cast<int>(treeChildren.size());
+        index = static_cast<int>(m_treeChildren.size());
     }
 
-    // 修正：在插入 treeChildren 时不要加1
-    treeChildren.insert(treeChildren.begin() + index, treeChild);
+    m_treeChildren.insert(m_treeChildren.begin() + index, treeChild);
 
     // 修正：在插入布局时要加1，因为itemWidget是布局中的第0个元素
     vBoxLayout->insertWidget(index + 1, treeChild, 0, Qt::AlignTop);
@@ -423,10 +451,10 @@ void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
     if (isExpanded) {
         setFixedHeight(height() + treeChild->height() + vBoxLayout->spacing());
 
-        NavigationTreeWidget* p = dynamic_cast<NavigationTreeWidget*>(treeParent);
+        NavigationTreeWidget* p = dynamic_cast<NavigationTreeWidget*>(treeParent());
         while (p) {
             p->setFixedSize(p->sizeHint());
-            p = dynamic_cast<NavigationTreeWidget*>(p->treeParent);
+            p = dynamic_cast<NavigationTreeWidget*>(p->treeParent());
         }
     }
 
@@ -437,19 +465,29 @@ void NavigationTreeWidget::removeChild(NavigationWidget* child) {
     NavigationTreeWidget* treeChild = dynamic_cast<NavigationTreeWidget*>(child);
     if (!treeChild) return;
 
-    auto it = std::find(treeChildren.begin(), treeChildren.end(), treeChild);
-    if (it != treeChildren.end()) {
-        treeChildren.erase(it);
+    auto it = std::find(m_treeChildren.begin(), m_treeChildren.end(), treeChild);
+    if (it != m_treeChildren.end()) {
+        m_treeChildren.erase(it);
         vBoxLayout->removeWidget(treeChild);
     }
 }
 
 std::vector<NavigationWidget*> NavigationTreeWidget::childItems() {
     std::vector<NavigationWidget*> result;
-    for (auto child : treeChildren) {
+    for (auto child : m_treeChildren) {
         result.push_back(child);
     }
     return result;
+}
+
+std::vector<NavigationTreeWidget*> NavigationTreeWidget::treeChildren()
+{
+    return m_treeChildren;
+}
+
+NavigationTreeItem* NavigationTreeWidget::itemWidget()
+{
+    return m_itemWidget;
 }
 
 void NavigationTreeWidget::setExpanded(bool isExpanded) {
@@ -461,9 +499,9 @@ void NavigationTreeWidget::setExpanded(bool isExpanded, bool ani) {
         return;
 
     this->isExpanded = isExpanded;
-    itemWidget->setExpanded(isExpanded);
+    m_itemWidget->setExpanded(isExpanded);
 
-    for (auto child : treeChildren) {
+    for (auto child : m_treeChildren) {
         child->setVisible(isExpanded);
         child->setFixedSize(child->sizeHint());
     }
@@ -481,16 +519,16 @@ void NavigationTreeWidget::setExpanded(bool isExpanded, bool ani) {
 }
 
 bool NavigationTreeWidget::isRoot() {
-    return treeParent == nullptr;
+    return treeParent() == nullptr;
 }
 
 bool NavigationTreeWidget::isLeaf() {
-    return treeChildren.empty();
+    return m_treeChildren.empty();
 }
 
 void NavigationTreeWidget::setSelected(bool isSelected) {
     NavigationWidget::setSelected(isSelected);
-    itemWidget->setSelected(isSelected);
+    m_itemWidget->setSelected(isSelected);
 }
 
 void NavigationTreeWidget::mouseReleaseEvent(QMouseEvent* e) {
@@ -499,20 +537,20 @@ void NavigationTreeWidget::mouseReleaseEvent(QMouseEvent* e) {
 
 void NavigationTreeWidget::setCompacted(bool isCompacted) {
     NavigationWidget::setCompacted(isCompacted);
-    itemWidget->setCompacted(isCompacted);
+    m_itemWidget->setCompacted(isCompacted);
     update();
 }
 
 void NavigationTreeWidget::_onClicked(bool triggerByUser, bool clickArrow) {
-    if (!isCompacted) {
-        if (isSelectable && !isSelected && !clickArrow) {
+    if (!property("isCompacted").toBool()) {
+        if (property("isSelectable").toBool() && !property("isSelected").toBool() && !clickArrow) {
             setExpanded(true, true);
         } else {
             setExpanded(!isExpanded, true);
         }
     }
 
-    if (!clickArrow || isCompacted) {
+    if (!clickArrow || property("isCompacted").toBool()) {
         emit clicked(triggerByUser);
     }
 }
@@ -524,70 +562,70 @@ void NavigationTreeWidget::_onClicked(bool triggerByUser, bool clickArrow) {
 // NavigationFlyoutMenu 实现
 NavigationFlyoutMenu::NavigationFlyoutMenu(NavigationTreeWidget* tree, QWidget* parent)
     : QScrollArea(parent), treeWidget(tree) {
-    view = new QWidget(this);
-    vBoxLayout = new QVBoxLayout(view);
+    // view = new QWidget(this);
+    // vBoxLayout = new QVBoxLayout(view);
 
-    setWidget(view);
-    setWidgetResizable(true);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setStyleSheet("QScrollArea { border: none; background: transparent; }");
-    view->setStyleSheet("QWidget { border: none; background: transparent; }");
+    // setWidget(view);
+    // setWidgetResizable(true);
+    // setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    // setStyleSheet("QScrollArea { border: none; background: transparent; }");
+    // view->setStyleSheet("QWidget { border: none; background: transparent; }");
 
-    vBoxLayout->setSpacing(5);
-    vBoxLayout->setContentsMargins(5, 8, 5, 8);
+    // vBoxLayout->setSpacing(5);
+    // vBoxLayout->setContentsMargins(5, 8, 5, 8);
 
-    // 添加节点到菜单
-    for (auto child : treeWidget->treeChildren) {
-        NavigationTreeWidget* node = child->clone();
-        connect(node, &NavigationTreeWidget::expanded, this, [this]() { _adjustViewSize(); });
+    // // 添加节点到菜单
+    // for (auto child : treeWidget->treeChildren()) {
+    //     NavigationTreeWidget* node = child->clone();
+    //     connect(node, &NavigationTreeWidget::expanded, this, [this]() { _adjustViewSize(); });
 
-        treeChildren.push_back(node);
-        vBoxLayout->addWidget(node);
-    }
+    //     treeChildren.push_back(node);
+    //     vBoxLayout->addWidget(node);
+    // }
 
-    _initNode(this->treeWidget);
-    _adjustViewSize(false);
+    // _initNode(this->treeWidget);
+    // _adjustViewSize(false);
 }
 
 void NavigationFlyoutMenu::_initNode(NavigationTreeWidget* root) {
-    for (auto c : root->treeChildren) {
-        c->nodeDepth -= 1;
-        c->setCompacted(false);
+    // for (auto c : root->treeChildren()) {
+    //     c->setProperty("nodeDepth", c->property("nodeDepth").toInt() - 1);
+    //     c->setCompacted(false);
 
-        if (c->isLeaf()) {
-            connect(c, &NavigationTreeWidget::clicked, window(), &QWidget::close);
-        }
+    //     if (c->isLeaf()) {
+    //         connect(c, &NavigationTreeWidget::clicked, window(), &QWidget::close);
+    //     }
 
-        _initNode(c);
-    }
+    //     _initNode(c);
+    // }
 }
 
 void NavigationFlyoutMenu::_adjustViewSize(bool emitSignal) {
-    int w = _suitableWidth();
+    // int w = _suitableWidth();
 
-    // 调整节点宽度
-    for (auto node : visibleTreeNodes()) {
-        node->setFixedWidth(w - 10);
-        node->itemWidget->setFixedWidth(w - 10);
-    }
+    // // 调整节点宽度
+    // for (auto node : visibleTreeNodes()) {
+    //     node->setFixedWidth(w - 10);
+    //     node->itemWidget()->setFixedWidth(w - 10);
+    // }
 
-    view->setFixedSize(w, view->sizeHint().height());
+    // view->setFixedSize(w, view->sizeHint().height());
 
-    int h = qMin(window()->parentWidget()->height() - 48, view->height());
-    setFixedSize(w, h);
+    // int h = qMin(window()->parentWidget()->height() - 48, view->height());
+    // setFixedSize(w, h);
 
-    if (emitSignal)
-        emit expanded();
+    // if (emitSignal)
+    //     emit expanded();
 }
 
 int NavigationFlyoutMenu::_suitableWidth() {
     int w = 0;
 
-    for (auto node : visibleTreeNodes()) {
-        if (!node->isHidden()) {
-            w = qMax(w, node->suitableWidth() + 10);
-        }
-    }
+    // for (auto node : visibleTreeNodes()) {
+    //     if (!node->isHidden()) {
+    //         w = qMax(w, node->suitableWidth() + 10);
+    //     }
+    // }
 
     QWidget* window = this->window()->parentWidget();
     return qMin(window->width() / 2 - 25, w) + 10;
@@ -595,19 +633,19 @@ int NavigationFlyoutMenu::_suitableWidth() {
 
 std::vector<NavigationTreeWidget*> NavigationFlyoutMenu::visibleTreeNodes() {
     std::vector<NavigationTreeWidget*> nodes;
-    std::deque<NavigationTreeWidget*> queue(treeChildren.begin(), treeChildren.end());
+    // std::deque<NavigationTreeWidget*> queue(treeChildren.begin(), treeChildren.end());
 
-    while (!queue.empty()) {
-        NavigationTreeWidget* node = queue.front();
-        queue.pop_front();
-        nodes.push_back(node);
+    // while (!queue.empty()) {
+    //     NavigationTreeWidget* node = queue.front();
+    //     queue.pop_front();
+    //     nodes.push_back(node);
 
-        for (auto child : node->treeChildren) {
-            if (!child->isHidden()) {
-                queue.push_back(child);
-            }
-        }
-    }
+    //     for (auto child : node->treeChildren()) {
+    //         if (!child->isHidden()) {
+    //             queue.push_back(child);
+    //         }
+    //     }
+    // }
 
     return nodes;
 }
@@ -668,19 +706,19 @@ void NavigationAvatarWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    if (isPressed) { // 假设 NavigationWidget 提供 isPressed()
+    if (property("isPressed").toBool()) { // 假设 NavigationWidget 提供 isPressed()
         painter.setOpacity(0.7);
     }
 
     // draw background on hover
-    if (isEnter) { // 假设 NavigationWidget 提供 isEnter()
+    if (property("isEnter").toBool()) { // 假设 NavigationWidget 提供 isEnter()
         int c = Theme::instance()->isDarkMode() ? 255 : 0;
         painter.setBrush(QColor(c, c, c, 10));
         painter.drawRoundedRect(rect(), 5, 5);
     }
 
     // draw text if not compacted
-    if (!isCompacted) { // 假设 NavigationWidget 提供 isCompacted()
+    if (!property("isCompacted").toBool()) { // 假设 NavigationWidget 提供 isCompacted()
         painter.setPen(textColor()); // 假设提供 textColor()
         painter.setFont(font());
         painter.drawText(QRect(44, 0, 255, 36), Qt::AlignVCenter, m_name);

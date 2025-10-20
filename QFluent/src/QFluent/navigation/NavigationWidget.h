@@ -27,14 +27,6 @@ public:
 
     void setExpandWidth(int width);
 
-    int nodeDepth;
-    bool isCompacted;
-    bool isSelected;
-    bool isPressed;
-    bool isEnter;
-    bool isSelectable;
-
-
 signals:
     void clicked(bool triggeredByUser);
     void selectedChanged(bool selected);
@@ -45,8 +37,13 @@ protected:
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
 
-    NavigationWidget* treeParent;
+    NavigationWidget* treeParent();
+    void setTreeParent(NavigationWidget* p);
 
+    int expandWidth();
+
+private:
+    NavigationWidget* m_treeParent;
     QColor lightTextColor;
     QColor darkTextColor;
     int m_expandWidth{160};
@@ -69,10 +66,15 @@ protected:
     virtual QMargins _margins();
     virtual bool _canDrawIndicator();
 
+    IconType::FLuentIcon fluentButton();
+
+
+private:
     IconType::FLuentIcon m_icon;
     QString m_text;
     QColor lightIndicatorColor;
     QColor darkIndicatorColor;
+
 };
 
 class NavigationToolButton : public NavigationPushButton {
@@ -113,7 +115,7 @@ signals:
 protected:
     void mouseReleaseEvent(QMouseEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
-
+private:
     float _arrowAngle;
     QPropertyAnimation* rotateAni;
 };
@@ -156,9 +158,9 @@ public:
     void setSelected(bool isSelected);
     void setCompacted(bool isCompacted) override;
     std::vector<NavigationWidget*> childItems() override;
-    std::vector<NavigationTreeWidget*> treeChildren;
-    NavigationTreeItem* itemWidget;
 
+    std::vector<NavigationTreeWidget*> treeChildren();
+    NavigationTreeItem* itemWidget();
 
 signals:
     void expanded();
@@ -177,6 +179,10 @@ private:
 
     QVBoxLayout* vBoxLayout;
     QPropertyAnimation* expandAni;
+
+    std::vector<NavigationTreeWidget*> m_treeChildren;
+    NavigationTreeItem* m_itemWidget;
+
 };
 
 
@@ -212,7 +218,7 @@ class NavigationAvatarWidget : public NavigationWidget
 
 public:
     explicit NavigationAvatarWidget(const QString &name,
-                                    const QVariant &avatar = QVariant(),
+                                    const QVariant &avatar = NULL,
                                     QWidget *parent = nullptr);
 
     void setName(const QString &name);
@@ -225,9 +231,5 @@ private:
     QString m_name;
     AvatarWidget *m_avatar;
 };
-
-
-
-
 
 #endif // NAVIGATION_WIDGET_H

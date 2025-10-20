@@ -2,16 +2,10 @@
 #define PIVOT_H
 
 #include <QWidget>
-#include <QHBoxLayout>
 #include <QPushButton>
-#include <QMap>
-#include <QColor>
-#include <QFont>
-#include <QPainter>
-#include <QEvent>
-#include "Animation.h"
-#include "../PushButton.h"
 
+class QHBoxLayout;
+class FluentAnimation;
 class PivotItem : public QPushButton {
     Q_OBJECT
     Q_PROPERTY(bool isSelected READ isSelected WRITE setSelected NOTIFY isSelectedChanged)

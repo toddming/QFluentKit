@@ -2,14 +2,11 @@
 #define PROFILECARD_H
 
 #include <QWidget>
-#include <QColor>
-#include <QFont>
 
-#include "AvatarWidget.h"
-#include "../Label.h"
-#include "../PushButton.h"
-
-
+class BodyLabel;
+class CaptionLabel;
+class AvatarWidget;
+class HyperlinkButton;
 class ProfileCard : public QWidget
 {
     Q_OBJECT

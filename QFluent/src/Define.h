@@ -393,3 +393,25 @@ class QFLUENT_EXPORT CLASS : public QObject \
     };
     Q_ENUM_CREATE(Alignment)
     Q_END_ENUM_CREATE(PagiNationType)
+
+
+
+
+    Q_BEGIN_ENUM_CREATE(NavigationType)
+    enum NavigationDisplayMode
+    {
+        MINIMAL = 0,
+        COMPACT = 1,
+        EXPAND = 2,
+        MENU = 3
+    };
+    Q_ENUM_CREATE(NavigationDisplayMode)
+
+    enum NavigationItemPosition
+    {
+        TOP = 0,
+        SCROLL = 1,
+        BOTTOM = 2
+    };
+    Q_ENUM_CREATE(NavigationItemPosition)
+    Q_END_ENUM_CREATE(NavigationType)

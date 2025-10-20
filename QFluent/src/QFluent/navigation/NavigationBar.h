@@ -76,19 +76,19 @@ public:
     void addItem(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
                  const std::function<void()>& onClick = nullptr, bool selectable = true,
                  IconType::FLuentIcon selectedIcon = IconType::FLuentIcon::NONE,
-                 NavigationItemPosition position = NavigationItemPosition::TOP);
+                 NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
     void addWidget(const QString& routeKey, NavigationWidget* widget,
                    const std::function<void()>& onClick = nullptr,
-                   NavigationItemPosition position = NavigationItemPosition::TOP);
+                   NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
     void insertItem(int index, const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
                    const std::function<void()>& onClick = nullptr, bool selectable = true,
                    IconType::FLuentIcon selectedIcon = IconType::FLuentIcon::NONE,
-                   NavigationItemPosition position = NavigationItemPosition::TOP);
+                   NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
     void insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
                      const std::function<void()>& onClick = nullptr,
-                     NavigationItemPosition position = NavigationItemPosition::TOP);
-    void addSeparator(NavigationItemPosition position = NavigationItemPosition::TOP);
-    void insertSeparator(int index, NavigationItemPosition position = NavigationItemPosition::TOP);
+                     NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+    void addSeparator(NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+    void insertSeparator(int index, NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
     void removeWidget(const QString& routeKey);
     void setCurrentItem(const QString& routeKey);
     void setFont(const QFont& font);
@@ -97,7 +97,7 @@ public:
     QList<NavigationBarPushButton*> buttons() const;
 
 signals:
-    void displayModeChanged(NavigationDisplayMode mode);
+    void displayModeChanged(NavigationType::NavigationDisplayMode mode);
 
 protected:
     void paintEvent(QPaintEvent* e) override;
@@ -107,7 +107,7 @@ private:
     void __initWidget();
     void __initLayout();
     void _registerWidget(const QString& routeKey, NavigationWidget* widget, const std::function<void()>& onClick);
-    void _insertWidgetToLayout(int index, NavigationWidget* widget, NavigationItemPosition position);
+    void _insertWidgetToLayout(int index, NavigationWidget* widget, NavigationType::NavigationItemPosition position);
     void _onWidgetClicked();
     void _onExpandAniFinished();
     void setWidgetCompacted(bool isCompacted);
@@ -124,7 +124,7 @@ private:
     QPropertyAnimation* m_expandAni;
     int m_expandWidth;
     bool m_isMinimalEnabled;
-    NavigationDisplayMode m_displayMode;
+    NavigationType::NavigationDisplayMode m_displayMode;
     QColor m_lightSelectedColor;
     QColor m_darkSelectedColor;
     bool m_isMenuButtonVisible;

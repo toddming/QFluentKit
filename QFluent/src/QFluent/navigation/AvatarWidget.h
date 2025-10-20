@@ -1,15 +1,7 @@
-#ifndef IMAGELABEL_H
+﻿#ifndef IMAGELABEL_H
 #define IMAGELABEL_H
 
 #include <QLabel>
-#include <QImage>
-#include <QPixmap>
-#include <QMovie>
-#include <QPainterPath>
-#include <QUrl>
-#include <QSize>
-#include <QColor>
-#include <QVariant>
 
 class ImageLabel : public QLabel
 {
@@ -46,8 +38,8 @@ public:
     int bottomRightRadius() const;
     void setBottomRightRadius(int radius);
 
-    QImage image() const { return m_image; };
-    void setImage(const QVariant &image = QVariant());
+    QImage image() const;
+    void setImage(const QVariant &image);
 
 signals:
     void clicked();
@@ -92,7 +84,7 @@ public:
     void setDarkBackgroundColor(const QColor &color);
 
     void setBackgroundColor(const QColor &light, const QColor &dark);
-    void setImage(const QVariant &image = QVariant());
+    void setImage(const QVariant &image);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

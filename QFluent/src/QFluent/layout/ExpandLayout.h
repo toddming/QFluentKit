@@ -1,13 +1,8 @@
-#ifndef EXPANDLAYOUT_H
+﻿#ifndef EXPANDLAYOUT_H
 #define EXPANDLAYOUT_H
 
 #include <QLayout>
-#include <QList>
-#include <QWidget>
-#include <QRect>
-#include <QPoint>
-#include <QSize>
-#include <QEvent>
+
 
 class ExpandLayout : public QLayout
 {

@@ -4,6 +4,15 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QFont>
+#include <QImage>
+#include <QPixmap>
+#include <QMovie>
+#include <QPainterPath>
+#include <QUrl>
+#include <QSize>
+#include <QColor>
+#include <QVariant>
+
 #include "Theme.h"
 
 ImageLabel::ImageLabel(QWidget *parent)
@@ -46,6 +55,11 @@ void ImageLabel::setBorderRadius(int topLeft, int topRight, int bottomLeft, int 
     m_bottomLeftRadius = bottomLeft;
     m_bottomRightRadius = bottomRight;
     update();
+}
+
+QImage ImageLabel::image() const
+{
+    return m_image;
 }
 
 void ImageLabel::setImage(const QVariant &image)

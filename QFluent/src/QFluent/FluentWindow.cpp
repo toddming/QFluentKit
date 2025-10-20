@@ -510,36 +510,36 @@ void FluentWindow::initUI()
 
     NavigationPanel *panel = new NavigationPanel(this);
     panel->setMenuButtonVisible(true);
-    panel->addItem("1", IconType::FLuentIcon::HOME, "主页", [=](){switchTo(wids[0]);}, true, NavigationItemPosition::TOP);
+    panel->addItem("1", IconType::FLuentIcon::HOME, "主页", [=](){switchTo(wids[0]);}, true, NavigationType::NavigationItemPosition::TOP);
     panel->addSeparator();
-    panel->addItem("2", IconType::FLuentIcon::CHECKBOX, "基本输入", [=](){switchTo(wids[1]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期和时间", [=](){}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("3-1", IconType::FLuentIcon::DATE_TIME, "日期", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3");
-    panel->addItem("3-1-1", IconType::FLuentIcon::DATE_TIME, "AAAA", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3-1");
-    panel->addItem("3-1-2", IconType::FLuentIcon::DATE_TIME, "BBBB", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3-1");
-    panel->addItem("3-2", IconType::FLuentIcon::DATE_TIME, "时间", [=](){ }, true, NavigationItemPosition::SCROLL, "", "3");
+    panel->addItem("2", IconType::FLuentIcon::CHECKBOX, "基本输入", [=](){switchTo(wids[1]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期和时间", [=](){}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("3-1", IconType::FLuentIcon::DATE_TIME, "日期", [=](){ }, true, NavigationType::NavigationItemPosition::SCROLL, "", "3");
+    panel->addItem("3-1-1", IconType::FLuentIcon::DATE_TIME, "AAAA", [=](){ }, true, NavigationType::NavigationItemPosition::SCROLL, "", "3-1");
+    panel->addItem("3-1-2", IconType::FLuentIcon::DATE_TIME, "BBBB", [=](){ }, true, NavigationType::NavigationItemPosition::SCROLL, "", "3-1");
+    panel->addItem("3-2", IconType::FLuentIcon::DATE_TIME, "时间", [=](){ }, true, NavigationType::NavigationItemPosition::SCROLL, "", "3");
 
-    panel->addItem("4", IconType::FLuentIcon::MESSAGE, "弹出窗口", [=](){switchTo(wids[3]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("5", IconType::FLuentIcon::LAYOUT, "布局", [=](){switchTo(wids[4]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("6", IconType::FLuentIcon::PALETTE, "材料", [=](){switchTo(wids[5]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("7", IconType::FLuentIcon::WIFI, "网络", [=](){switchTo(wids[6]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("8", IconType::FLuentIcon::SCROLL, "布局", [=](){switchTo(wids[7]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("9", IconType::FLuentIcon::CHAT, "信息", [=](){switchTo(wids[8]);}, true, NavigationItemPosition::SCROLL);
-    panel->addItem("10", IconType::FLuentIcon::EMOJI_TAB_SYMBOLS, "图标", [=](){switchTo(wids[9]);}, true, NavigationItemPosition::SCROLL);
+    panel->addItem("4", IconType::FLuentIcon::MESSAGE, "弹出窗口", [=](){switchTo(wids[3]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("5", IconType::FLuentIcon::LAYOUT, "布局", [=](){switchTo(wids[4]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("6", IconType::FLuentIcon::PALETTE, "材料", [=](){switchTo(wids[5]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("7", IconType::FLuentIcon::WIFI, "网络", [=](){switchTo(wids[6]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("8", IconType::FLuentIcon::SCROLL, "布局", [=](){switchTo(wids[7]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("9", IconType::FLuentIcon::CHAT, "信息", [=](){switchTo(wids[8]);}, true, NavigationType::NavigationItemPosition::SCROLL);
+    panel->addItem("10", IconType::FLuentIcon::EMOJI_TAB_SYMBOLS, "图标", [=](){switchTo(wids[9]);}, true, NavigationType::NavigationItemPosition::SCROLL);
 
-    panel->addSeparator(NavigationItemPosition::BOTTOM);
-    panel->addItem("11", IconType::FLuentIcon::SETTING, "设置", [=](){switchTo(wids[10]);}, true, NavigationItemPosition::BOTTOM);
+    panel->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
+    panel->addItem("11", IconType::FLuentIcon::SETTING, "设置", [=](){switchTo(wids[10]);}, true, NavigationType::NavigationItemPosition::BOTTOM);
 
 
 
     auto *navBar = new NavigationBar(this);
-    navBar->addItem("1", IconType::FLuentIcon::HOME, "主页", nullptr, true, IconType::FLuentIcon::HOME, NavigationItemPosition::TOP);
+    navBar->addItem("1", IconType::FLuentIcon::HOME, "主页", nullptr, true, IconType::FLuentIcon::HOME, NavigationType::NavigationItemPosition::TOP);
     navBar->addSeparator();
-    navBar->addItem("2", IconType::FLuentIcon::CHECKBOX, "输入", nullptr, true, IconType::FLuentIcon::CHECKBOX, NavigationItemPosition::SCROLL);
-    navBar->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期", nullptr, true, IconType::FLuentIcon::DATE_TIME, NavigationItemPosition::SCROLL);
-    navBar->addItem("4", IconType::FLuentIcon::MESSAGE, "信息框", nullptr, true, IconType::FLuentIcon::MESSAGE, NavigationItemPosition::SCROLL);
-    navBar->addSeparator(NavigationItemPosition::BOTTOM);
-    navBar->addItem("5", IconType::FLuentIcon::SETTING, "设置", nullptr, true, IconType::FLuentIcon::SETTING, NavigationItemPosition::BOTTOM);
+    navBar->addItem("2", IconType::FLuentIcon::CHECKBOX, "输入", nullptr, true, IconType::FLuentIcon::CHECKBOX, NavigationType::NavigationItemPosition::SCROLL);
+    navBar->addItem("3", IconType::FLuentIcon::DATE_TIME, "日期", nullptr, true, IconType::FLuentIcon::DATE_TIME, NavigationType::NavigationItemPosition::SCROLL);
+    navBar->addItem("4", IconType::FLuentIcon::MESSAGE, "信息框", nullptr, true, IconType::FLuentIcon::MESSAGE, NavigationType::NavigationItemPosition::SCROLL);
+    navBar->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
+    navBar->addItem("5", IconType::FLuentIcon::SETTING, "设置", nullptr, true, IconType::FLuentIcon::SETTING, NavigationType::NavigationItemPosition::BOTTOM);
 
     hlay->addWidget(navBar, 0);
     navBar->hide();

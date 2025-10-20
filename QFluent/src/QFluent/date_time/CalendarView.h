@@ -1,46 +1,25 @@
 ﻿#ifndef CALENDAR_VIEW_H
 #define CALENDAR_VIEW_H
 
-#include <QApplication>
-#include <QFrame>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QListWidget>
-#include <QListWidgetItem>
 #include <QStyledItemDelegate>
-#include <QStyle>
-#include <QStyleOptionViewItem>
-#include <QLabel>
-#include <QWidget>
-#include <QStackedWidget>
-#include <QGraphicsDropShadowEffect>
-#include <QListView>
-#include <QPainter>
-#include <QColor>
-#include <QCursor>
-#include <QRectF>
-#include <QModelIndex>
-#include <QDate>
-#include <QCalendar>
 #include <QEasingCurve>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QPoint>
-#include <QRect>
-#include <QStringListModel>
-#include <QSize>
+#include <QListWidget>
 #include <QScrollBar>
-#include <QtMath>
-#include <QWheelEvent>
-#include <QMouseEvent>
+#include <QFrame>
+#include <QDate>
 
-#include "Theme.h"
-#include "../ToolButton.h"
-#include "Icon.h"
+#include "Define.h"
+#include "QFluent/ToolButton.h"
 
 using FIF = IconType::FLuentIcon;
 
+class QHBoxLayout;
+class QVBoxLayout;
+class QPushButton;
+class QStackedWidget;
+class QPropertyAnimation;
+class QParallelAnimationGroup;
+class QGraphicsDropShadowEffect;
 class SmoothScrollBar : public QScrollBar {
     Q_OBJECT
 public:
@@ -48,7 +27,8 @@ public:
     void setScrollAnimation(int duration, QEasingCurve curve = QEasingCurve());
     void scrollTo(int value);
     void setForceHidden(bool hidden);
-    QPropertyAnimation* ani() const { return m_ani; }
+    QPropertyAnimation* ani() const;
+
 private:
     QPropertyAnimation* m_ani;
 };
@@ -83,6 +63,7 @@ protected:
     virtual void _drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     virtual void _drawText(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     virtual int _itemMargin() const { return 0; }
+
     QDate min, max;
     QFont font;
     QModelIndex pressedIndex;
@@ -235,11 +216,13 @@ protected:
     QDate _pageToDate();
     int _dateToRow(const QDate& date);
     void mouseReleaseEvent(QMouseEvent* e) override;
+    int cols() const override { return 7; }
+    int pageRows() const override { return 4; }
+
+private:
     QHBoxLayout* vBoxLayout;
     QWidget* weekDayGroup;
     QHBoxLayout* weekDayLayout;
-    int cols() const override { return 7; }
-    int pageRows() const override { return 4; }
 };
 
 class DayCalendarView : public CalendarViewBase {
@@ -274,6 +257,7 @@ protected:
     void _onMonthItemClicked(const QDate& date);
     void _onYearItemClicked(const QDate& date);
     void _onDayItemClicked(const QDate& date);
+private:
     QHBoxLayout* hBoxLayout;
     QDate date;
     bool _isResetEnabled = false;

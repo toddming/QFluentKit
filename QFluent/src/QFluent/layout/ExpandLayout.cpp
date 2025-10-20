@@ -1,6 +1,12 @@
-#include "ExpandLayout.h"
+﻿#include "ExpandLayout.h"
 #include <QResizeEvent>
 #include <QMargins>
+#include <QList>
+#include <QWidget>
+#include <QRect>
+#include <QPoint>
+#include <QSize>
+#include <QEvent>
 
 ExpandLayout::ExpandLayout(QWidget *parent)
     : QLayout(parent)

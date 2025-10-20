@@ -100,29 +100,29 @@ void NavigationBarPushButton::paintEvent(QPaintEvent* e) {
 }
 
 void NavigationBarPushButton::_drawBackground(QPainter& painter) {
-    if (isSelected) {
+    if (property("isSelected").toBool()) {
         QColor bg = Theme::instance()->isDarkMode() ? QColor(255, 255, 255, 42) : Qt::white;
         painter.setBrush(bg);
         painter.drawRoundedRect(rect(), 5, 5);
         // draw indicator
         QColor indicatorColor = Theme::instance()->themeColor();
-        if (!isPressed) {
+        if (!property("isPressed").toBool()) {
             painter.setBrush(indicatorColor);
             painter.drawRoundedRect(0, 16, 4, 24, 2, 2);
         } else {
             painter.setBrush(indicatorColor);
             painter.drawRoundedRect(0, 19, 4, 18, 2, 2);
         }
-    } else if (isPressed || isEnter) {
+    } else if (property("isPressed").toBool() || property("isEnter").toBool()) {
         int c = Theme::instance()->isDarkMode() ? 255 : 0;
-        int alpha = isEnter ? 9 : 6;
+        int alpha = property("isEnter").toBool() ? 9 : 6;
         painter.setBrush(QColor(c, c, c, alpha));
         painter.drawRoundedRect(rect(), 5, 5);
     }
 }
 
 void NavigationBarPushButton::_drawIcon(QPainter& painter) {
-    if (isPressed || (!isEnter && !isSelected)) {
+    if (property("isPressed").toBool() || (!property("isEnter").toBool() && !property("isSelected").toBool())) {
         painter.setOpacity(0.6);
     }
     if (!isEnabled()) {
@@ -136,24 +136,24 @@ void NavigationBarPushButton::_drawIcon(QPainter& painter) {
         rect = QRectF(22, 13 + m_iconAni->getOffset(), 20, 20);
     }
 
-    IconType::FLuentIcon selectedIcon = _selectedIcon != IconType::FLuentIcon::NONE ? _selectedIcon : m_icon;
-    if (isSelected) {
+    IconType::FLuentIcon selectedIcon = _selectedIcon != IconType::FLuentIcon::NONE ? _selectedIcon : fluentButton();
+    if (property("isSelected").toBool()) {
         if (selectedIcon != IconType::FLuentIcon::NONE) {
             QMap<QString, QString> attrs;
             attrs["fill"] = Theme::instance()->themeColor().name();
             Icon::drawSvgIcon(&painter, selectedIcon, rect, attrs);
         }
     } else {
-        Icon::drawSvgIcon(&painter, m_icon, rect);
+        Icon::drawSvgIcon(&painter, fluentButton(), rect);
     }
 }
 
 void NavigationBarPushButton::_drawText(QPainter& painter) {
-    if (isSelected && !_isSelectedTextVisible) {
+    if (property("isSelected").toBool() && !_isSelectedTextVisible) {
         return;
     }
 
-    QColor textColor = isSelected ? Theme::instance()->themeColor() : (Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    QColor textColor = property("isSelected").toBool() ? Theme::instance()->themeColor() : (Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
     painter.setPen(textColor);
     painter.setFont(font());
     QRect rect(0, 32, width(), 26);
@@ -172,7 +172,7 @@ NavigationBar::NavigationBar(QWidget* parent)
       m_expandAni(new QPropertyAnimation(this, "minimumWidth", this)),
       m_expandWidth(160),
       m_isMinimalEnabled(false),
-      m_displayMode(NavigationDisplayMode::COMPACT),
+      m_displayMode(NavigationType::NavigationDisplayMode::COMPACT),
       m_isMenuButtonVisible(true),
       m_isReturnButtonVisible(false),
       m_isCollapsible(true),
@@ -243,20 +243,20 @@ NavigationWidget* NavigationBar::widget(const QString& routeKey) {
 void NavigationBar::addItem(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
                           const std::function<void()>& onClick, bool selectable,
                           IconType::FLuentIcon selectedIcon,
-                          NavigationItemPosition position) {
+                          NavigationType::NavigationItemPosition position) {
     insertItem(-1, routeKey, icon, text, onClick, selectable, selectedIcon, position);
 }
 
 void NavigationBar::addWidget(const QString& routeKey, NavigationWidget* widget,
                             const std::function<void()>& onClick,
-                            NavigationItemPosition position) {
+                            NavigationType::NavigationItemPosition position) {
     insertWidget(-1, routeKey, widget, onClick, position);
 }
 
 void NavigationBar::insertItem(int index, const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
                              const std::function<void()>& onClick, bool selectable,
                              IconType::FLuentIcon selectedIcon,
-                             NavigationItemPosition position) {
+                             NavigationType::NavigationItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;
     }
@@ -268,7 +268,7 @@ void NavigationBar::insertItem(int index, const QString& routeKey, IconType::FLu
 
 void NavigationBar::insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
                                const std::function<void()>& onClick,
-                               NavigationItemPosition position) {
+                               NavigationType::NavigationItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;
     }
@@ -277,11 +277,11 @@ void NavigationBar::insertWidget(int index, const QString& routeKey, NavigationW
     _insertWidgetToLayout(index, widget, position);
 }
 
-void NavigationBar::addSeparator(NavigationItemPosition position) {
+void NavigationBar::addSeparator(NavigationType::NavigationItemPosition position) {
     insertSeparator(-1, position);
 }
 
-void NavigationBar::insertSeparator(int index, NavigationItemPosition position) {
+void NavigationBar::insertSeparator(int index, NavigationType::NavigationItemPosition position) {
     NavigationSeparator* separator = new NavigationSeparator(this);
     _insertWidgetToLayout(index, separator, position);
 }
@@ -295,11 +295,11 @@ void NavigationBar::_registerWidget(const QString& routeKey, NavigationWidget* w
     m_items[routeKey] = {routeKey, "", widget};
 }
 
-void NavigationBar::_insertWidgetToLayout(int index, NavigationWidget* widget, NavigationItemPosition position) {
-    if (position == NavigationItemPosition::TOP) {
+void NavigationBar::_insertWidgetToLayout(int index, NavigationWidget* widget, NavigationType::NavigationItemPosition position) {
+    if (position == NavigationType::NavigationItemPosition::TOP) {
         widget->setParent(this);
         m_topLayout->insertWidget(index, widget, 0, Qt::AlignTop);
-    } else if (position == NavigationItemPosition::SCROLL) {
+    } else if (position == NavigationType::NavigationItemPosition::SCROLL) {
         widget->setParent(m_scrollWidget);
         m_scrollLayout->insertWidget(index, widget, 0, Qt::AlignTop);
     } else {
@@ -361,7 +361,7 @@ QList<NavigationBarPushButton*> NavigationBar::buttons() const {
 
 void NavigationBar::_onWidgetClicked() {
     NavigationWidget* widget = qobject_cast<NavigationWidget*>(sender());
-    if (widget->isSelectable) {
+    if (widget->property("isSelectable").toBool()) {
         setCurrentItem(widget->property("routeKey").toString());
     }
 }

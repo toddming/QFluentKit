@@ -2,38 +2,17 @@
 #define NAVIGATION_PANEL_H
 
 #include <QFrame>
-#include <QMap>
-#include <QPropertyAnimation>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QEvent>
-#include <QResizeEvent>
-#include <QIcon>
-#include <QColor>
-#include <QPoint>
-#include <QPainterPath>
-#include <QEvent>
-#include <QMargins>
-#include <QScrollArea>
 
-#include "NavigationWidget.h"
-#include "ProfileCard.h"
+#include "Define.h"
 
-// 枚举定义
-enum class NavigationDisplayMode {
-    MINIMAL = 0,
-    COMPACT = 1,
-    EXPAND = 2,
-    MENU = 3
-};
-
-enum class NavigationItemPosition {
-    TOP = 0,
-    SCROLL = 1,
-    BOTTOM = 2
-};
-
-// 异常类
+class QScrollArea;
+class ProfileCard;
+class NavigationWidget;
+class QPropertyAnimation;
+class NavigationToolButton;
+class NavigationTreeWidget;
+class NavigationAvatarWidget;
 class RouteKeyError : public std::exception {
 public:
     RouteKeyError(const QString& message) : m_message(message.toUtf8()) {}
@@ -61,26 +40,26 @@ public:
     NavigationWidget* widget(const QString& routeKey);
     void addItem(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
                  const std::function<void()>& onClick = nullptr, bool selectable = true,
-                 NavigationItemPosition position = NavigationItemPosition::TOP,
+                 NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                  const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void addWidget(const QString& routeKey, NavigationWidget* widget,
                    const std::function<void()>& onClick = nullptr,
-                   NavigationItemPosition position = NavigationItemPosition::TOP,
+                   NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                    const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void insertItem(int index, const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
                    const std::function<void()>& onClick = nullptr, bool selectable = true,
-                   NavigationItemPosition position = NavigationItemPosition::TOP,
+                   NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                    const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
                      const std::function<void()>& onClick = nullptr,
-                     NavigationItemPosition position = NavigationItemPosition::TOP,
+                     NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                      const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
-    void addSeparator(NavigationItemPosition position = NavigationItemPosition::TOP);
-    void insertSeparator(int index, NavigationItemPosition position = NavigationItemPosition::TOP);
+    void addSeparator(NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+    void insertSeparator(int index, NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
     void removeWidget(const QString& routeKey);
     void setCurrentItem(const QString& routeKey);
 
@@ -98,7 +77,7 @@ public:
 
     // 信号
     signals:
-    void displayModeChanged(NavigationDisplayMode mode);
+    void displayModeChanged(NavigationType::NavigationDisplayMode mode);
 
 protected:
     void paintEvent(QPaintEvent* e) override;
@@ -111,7 +90,7 @@ private:
     void registerWidget(const QString& routeKey, const QString& parentRouteKey,
                        NavigationWidget* widget, const std::function<void()>& onClick,
                        const QString& tooltip);
-    void insertWidgetToLayout(int index, NavigationWidget* widget, NavigationItemPosition position);
+    void insertWidgetToLayout(int index, NavigationWidget* widget, NavigationType::NavigationItemPosition position);
     void onWidgetClicked();
     void onExpandAniFinished();
     void setWidgetCompacted(bool isCompacted);
@@ -146,7 +125,7 @@ private:
     int m_expandWidth;
 
     bool m_isMinimalEnabled;
-    NavigationDisplayMode m_displayMode;
+    NavigationType::NavigationDisplayMode m_displayMode;
 };
 
 // 导航项布局类

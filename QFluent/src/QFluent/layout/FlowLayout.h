@@ -2,16 +2,12 @@
 #define FLOWLAYOUT_H
 
 #include <QLayout>
-#include <QVector>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
 #include <QEasingCurve>
-#include <QTimer>
-#include <QEvent>
-#include <QObject>
 
 QT_BEGIN_NAMESPACE
 
+class QPropertyAnimation;
+class QParallelAnimationGroup;
 class FlowLayout : public QLayout
 {
     Q_OBJECT
