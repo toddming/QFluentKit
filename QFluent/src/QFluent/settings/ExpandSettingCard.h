@@ -1,28 +1,13 @@
-﻿// expand_setting_card.h
-
-#ifndef EXPAND_SETTING_CARD_H
+﻿#ifndef EXPAND_SETTING_CARD_H
 #define EXPAND_SETTING_CARD_H
 
-#include <QEvent>
-#include <Qt>
-#include <QPropertyAnimation>
-#include <QEasingCurve>
-#include <QRectF>
-#include <QColor>
-#include <QPainter>
-#include <QIcon>
-#include <QPainterPath>
-#include <QFrame>
-#include <QWidget>
-#include <QAbstractButton>
-#include <QApplication>
 #include <QScrollArea>
-#include <QVBoxLayout>
+#include <QAbstractButton>
 
 #include "Property.h"
 #include "SettingCard.h"
 
-
+class QPropertyAnimation;
 class ExpandButton : public QAbstractButton {
     Q_OBJECT
     Q_PROPERTY(float angle READ getAngle WRITE setAngle)

@@ -1,6 +1,27 @@
 ﻿#include "InfoBar.h"
 #include <QApplication>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QToolButton>
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QParallelAnimationGroup>
+#include <QPoint>
+#include <QEvent>
+#include <QSize>
+#include <QRectF>
+#include <QPainter>
+#include <QIcon>
+#include <QColor>
+#include <QObject>
+#include <QMap>
+#include <QPointer>
+#include <functional>
+#include <QCloseEvent>
 
+#include "ToolButton.h"
 #include "TextWrap.h"
 #include "Theme.h"
 #include "Icon.h"

@@ -1,5 +1,10 @@
 #include "OptionsSettingCard.h"
 #include <QVBoxLayout>
+#include <QObject>
+#include <QLabel>
+#include <QButtonGroup>
+#include <QVector>
+#include "../RadioButton.h"
 
 OptionsSettingCard::OptionsSettingCard(const QIcon& icon,
                                        const QString& title,

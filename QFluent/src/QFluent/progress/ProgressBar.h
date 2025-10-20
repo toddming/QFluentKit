@@ -2,11 +2,7 @@
 
 #include <QProgressBar>
 #include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QSequentialAnimationGroup>
-#include <QEasingCurve>
-#include <QPainter>
-#include <QColor>
+
 
 
 class ProgressBar : public QProgressBar

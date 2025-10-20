@@ -1,14 +1,8 @@
 #pragma once
 
-#include <QObject>
-#include <QLabel>
-#include <QButtonGroup>
-#include <QVector>
-
-
-#include "../RadioButton.h"
 #include "ExpandSettingCard.h"
 
+class RadioButton;
 class OptionsSettingCard : public ExpandSettingCard {
     Q_OBJECT
 

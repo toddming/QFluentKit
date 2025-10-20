@@ -249,8 +249,9 @@ void FluentWindow::initUI()
     auto tlbtn = new ToggleButton("8", this);
     lay->addWidget(tlbtn);
     connect(tlbtn, &ToggleButton::clicked, this, [=](){
-        static auto mesBox = new MessageBoxBase(this);
-        mesBox->exec();
+        // static auto mesBox = new MessageBoxBase(this);
+        // mesBox->exec();
+        m_progressBar->setValue(m_progressBar->value() + 1);
     });
 
     auto hlbtn = new HyperlinkButton("PushButton", this);
@@ -327,15 +328,16 @@ void FluentWindow::initUI()
     lay->addWidget(picker);
 
     // 进度条
-    auto progressBar = new ProgressBar(this);
-    progressBar->setValue(50);
-    progressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
-    lay->addWidget(progressBar);
+    m_progressBar = new ProgressBar(this);
+    m_progressBar->setValue(50);
+    m_progressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
+    lay->addWidget(m_progressBar);
 
-    // auto indeterminateProgressBar = new IndeterminateProgressBar(this);
-    // indeterminateProgressBar->setValue(50);
-    // indeterminateProgressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
-    // lay->addWidget(indeterminateProgressBar);
+
+    auto indeterminateProgressBar = new IndeterminateProgressBar(this);
+    indeterminateProgressBar->setValue(50);
+    indeterminateProgressBar->setCustomBarColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
+    lay->addWidget(indeterminateProgressBar);
 
     auto progressRing = new ProgressRing(this);
     progressRing->setValue(50);

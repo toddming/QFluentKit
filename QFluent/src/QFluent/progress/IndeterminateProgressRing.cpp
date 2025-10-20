@@ -1,5 +1,14 @@
 ﻿#include "IndeterminateProgressRing.h"
 #include <QPainter>
+#include <QColor>
+#include <QRectF>
+#include <QPen>
+#include <QPainter>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
+#include <QParallelAnimationGroup>
+#include <QVariant>
+#include "Theme.h"
 
 IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start)
     : QProgressBar(parent),

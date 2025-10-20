@@ -2,11 +2,11 @@
 #define SETTINGCARDGROUP_H
 
 #include <QWidget>
-#include <QLabel>
-#include <QVBoxLayout>
 
 #include "../layout/ExpandLayout.h"
 
+class QLabel;
+class QVBoxLayout;
 class SettingCardGroup : public QWidget
 {
     Q_OBJECT

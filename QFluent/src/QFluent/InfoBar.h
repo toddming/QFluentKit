@@ -1,33 +1,17 @@
 ﻿#ifndef INFO_BAR_H
 #define INFO_BAR_H
 
-#include <QWidget>
 #include <QFrame>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QToolButton>
-#include <QGraphicsOpacityEffect>
-#include <QPropertyAnimation>
-#include <QEasingCurve>
-#include <QTimer>
-#include <QParallelAnimationGroup>
-#include <QPoint>
-#include <QEvent>
-#include <QSize>
-#include <QRectF>
-#include <QPainter>
-#include <QIcon>
-#include <QColor>
-#include <QObject>
-#include <QMap>
-#include <QPointer>
-#include <functional>
-#include <QCloseEvent>
 
-#include "ToolButton.h"
 #include "Define.h"
 
+class QLabel;
+class QBoxLayout;
+class QHBoxLayout;
+class TransparentToolButton;
+class QGraphicsOpacityEffect;
+class QPropertyAnimation;
+class QParallelAnimationGroup;
 
 class QFLUENT_EXPORT InfoIconWidget : public QWidget {
     Q_OBJECT

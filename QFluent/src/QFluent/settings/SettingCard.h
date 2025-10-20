@@ -2,18 +2,16 @@
 #define SETTINGCARD_H
 
 #include <QFrame>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QIcon>
-#include <QPushButton>
 #include <QPainter>
 
 #include "../IconWidget.h"
-#include "../SwitchButton.h"
-#include "../PushButton.h"
-#include "../ComboBox.h"
 
+class QLabel;
+class ComboBox;
+class QHBoxLayout;
+class QVBoxLayout;
+class QPushButton;
+class SwitchButton;
 class SettingIconWidget : public IconWidget
 {
     Q_OBJECT

@@ -1,6 +1,8 @@
 ﻿#include "SettingCardGroup.h"
 #include <QFont>
 #include <QApplication>
+#include <QLabel>
+#include <QVBoxLayout>
 
 #include "Theme.h"
 

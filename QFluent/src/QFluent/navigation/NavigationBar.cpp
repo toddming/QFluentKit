@@ -7,6 +7,11 @@
 #include <QResizeEvent>
 #include <QMouseEvent>
 #include <QFont>
+#include <QVBoxLayout>
+#include <QScrollArea>
+#include <QMap>
+#include <QIcon>
+#include <QColor>
 
 #include "Icon.h"
 #include "Theme.h"

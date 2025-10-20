@@ -5,6 +5,11 @@
 #include <QMouseEvent>
 #include <QStyle>
 #include <QStyleOptionProgressBar>
+#include <QParallelAnimationGroup>
+#include <QSequentialAnimationGroup>
+#include <QEasingCurve>
+#include <QPainter>
+#include <QColor>
 
 #include "Theme.h"
 

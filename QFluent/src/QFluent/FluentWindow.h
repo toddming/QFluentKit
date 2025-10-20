@@ -86,5 +86,7 @@ private:
     FlowLayout *m_flay;
 
     QList<PushButton*> m_btns;
+
+    ProgressBar *m_progressBar;
 };
 #endif // FLUENTWINDOW_H

@@ -3,7 +3,16 @@
 #include <QStyle>
 #include <QApplication>
 #include <QPoint>
+#include <QDate>
+#include <QPainter>
+#include <QStyle>
+#include <QApplication>
+#include <QPoint>
+#include <QVariant>
 #include <QDebug>
+
+#include "Theme.h"
+#include "Icon.h"
 
 
 CalendarPicker::CalendarPicker(QWidget* parent)

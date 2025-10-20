@@ -2,15 +2,7 @@
 #define CALENDARPICKER_H
 
 #include <QPushButton>
-#include <QDate>
-#include <QPainter>
-#include <QStyle>
-#include <QApplication>
-#include <QPoint>
-#include <QVariant>
 
-#include "Theme.h"
-#include "Icon.h"
 #include "Property.h"
 #include "CalendarView.h"
 

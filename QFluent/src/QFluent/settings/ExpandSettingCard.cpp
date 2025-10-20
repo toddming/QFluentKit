@@ -4,6 +4,20 @@
 #include <QFrame>
 #include <QPropertyAnimation>
 #include <QMouseEvent>
+#include <QEvent>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QRectF>
+#include <QColor>
+#include <QPainter>
+#include <QIcon>
+#include <QPainterPath>
+#include <QFrame>
+#include <QWidget>
+#include <QAbstractButton>
+#include <QApplication>
+#include <QVBoxLayout>
+#include <QLabel>
 
 #include "Theme.h"
 #include "Icon.h"

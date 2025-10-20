@@ -1,61 +1,64 @@
-﻿#pragma once
+﻿#ifndef INDETERMINATEPROGRESSBAR_H
+#define INDETERMINATEPROGRESSBAR_H
 
 #include <QProgressBar>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QSequentialAnimationGroup>
-#include <QEasingCurve>
-#include <QPainter>
-#include <QColor>
 
+class QPropertyAnimation;
+class QParallelAnimationGroup;
+class QSequentialAnimationGroup;
 class IndeterminateProgressBar : public QProgressBar
 {
     Q_OBJECT
-    Q_PROPERTY(bool useAni READ isUseAni WRITE setUseAni NOTIFY useAniChanged)
-    Q_PROPERTY(float shortPos READ shortPos WRITE setShortPos NOTIFY shortPosChanged)
-    Q_PROPERTY(float longPos READ longPos WRITE setLongPos NOTIFY longPosChanged)
+    Q_PROPERTY(qreal shortPos READ shortPos WRITE setShortPos)
+    Q_PROPERTY(qreal longPos READ longPos WRITE setLongPos)
 
 public:
     explicit IndeterminateProgressBar(QWidget *parent = nullptr, bool start = true);
     ~IndeterminateProgressBar();
 
-    bool isUseAni() const;
-    void setUseAni(bool isUse);
-    float shortPos() const;
-    void setShortPos(float p);
-    float longPos() const;
-    void setLongPos(float p);
+    QColor lightBarColor() const;
+    QColor darkBarColor() const;
+
+    void setCustomBarColor(const QColor &light, const QColor &dark);
+
+    qreal shortPos() const;
+    void setShortPos(qreal pos);
+
+    qreal longPos() const;
+    void setLongPos(qreal pos);
 
     void start();
     void stop();
     bool isStarted() const;
+
     void pause();
     void resume();
     void setPaused(bool isPaused);
     bool isPaused() const;
+
     void error();
     void setError(bool isError);
     bool isError() const;
 
-    void setCustomBarColor(const QColor &light, const QColor &dark);
-    QColor barColor() const;
-
-signals:
-    void useAniChanged(bool isUse);
-    void shortPosChanged(float p);
-    void longPosChanged(float p);
-
 protected:
-    void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *e) override;
 
 private:
-    float _shortPos;
-    float _longPos;
-    QPropertyAnimation shortBarAni;
-    QPropertyAnimation longBarAni;
-    QParallelAnimationGroup aniGroup;
-    QSequentialAnimationGroup longBarAniGroup;
-    QColor _lightBarColor;
-    QColor _darkBarColor;
-    bool _isError;
+    QColor barColor() const;
+
+    qreal m_shortPos = 0;
+    qreal m_longPos = 0;
+
+    QPropertyAnimation *m_shortBarAni = nullptr;
+    QPropertyAnimation *m_longBarAni = nullptr;
+
+    QColor m_lightBarColor;
+    QColor m_darkBarColor;
+
+    bool m_isError = false;
+
+    QParallelAnimationGroup *m_aniGroup = nullptr;
+    QSequentialAnimationGroup *m_longBarAniGroup = nullptr;
 };
+
+#endif // INDETERMINATEPROGRESSBAR_H

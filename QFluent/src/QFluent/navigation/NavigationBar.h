@@ -2,15 +2,7 @@
 #define NAVIGATION_BAR_H
 
 #include <QWidget>
-#include <QVBoxLayout>
-#include <QScrollArea>
-#include <QMap>
 #include <QPropertyAnimation>
-#include <QFont>
-#include <QEvent>
-#include <QMouseEvent>
-#include <QIcon>
-#include <QColor>
 
 #include "NavigationWidget.h"
 #include "NavigationPanel.h"

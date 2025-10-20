@@ -1,8 +1,17 @@
 ﻿#include "SettingCard.h"
 #include <QApplication>
 #include <QStyle>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QIcon>
+#include <QPushButton>
 
 #include "Theme.h"
+#include "../PushButton.h"
+#include "../SwitchButton.h"
+#include "../ComboBox.h"
+
 
 class SettingIconWidget;
 

@@ -2,18 +2,12 @@
 #define INDETERMINATE_PROGRESS_RING_H
 
 #include <QProgressBar>
-#include <QColor>
-#include <QRectF>
-#include <QPen>
-#include <QPainter>
-#include <QPropertyAnimation>
-#include <QSequentialAnimationGroup>
-#include <QParallelAnimationGroup>
-#include <QVariant>
 
-#include "Theme.h"
 #include "Property.h"
 
+class QPropertyAnimation;
+class QParallelAnimationGroup;
+class QSequentialAnimationGroup;
 class QFLUENT_EXPORT IndeterminateProgressRing : public QProgressBar
 {
     Q_OBJECT
