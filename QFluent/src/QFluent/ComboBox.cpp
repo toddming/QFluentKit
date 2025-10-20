@@ -5,10 +5,6 @@
 #include <QDebug>
 #include <QPainter>
 
-#include "menu/RoundMenu.h"
-#include "menu/ComboBoxMenu.h"
-#include "menu/MenuActionListWidget.h"
-
 #include "Private/ComboBoxPrivate.h"
 #include "Animation.h"
 #include "Theme.h"
@@ -20,6 +16,8 @@ ComboBox::ComboBox(QWidget *parent)
 {
     Q_D(ComboBox);
     d->q_ptr = this;
+
+    setCurrentIndex(-1);
 
     setMaxVisibleItems(-1);
 

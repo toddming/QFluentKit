@@ -2,15 +2,12 @@
 #include <QApplication>
 #include <QScreen>
 #include <QActionGroup>
-#include <QDebug>
 
-#include "menu/RoundMenu.h"
 #include "Theme.h"
 #include "Icon.h"
-#include "menu/MenuActionListWidget.h"
-#include "menu/ComboBoxMenu.h"
-#include "Private/EditableComboBoxPrivate.h"
 #include "Animation.h"
+#include "Private/EditableComboBoxPrivate.h"
+
 
 Q_PROPERTY_CREATE_Q_CPP(EditableComboBox, int, MaxVisibleItems)
 EditableComboBox::EditableComboBox(QWidget *parent)
@@ -21,8 +18,10 @@ EditableComboBox::EditableComboBox(QWidget *parent)
 
     installEventFilter(this);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
+    // Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
 
+    d->_pCurrentIndex = -1;
+    d->_pMaxVisibleItems = -1;
     d->_arrowAni = new TranslateYAnimation(this);
 
     d->_dropButton = new LineEditButton(Icon::FluentIcon(IconType::FLuentIcon::ARROW_DOWN), this);
@@ -142,6 +141,7 @@ void EditableComboBox::setCurrentIndex(int index)
     } else {
         d->_pCurrentIndex = index;
         setText(d->_items.at(index).text);
+        d->updateTextState(false);
     }
 }
 
@@ -219,7 +219,6 @@ int EditableComboBox::findData(const QVariant &data) const
 void EditableComboBox::setPlaceholderText(const QString &text)
 {
     Q_D(EditableComboBox);
-
     d->_pPlaceholderText = text;
     if (d->_pCurrentIndex == -1) {
         setText(text);

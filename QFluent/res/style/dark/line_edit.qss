@@ -51,3 +51,7 @@ LineEdit:disabled, TextEdit:disabled, PlainTextEdit:disabled, TextBrowser:disabl
 #lineEditButton:pressed {
     background-color: rgba(255, 255, 255, 6);
 }
+
+LineEdit[isPlaceholderText=true] {
+    color: rgba(255, 255, 255, 0.6063);
+}
