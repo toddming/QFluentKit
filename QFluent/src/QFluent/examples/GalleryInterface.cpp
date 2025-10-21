@@ -16,7 +16,6 @@ void SeparatorWidget::paintEvent(QPaintEvent *e)
     QPen pen(Qt::SolidLine);
     pen.setCosmetic(true);
 
-    // 假设isDarkTheme()函数存在
     QColor c = Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, 21) : QColor(0, 0, 0, 15);
     pen.setColor(c);
     painter.setPen(pen);
@@ -29,10 +28,12 @@ ToolBar::ToolBar(const QString &title, const QString &subtitle, QWidget *parent)
     : QWidget(parent)
 {
     titleLabel = new TitleLabel(title, this);
+    Theme::instance()->setFont(titleLabel, 28, QFont::Normal);
     subtitleLabel = new CaptionLabel(subtitle, this);
+    subtitleLabel->setTextColor(QColor(96, 96, 96), QColor(216, 216, 216));
 
-    documentButton = new PushButton(tr("Documentation"), this, IconType::FLuentIcon::DOCUMENT);
-    sourceButton = new PushButton(tr("Source"), this, IconType::FLuentIcon::GITHUB);
+    documentButton = new PushButton("在线文档", this, IconType::FLuentIcon::DOCUMENT);
+    sourceButton = new PushButton("源代码", this, IconType::FLuentIcon::GITHUB);
     themeButton = new ToolButton(IconType::FLuentIcon::CONSTRACT, this);
     separator = new SeparatorWidget(this);
     supportButton = new ToolButton(IconType::FLuentIcon::HEART, this);
@@ -83,7 +84,7 @@ ExampleCard::ExampleCard(const QString &title, QWidget *widget, const QString &s
     titleLabel = new StrongBodyLabel(title, this);
     card = new QFrame(this);
     sourceWidget = new QFrame(card);
-    sourcePathLabel = new BodyLabel(tr("Source code"), sourceWidget);
+    sourcePathLabel = new BodyLabel("源代码", sourceWidget);
     linkIcon = new IconWidget(IconType::FLuentIcon::LINK, sourceWidget);
 
     vBoxLayout = new QVBoxLayout(this);

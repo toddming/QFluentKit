@@ -10,10 +10,6 @@ FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* pa
     setFont(Theme::instance()->getFont(fontSize, weight));
 
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
-    setTextColor(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
-        setTextColor(theme == ThemeType::ThemeMode::DARK ? Qt::white : Qt::black);
-    });
 }
 
 FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weight weight, QWidget* parent)
@@ -21,17 +17,21 @@ FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weigh
     setFont(Theme::instance()->getFont(fontSize, weight));
 
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
-    setTextColor(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
-        setTextColor(theme == ThemeType::ThemeMode::DARK ? Qt::white : Qt::black);
-    });
 }
 
 
-void FluentLabelBase::setTextColor(const QColor& color) {
-    QString colorStr = color.name(QColor::HexArgb);
-    QString styleSheet = QString("FluentLabelBase{color:%1}").arg(colorStr);
-    setStyleSheet(styleSheet);
+void FluentLabelBase::setTextColor(const QColor& lightColor, const QColor& darkColor) {
+    QString lightColorStr = lightColor.name(QColor::HexArgb);
+    QString darkColorStr  = darkColor.name(QColor::HexArgb);
+
+    auto customStyle = std::make_shared<CustomStyleSheet>(this);
+    customStyle->setCustomStyleSheet(
+        QString("FluentLabelBase{color:%1}").arg(lightColorStr),
+        QString("FluentLabelBase{color:%1}").arg(darkColorStr)
+        );
+
+    StyleSheetManager::instance()->registerWidget(customStyle, this);
+
 }
 
 
@@ -83,8 +83,8 @@ SubtitleLabel::SubtitleLabel(QWidget* parent) : FluentLabelBase(20, QFont::DemiB
 SubtitleLabel::SubtitleLabel(const QString& text, QWidget* parent) : FluentLabelBase(text, 20, QFont::DemiBold, parent) {}
 
 
-TitleLabel::TitleLabel(QWidget* parent, QFont::Weight weight) : FluentLabelBase(28, weight, parent) {}
-TitleLabel::TitleLabel(const QString& text, QWidget* parent, QFont::Weight weight) : FluentLabelBase(text, 28, weight, parent) {}
+TitleLabel::TitleLabel(QWidget* parent) : FluentLabelBase(28, QFont::DemiBold, parent) {}
+TitleLabel::TitleLabel(const QString& text, QWidget* parent) : FluentLabelBase(text, 28, QFont::DemiBold, parent) {}
 
 
 LargeTitleLabel::LargeTitleLabel(QWidget* parent) : FluentLabelBase(40, QFont::DemiBold, parent) {}

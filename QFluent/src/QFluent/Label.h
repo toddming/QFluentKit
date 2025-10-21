@@ -17,7 +17,7 @@ public:
 
     bool underline() const;
 
-    void setTextColor(const QColor& color);
+    void setTextColor(const QColor& lightColor, const QColor& darkColor);
 
     void setPixelFontSize(int size);
     void setStrikeOut(bool isStrikeOut);
@@ -57,8 +57,8 @@ public:
 class QFLUENT_EXPORT TitleLabel : public FluentLabelBase {
     Q_OBJECT
 public:
-    explicit TitleLabel(QWidget* parent = nullptr, QFont::Weight weight = QFont::DemiBold);
-    explicit TitleLabel(const QString& text, QWidget* parent = nullptr, QFont::Weight weight = QFont::DemiBold);
+    explicit TitleLabel(QWidget* parent = nullptr);
+    explicit TitleLabel(const QString& text, QWidget* parent = nullptr);
 };
 
 class QFLUENT_EXPORT LargeTitleLabel : public FluentLabelBase {

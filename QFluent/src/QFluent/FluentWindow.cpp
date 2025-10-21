@@ -445,7 +445,7 @@ void FluentWindow::initUI()
     for (int i=0; i < 9; i++) {
         // QWidget *w = new QWidget(this);
 
-        auto w = new GalleryInterface(QString("界面%1").arg(i+1), QString("界面%1").arg(i+1), this);
+        auto w = new GalleryInterface(QString("基本输入%1").arg(i+1), "qfluentwidgets.components.widgets", this);
 
         // 创建样式表源
         auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/gallery_interface.qss");
