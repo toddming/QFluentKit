@@ -25,6 +25,8 @@
 #include "TextWrap.h"
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
+
 
 QMap<InfoBarType::BarPosition, std::function<InfoBarManager*()>> InfoBarManager::m_managers;
 namespace {
@@ -161,7 +163,7 @@ void InfoBar::__setQss() {
     m_titleLabel->setObjectName("titleLabel");
     m_contentLabel->setObjectName("contentLabel");
     setProperty("type", InfoBarManager::toString(m_type));
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::INFO_BAR);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::INFO_BAR);
 }
 
 void InfoBar::__fadeOut() {
@@ -238,7 +240,7 @@ void InfoBar::paintEvent(QPaintEvent* event) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    if (Theme::instance()->isDarkMode()) { painter.setBrush(m_darkBackgroundColor); } else { painter.setBrush(m_lightBackgroundColor); }
+    if (Theme::instance()->isDarkTheme()) { painter.setBrush(m_darkBackgroundColor); } else { painter.setBrush(m_lightBackgroundColor); }
 
     QRect rect = this->rect().adjusted(1, 1, -1, -1);
     painter.drawRoundedRect(rect, 6, 6);

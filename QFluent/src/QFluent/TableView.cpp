@@ -57,7 +57,7 @@ void TableItemDelegate::initStyleOption(QStyleOptionViewItem* option, const QMod
     // option->font = index.data(Qt::FontRole).value<QFont>() || Theme::instance()->getFont(13);
     // option->font = Theme::instance()->getFont(13);
 
-    QColor textColor = Theme::instance()->isDarkMode() ? Qt::white : Qt::black;
+    QColor textColor = Theme::instance()->isDarkTheme() ? Qt::white : Qt::black;
     QVariant textBrushVar = index.data(Qt::ForegroundRole);
     if (textBrushVar.canConvert<QBrush>()) {
         QBrush textBrush = textBrushVar.value<QBrush>();
@@ -82,7 +82,7 @@ void TableItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     bool isHover = hoverRow == index.row();
     bool isPressed = pressedRow == index.row();
     bool isAlternate = index.row() % 2 == 0 && qobject_cast<const QTableView*>(parent())->alternatingRowColors();
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
 
     int c = isDark ? 255 : 0;
     int alpha = 0;
@@ -155,7 +155,7 @@ void TableItemDelegate::_drawCheckBox(QPainter* painter, const QStyleOptionViewI
     QVariant checkStateVar = index.data(Qt::CheckStateRole);
     Qt::CheckState checkState = static_cast<Qt::CheckState>(checkStateVar.toInt());
 
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
 
     qreal r = 4.5;
     qreal x = option.rect.x() + 15;

@@ -1,4 +1,4 @@
-#include "SpinBox.h"
+﻿#include "SpinBox.h"
 #include <QMenu>
 #include <QLineEdit>
 #include <QPainterPath>
@@ -11,6 +11,7 @@
 
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
 
 
 template class InlineSpinBoxBase<QSpinBox>;
@@ -29,7 +30,7 @@ SpinButton::SpinButton(IconType::FLuentIcon iconType, QWidget* parent)
 
     setFixedSize(31, 23);
     setIconSize(QSize(10, 10));
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::SPIN_BOX);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::SPIN_BOX);
 }
 
 void SpinButton::mousePressEvent(QMouseEvent* e) {
@@ -72,7 +73,7 @@ void SpinBoxBase::setup() {
 
 void SpinBoxBase::setupStyle() {
     m_parentWidget->setProperty("transparent", true);
-    Theme::instance()->registerWidget(m_parentWidget, ThemeType::ThemeStyle::SPIN_BOX);
+    StyleSheetManager::instance()->registerWidget(m_parentWidget, ThemeType::ThemeStyle::SPIN_BOX);
 
     if (auto *spin = qobject_cast<QAbstractSpinBox*>(m_parentWidget)) {
         spin->setButtonSymbols(QAbstractSpinBox::NoButtons);

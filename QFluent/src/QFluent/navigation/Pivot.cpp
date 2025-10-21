@@ -11,6 +11,7 @@
 
 #include "Animation.h"
 #include "Theme.h"
+#include "StyleSheet.h"
 
 PivotItem::PivotItem(const QString &text, QWidget *parent)
     : QPushButton(text, parent), _isSelected(false)
@@ -18,7 +19,7 @@ PivotItem::PivotItem(const QString &text, QWidget *parent)
     setAttribute(Qt::WA_LayoutUsesWidgetRect);
     setCheckable(true);
     setChecked(false);
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::PIVOT);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::PIVOT);
     connect(this, &PivotItem::clicked, [this]() {
         emit itemClicked(true);
     });
@@ -61,7 +62,7 @@ Pivot::Pivot(QWidget *parent)
         this
     );
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::PIVOT);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::PIVOT);
 }
 
 Pivot::~Pivot() {

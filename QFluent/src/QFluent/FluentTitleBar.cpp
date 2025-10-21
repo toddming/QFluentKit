@@ -10,6 +10,8 @@
 
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
+
 #include "Private/FluentTitleBarPrivate.h"
 
 static inline void emulateLeaveEvent(QWidget *widget) {
@@ -121,7 +123,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     connect(d->_maxButton,   &QAbstractButton::clicked, this, &FluentTitleBar::maximizeRequested);
     connect(d->_closeButton, &QAbstractButton::clicked, this, &FluentTitleBar::closeRequested);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::TITLE_BAR);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::TITLE_BAR);
 
     const QString fillPath = ":/res/images/window_bar/%1_%2.svg";
     d->_backButton->setIcon(Icon::FluentIcon(IconType::FLuentIcon::LEFT_ARROW));

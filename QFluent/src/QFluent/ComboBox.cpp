@@ -9,6 +9,8 @@
 #include "Animation.h"
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
+
 
 Q_PROPERTY_CREATE_Q_CPP(ComboBox, int, MaxVisibleItems)
 ComboBox::ComboBox(QWidget *parent)
@@ -23,7 +25,7 @@ ComboBox::ComboBox(QWidget *parent)
 
     installEventFilter(this);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
 
     d->_arrowAni = new TranslateYAnimation(this);
 }

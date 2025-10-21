@@ -51,7 +51,7 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     d->windowAgent = agent;
 
-    d->loadStyleSheet(Theme::instance()->isDarkMode());
+    d->loadStyleSheet(Theme::instance()->isDarkTheme());
 }
 
 FluentWidget::~FluentWidget()

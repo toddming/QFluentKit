@@ -8,6 +8,8 @@
 #include <QEnterEvent>
 
 #include "Theme.h"
+#include "StyleSheet.h"
+
 
 RadioButton::RadioButton(QWidget *parent)
     : QRadioButton(parent), indicatorPos_(11, 12), isHover_(false)
@@ -25,7 +27,7 @@ void RadioButton::init()
 {
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
 }
 
 void RadioButton::paintEvent(QPaintEvent *event)
@@ -57,13 +59,13 @@ void RadioButton::drawText(QPainter &painter)
     }
 
     painter.setFont(font());
-    painter.setPen(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    painter.setPen(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
     painter.drawText(QRect(29, 0, width(), height()), Qt::AlignVCenter, text());
 }
 
 void RadioButton::drawIndicator(QPainter &painter)
 {
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
 
     QColor borderColor, filledColor;
 

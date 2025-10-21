@@ -338,7 +338,7 @@ void AvatarWidget::_drawTextAvatar(QPainter &painter)
 {
     if (text().isEmpty()) return;
 
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
     QColor bgColor = isDark ? m_darkBackgroundColor : m_lightBackgroundColor;
 
     painter.setBrush(bgColor);

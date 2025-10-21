@@ -42,7 +42,7 @@ MaskDialogBase::MaskDialogBase(QWidget* parent)
 
     d->_windowMask->resize(size());
 
-    int c = Theme::instance()->isDarkMode() ? 0 : 255;
+    int c = Theme::instance()->isDarkTheme() ? 0 : 255;
     d->_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
 
     setShadowEffect();
@@ -80,7 +80,7 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
 
     d->_windowMask->resize(size());
 
-    int c = Theme::instance()->isDarkMode() ? 0 : 255;
+    int c = Theme::instance()->isDarkTheme() ? 0 : 255;
     d->_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
 
     setShadowEffect();

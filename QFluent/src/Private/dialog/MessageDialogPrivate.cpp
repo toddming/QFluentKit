@@ -5,6 +5,7 @@
 #include <QFrame>
 
 #include "Theme.h"
+#include "StyleSheet.h"
 #include "TextWrap.h"
 #include "QFluent/Label.h"
 #include "QFluent/PushButton.h"
@@ -22,8 +23,8 @@ void MessageDialogPrivate::setQss()
     buttonGroup->setObjectName("buttonGroup");
     cancelButton->setObjectName("cancelButton");
 
-    Theme::instance()->registerWidget(_dialog, ThemeType::ThemeStyle::DIALOG);
-    Theme::instance()->registerWidget(contentLabel, ThemeType::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(_dialog, ThemeType::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(contentLabel, ThemeType::ThemeStyle::DIALOG);
 
     yesButton->adjustSize();
     cancelButton->adjustSize();

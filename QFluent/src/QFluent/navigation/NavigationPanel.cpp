@@ -20,6 +20,7 @@
 #include "Theme.h"
 #include "ProfileCard.h"
 #include "NavigationWidget.h"
+#include "StyleSheet.h"
 
 #include "../scrollbar/ScrollBar.h"
 #include "QFluent/menu/RoundMenu.h"
@@ -97,8 +98,8 @@ void NavigationPanel::initWidget() {
     m_scrollWidget->setObjectName("scrollWidget");
 
     // this->setStyleSheet("background-color: green;");
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::NAVIGATION_INTERFACE);
-    Theme::instance()->registerWidget(m_scrollWidget, ThemeType::ThemeStyle::NAVIGATION_INTERFACE);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::NAVIGATION_INTERFACE);
+    StyleSheetManager::instance()->registerWidget(m_scrollWidget, ThemeType::ThemeStyle::NAVIGATION_INTERFACE);
 
     initLayout();
 }

@@ -108,7 +108,7 @@ void NavigationWidget::setSelected(bool isSelected) {
 }
 
 QColor NavigationWidget::textColor() {
-    return Theme::instance()->isDarkMode() ? darkTextColor : lightTextColor;
+    return Theme::instance()->isDarkTheme() ? darkTextColor : lightTextColor;
 }
 
 void NavigationWidget::setLightTextColor(const QColor& color) {
@@ -189,7 +189,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
         painter.setOpacity(0.4);
 
     // 绘制背景
-    int c = Theme::instance()->isDarkMode() ? 255 : 0;
+    int c = Theme::instance()->isDarkTheme() ? 255 : 0;
     QMargins m = _margins();
     int pl = m.left(), pr = m.right();
     QPoint globalPos = mapToGlobal(QPoint(0, 0));
@@ -712,7 +712,7 @@ void NavigationAvatarWidget::paintEvent(QPaintEvent *event)
 
     // draw background on hover
     if (property("isEnter").toBool()) { // 假设 NavigationWidget 提供 isEnter()
-        int c = Theme::instance()->isDarkMode() ? 255 : 0;
+        int c = Theme::instance()->isDarkTheme() ? 255 : 0;
         painter.setBrush(QColor(c, c, c, 10));
         painter.drawRoundedRect(rect(), 5, 5);
     }

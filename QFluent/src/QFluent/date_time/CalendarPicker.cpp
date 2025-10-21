@@ -13,6 +13,7 @@
 
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
 
 
 CalendarPicker::CalendarPicker(QWidget* parent)
@@ -23,7 +24,7 @@ CalendarPicker::CalendarPicker(QWidget* parent)
 {
     setText("选择日期");
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::CALENDAR_PICKER);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::CALENDAR_PICKER);
     connect(this, &QPushButton::clicked, this, &CalendarPicker::_showCalendarView);
 }
 

@@ -1,4 +1,4 @@
-#include "CheckBoxPrivate.h"
+﻿#include "CheckBoxPrivate.h"
 
 #include <QColor>
 
@@ -6,7 +6,7 @@
 #include "QFluent/CheckBox.h"
 
 QColor CheckBoxPrivate::borderColor()  {
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         switch (state()) {
         case CheckBoxType::CheckBoxState::NORMAL: return QColor(255, 255, 255, 141);
         case CheckBoxType::CheckBoxState::HOVER: return QColor(255, 255, 255, 141);
@@ -33,7 +33,7 @@ QColor CheckBoxPrivate::borderColor()  {
 }
 
 QColor CheckBoxPrivate::backgroundColor() {
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         switch (state()) {
         case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 26);
         case CheckBoxType::CheckBoxState::HOVER: return QColor(255, 255, 255, 11);

@@ -10,6 +10,7 @@
 
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
 
 
 ToolButton::ToolButton(QWidget* parent)
@@ -17,7 +18,7 @@ ToolButton::ToolButton(QWidget* parent)
     , m_isPressed(false)
     , m_isHover(false)
 {
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
 
     setIcon(IconType::FLuentIcon::NONE);
 

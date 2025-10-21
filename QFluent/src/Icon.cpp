@@ -250,7 +250,7 @@ void Icon::drawSvgIcon(QPainter *painter, IconType::FLuentIcon icon,
                        const QRectF &rect, const QMap<QString, QString> &attributes)
 {
     const QString &path = QString(":/res/images/icons/%1_%2.svg")
-    .arg(toString(icon), Theme::instance()->isDarkMode() ? "white" : "black");
+    .arg(toString(icon), Theme::instance()->isDarkTheme() ? "white" : "black");
 
     if (attributes.isEmpty()) {
         QSvgRenderer renderer(path);
@@ -268,7 +268,7 @@ void Icon::drawSvgIcon(QPainter *painter, const QString& fillPath, const QString
                        const QString& lightSuffix, const QString& darkSuffix,
                        const QRectF &rect, const QMap<QString, QString> &attributes)
 {
-    const QString &path = fillPath.arg(baseName, Theme::instance()->isDarkMode() ? lightSuffix : darkSuffix);
+    const QString &path = fillPath.arg(baseName, Theme::instance()->isDarkTheme() ? lightSuffix : darkSuffix);
 
     if (attributes.isEmpty()) {
         QSvgRenderer renderer(path);

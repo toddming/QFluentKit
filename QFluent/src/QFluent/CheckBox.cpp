@@ -9,6 +9,8 @@
 #include "Theme.h"
 #include "Icon.h"
 #include "Define.h"
+#include "StyleSheet.h"
+
 #include "Private/CheckBoxPrivate.h"
 
 CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent), d_ptr(new CheckBoxPrivate())
@@ -16,7 +18,7 @@ CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent), d_ptr(new CheckBoxPriva
     Q_D(CheckBox);
     d->q_ptr = this;
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::CHECK_BOX);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::CHECK_BOX);
 
     d->_isPressed = false;
     d->_isHover = false;

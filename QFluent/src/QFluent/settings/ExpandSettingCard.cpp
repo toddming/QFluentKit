@@ -22,6 +22,7 @@
 #include "Theme.h"
 #include "Icon.h"
 #include "../scrollbar/ScrollBar.h"
+#include "StyleSheet.h"
 
 
 ExpandButton::ExpandButton(QWidget *parent) : QAbstractButton(parent),
@@ -39,7 +40,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.setPen(Qt::NoPen);
 
     // draw background
-    int r = Theme::instance()->isDarkMode() ? 255 : 0;
+    int r = Theme::instance()->isDarkTheme() ? 255 : 0;
     QColor color = Qt::transparent;
 
     if (isEnabled()) {
@@ -156,7 +157,7 @@ void HeaderSettingCard::paintEvent(QPaintEvent *e) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         painter.setBrush(QColor(255, 255, 255, 13));
     } else {
         painter.setBrush(QColor(255, 255, 255, 170));
@@ -191,7 +192,7 @@ void ExpandBorderWidget::paintEvent(QPaintEvent *e) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(Qt::NoBrush);
 
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         painter.setPen(QColor(0, 0, 0, 50));
     } else {
         painter.setPen(QColor(0, 0, 0, 19));
@@ -249,8 +250,8 @@ void ExpandSettingCard::initWidget() {
     scrollWidget->setObjectName("scrollWidget");
     setProperty("isExpand", false);
 
-    Theme::instance()->registerWidget(m_card, ThemeType::ThemeStyle::EXPAND_SETTING_CARD);
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::EXPAND_SETTING_CARD);
+    StyleSheetManager::instance()->registerWidget(m_card, ThemeType::ThemeStyle::EXPAND_SETTING_CARD);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::EXPAND_SETTING_CARD);
 
     m_card->installEventFilter(this);
     connect(expandAni, &QPropertyAnimation::valueChanged, this, &ExpandSettingCard::onExpandValueChanged);
@@ -327,7 +328,7 @@ void GroupSeparator::paintEvent(QPaintEvent *e) {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         painter.setPen(QColor(0, 0, 0, 50));
     } else {
         painter.setPen(QColor(0, 0, 0, 19));
