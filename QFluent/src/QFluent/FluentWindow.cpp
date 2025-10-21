@@ -153,11 +153,6 @@ void FluentWindow::initUI()
     edit->setFixedWidth(100);
 
 
-    // QPalette palette(this->palette());
-    // palette.setColor(QPalette::Window, QColor("#202020"));
-    // this->setAutoFillBackground(true);
-    // this->setPalette(palette);
-
     lay->addWidget(edit, 1, 1);
 
     ComboBox* combo2 = new ComboBox(this);
@@ -448,12 +443,20 @@ void FluentWindow::initUI()
     QList<QWidget *> wids;
     wids << client;
     for (int i=0; i < 9; i++) {
-        QWidget *w = new QWidget(this);
-        QHBoxLayout *lay = new QHBoxLayout(w);
-        DisplayLabel *label = new DisplayLabel(w);
-        label->setAlignment(Qt::AlignCenter);
-        label->setText(QString("界面%1").arg(i+1));
-        lay->addWidget(label);
+        // QWidget *w = new QWidget(this);
+
+        auto w = new GalleryInterface(QString("界面%1").arg(i+1), QString("界面%1").arg(i+1), this);
+
+        // 创建样式表源
+        auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/gallery_interface.qss");
+
+        // 注册控件
+        StyleSheetManager::instance()->registerWidget(styleSource, w);
+
+
+        w->addExampleCard("按钮", new PushButton("按钮", w), "");
+
+
         stacked->addWidget(w);
         wids << w;
     }
@@ -597,7 +600,7 @@ void FluentWindow::initUI()
 
     loadStyleSheet(true);
 
-    setWindowTitle("QFluent");
+    setWindowTitle("QFluentKit");
     setWindowIcon(QPixmap(":/res/example.png"));
 
     resize(800, 600);

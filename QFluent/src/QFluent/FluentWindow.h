@@ -57,6 +57,8 @@
 
 #include "dialog/MessageBoxBase.h"
 
+#include "examples/GalleryInterface.h"
+
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
     Q_OBJECT

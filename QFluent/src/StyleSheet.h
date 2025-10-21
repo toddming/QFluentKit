@@ -2,18 +2,12 @@
 #define STYLESHEET_H
 
 #include <QObject>
-#include <QWidget>
-#include <QColor>
-#include <QString>
 #include <QMap>
-#include <QEvent>
-#include <QFile>
-#include <memory>
-#include <vector>
 
 #include "Define.h"
 
 // 前向声明
+class QWidget;
 class StyleSheetBase;
 class StyleSheetManager;
 

@@ -1,9 +1,15 @@
 ﻿#include "StyleSheet.h"
 #include <QApplication>
 #include <QRegularExpression>
-#include <QDebug>
 #include <QTextStream>
 #include <QDynamicPropertyChangeEvent>
+#include <QWidget>
+#include <QColor>
+#include <QString>
+#include <QEvent>
+#include <QFile>
+#include <memory>
+#include <vector>
 
 #include "Theme.h"
 
@@ -111,7 +117,7 @@ void StyleSheetBase::apply(QWidget* widget, ThemeType::ThemeMode theme) {
 // ==================== StyleSheetFile 实现 ====================
 
 StyleSheetFile::StyleSheetFile(const QString& path)
-    : m_filePath(path), m_lightPath(path), m_darkPath(path) {}
+    : m_lightPath(path), m_darkPath(path), m_filePath(path) {}
 
 StyleSheetFile::StyleSheetFile(const QString& lightPath, const QString& darkPath)
     : m_lightPath(lightPath), m_darkPath(darkPath) {}
