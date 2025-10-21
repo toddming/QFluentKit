@@ -3,7 +3,6 @@
 #include <QScreen>
 #include <QActionGroup>
 
-#include "Theme.h"
 #include "Icon.h"
 #include "Animation.h"
 #include "Private/EditableComboBoxPrivate.h"
@@ -17,8 +16,6 @@ EditableComboBox::EditableComboBox(QWidget *parent)
     d->q_ptr = this;
 
     installEventFilter(this);
-
-    // Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
 
     d->_pCurrentIndex = -1;
     d->_pMaxVisibleItems = -1;
