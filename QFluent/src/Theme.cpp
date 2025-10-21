@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QStyleHints>
 
+#include "StyleSheet.h"
 #include "Private/ThemePrivate.h"
 
 Q_GLOBAL_STATIC(Theme, qtheme)
@@ -15,16 +16,14 @@ Theme::Theme(QObject* parent) : QObject(parent), d_ptr(new ThemePrivate())
 
     Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
     qWarning() << "当前主题:" << (currentScheme == Qt::ColorScheme::Dark ? "深色" : "浅色");
+    d->_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
     QStyleHints *styleHints = QApplication::styleHints();
-
-    connect(styleHints, &QStyleHints::colorSchemeChanged, [](Qt::ColorScheme scheme) {
+    connect(styleHints, &QStyleHints::colorSchemeChanged, [d](Qt::ColorScheme scheme) {
         if (scheme == Qt::ColorScheme::Dark) {
-            qWarning() << "系统切换到深色模式";
+            d->_sysIsDarkMode = true;
         } else if (scheme == Qt::ColorScheme::Light) {
-            qWarning() << "系统切换到浅色模式";
-        } else {
-            qWarning() << "未知主题模式";
+            d->_sysIsDarkMode = false;
         }
     });
 
@@ -40,47 +39,56 @@ Theme *Theme::instance()
     return qtheme();
 }
 
+ThemeType::ThemeMode Theme::theme() const {
+    Q_D_CONST(Theme);
+    return d->_currentTheme;
+}
 
-void Theme::setThemeMode(ThemeType::ThemeMode themeMode)
-{
+void Theme::setTheme(ThemeType::ThemeMode theme, bool save, bool lazy) {
     Q_D(Theme);
-    d->_themeMode = themeMode;
-    d->updateStyleSheet();
-    Q_EMIT themeModeChanged(themeMode);
+    Q_UNUSED(save) // 在实际应用中，这里可以保存设置到配置文件
+
+    if (d->_currentTheme != theme) {
+        d->_currentTheme = theme;
+        StyleSheetManager::instance()->updateStyleSheet(lazy);
+        emit themeModeChanged(theme);
+    }
+}
+
+void Theme::toggleTheme(bool save, bool lazy) {
+    ThemeType::ThemeMode newTheme = isDarkTheme() ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK;
+    setTheme(newTheme, save, lazy);
+}
+
+QColor Theme::themeColor() const {
+    Q_D_CONST(Theme);
+    return d->_themeColor;
+}
+
+QColor Theme::themeColor(ThemeType::ThemeColor type) const {
+    Q_D_CONST(Theme);
+    return d->calculateThemeColor(type);
+}
+
+void Theme::setThemeColor(const QColor& color, bool save, bool lazy) {
+    Q_D(Theme);
+    Q_UNUSED(save) // 在实际应用中，这里可以保存设置到配置文件
+
+    if (d->_themeColor != color) {
+        d->_themeColor = color;
+        StyleSheetManager::instance()->updateStyleSheet(lazy);
+        // 这里可以发射主题颜色改变信号
+        // emit themeColorChanged(color);
+    }
+}
+
+bool Theme::isDarkTheme() const {
+    Q_D_CONST(Theme);
+    return d->_currentTheme == ThemeType::ThemeMode::DARK;
 }
 
 
-bool Theme::isDarkMode()
-{
-    Q_D(Theme);
-    return (d->_themeMode == ThemeType::DARK);
-}
 
-
-void Theme::setThemeColor(QColor color)
-{
-    Q_D(Theme);
-    d->_themeColor = color;
-}
-
-QColor Theme::themeColor(ThemeType::ThemeColor themeColor)
-{
-    Q_D(Theme);
-    return d->getThemeColor(themeColor);
-}
-
-void Theme::registerWidget(QWidget* widget, ThemeType::ThemeStyle styleSheet)
-{
-    Q_D(Theme);
-
-    if (!widget || d->_Widgets.contains(widget))
-        return;
-
-    connect(widget, &QObject::destroyed, this, [d, widget]() { d->_Widgets.remove(widget); });
-    d->_Widgets.insert(widget, styleSheet);
-
-    d->applyStyleSheet(widget, styleSheet);
-}
 
 
 void Theme::setFont(QWidget *widget, int fontSize, QFont::Weight weight)

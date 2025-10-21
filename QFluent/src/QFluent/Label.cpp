@@ -3,14 +3,14 @@
 #include <QPalette>
 #include <QMetaObject>
 #include "Theme.h"
-
+#include "StyleSheet.h"
 
 FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(parent) {
     setFont(Theme::instance()->getFont(fontSize, weight));
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
-    setTextColor(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
+    setTextColor(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
     connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
         setTextColor(theme == ThemeType::ThemeMode::DARK ? Qt::white : Qt::black);
     });
@@ -20,8 +20,8 @@ FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weigh
     : QLabel(text, parent) {
     setFont(Theme::instance()->getFont(fontSize, weight));
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
-    setTextColor(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
+    setTextColor(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
     connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
         setTextColor(theme == ThemeType::ThemeMode::DARK ? Qt::white : Qt::black);
     });

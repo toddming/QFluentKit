@@ -11,6 +11,7 @@
 #include "../PushButton.h"
 #include "../SwitchButton.h"
 #include "../ComboBox.h"
+#include "StyleSheet.h"
 
 
 class SettingIconWidget;
@@ -55,7 +56,7 @@ SettingCard::SettingCard(const QIcon &icon, const QString &title,
 
     contentLabel->setObjectName("contentLabel");
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::SETTING_CARD);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::SETTING_CARD);
 }
 
 void SettingCard::setTitle(const QString &title)
@@ -93,7 +94,7 @@ void SettingCard::paintEvent(QPaintEvent *event)
 
     QColor brushColor, penColor;
 
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         brushColor = QColor(255, 255, 255, 13);
         penColor = QColor(0, 0, 0, 50);
     } else {

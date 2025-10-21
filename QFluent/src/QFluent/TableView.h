@@ -16,6 +16,8 @@
 
 #include "Theme.h"
 #include "Property.h"
+#include "StyleSheet.h"
+
 
 class QPainter;
 class TableItemDelegate : public QStyledItemDelegate {
@@ -51,7 +53,7 @@ public:
 
         _isSelectRightClickedRow(false) {
 
-        Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::TABLE_VIEW);
+        StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::TABLE_VIEW);
 
         this->setShowGrid(false);
         this->setMouseTracking(true);

@@ -22,7 +22,7 @@ QPixmap IconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State sta
     Q_UNUSED(mode);
     Q_UNUSED(state);
 
-    const QString &path = m_fillPath.arg(m_baseName, Theme::instance()->isDarkMode() ? m_darkSuffix : m_lightSuffix);
+    const QString &path = m_fillPath.arg(m_baseName, Theme::instance()->isDarkTheme() ? m_darkSuffix : m_lightSuffix);
 
     QPixmap pixmap(size);
     pixmap.fill(Qt::transparent);
@@ -46,7 +46,7 @@ void IconEngine::paint(QPainter* painter, const QRect& rect, QIcon::Mode mode, Q
     Q_UNUSED(mode);
     Q_UNUSED(state);
 
-    const QString &path = m_fillPath.arg(m_baseName, Theme::instance()->isDarkMode() ? m_darkSuffix : m_lightSuffix);
+    const QString &path = m_fillPath.arg(m_baseName, Theme::instance()->isDarkTheme() ? m_darkSuffix : m_lightSuffix);
 
     QSvgRenderer renderer(path);
     if (renderer.isValid()) {

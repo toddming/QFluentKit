@@ -9,6 +9,8 @@
 #include <QEvent>
 
 #include "Theme.h"
+#include "StyleSheet.h"
+
 
 Indicator::Indicator(QWidget *parent) : QToolButton(parent), m_sliderX(11) {
     setCheckable(true);
@@ -52,7 +54,7 @@ void Indicator::drawCircle(QPainter &painter) {
 }
 
 QColor Indicator::backgroundColor() const {
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
 
     if (isChecked()) {
         QColor color = Theme::instance()->themeColor();
@@ -81,7 +83,7 @@ QColor Indicator::backgroundColor() const {
 }
 
 QColor Indicator::borderColor() const {
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
 
     if (isChecked()) {
         return isEnabled() ? backgroundColor() : QColor(0, 0, 0, 0);
@@ -94,7 +96,7 @@ QColor Indicator::borderColor() const {
 }
 
 QColor Indicator::sliderColor() const {
-    bool isDark = Theme::instance()->isDarkMode();
+    bool isDark = Theme::instance()->isDarkTheme();
 
     if (isChecked()) {
         if (isEnabled()) {
@@ -129,7 +131,7 @@ void SwitchButton::initWidget() {
     installEventFilter(this);
     setFixedHeight(22);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::SWITCH_BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::SWITCH_BUTTON);
 
     m_hBox = new QHBoxLayout(this);
     m_indicator = new Indicator(this);

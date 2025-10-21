@@ -16,6 +16,8 @@
 
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
+
 #include "menu/MenuItemDelegate.h"
 #include "menu/MenuActionListWidget.h"
 
@@ -26,7 +28,7 @@ LineEditButton::LineEditButton(const QIcon& icon, QWidget* parent)
     setCursor(Qt::PointingHandCursor);
     setIconSize(QSize(10, 10));
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::LINE_EDIT);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LINE_EDIT);
 }
 
 void LineEditButton::setAction(QAction* action) {
@@ -87,7 +89,7 @@ LineEdit::LineEdit(QWidget* parent)
     setClearButtonEnabled(true);
     setProperty("transparent", true);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::LINE_EDIT);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LINE_EDIT);
     
     m_layout->setSpacing(3);
     m_layout->setContentsMargins(4, 4, 4, 4);

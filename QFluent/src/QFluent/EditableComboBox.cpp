@@ -18,7 +18,7 @@ EditableComboBox::EditableComboBox(QWidget *parent)
 
     installEventFilter(this);
 
-    // Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
+    // StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
 
     d->_pCurrentIndex = -1;
     d->_pMaxVisibleItems = -1;

@@ -10,6 +10,8 @@
 #include <QGraphicsDropShadowEffect>
 
 #include "Theme.h"
+#include "StyleSheet.h"
+
 #include "MenuAnimation.h"
 #include "Private/menu/RoundMenuPrivate.h"
 #include "MenuActionListWidget.h"
@@ -37,7 +39,7 @@ RoundMenu::RoundMenu(const QString& title, QWidget* parent)
 
     d->setShadowEffect();
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::MENU);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::MENU);
 
     connect(d->_view, &QListWidget::itemClicked, d, &RoundMenuPrivate::handleItemClicked);
     connect(d->_view, &QListWidget::itemEntered, d, &RoundMenuPrivate::handleItemEntered);

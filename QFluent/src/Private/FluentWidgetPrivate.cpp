@@ -2,6 +2,7 @@
 #include "QWKWidgets/widgetwindowagent.h"
 #include "QFluent/FluentWidget.h"
 #include "Theme.h"
+#include "StyleSheet.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -27,5 +28,5 @@ void FluentWidgetPrivate::loadStyleSheet(bool dark) {
     q->setStyleSheet(content);
     file.close();
 
-    Theme::instance()->setThemeMode(!dark ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK);
+    Theme::instance()->setTheme(!dark ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK);
 }

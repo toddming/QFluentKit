@@ -116,7 +116,7 @@ void FluentWindow::loadStyleSheet(bool dark) {
     setStyleSheet(content);
     file.close();
 
-    Theme::instance()->setThemeMode(!dark ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK);
+    Theme::instance()->setTheme(!dark ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK);
 }
 
 void FluentWindow::initUI()
@@ -443,7 +443,7 @@ void FluentWindow::initUI()
 
     stacked = new StackedWidget(this);
     stacked->addWidget(client);
-    Theme::instance()->registerWidget(stacked, ThemeType::ThemeStyle::FLUENT_WINDOW);
+    StyleSheetManager::instance()->registerWidget(stacked, ThemeType::ThemeStyle::FLUENT_WINDOW);
 
     QList<QWidget *> wids;
     wids << client;

@@ -30,7 +30,7 @@ void ProgressRing::setStrokeWidth(int w)
 void ProgressRing::_drawText(QPainter &painter, const QString &text)
 {
     painter.setFont(font());
-    painter.setPen(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+    painter.setPen(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
     painter.drawText(rect(), Qt::AlignCenter, text);
 }
 
@@ -45,7 +45,7 @@ void ProgressRing::paintEvent(QPaintEvent *event)
     const QRectF rc(cw / 2, height() / 2 - w / 2, w, w);
 
     // 绘制背景
-    const QColor bc = Theme::instance()->isDarkMode() ? darkBackgroundColor : lightBackgroundColor;
+    const QColor bc = Theme::instance()->isDarkTheme() ? darkBackgroundColor : lightBackgroundColor;
     QPen pen(bc, cw, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     painter.setPen(pen);
     painter.drawArc(rc, 0, 360 * 16);

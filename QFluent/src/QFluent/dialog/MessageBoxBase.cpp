@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 
 #include "Theme.h"
+#include "StyleSheet.h"
+
 #include "QFluent/PushButton.h"
 #include "Private/dialog/MessageBoxBasePrivate.h"
 
@@ -27,7 +29,7 @@ MessageBoxBase::MessageBoxBase(QWidget *parent)
 
     d->_buttonGroup->setObjectName("buttonGroup");
     d->_cancelButton->setObjectName("cancelButton");
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::DIALOG);
 
     vBoxLayout->setSpacing(0);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);

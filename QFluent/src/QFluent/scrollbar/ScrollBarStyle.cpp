@@ -40,15 +40,15 @@ void ScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleOpti
                 // 背景绘制
                 painter->setOpacity(m_Opacity);
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(Theme::instance()->isDarkMode() ? QColor(44, 44, 44, 245) : QColor(252, 252, 252, 217)); // 滑槽
+                painter->setBrush(Theme::instance()->isDarkTheme() ? QColor(44, 44, 44, 245) : QColor(252, 252, 252, 217)); // 滑槽
                 painter->drawRoundedRect(scrollBarRect, 6, 6);
                 //指示器绘制 center()在此处不适用 存在外围边距宽度 需手动计算
                 int sideLength = 8;
-                painter->setBrush(Theme::instance()->isDarkMode() ? QColor(255, 255, 255, 139) : QColor(0, 0, 0, 114));
+                painter->setBrush(Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, 139) : QColor(0, 0, 0, 114));
 
                 QMap<QString, QString> attrs;
-                attrs["fill"] = Theme::instance()->isDarkMode() ? "#FFFFFF" : "#000000";
-                attrs["fill-opacity"] = Theme::instance()->isDarkMode() ?  "0.54" : "0.45";
+                attrs["fill"] = Theme::instance()->isDarkTheme() ? "#FFFFFF" : "#000000";
+                attrs["fill-opacity"] = Theme::instance()->isDarkTheme() ?  "0.54" : "0.45";
 
                 if (sopt->orientation == Qt::Horizontal)
                 {
@@ -74,7 +74,7 @@ void ScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleOpti
             painter->setOpacity(1);
             //滑块绘制
             QRectF sliderRect = subControlRect(control, sopt, QStyle::SC_ScrollBarSlider, widget);
-            painter->setBrush(Theme::instance()->isDarkMode() ? QColor(255, 255, 255, 139) : QColor(0, 0, 0, 114));
+            painter->setBrush(Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, 139) : QColor(0, 0, 0, 114));
             if (sopt->orientation == Qt::Horizontal) {
                 sliderRect.setRect(sliderRect.x(), sliderRect.bottom() - _sliderMargin - m_SliderExtent, sliderRect.width(), m_SliderExtent);
             } else {

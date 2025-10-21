@@ -32,6 +32,8 @@
 #include "Screen.h"
 #include "Theme.h"
 #include "Icon.h"
+#include "StyleSheet.h"
+
 
 SmoothScrollBar::SmoothScrollBar(Qt::Orientation orientation, QWidget* parent)
     : QScrollBar(orientation, parent) {
@@ -90,7 +92,7 @@ void ScrollButton::paintEvent(QPaintEvent* event)
     int x = (width() - w) / 2;
 
     QMap<QString, QString> attrs;
-    attrs["fill"] = Theme::instance()->isDarkMode() ? "#5e5e5e" : "#9c9c9c";
+    attrs["fill"] = Theme::instance()->isDarkTheme() ? "#5e5e5e" : "#9c9c9c";
     Icon::drawSvgIcon(&painter, m_iconType, QRectF(x, y, w, h), attrs);
 }
 
@@ -139,7 +141,7 @@ void ScrollItemDelegate::_drawBackground(QPainter* painter, const QStyleOptionVi
             painter->setBrush(Theme::instance()->themeColor());
         }
     } else {
-        int c = Theme::instance()->isDarkMode() ? 255 : 0;
+        int c = Theme::instance()->isDarkTheme() ? 255 : 0;
         if (index == pressedIndex) {
             painter->setBrush(QColor(c, c, c, 7));
         } else if (option.state & QStyle::State_MouseOver) {
@@ -159,9 +161,9 @@ void ScrollItemDelegate::_drawText(QPainter* painter, const QStyleOptionViewItem
     painter->setFont(font);
 
     if (index == currentIndex) {
-        painter->setPen(Theme::instance()->isDarkMode() ? Qt::black : Qt::white);
+        painter->setPen(Theme::instance()->isDarkTheme() ? Qt::black : Qt::white);
     } else {
-        painter->setPen(Theme::instance()->isDarkMode() ? Qt::white : Qt::black);
+        painter->setPen(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
         if (!((min <= index.data(Qt::UserRole).toDate() && index.data(Qt::UserRole).toDate() <= max )|| (option.state & QStyle::State_MouseOver)) || index == pressedIndex) {
             painter->setOpacity(0.6);
         }
@@ -307,7 +309,7 @@ void CalendarViewBase::initWidget() {
     vBoxLayout->setAlignment(Qt::AlignTop);
 
     titleButton->setObjectName("titleButton");
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::CALENDAR_PICKER);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::CALENDAR_PICKER);
 
     connect(titleButton, &QPushButton::clicked, this, &CalendarViewBase::titleClicked);
     connect(resetButton, &QPushButton::clicked, this, &CalendarViewBase::resetted);

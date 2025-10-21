@@ -7,6 +7,7 @@
 
 #include "Icon.h"
 #include "Theme.h"
+#include "StyleSheet.h"
 #include "Animation.h"
 #include "menu/RoundMenu.h"
 #include "menu/MenuActionListWidget.h"
@@ -45,7 +46,7 @@ void PushButton::initialize()
 
     setProperty("hasIcon", false);
 
-    Theme::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
 
     setIconSize(QSize(16, 16));
 
@@ -306,7 +307,7 @@ void DropDownButtonBase::hideMenu()
 
 void DropDownButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
-    if (Theme::instance()->isDarkMode()) {
+    if (Theme::instance()->isDarkTheme()) {
         Icon::drawSvgIcon(painter, IconType::FLuentIcon::ARROW_DOWN, rect);
     } else {
         QMap<QString, QString> attrs;
