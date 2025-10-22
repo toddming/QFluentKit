@@ -3,30 +3,35 @@
 
 #include <QMainWindow>
 
-#include "Property.h"
+#include "Define.h"
 
-class StackedWidget;
+class NavigationPanel;
+class FluentWindowPrivate;
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
     Q_OBJECT
+    Q_Q_CREATE(FluentWindow)
 
 public:
     FluentWindow(QMainWindow *parent = nullptr);
     ~FluentWindow();
 
+    void setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable = true);
+    void setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags);
+    AppBarType::ButtonFlags getWindowButtonFlags() const;
+
+    void setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType);
+    void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
+
+    void addSubInterface(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
+                         QWidget* widget, bool selectable = true,
+                         NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
+                         const QString& tooltip = QString(), const QString& parentRouteKey = QString());
+
+    NavigationPanel *navigationInterface() const;
+
 protected:
     bool event(QEvent *event) override;
-
-private:
-    void initUI();
-
-    void setDarkTheme(bool dark);
-
-    QObject *windowAgent{nullptr};
-
-    void switchTo(QWidget *w);
-
-    StackedWidget *stacked;
 
 };
 #endif // FLUENTWINDOW_H

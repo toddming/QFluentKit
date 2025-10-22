@@ -1,5 +1,5 @@
 ﻿#include <QApplication>
-#include "QFluent/FluentWindow.h"
+#include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     font.setStyleStrategy(QFont::PreferAntialias);
     app.setFont(font);
 
-    FluentWindow w;
+    MainWindow w;
     w.show();
     return app.exec();
 }

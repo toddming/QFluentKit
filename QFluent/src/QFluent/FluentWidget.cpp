@@ -37,7 +37,7 @@ FluentWidget::FluentWidget(QMainWindow *parent)
 
     setMenuWidget(d->_windowBar);
 
-    connect(d->_windowBar, &FluentTitleBar::themeRequested, this, [this, d](bool checked){
+    connect(d->_windowBar, &FluentTitleBar::themeRequested, this, [d](bool checked){
         d->_windowBar->themeButton()->setChecked(checked);
         d->setDarkTheme(!checked);
     });
@@ -53,7 +53,6 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     d->windowAgent = agent;
 
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
-
     d->setDarkTheme(Theme::instance()->isDarkTheme());
 }
 

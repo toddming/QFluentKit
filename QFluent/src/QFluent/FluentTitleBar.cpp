@@ -203,8 +203,6 @@ void FluentTitleBar::setHostWidget(QWidget *w) {
 
     if (!d->_hostWidget.isNull()) {
         d->_hostWidget->installEventFilter(this);
-
-        qDebug() << "d->_hostWidget->installEventFilter(this);";
     }
 }
 

@@ -151,7 +151,7 @@ bool ExampleCard::eventFilter(QObject *obj, QEvent *e)
 }
 
 GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle, QWidget *parent)
-    : ScrollArea(parent)
+    : ScrollArea(Qt::Vertical, parent)
 {
     view = new QWidget(this);
     toolBar = new ToolBar(title, subtitle, this);
@@ -169,7 +169,8 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
     view->setObjectName("view");
     // StyleSheet::GALLERY_INTERFACE.apply(this);
 
-
+    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/gallery_interface.qss");
+    StyleSheetManager::instance()->registerWidget(styleSource, this);
 }
 
 ExampleCard* GalleryInterface::addExampleCard(const QString &title, QWidget *widget,
