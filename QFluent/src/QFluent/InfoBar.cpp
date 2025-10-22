@@ -21,6 +21,8 @@
 #include <functional>
 #include <QCloseEvent>
 
+#include <QDebug>
+
 #include "ToolButton.h"
 #include "TextWrap.h"
 #include "Theme.h"
@@ -30,29 +32,29 @@
 
 QMap<InfoBarType::BarPosition, std::function<InfoBarManager*()>> InfoBarManager::m_managers;
 namespace {
-    struct RegisterInfoBarManagers {
-        RegisterInfoBarManagers() {
-            InfoBarManager::registerManager(InfoBarType::BarPosition::TOP,
-                []() { return TopInfoBarManager::getInstance(); });
+struct RegisterInfoBarManagers {
+    RegisterInfoBarManagers() {
+        InfoBarManager::registerManager(InfoBarType::BarPosition::TOP,
+                                        []() { return TopInfoBarManager::getInstance(); });
 
-            InfoBarManager::registerManager(InfoBarType::BarPosition::TOP_RIGHT,
-                []() { return TopRightInfoBarManager::getInstance(); });
+        InfoBarManager::registerManager(InfoBarType::BarPosition::TOP_RIGHT,
+                                        []() { return TopRightInfoBarManager::getInstance(); });
 
-            InfoBarManager::registerManager(InfoBarType::BarPosition::BOTTOM_RIGHT,
-                []() { return BottomRightInfoBarManager::getInstance(); });
+        InfoBarManager::registerManager(InfoBarType::BarPosition::BOTTOM_RIGHT,
+                                        []() { return BottomRightInfoBarManager::getInstance(); });
 
-            InfoBarManager::registerManager(InfoBarType::BarPosition::TOP_LEFT,
-                []() { return TopLeftInfoBarManager::getInstance(); });
+        InfoBarManager::registerManager(InfoBarType::BarPosition::TOP_LEFT,
+                                        []() { return TopLeftInfoBarManager::getInstance(); });
 
-            InfoBarManager::registerManager(InfoBarType::BarPosition::BOTTOM_LEFT,
-                []() { return BottomLeftInfoBarManager::getInstance(); });
+        InfoBarManager::registerManager(InfoBarType::BarPosition::BOTTOM_LEFT,
+                                        []() { return BottomLeftInfoBarManager::getInstance(); });
 
-            InfoBarManager::registerManager(InfoBarType::BarPosition::BOTTOM,
-                []() { return BottomInfoBarManager::getInstance(); });
-        }
-    };
+        InfoBarManager::registerManager(InfoBarType::BarPosition::BOTTOM,
+                                        []() { return BottomInfoBarManager::getInstance(); });
+    }
+};
 
-    static RegisterInfoBarManagers registerInfoBarManagersInstance;
+static RegisterInfoBarManagers registerInfoBarManagersInstance;
 }
 
 
@@ -76,7 +78,7 @@ InfoBar::InfoBar(InfoBarType::BarType type, const QString& title, const QString&
                  Qt::Orientation orient, bool isClosable, int duration,
                  InfoBarType::BarPosition position, QWidget* parent)
     : QFrame(parent), m_title(title), m_content(content), m_orient(orient), m_type(type),
-    m_duration(duration), m_isClosable(isClosable), m_position(position) {
+      m_duration(duration), m_isClosable(isClosable), m_position(position) {
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::SubWindow);
 
@@ -103,6 +105,7 @@ InfoBar::InfoBar(InfoBarType::BarType type, const QString& title, const QString&
 
     __initWidget();
 }
+
 
 void InfoBar::__initWidget() {
     m_opacityEffect->setOpacity(1.0);
@@ -167,6 +170,10 @@ void InfoBar::__setQss() {
 }
 
 void InfoBar::__fadeOut() {
+    if (!isVisible() || (parentWidget() && !parentWidget()->isVisible())) {
+        close();
+        return;
+    }
     m_opacityAni->setDuration(200);
     m_opacityAni->setStartValue(1.0);
     m_opacityAni->setEndValue(0.0);
@@ -230,7 +237,14 @@ void InfoBar::showEvent(QShowEvent* event) {
     }
 }
 
+void InfoBar::hideEvent(QHideEvent* event) {
+    QFrame::hideEvent(event);
+}
+
 void InfoBar::paintEvent(QPaintEvent* event) {
+    if (!isVisible() || (parentWidget() && !parentWidget()->isVisible())) {
+        return;
+    }
     QFrame::paintEvent(event);
 
     if (m_darkBackgroundColor == QColor() || m_lightBackgroundColor == QColor())
@@ -287,7 +301,6 @@ void InfoBarManager::add(InfoBar* infoBar) {
     if (!m_infoBars.contains(p)) {
         p->installEventFilter(this);
         m_infoBars[p] = QList<QPointer<InfoBar>>();
-        m_aniGroups[p] = new QParallelAnimationGroup(this);
     }
 
     if (m_infoBars[p].contains(infoBar)) return;
@@ -296,7 +309,7 @@ void InfoBarManager::add(InfoBar* infoBar) {
     if (!m_infoBars[p].isEmpty()) {
         QPropertyAnimation* dropAni = new QPropertyAnimation(infoBar, "pos");
         dropAni->setDuration(200);
-        m_aniGroups[p]->addAnimation(dropAni);
+        dropAni->setEasingCurve(QEasingCurve::OutQuad);  // 新增，与slideAni匹配
         m_dropAnis.append(dropAni);
         infoBar->setProperty("dropAni", QVariant::fromValue(dropAni));
     }
@@ -321,8 +334,8 @@ void InfoBarManager::remove(InfoBar* infoBar) {
     QVariant dropVar = infoBar->property("dropAni");
     if (dropVar.isValid()) {
         QPropertyAnimation* dropAni = dropVar.value<QPropertyAnimation*>();
-        m_aniGroups[p]->removeAnimation(dropAni);
         m_dropAnis.removeOne(dropAni);
+        dropAni->deleteLater();
     }
 
     // 移除 slide 动画
@@ -334,7 +347,13 @@ void InfoBarManager::remove(InfoBar* infoBar) {
 
     // 更新剩余 info bar 的位置
     _updateDropAni(p);
-    m_aniGroups[p]->start();
+    for (const QPointer<InfoBar>& bar : m_infoBars[p]) {
+        if (bar.isNull()) continue;
+        QVariant aniVar = bar->property("dropAni");
+        if (!aniVar.isValid()) continue;
+        QPropertyAnimation* ani = aniVar.value<QPropertyAnimation*>();
+        ani->start();  // 每个单独启动，实现并行
+    }
 }
 
 QPropertyAnimation* InfoBarManager::_createSlideAni(InfoBar* infoBar) {
@@ -343,6 +362,7 @@ QPropertyAnimation* InfoBarManager::_createSlideAni(InfoBar* infoBar) {
     slideAni->setDuration(200);
     slideAni->setStartValue(_slideStartPos(infoBar));
     slideAni->setEndValue(_pos(infoBar));
+
     return slideAni;
 }
 
@@ -409,7 +429,7 @@ TopInfoBarManager* TopInfoBarManager::s_instance = nullptr;
 QPoint TopInfoBarManager::_pos(InfoBar* infoBar, const QSize& parentSize) {
     QWidget* p = infoBar->parentWidget();
     QSize size = parentSize.isValid() ? parentSize : p->size();
-    int x = (p->width() - infoBar->width()) / 2;
+    int x = (size.width() - infoBar->width()) / 2;
     int y = m_margin;
     int index = m_infoBars[p].indexOf(infoBar);
     for (int i = 0; i < index; ++i) {
@@ -417,6 +437,7 @@ QPoint TopInfoBarManager::_pos(InfoBar* infoBar, const QSize& parentSize) {
             y += m_infoBars[p][i]->height() + m_spacing;
         }
     }
+
     return QPoint(x, y);
 }
 

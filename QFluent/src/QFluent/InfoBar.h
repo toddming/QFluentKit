@@ -37,6 +37,7 @@ public:
     void closeEvent(QCloseEvent* event) override;
     void showEvent(QShowEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
+    void hideEvent(QHideEvent* event) override;
 
     static InfoBar* newInfoBar(InfoBarType::BarType type, const QString& title, const QString& content,
                                Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
@@ -117,7 +118,6 @@ protected:
     int m_spacing = 16;
     int m_margin = 24;
     QMap<QWidget*, QList<QPointer<InfoBar>>> m_infoBars;
-    QMap<QWidget*, QParallelAnimationGroup*> m_aniGroups;
     QList<QPropertyAnimation*> m_slideAnis;
     QList<QPropertyAnimation*> m_dropAnis;
 
