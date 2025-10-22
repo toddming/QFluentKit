@@ -5,6 +5,7 @@
 #include <QLabel>
 
 #include "Theme.h"
+#include "StyleSheet.h"
 #include "FluentTitleBar.h"
 #include "Private/FluentWidgetPrivate.h"
 #include "QWKWidgets/widgetwindowagent.h"
@@ -36,9 +37,9 @@ FluentWidget::FluentWidget(QMainWindow *parent)
 
     setMenuWidget(d->_windowBar);
 
-    connect(d->_windowBar, &FluentTitleBar::themeRequested, this, [this, d](bool dark){
-        d->_windowBar->themeButton()->setChecked(dark);
-        d->loadStyleSheet(!dark);
+    connect(d->_windowBar, &FluentTitleBar::themeRequested, this, [this, d](bool checked){
+        d->_windowBar->themeButton()->setChecked(checked);
+        d->setDarkTheme(!checked);
     });
     connect(d->_windowBar, &FluentTitleBar::minimizeRequested, this, &QWidget::showMinimized);
     connect(d->_windowBar, &FluentTitleBar::maximizeRequested, this, [this](bool max) {
@@ -51,7 +52,9 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     d->windowAgent = agent;
 
-    d->loadStyleSheet(Theme::instance()->isDarkTheme());
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
+
+    d->setDarkTheme(Theme::instance()->isDarkTheme());
 }
 
 FluentWidget::~FluentWidget()

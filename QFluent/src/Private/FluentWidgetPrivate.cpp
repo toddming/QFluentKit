@@ -7,26 +7,11 @@
 #include <QFile>
 #include <QTextStream>
 
-void FluentWidgetPrivate::loadStyleSheet(bool dark) {
-    Q_Q(FluentWidget);
-
+void FluentWidgetPrivate::setDarkTheme(bool dark) {
     QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(windowAgent);
     if (agent == nullptr) {
         return;
     }
-
     agent->setWindowAttribute("dark-mode", dark);
-
-    QFile file(dark ? ":/res/style/dark-style.qss" : ":/res/style/light-style.qss");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Open Style File Error:" << file.errorString();
-        return;
-    }
-
-    QTextStream in(&file);
-    QString content = in.readAll();
-    q->setStyleSheet(content);
-    file.close();
-
-    Theme::instance()->setTheme(!dark ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK);
+    Theme::instance()->setTheme(dark ? ThemeType::ThemeMode::DARK : ThemeType::ThemeMode::LIGHT);
 }

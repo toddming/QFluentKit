@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <QPushButton>
-
+#include <QDebug>
 #include "Theme.h"
 #include "Icon.h"
 #include "StyleSheet.h"
@@ -133,6 +133,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     d->_closeButton->setIcon(Icon::SvgIcon(fillPath, "close", "light", "dark"));
 
     connect(d->_maxButton, &QAbstractButton::clicked, this, [=](bool max) {
+        qDebug() << "------------max" << max;
         d->_maxButton->setIcon(Icon::SvgIcon(fillPath, max ? "restore" : "maximize", "light", "dark"));
         emulateLeaveEvent(d->_maxButton);
     });
@@ -202,6 +203,8 @@ void FluentTitleBar::setHostWidget(QWidget *w) {
 
     if (!d->_hostWidget.isNull()) {
         d->_hostWidget->installEventFilter(this);
+
+        qDebug() << "d->_hostWidget->installEventFilter(this);";
     }
 }
 
@@ -232,6 +235,8 @@ bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
         case QEvent::WindowStateChange: {
             if (maxBtn) {
                 maxBtn->setChecked(w->isMaximized());
+                const QString fillPath = ":/res/images/window_bar/%1_%2.svg";
+                d->_maxButton->setIcon(Icon::SvgIcon(fillPath, w->isMaximized() ? "restore" : "maximize", "light", "dark"));
             }
             break;
         }

@@ -10,7 +10,7 @@ class FluentWidgetPrivate
     Q_D_CREATE(FluentWidget)
 
 private:
-    void loadStyleSheet(bool);
+    void setDarkTheme(bool dark);
 
     QObject *windowAgent{nullptr};
 
