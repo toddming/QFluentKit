@@ -1,4 +1,4 @@
-#include "GalleryInterface.h"
+﻿#include "GalleryInterface.h"
 
 #include "Icon.h"
 #include "Theme.h"
@@ -167,7 +167,6 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
     vBoxLayout->setContentsMargins(36, 20, 36, 36);
 
     view->setObjectName("view");
-    // StyleSheet::GALLERY_INTERFACE.apply(this);
 
     auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/gallery_interface.qss");
     StyleSheetManager::instance()->registerWidget(styleSource, this);
@@ -190,4 +189,9 @@ void GalleryInterface::resizeEvent(QResizeEvent *e)
 {
     ScrollArea::resizeEvent(e);
     toolBar->resize(width(), toolBar->height());
+}
+
+QLayout *GalleryInterface::layout() const
+{
+    return vBoxLayout;
 }

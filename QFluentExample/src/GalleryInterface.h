@@ -1,4 +1,4 @@
-#ifndef GALLERY_INTERFACE_H
+﻿#ifndef GALLERY_INTERFACE_H
 #define GALLERY_INTERFACE_H
 
 #include <QWidget>
@@ -94,6 +94,8 @@ public:
 
     ExampleCard* addExampleCard(const QString &title, QWidget *widget, const QString &sourcePath, int stretch = 0);
     void scrollToCard(int index);
+
+    QLayout *layout() const;
 
 protected:
     void resizeEvent(QResizeEvent *e) override;

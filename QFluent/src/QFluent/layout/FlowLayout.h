@@ -4,11 +4,13 @@
 #include <QLayout>
 #include <QEasingCurve>
 
+#include "Property.h"
+
 QT_BEGIN_NAMESPACE
 
 class QPropertyAnimation;
 class QParallelAnimationGroup;
-class FlowLayout : public QLayout
+class QFLUENT_EXPORT FlowLayout : public QLayout
 {
     Q_OBJECT
     Q_DISABLE_COPY(FlowLayout)

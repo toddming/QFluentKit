@@ -6,6 +6,8 @@
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 
+#include "Property.h"
+
 class QGraphicsDropShadowEffect;
 class AnimationBase : public QObject {
     Q_OBJECT
@@ -21,7 +23,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
 };
 
-class TranslateYAnimation : public AnimationBase {
+class QFLUENT_EXPORT TranslateYAnimation : public AnimationBase {
     Q_OBJECT
     Q_PROPERTY(float y READ y WRITE setY NOTIFY valueChanged)
 public:
@@ -45,7 +47,7 @@ private:
 
 class BackgroundColorObject;
 
-class BackgroundAnimationWidget : public QWidget {
+class QFLUENT_EXPORT BackgroundAnimationWidget : public QWidget {
     Q_OBJECT
 public:
     explicit BackgroundAnimationWidget(QWidget *parent = nullptr);
@@ -71,10 +73,18 @@ protected:
     void leaveEvent(QEvent *e) override;
     void focusInEvent(QFocusEvent *e) override;
 
-    bool isHover = false;
-    bool isPressed = false;
+    bool isHover() const;
+    bool isPressed() const;
+    void setHover(bool hover);
+    void setPressed(bool pressed);
+
     BackgroundColorObject *bgColorObject;
     QPropertyAnimation *backgroundColorAni;
+
+private:
+    bool m_isHover = false;
+    bool m_isPressed = false;
+
 };
 
 class BackgroundColorObject : public QObject {
@@ -206,7 +216,7 @@ private:
     float _opacity = 0.0f;
 };
 
-class FluentAnimation : public QPropertyAnimation {
+class QFLUENT_EXPORT FluentAnimation : public QPropertyAnimation {
     Q_OBJECT
 public:
     explicit FluentAnimation(QObject *parent = nullptr);
@@ -229,7 +239,7 @@ private:
     static QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> animations;
 };
 
-class FastInvokeAnimation : public FluentAnimation {
+class QFLUENT_EXPORT FastInvokeAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit FastInvokeAnimation(QObject *parent = nullptr);
@@ -238,7 +248,7 @@ public:
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
-class StrongInvokeAnimation : public FluentAnimation {
+class QFLUENT_EXPORT StrongInvokeAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit StrongInvokeAnimation(QObject *parent = nullptr);
@@ -247,13 +257,13 @@ public:
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
-class FastDismissAnimation : public FastInvokeAnimation {
+class QFLUENT_EXPORT FastDismissAnimation : public FastInvokeAnimation {
     Q_OBJECT
 public:
     explicit FastDismissAnimation(QObject *parent = nullptr);
 };
 
-class SoftDismissAnimation : public FluentAnimation {
+class QFLUENT_EXPORT SoftDismissAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit SoftDismissAnimation(QObject *parent = nullptr);
@@ -262,7 +272,7 @@ public:
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
-class PointToPointAnimation : public FastDismissAnimation {
+class QFLUENT_EXPORT PointToPointAnimation : public FastDismissAnimation {
     Q_OBJECT
 public:
     explicit PointToPointAnimation(QObject *parent = nullptr);
@@ -270,7 +280,7 @@ public:
     static QEasingCurve curve();
 };
 
-class FadeInOutAnimation : public FluentAnimation {
+class QFLUENT_EXPORT FadeInOutAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit FadeInOutAnimation(QObject *parent = nullptr);

@@ -7,7 +7,9 @@
 #include <QHash>
 #include <QChar>
 
-class TextWrap
+#include "Property.h"
+
+class QFLUENT_EXPORT TextWrap
 {
 public:
     static std::pair<QString, bool> wrap(const QString &text, int width, bool once = true);

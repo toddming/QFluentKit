@@ -134,9 +134,9 @@ void BackgroundAnimationWidget::_updateBackgroundColor() {
         color = _disabledBackgroundColor();
     } else if (qobject_cast<QLineEdit*>(this) && hasFocus()) {
         color = _focusInBackgroundColor();
-    } else if (isPressed) {
+    } else if (m_isPressed) {
         color = _pressedBackgroundColor();
-    } else if (isHover) {
+    } else if (m_isHover) {
         color = _hoverBackgroundColor();
     } else {
         color = _normalBackgroundColor();
@@ -161,25 +161,25 @@ bool BackgroundAnimationWidget::eventFilter(QObject *obj, QEvent *e) {
 }
 
 void BackgroundAnimationWidget::mousePressEvent(QMouseEvent *e) {
-    isPressed = true;
+    m_isPressed = true;
     _updateBackgroundColor();
     QWidget::mousePressEvent(e);
 }
 
 void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
-    isPressed = false;
+    m_isPressed = false;
     _updateBackgroundColor();
     QWidget::mouseReleaseEvent(e);
 }
 
 void BackgroundAnimationWidget::enterEvent(QEnterEvent *e) {
-    isHover = true;
+    m_isHover = true;
     _updateBackgroundColor();
     QWidget::enterEvent(e);
 }
 
 void BackgroundAnimationWidget::leaveEvent(QEvent *e) {
-    isHover = false;
+    m_isHover = false;
     _updateBackgroundColor();
     QWidget::leaveEvent(e);
 }
@@ -187,6 +187,26 @@ void BackgroundAnimationWidget::leaveEvent(QEvent *e) {
 void BackgroundAnimationWidget::focusInEvent(QFocusEvent *e) {
     QWidget::focusInEvent(e);
     _updateBackgroundColor();
+}
+
+bool BackgroundAnimationWidget::isHover() const
+{
+    return m_isHover;
+}
+
+bool BackgroundAnimationWidget::isPressed() const
+{
+    return m_isPressed;
+}
+
+void BackgroundAnimationWidget::setHover(bool hover)
+{
+    m_isHover = hover;
+}
+
+void BackgroundAnimationWidget::setPressed(bool pressed)
+{
+    m_isPressed = pressed;
 }
 
 QColor BackgroundAnimationWidget::getBackgroundColor() const {

@@ -7,7 +7,7 @@
 #include "Property.h"
 
 class ScrollBarPrivate;
-class ScrollBar : public QScrollBar
+class QFLUENT_EXPORT ScrollBar : public QScrollBar
 {
     Q_OBJECT
     Q_Q_CREATE(ScrollBar)
