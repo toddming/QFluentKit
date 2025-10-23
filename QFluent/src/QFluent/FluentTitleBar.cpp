@@ -133,7 +133,6 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     d->_closeButton->setIcon(Icon::SvgIcon(fillPath, "close", "light", "dark"));
 
     connect(d->_maxButton, &QAbstractButton::clicked, this, [=](bool max) {
-        qDebug() << "------------max" << max;
         d->_maxButton->setIcon(Icon::SvgIcon(fillPath, max ? "restore" : "maximize", "light", "dark"));
         emulateLeaveEvent(d->_maxButton);
     });

@@ -15,6 +15,9 @@ public:
     explicit ScrollArea(Qt::Orientation orientation, QWidget *parent = nullptr);
 
     void enableTransparentBackground();
+
+    void setViewportMargins(int left, int top, int right, int bottom);
+
 };
 
 #endif // SCROLLAREA_H

@@ -22,6 +22,7 @@ public:
                             const QString& lightSuffix, const QString& darkSuffix,
                             const QRectF &rect, const QMap<QString, QString> &attributes = {});
 
+    static QMap<IconType::FLuentIcon, QString> fluentIcons();
 };
 
 

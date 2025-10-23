@@ -1,6 +1,7 @@
 ﻿#include "IconInterface.h"
 #include <QApplication>
 #include <QFontMetrics>
+#include <QMap>
 
 // 辅助函数（需要根据实际实现）
 IconType::FLuentIcon getDefaultFluentIcon() {
@@ -190,7 +191,6 @@ void CustomLineEdit::onTextChanged(const QString& text) {
     }
 }
 
-// IconCardView 实现
 IconCardView::IconCardView(QWidget* parent)
     : QWidget(parent),
       m_currentIndex(-1) {
@@ -198,8 +198,9 @@ IconCardView::IconCardView(QWidget* parent)
     m_trie = new Trie();
     m_iconLibraryLabel = new StrongBodyLabel("Fluent Icons Library", this);
     m_searchLineEdit = new CustomLineEdit(this);
+
     m_view = new QFrame(this);
-    m_scrollArea = new ScrollArea(m_view);
+    m_scrollArea = new ScrollArea(Qt::Vertical, m_view);
     m_scrollWidget = new QWidget(m_scrollArea);
     m_infoPanel = new IconInfoPanel(getDefaultFluentIcon(), this); // 假设有一个获取默认图标的方法
 
@@ -214,7 +215,7 @@ IconCardView::IconCardView(QWidget* parent)
 
 void IconCardView::initWidget() {
     m_scrollArea->setWidget(m_scrollWidget);
-    // m_scrollArea->setViewportMargins(0, 5, 0, 5);
+    m_scrollArea->setViewportMargins(0, 5, 0, 5);
     m_scrollArea->setWidgetResizable(true);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -238,22 +239,22 @@ void IconCardView::initWidget() {
     // connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
     // connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
-    // // 假设有一个获取所有 FluentIcon 的方法
-    // QVector<IconType::FLuentIcon> allIcons = getAllFluentIcons();
-    // for (IconType::FLuentIcon icon : allIcons) {
-    //     addIcon(icon);
-    // }
+    // 假设有一个获取所有 FluentIcon 的方法
+    QMap<IconType::FLuentIcon, QString> allIcons = Icon::fluentIcons();
+    for (IconType::FLuentIcon icon : allIcons.keys()) {
+        addIcon(icon, allIcons.value(icon));
+    }
 
-    // if (!m_icons.isEmpty()) {
-    //     setSelectedIcon(m_icons[0]);
-    // }
+    if (!m_icons.isEmpty()) {
+        setSelectedIcon(m_icons[0]);
+    }
 }
 
-void IconCardView::addIcon(IconType::FLuentIcon icon) {
-    IconCard* card = new IconCard(icon, this);
+void IconCardView::addIcon(IconType::FLuentIcon icon, const QString &name) {
+    IconCard* card = new IconCard(icon, m_scrollWidget);
     connect(card, &IconCard::clicked, this, &IconCardView::setSelectedIcon);
 
-    m_trie->insert("value", m_cards.size());
+    m_trie->insert(name, m_cards.size());
     m_cards.append(card);
     m_icons.append(icon);
     m_flowLayout->addWidget(card);
@@ -278,9 +279,14 @@ void IconCardView::setQss() {
     m_view->setObjectName("iconView");
     m_scrollWidget->setObjectName("scrollWidget");
 
-    // 假设 StyleSheet 已经实现
-    // StyleSheet::applyIconInterface(this);
-    // StyleSheet::applyIconInterface(m_scrollWidget);
+    {
+        auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/icon_interface.qss");
+        StyleSheetManager::instance()->registerWidget(styleSource, this);
+    }
+    {
+        auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/icon_interface.qss");
+        StyleSheetManager::instance()->registerWidget(styleSource, m_scrollWidget);
+    }
 
     if (m_currentIndex >= 0 && m_currentIndex < m_cards.size()) {
         m_cards[m_currentIndex]->setSelected(true, true);

@@ -31,3 +31,8 @@ void ScrollArea::enableTransparentBackground()
         widget->setStyleSheet("QWidget{background: transparent}");
     }
 }
+
+void ScrollArea::setViewportMargins(int left, int top, int right, int bottom)
+{
+    QScrollArea::setViewportMargins(left, top, right, bottom);
+}

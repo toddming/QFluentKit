@@ -112,7 +112,7 @@ class IconCardView : public QWidget {
 
 public:
     explicit IconCardView(QWidget* parent = nullptr);
-    void addIcon(IconType::FLuentIcon icon);
+    void addIcon(IconType::FLuentIcon icon, const QString &name);
     void setSelectedIcon(IconType::FLuentIcon icon);
     void search(const QString& keyword);
     void showAllIcons();
