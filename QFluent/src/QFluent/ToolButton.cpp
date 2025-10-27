@@ -9,7 +9,7 @@
 #include <QPaintEvent>
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 
@@ -20,39 +20,35 @@ ToolButton::ToolButton(QWidget* parent)
 {
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
 
-    setIcon(IconType::FLuentIcon::NONE);
+    setIcon(FluentIconType::IconType::NONE);
 
     QTimer::singleShot(0, this, [this]() {
         postInit();
     });
 }
 
-ToolButton::ToolButton(IconType::FLuentIcon icon, QWidget* parent)
+ToolButton::ToolButton(FluentIconType::IconType icon, QWidget* parent)
     : ToolButton(parent)
 {
     setIcon(icon);
 }
 
-ToolButton::ToolButton(const QString& fillPath, const QString& baseName, const QString& lightSuffix, const QString& darkSuffix,
-                       QWidget* parent)
+ToolButton::ToolButton(const QString& templatePath, QWidget* parent)
     : ToolButton(parent)
 {
-    setIcon(fillPath, baseName, lightSuffix, darkSuffix);
+    setIcon(templatePath);
 }
 
-void ToolButton::setIcon(IconType::FLuentIcon icon)
+void ToolButton::setIcon(FluentIconType::IconType icon)
 {
     m_iconType = icon;
     update();
 }
 
-void ToolButton::setIcon(const QString& fillPath, const QString& baseName, const QString& lightSuffix, const QString& darkSuffix)
+void ToolButton::setIcon(const QString& templatePath)
 {
-    m_fillPath = fillPath;
-    m_baseName = baseName;
-    m_lightSuffix = lightSuffix;
-    m_darkSuffix = darkSuffix;
-    m_iconType = IconType::FLuentIcon::NONE;
+    m_templatePath = templatePath;
+    m_iconType = FluentIconType::IconType::NONE;
 
     update();
 }
@@ -87,7 +83,7 @@ void ToolButton::paintEvent(QPaintEvent* event)
 {
     QToolButton::paintEvent(event);
 
-    if (m_iconType == IconType::FLuentIcon::NONE && m_baseName.isEmpty()) {
+    if (m_iconType == FluentIconType::IconType::NONE && m_templatePath.isEmpty()) {
         return;
     }
 
@@ -105,10 +101,10 @@ void ToolButton::paintEvent(QPaintEvent* event)
     int y = (height() - h) / 2;
     int x = (width() - w) / 2;
 
-    if (m_iconType != IconType::FLuentIcon::NONE) {
-        Icon::drawSvgIcon(&painter, m_iconType, QRectF(x, y, w, h));
+    if (m_iconType != FluentIconType::IconType::NONE) {
+        FluentIcon(m_iconType).render(&painter, QRectF(x, y, w, h));
     } else {
-        Icon::drawSvgIcon(&painter, m_fillPath, m_baseName, m_lightSuffix, m_darkSuffix, QRectF(x, y, w ,h));
+        FluentIcon(m_templatePath).render(&painter, QRectF(x, y, w, h));
     }
 }
 

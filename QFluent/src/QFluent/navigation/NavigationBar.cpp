@@ -13,7 +13,7 @@
 #include <QIcon>
 #include <QColor>
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
 
@@ -56,8 +56,8 @@ QVariant IconSlideAnimation::animateValue(const QVariant& startValue, const QVar
 }
 
 // NavigationBarPushButton 实现
-NavigationBarPushButton::NavigationBarPushButton(IconType::FLuentIcon icon, const QString& text, bool isSelectable,
-                                              IconType::FLuentIcon selectedIcon, QWidget* parent)
+NavigationBarPushButton::NavigationBarPushButton(FluentIconType::IconType icon, const QString& text, bool isSelectable,
+                                              FluentIconType::IconType selectedIcon, QWidget* parent)
     : NavigationPushButton(icon, text, isSelectable, parent),
       m_iconAni(new IconSlideAnimation(this)),
       _selectedIcon(selectedIcon),
@@ -76,7 +76,7 @@ void NavigationBarPushButton::setSelectedColor(const QColor& light, const QColor
     update();
 }
 
-void NavigationBarPushButton::setSelectedIcon(IconType::FLuentIcon icon) {
+void NavigationBarPushButton::setSelectedIcon(FluentIconType::IconType icon) {
     _selectedIcon = icon;
     update();
 }
@@ -143,15 +143,15 @@ void NavigationBarPushButton::_drawIcon(QPainter& painter) {
         rect = QRectF(22, 13 + m_iconAni->getOffset(), 20, 20);
     }
 
-    IconType::FLuentIcon selectedIcon = _selectedIcon != IconType::FLuentIcon::NONE ? _selectedIcon : fluentButton();
+    FluentIconType::IconType selectedIcon = _selectedIcon != FluentIconType::IconType::NONE ? _selectedIcon : fluentButton();
     if (property("isSelected").toBool()) {
-        if (selectedIcon != IconType::FLuentIcon::NONE) {
+        if (selectedIcon != FluentIconType::IconType::NONE) {
             QMap<QString, QString> attrs;
             attrs["fill"] = Theme::instance()->themeColor().name();
-            Icon::drawSvgIcon(&painter, selectedIcon, rect, attrs);
+            FluentIcon(selectedIcon).render(&painter, rect, ThemeType::AUTO, QList<int>(), attrs);
         }
     } else {
-        Icon::drawSvgIcon(&painter, fluentButton(), rect);
+        FluentIcon(fluentButton()).render(&painter, rect);
     }
 }
 
@@ -247,9 +247,9 @@ NavigationWidget* NavigationBar::widget(const QString& routeKey) {
     return m_items[routeKey].widget;
 }
 
-void NavigationBar::addItem(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
+void NavigationBar::addItem(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
                           const std::function<void()>& onClick, bool selectable,
-                          IconType::FLuentIcon selectedIcon,
+                          FluentIconType::IconType selectedIcon,
                           NavigationType::NavigationItemPosition position) {
     insertItem(-1, routeKey, icon, text, onClick, selectable, selectedIcon, position);
 }
@@ -260,9 +260,9 @@ void NavigationBar::addWidget(const QString& routeKey, NavigationWidget* widget,
     insertWidget(-1, routeKey, widget, onClick, position);
 }
 
-void NavigationBar::insertItem(int index, const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
+void NavigationBar::insertItem(int index, const QString& routeKey, FluentIconType::IconType icon, const QString& text,
                              const std::function<void()>& onClick, bool selectable,
-                             IconType::FLuentIcon selectedIcon,
+                             FluentIconType::IconType selectedIcon,
                              NavigationType::NavigationItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;

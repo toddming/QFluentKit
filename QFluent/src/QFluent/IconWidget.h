@@ -16,12 +16,12 @@ public:
     explicit IconWidget(QWidget *parent = nullptr);
     explicit IconWidget(const QIcon &icon, QWidget *parent = nullptr);
     explicit IconWidget(const QString &iconPath, QWidget *parent = nullptr);
-    explicit IconWidget(IconType::FLuentIcon icon, QWidget *parent = nullptr);
+    explicit IconWidget(FluentIconType::IconType icon, QWidget *parent = nullptr);
     ~IconWidget();
 
     void setIcon(const QIcon &icon);
     void setIcon(const QString &iconPath);
-    void setIcon(IconType::FLuentIcon icon);
+    void setIcon(FluentIconType::IconType icon);
     QIcon getIcon() const;
 
     QSize sizeHint() const override;

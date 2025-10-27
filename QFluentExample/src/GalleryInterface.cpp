@@ -1,6 +1,6 @@
 ﻿#include "GalleryInterface.h"
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
 
@@ -32,12 +32,12 @@ ToolBar::ToolBar(const QString &title, const QString &subtitle, QWidget *parent)
     subtitleLabel = new CaptionLabel(subtitle, this);
     subtitleLabel->setTextColor(QColor(96, 96, 96), QColor(216, 216, 216));
 
-    documentButton = new PushButton("在线文档", this, IconType::FLuentIcon::DOCUMENT);
-    sourceButton = new PushButton("源代码", this, IconType::FLuentIcon::GITHUB);
-    themeButton = new ToolButton(IconType::FLuentIcon::CONSTRACT, this);
+    documentButton = new PushButton("在线文档", this, FluentIconType::IconType::DOCUMENT);
+    sourceButton = new PushButton("源代码", this, FluentIconType::IconType::GITHUB);
+    themeButton = new ToolButton(FluentIconType::IconType::CONSTRACT, this);
     separator = new SeparatorWidget(this);
-    supportButton = new ToolButton(IconType::FLuentIcon::HEART, this);
-    feedbackButton = new ToolButton(IconType::FLuentIcon::FEEDBACK, this);
+    supportButton = new ToolButton(FluentIconType::IconType::HEART, this);
+    feedbackButton = new ToolButton(FluentIconType::IconType::FEEDBACK, this);
 
     vBoxLayout = new QVBoxLayout(this);
     buttonLayout = new QHBoxLayout();
@@ -85,7 +85,7 @@ ExampleCard::ExampleCard(const QString &title, QWidget *widget, const QString &s
     card = new QFrame(this);
     sourceWidget = new QFrame(card);
     sourcePathLabel = new BodyLabel("源代码", sourceWidget);
-    linkIcon = new IconWidget(IconType::FLuentIcon::LINK, sourceWidget);
+    linkIcon = new IconWidget(FluentIconType::IconType::LINK, sourceWidget);
 
     vBoxLayout = new QVBoxLayout(this);
     cardLayout = new QVBoxLayout(card);

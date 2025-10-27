@@ -4,7 +4,7 @@
 #include <QActionGroup>
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Animation.h"
 #include "Private/EditableComboBoxPrivate.h"
 
@@ -24,7 +24,7 @@ EditableComboBox::EditableComboBox(QWidget *parent)
     d->_pMaxVisibleItems = -1;
     d->_arrowAni = new TranslateYAnimation(this);
 
-    d->_dropButton = new LineEditButton(Icon::FluentIcon(IconType::FLuentIcon::ARROW_DOWN), this);
+    d->_dropButton = new LineEditButton(FluentIcon(FluentIconType::ARROW_DOWN).qicon(), this);
     d->_dropButton->setFixedSize(30, 25);
     hBoxLayout()->addWidget(d->_dropButton, 0, Qt::AlignRight);
     setTextMargins(0, 0, 29, 0);

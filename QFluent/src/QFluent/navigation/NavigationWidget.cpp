@@ -15,7 +15,7 @@
 #include <vector>
 #include <deque>
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "AvatarWidget.h"
 
@@ -135,7 +135,7 @@ void NavigationWidget::setExpandWidth(int width) {
 }
 
 // NavigationPushButton 实现
-NavigationPushButton::NavigationPushButton(IconType::FLuentIcon icon, const QString& text,
+NavigationPushButton::NavigationPushButton(FluentIconType::IconType icon, const QString& text,
                                          bool isSelectable, QWidget* parent)
     : NavigationWidget(isSelectable, parent), m_icon(icon), m_text(text) {
     // setFont(this);
@@ -154,7 +154,7 @@ QIcon NavigationPushButton::icon() const {
     return QIcon();
 }
 
-void NavigationPushButton::setIcon(IconType::FLuentIcon icon) {
+void NavigationPushButton::setIcon(FluentIconType::IconType icon) {
     m_icon = icon;
     update();
 }
@@ -173,7 +173,7 @@ bool NavigationPushButton::_canDrawIndicator() {
     return property("isSelected").toBool();
 }
 
-IconType::FLuentIcon NavigationPushButton::fluentButton()
+FluentIconType::IconType NavigationPushButton::fluentButton()
 {
     return m_icon;
 }
@@ -207,7 +207,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
         painter.drawRoundedRect(rect(), 5, 5);
     }
 
-    Icon::drawSvgIcon(&painter, m_icon, QRectF(11.5 + pl, 10, 16, 16));
+    FluentIcon(m_icon).render(&painter, QRectF(11.5 + pl, 10, 16, 16));
 
     // 绘制文本
     if (property("isCompacted").toBool())
@@ -215,12 +215,12 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 
     painter.setPen(textColor());
 
-    int left = (m_icon == IconType::FLuentIcon::NONE) ? pl + 16 : 44 + pl;
+    int left = (m_icon == FluentIconType::IconType::NONE) ? pl + 16 : 44 + pl;
     painter.drawText(QRectF(left, 0, width() - 13 - left - pr, height()), Qt::AlignVCenter, text());
 }
 
 // NavigationToolButton 实现
-NavigationToolButton::NavigationToolButton(IconType::FLuentIcon icon, QWidget* parent)
+NavigationToolButton::NavigationToolButton(FluentIconType::IconType icon, QWidget* parent)
     : NavigationPushButton(icon, "", false, parent) {
     setFixedSize(40, 36);
 
@@ -256,7 +256,7 @@ void NavigationSeparator::paintEvent(QPaintEvent* e) {
 }
 
 // NavigationTreeItem 实现
-NavigationTreeItem::NavigationTreeItem(IconType::FLuentIcon icon, const QString& text,
+NavigationTreeItem::NavigationTreeItem(FluentIconType::IconType icon, const QString& text,
                                      bool isSelectable, NavigationTreeWidget* parent)
     : NavigationPushButton(icon, text, isSelectable, parent), _arrowAngle(0) {
     rotateAni = new QPropertyAnimation(this, "arrowAngle", this);
@@ -322,7 +322,7 @@ void NavigationTreeItem::paintEvent(QPaintEvent* e) {
     painter.translate(width() - 20, 18);
     painter.rotate(_arrowAngle);
 
-    Icon::drawSvgIcon(&painter, IconType::FLuentIcon::ARROW_DOWN, QRectF(-5, -5, 9.6, 9.6));
+    FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
 
@@ -336,7 +336,7 @@ void NavigationTreeItem::setArrowAngle(float angle) {
 }
 
 // NavigationTreeWidget 实现
-NavigationTreeWidget::NavigationTreeWidget(IconType::FLuentIcon icon, const QString& text,
+NavigationTreeWidget::NavigationTreeWidget(FluentIconType::IconType icon, const QString& text,
                                          bool isSelectable, QWidget* parent)
     : NavigationTreeWidgetBase(isSelectable, parent), isExpanded(false), m_icon(icon) {
     m_itemWidget = new NavigationTreeItem(icon, text, isSelectable, this);
@@ -380,7 +380,7 @@ void NavigationTreeWidget::setText(const QString& text) {
     m_itemWidget->setText(text);
 }
 
-void NavigationTreeWidget::setIcon(IconType::FLuentIcon icon) {
+void NavigationTreeWidget::setIcon(FluentIconType::IconType icon) {
     m_itemWidget->setIcon(icon);
 }
 

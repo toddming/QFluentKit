@@ -20,7 +20,7 @@
 #include <QLabel>
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "../scrollbar/ScrollBar.h"
 #include "StyleSheet.h"
 
@@ -60,7 +60,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.translate(width() / 2, height() / 2);
     painter.rotate(m_angle);
 
-    Icon::drawSvgIcon(&painter, IconType::FLuentIcon::ARROW_DOWN, QRectF(-5, -5, 9.6, 9.6));
+    FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
 void ExpandButton::enterEvent(QEnterEvent *e) {

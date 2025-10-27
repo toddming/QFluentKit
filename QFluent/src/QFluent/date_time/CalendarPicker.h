@@ -6,7 +6,7 @@
 #include "Property.h"
 #include "CalendarView.h"
 
-using FIF = IconType::FLuentIcon;
+using FIF = FluentIconType::IconType;
 
 
 class QFLUENT_EXPORT CalendarPicker : public QPushButton

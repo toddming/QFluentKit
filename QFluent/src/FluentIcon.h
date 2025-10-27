@@ -1,4 +1,4 @@
-// FluentIcon.h
+﻿// FluentIcon.h
 #ifndef FLUENTICON_H
 #define FLUENTICON_H
 
@@ -17,15 +17,16 @@
 #include <QCache>
 #include <QPair>
 #include <QMutex>  // 添加以支持线程安全
+#include <QAction>
 
-#include "../common/Theme.h"
+#include "Define.h"
 
 // 前向声明
 class FluentIconBase;
 class ColoredFluentIcon;
 
 // 获取图标颜色
-QString getIconColor(Theme::ThemeType theme = Theme::ThemeType::AUTO, bool reverse = false);
+QString getIconColor(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO, bool reverse = false);
 
 // ============================================================================
 // SvgCache - SVG缓存管理器（添加线程安全）
@@ -108,7 +109,7 @@ private:
 // ============================================================================
 // FluentIconBase - Fluent图标基类
 // ============================================================================
-class FluentIconBase {
+class QFLUENT_EXPORT FluentIconBase {
 public:
     using Ptr = QSharedPointer<FluentIconBase>;
 
@@ -118,10 +119,10 @@ public:
     virtual Ptr clone() const = 0;
 
     // 获取图标路径
-    virtual QString path(Theme::ThemeType theme = Theme::ThemeType::AUTO) const = 0;
+    virtual QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) const = 0;
 
     // 创建QIcon
-    virtual QIcon icon(Theme::ThemeType theme = Theme::ThemeType::AUTO, const QColor& color = QColor()) const;
+    virtual QIcon icon(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO, const QColor& color = QColor()) const;
 
     // 创建彩色图标（返回智能指针）
     virtual Ptr colored(const QColor& lightColor, const QColor& darkColor);
@@ -130,7 +131,7 @@ public:
     QIcon qicon(bool reverse = false) const;
 
     // 渲染图标
-    virtual void render(QPainter* painter, const QRect& rect, Theme::ThemeType theme = Theme::ThemeType::AUTO,
+    virtual void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
                         const QList<int>& indexes = QList<int>(),
                         const QMap<QString, QString>& attributes = QMap<QString, QString>()) const;
 };
@@ -138,7 +139,7 @@ public:
 // ============================================================================
 // FluentFontIconBase - Fluent字体图标基类
 // ============================================================================
-class FluentFontIconBase : public FluentIconBase {
+class QFLUENT_EXPORT FluentFontIconBase : public FluentIconBase {
 public:
     using Ptr = QSharedPointer<FluentFontIconBase>;
 
@@ -149,19 +150,19 @@ public:
     FluentIconBase::Ptr clone() const override = 0;
 
     // 提供默认实现,子类可以重写
-    QString path(Theme::ThemeType theme = Theme::ThemeType::AUTO) const override;
+    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) const override;
 
     // 设置粗体 - 返回派生类智能指针
     Ptr bold();
 
     // 创建QIcon
-    QIcon icon(Theme::ThemeType theme = Theme::ThemeType::AUTO, const QColor& color = QColor()) const override;
+    QIcon icon(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO, const QColor& color = QColor()) const override;
 
     // 设置颜色 - 返回派生类智能指针（不重写基类虚函数）
     Ptr withColor(const QColor& lightColor, const QColor& darkColor);
 
     // 渲染
-    void render(QPainter* painter, const QRect& rect, Theme::ThemeType theme = Theme::ThemeType::AUTO,
+    void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
                 const QList<int>& indexes = QList<int>(),
                 const QMap<QString, QString>& attributes = QMap<QString, QString>()) const override;
 
@@ -185,13 +186,13 @@ protected:
     static QString s_fontFamily;
 
 private:
-    QColor getIconColor(Theme::ThemeType theme) const;
+    QColor getIconColor(ThemeType::ThemeMode theme) const;
 };
 
 // ============================================================================
 // ColoredFluentIcon - 彩色Fluent图标
 // ============================================================================
-class ColoredFluentIcon : public FluentIconBase {
+class QFLUENT_EXPORT ColoredFluentIcon : public FluentIconBase {
 public:
     ColoredFluentIcon(FluentIconBase::Ptr icon, const QColor& lightColor, const QColor& darkColor);
     ~ColoredFluentIcon() override = default;
@@ -199,9 +200,9 @@ public:
     // 克隆方法
     Ptr clone() const override;
 
-    QString path(Theme::ThemeType theme = Theme::ThemeType::AUTO) const override;
+    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) const override;
 
-    void render(QPainter* painter, const QRect& rect, Theme::ThemeType theme = Theme::ThemeType::AUTO,
+    void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
                 const QList<int>& indexes = QList<int>(),
                 const QMap<QString, QString>& attributes = QMap<QString, QString>()) const override;
 
@@ -214,37 +215,29 @@ private:
 // ============================================================================
 // FluentIcon - Fluent图标枚举
 // ============================================================================
-class FluentIcon : public FluentIconBase {
+class QFLUENT_EXPORT FluentIcon : public FluentIconBase {
 public:
-    enum IconType {
-        UP,
-        ADD,
-        BUS,
-        CAR,
-        CUT,
-        DELETE,
-        EDIT,
-        SEARCH
-    };
 
-    explicit FluentIcon(IconType type);
+    explicit FluentIcon(FluentIconType::IconType type);
+    explicit FluentIcon(const QString& templatePath);
     ~FluentIcon() override = default;
 
     // 克隆方法
     Ptr clone() const override;
 
-    QString path(Theme::ThemeType theme = Theme::ThemeType::AUTO) const override;
-    IconType type() const { return m_type; }
+    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) const override;
+    FluentIconType::IconType type() const { return m_type; }
 
 private:
-    IconType m_type;
-    static QString iconName(IconType type);
+    FluentIconType::IconType m_type;
+    QString m_templatePath;
+    static QString iconName(FluentIconType::IconType type);
 };
 
 // ============================================================================
 // Icon - QIcon包装类
 // ============================================================================
-class Icon : public QIcon {
+class QFLUENT_EXPORT Icon : public QIcon {
 public:
     explicit Icon(const FluentIcon& fluentIcon);
     ~Icon() = default;
@@ -255,23 +248,43 @@ private:
     FluentIcon m_fluentIcon;
 };
 
+
 // ============================================================================
 // 辅助函数
 // ============================================================================
 
 // 绘制SVG图标
-bool drawSvgIcon(const QByteArray& svgData, QPainter* painter, const QRect& rect);
+bool drawSvgIcon(const QByteArray& svgData, QPainter* painter, const QRectF& rect);
 
 // 写入SVG(修改属性)，使用缓存
 QString writeSvg(const QString& iconPath, const QList<int>& indexes = QList<int>(),
                  const QMap<QString, QString>& attributes = QMap<QString, QString>());
 
 // 绘制图标
-void drawIcon(const QVariant& icon, QPainter* painter, const QRect& rect,
+void drawIcon(const QVariant& icon, QPainter* painter, const QRectF& rect,
               QIcon::State state = QIcon::Off,
               const QMap<QString, QString>& attributes = QMap<QString, QString>());
 
 // 转换为QIcon
 QIcon toQIcon(const QVariant& icon);
+
+
+
+
+class QFLUENT_EXPORT Action : public QAction
+{
+    Q_OBJECT
+
+public:
+    explicit Action(QObject* parent = nullptr);
+    explicit Action(const QString& text, QObject* parent = nullptr);
+    Action(const QIcon& icon, const QString& text, QObject* parent = nullptr);
+    Action(const FluentIconType::IconType icon, const QString& text, QObject* parent = nullptr);
+    ~Action() override;
+
+    QIcon icon() const;
+
+    void setIcon(const FluentIconType::IconType icon);
+};
 
 #endif // FLUENTICON_H

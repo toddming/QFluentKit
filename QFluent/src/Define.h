@@ -95,8 +95,8 @@ class QFLUENT_EXPORT CLASS : public QObject \
     Q_END_ENUM_CREATE(ThemeType)
 
 
-    Q_BEGIN_ENUM_CREATE(IconType)
-    enum FLuentIcon {
+    Q_BEGIN_ENUM_CREATE(FluentIconType)
+    enum IconType {
         UP,
         ADD,
         BUS,
@@ -272,10 +272,11 @@ class QFLUENT_EXPORT CLASS : public QObject \
         CHEVRON_RIGHT_MED,
         EMOJI_TAB_SYMBOLS,
         EXPRESSIVE_INPUT_ENTRY,
-        NONE
+        NONE,
+        CUSTOM_PATH = -1
     };
-    Q_ENUM_CREATE(FLuentIcon)
-    Q_END_ENUM_CREATE(IconType)
+    Q_ENUM_CREATE(IconType)
+    Q_END_ENUM_CREATE(FluentIconType)
 
 
 

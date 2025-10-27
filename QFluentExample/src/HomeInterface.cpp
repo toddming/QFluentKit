@@ -2,7 +2,7 @@
 #include "Card/LinkCard.h"
 #include "Card/SampleCard.h"
 #include "QFluent/scrollbar/ScrollBar.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
 
@@ -34,28 +34,28 @@ void BannerWidget::setupUI()
 void BannerWidget::setupLinks()
 {
     m_linkCardView->addCard(
-                Icon::FluentIcon(IconType::FLuentIcon::SEARCH),
+                FluentIcon(FluentIconType::SEARCH).qicon(),
                 tr("Getting started"),
                 tr("An overview of app development options and samples."),
                 ""
                 );
 
     m_linkCardView->addCard(
-                Icon::FluentIcon(IconType::FLuentIcon::GITHUB),
+                FluentIcon(FluentIconType::GITHUB).qicon(),
                 tr("GitHub repo"),
                 tr("The latest fluent design controls and styles for your applications."),
                 ""
                 );
 
     m_linkCardView->addCard(
-                Icon::FluentIcon(IconType::FLuentIcon::CODE),
+                FluentIcon(FluentIconType::CODE).qicon(),
                 tr("Code samples"),
                 tr("Find samples that demonstrate specific tasks, features and APIs."),
                 ""
                 );
 
     m_linkCardView->addCard(
-                Icon::FluentIcon(IconType::FLuentIcon::FEEDBACK),
+                FluentIcon(FluentIconType::FEEDBACK).qicon(),
                 tr("Send feedback"),
                 tr("Help us improve PyQt-Fluent-Widgets by providing feedback."),
                 ""

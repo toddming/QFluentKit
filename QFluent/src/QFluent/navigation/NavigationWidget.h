@@ -53,12 +53,12 @@ private:
 class NavigationPushButton : public NavigationWidget {
     Q_OBJECT
 public:
-    NavigationPushButton(IconType::FLuentIcon icon, const QString& text, bool isSelectable, QWidget* parent = nullptr);
+    NavigationPushButton(FluentIconType::IconType icon, const QString& text, bool isSelectable, QWidget* parent = nullptr);
 
     QString text() const;
     void setText(const QString& text);
     QIcon icon() const;
-    void setIcon(IconType::FLuentIcon icon);
+    void setIcon(FluentIconType::IconType icon);
     void setIndicatorColor(const QColor& light, const QColor& dark);
 
 protected:
@@ -66,11 +66,11 @@ protected:
     virtual QMargins _margins();
     virtual bool _canDrawIndicator();
 
-    IconType::FLuentIcon fluentButton();
+    FluentIconType::IconType fluentButton();
 
 
 private:
-    IconType::FLuentIcon m_icon;
+    FluentIconType::IconType m_icon;
     QString m_text;
     QColor lightIndicatorColor;
     QColor darkIndicatorColor;
@@ -80,7 +80,7 @@ private:
 class NavigationToolButton : public NavigationPushButton {
     Q_OBJECT
 public:
-    NavigationToolButton(IconType::FLuentIcon icon, QWidget* parent = nullptr);
+    NavigationToolButton(FluentIconType::IconType icon, QWidget* parent = nullptr);
     void setCompacted(bool isCompacted) override;
 };
 
@@ -100,7 +100,7 @@ class NavigationTreeItem : public NavigationPushButton {
     Q_OBJECT
     Q_PROPERTY(float arrowAngle READ getArrowAngle WRITE setArrowAngle)
 public:
-    NavigationTreeItem(IconType::FLuentIcon icon, const QString& text, bool isSelectable, NavigationTreeWidget* parent = nullptr);
+    NavigationTreeItem(FluentIconType::IconType icon, const QString& text, bool isSelectable, NavigationTreeWidget* parent = nullptr);
 
     void setExpanded(bool isExpanded);
     float getArrowAngle() const;
@@ -137,7 +137,7 @@ public:
 class NavigationTreeWidget : public NavigationTreeWidgetBase {
     Q_OBJECT
 public:
-    NavigationTreeWidget(IconType::FLuentIcon icon, const QString& text, bool isSelectable, QWidget* parent = nullptr);
+    NavigationTreeWidget(FluentIconType::IconType icon, const QString& text, bool isSelectable, QWidget* parent = nullptr);
 
     void addChild(NavigationWidget* child) override;
     void insertChild(int index, NavigationWidget* child) override;
@@ -150,7 +150,7 @@ public:
     QString text() const;
     QIcon icon() const;
     void setText(const QString& text);
-    void setIcon(IconType::FLuentIcon icon);
+    void setIcon(FluentIconType::IconType icon);
     void setIndicatorColor(const QColor& light, const QColor& dark);
     void setFont(const QFont& font);
     NavigationTreeWidget* clone();
@@ -175,7 +175,7 @@ private:
     void __initWidget();
 
     bool isExpanded;
-    IconType::FLuentIcon m_icon;
+    FluentIconType::IconType m_icon;
 
     QVBoxLayout* vBoxLayout;
     QPropertyAnimation* expandAni;

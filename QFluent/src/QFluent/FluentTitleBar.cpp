@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QDebug>
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 #include "Private/FluentTitleBarPrivate.h"
@@ -125,15 +125,15 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
 
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::TITLE_BAR);
 
-    const QString fillPath = ":/res/images/window_bar/%1_%2.svg";
-    d->_backButton->setIcon(Icon::FluentIcon(IconType::FLuentIcon::LEFT_ARROW));
-    d->_themeButton->setIcon(Icon::SvgIcon(fillPath, "theme", "light", "dark"));
-    d->_minButton->setIcon(Icon::SvgIcon(fillPath, "minimize", "light", "dark"));
-    d->_maxButton->setIcon(Icon::SvgIcon(fillPath, "maximize", "light", "dark"));
-    d->_closeButton->setIcon(Icon::SvgIcon(fillPath, "close", "light", "dark"));
+    const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
+    d->_backButton->setIcon(FluentIcon(FluentIconType::LEFT_ARROW).qicon());
+    d->_themeButton->setIcon(FluentIcon(fillPath.arg("theme")).qicon());
+    d->_minButton->setIcon(FluentIcon(fillPath.arg("minimize")).qicon());
+    d->_maxButton->setIcon(FluentIcon(fillPath.arg("maximize")).qicon());
+    d->_closeButton->setIcon(FluentIcon(fillPath.arg("close")).qicon());
 
     connect(d->_maxButton, &QAbstractButton::clicked, this, [=](bool max) {
-        d->_maxButton->setIcon(Icon::SvgIcon(fillPath, max ? "restore" : "maximize", "light", "dark"));
+        d->_maxButton->setIcon(FluentIcon(fillPath.arg(max ? "restore" : "maximize")).qicon());
         emulateLeaveEvent(d->_maxButton);
     });
 }
@@ -232,8 +232,8 @@ bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
         case QEvent::WindowStateChange: {
             if (maxBtn) {
                 maxBtn->setChecked(w->isMaximized());
-                const QString fillPath = ":/res/images/window_bar/%1_%2.svg";
-                d->_maxButton->setIcon(Icon::SvgIcon(fillPath, w->isMaximized() ? "restore" : "maximize", "light", "dark"));
+                const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
+                maxBtn->setIcon(FluentIcon(fillPath.arg(w->isMaximized() ? "restore" : "maximize")).qicon());
             }
             break;
         }

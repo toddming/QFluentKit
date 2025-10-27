@@ -16,7 +16,7 @@ class SpinButton : public QToolButton {
     Q_OBJECT
 
 public:
-    explicit SpinButton(IconType::FLuentIcon iconType, QWidget* parent = nullptr);
+    explicit SpinButton(FluentIconType::IconType iconType, QWidget* parent = nullptr);
 
     QSize sizeHint() const override { return QSize(31, 23); }
 
@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent* e) override;
 
 private:
-    IconType::FLuentIcon m_iconType;
+    FluentIconType::IconType m_iconType;
     bool m_isPressed = false;
 };
 

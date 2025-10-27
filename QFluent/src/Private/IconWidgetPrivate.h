@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Define.h"
 #include <QIcon>
@@ -10,7 +10,7 @@ public:
     Q_D_CREATE(IconWidget)
     Q_PROPERTY_CREATE_D(QIcon, Icon)
     Q_PROPERTY_CREATE_D(bool, IsFluentIcon)
-    Q_PROPERTY_CREATE_D(IconType::FLuentIcon, FluentIcon)
+    Q_PROPERTY_CREATE_D(FluentIconType::IconType, FluentIcon)
 
     explicit IconWidgetPrivate();
 };

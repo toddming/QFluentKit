@@ -16,7 +16,7 @@
 #include <QMargins>
 #include <QScrollArea>
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "ProfileCard.h"
 #include "NavigationWidget.h"
@@ -36,7 +36,7 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     m_scrollArea = new QScrollArea(this);
     m_scrollWidget = new QWidget();
 
-    m_menuButton = new NavigationToolButton(IconType::FLuentIcon::MENU, this);
+    m_menuButton = new NavigationToolButton(FluentIconType::IconType::MENU, this);
     m_avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/app/avatar.png"), this);
     connect(m_avatarWidget, &NavigationAvatarWidget::clicked, this, [=](){
         auto menu = new RoundMenu("menu", this);
@@ -45,11 +45,11 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
         menu->view()->setMaxVisibleItems(0);
         menu->addWidget(card);
         menu->addSeparator();
-        menu->addAction(new Action(IconType::FLuentIcon::PEOPLE, "管理账户和设置"));
-        menu->addAction(new Action(IconType::FLuentIcon::SHOPPING_CART, "支付方式"));
-        menu->addAction(new Action(IconType::FLuentIcon::CODE, "兑换代码和礼品卡"));
+        menu->addAction(new Action(FluentIconType::IconType::PEOPLE, "管理账户和设置"));
+        menu->addAction(new Action(FluentIconType::IconType::SHOPPING_CART, "支付方式"));
+        menu->addAction(new Action(FluentIconType::IconType::CODE, "兑换代码和礼品卡"));
         menu->addSeparator();
-        menu->addAction(new Action(IconType::FLuentIcon::SETTING, "设置"));
+        menu->addAction(new Action(FluentIconType::IconType::SETTING, "设置"));
 
         menu->exec(m_avatarWidget->mapToGlobal(QPoint(m_avatarWidget->width()+5, -100)));
     });
@@ -151,7 +151,7 @@ NavigationWidget* NavigationPanel::widget(const QString& routeKey) {
     return m_items[routeKey].widget;
 }
 
-void NavigationPanel::addItem(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
+void NavigationPanel::addItem(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
                             const std::function<void()>& onClick, bool selectable,
                             NavigationType::NavigationItemPosition position, const QString& tooltip,
                             const QString& parentRouteKey) {
@@ -165,7 +165,7 @@ void NavigationPanel::addWidget(const QString& routeKey, NavigationWidget* widge
     insertWidget(-1, routeKey, widget, onClick, position, tooltip, parentRouteKey);
 }
 
-void NavigationPanel::insertItem(int index, const QString& routeKey, IconType::FLuentIcon icon,
+void NavigationPanel::insertItem(int index, const QString& routeKey, FluentIconType::IconType icon,
                                const QString& text, const std::function<void()>& onClick,
                                bool selectable, NavigationType::NavigationItemPosition position,
                                const QString& tooltip, const QString& parentRouteKey) {

@@ -1,8 +1,8 @@
-#include "IconWidget.h"
+﻿#include "IconWidget.h"
 #include <QPainter>
 #include <QIcon>
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Private/IconWidgetPrivate.h"
 
 IconWidget::IconWidget(QWidget *parent)
@@ -29,7 +29,7 @@ IconWidget::IconWidget(const QString &iconPath, QWidget *parent)
     setIcon(iconPath);
 }
 
-IconWidget::IconWidget(IconType::FLuentIcon icon, QWidget *parent)
+IconWidget::IconWidget(FluentIconType::IconType icon, QWidget *parent)
     : IconWidget(parent)
 {
     setIcon(icon);
@@ -46,7 +46,7 @@ void IconWidget::setIcon(const QIcon &icon)
 
     d->_pIcon = icon;
     d->_pIsFluentIcon = false;
-    d->_pFluentIcon = IconType::FLuentIcon::NONE;
+    d->_pFluentIcon = FluentIconType::IconType::NONE;
     update();
 }
 
@@ -55,7 +55,7 @@ void IconWidget::setIcon(const QString &iconPath)
     setIcon(QIcon(iconPath));
 }
 
-void IconWidget::setIcon(IconType::FLuentIcon icon)
+void IconWidget::setIcon(FluentIconType::IconType icon)
 {
     Q_D(IconWidget);
 
@@ -87,8 +87,8 @@ void IconWidget::paintEvent(QPaintEvent *event)
 
     QRect rect = this->rect();
 
-    if (d->_pIsFluentIcon && (d->_pFluentIcon != IconType::FLuentIcon::NONE)) {
-        Icon::drawSvgIcon(&painter, d->_pFluentIcon, rect);
+    if (d->_pIsFluentIcon && (d->_pFluentIcon != FluentIconType::IconType::NONE)) {
+        FluentIcon(d->_pFluentIcon).render(&painter, rect);
     } else {
         if (!d->_pIcon.isNull()) {
             d->_pIcon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);

@@ -23,7 +23,7 @@ public:
     void setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType);
     void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
 
-    void addSubInterface(const QString& routeKey, IconType::FLuentIcon icon, const QString& text,
+    void addSubInterface(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
                          QWidget* widget, bool selectable = true,
                          NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                          const QString& tooltip = QString(), const QString& parentRouteKey = QString());

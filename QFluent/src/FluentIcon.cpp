@@ -1,4 +1,4 @@
-// FluentIcon.cpp
+﻿// FluentIcon.cpp
 #include "FluentIcon.h"
 #include <QApplication>
 #include <QPalette>
@@ -11,7 +11,7 @@
 #include <QCryptographicHash>
 #include <QRegularExpression>
 #include <algorithm>  // 用于 std::sort
-
+#include "Theme.h"
 // ============================================================================
 // SvgCache 实现（添加线程安全）
 // ============================================================================
@@ -57,23 +57,23 @@ QString SvgCache::generateCacheKey(const QString& iconPath,
 
     // 组合所有部分生成唯一键
     return QString("%1|%2|%3")
-        .arg(iconPath)
-        .arg(qHash(sortedIndexes))
-        .arg(QCryptographicHash::hash(attrStr.toUtf8(), QCryptographicHash::Md5).toHex());
+            .arg(iconPath)
+            .arg(qHash(sortedIndexes))
+            .arg(QCryptographicHash::hash(attrStr.toUtf8(), QCryptographicHash::Md5).toHex());
 }
 
 // ============================================================================
 // 主题相关函数
 // ============================================================================
 
-QString getIconColor(Theme::ThemeType theme, bool reverse) {
+QString getIconColor(ThemeType::ThemeMode theme, bool reverse) {
     QString lc = reverse ? "white" : "black";
     QString dc = reverse ? "black" : "white";
 
-    if (theme == Theme::ThemeType::AUTO) {
-        return sTheme->isDarkMode() ? dc : lc;
+    if (theme == ThemeType::ThemeMode::AUTO) {
+        return Theme::instance()->isDarkTheme() ? dc : lc;
     } else {
-        return (theme == Theme::ThemeType::DARK) ? dc : lc;
+        return (theme == ThemeType::ThemeMode::DARK) ? dc : lc;
     }
 }
 
@@ -81,7 +81,7 @@ QString getIconColor(Theme::ThemeType theme, bool reverse) {
 // 辅助函数实现
 // ============================================================================
 
-bool drawSvgIcon(const QByteArray& svgData, QPainter* painter, const QRect& rect) {
+bool drawSvgIcon(const QByteArray& svgData, QPainter* painter, const QRectF& rect) {
     if (!painter || !painter->isActive()) {
         qWarning() << "Invalid painter in drawSvgIcon";
         return false;
@@ -128,11 +128,11 @@ QString writeSvg(const QString& iconPath, const QList<int>& indexes,
 
     QDomNodeList pathNodes = dom.elementsByTagName("path");
     QList<int> targetIndexes = indexes.isEmpty() ?
-                                   [&pathNodes]() {
-                                       QList<int> list;
-                                       for (int i = 0; i < pathNodes.length(); ++i) list.append(i);
-                                       return list;
-                                   }() : indexes;
+                [&pathNodes]() {
+        QList<int> list;
+        for (int i = 0; i < pathNodes.length(); ++i) list.append(i);
+        return list;
+    }() : indexes;
 
     for (int i : targetIndexes) {
         if (i >= pathNodes.length()) continue;
@@ -151,7 +151,7 @@ QString writeSvg(const QString& iconPath, const QList<int>& indexes,
     return modifiedSvg;
 }
 
-void drawIcon(const QVariant& iconVariant, QPainter* painter, const QRect& rect,
+void drawIcon(const QVariant& iconVariant, QPainter* painter, const QRectF& rect,
               QIcon::State state, const QMap<QString, QString>& attributes) {
     if (!painter || !painter->isActive()) {
         return;
@@ -161,14 +161,14 @@ void drawIcon(const QVariant& iconVariant, QPainter* painter, const QRect& rect,
     if (iconVariant.canConvert<FluentIconBase*>()) {
         FluentIconBase* icon = iconVariant.value<FluentIconBase*>();
         if (icon) {
-            icon->render(painter, rect, Theme::ThemeType::AUTO, QList<int>(), attributes);
+            icon->render(painter, rect, ThemeType::ThemeMode::AUTO, QList<int>(), attributes);
         }
     } else if (iconVariant.canConvert<QIcon>()) {
         QIcon icon = iconVariant.value<QIcon>();
-        icon.paint(painter, rect, Qt::AlignCenter, QIcon::Normal, state);
+        icon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
     } else if (iconVariant.canConvert<QString>()) {
         QIcon icon(iconVariant.toString());
-        icon.paint(painter, rect, Qt::AlignCenter, QIcon::Normal, state);
+        icon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
     }
 }
 
@@ -211,9 +211,9 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect,
         painter->setOpacity(0.7);
     }
 
-    Theme::ThemeType theme = m_isThemeReversed ?
-                                 (sTheme->isDarkMode() ? Theme::ThemeType::LIGHT : Theme::ThemeType::DARK) :
-                                 Theme::ThemeType::AUTO;
+    ThemeType::ThemeMode theme = m_isThemeReversed ?
+                (Theme::instance()->isDarkTheme() ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK) :
+                ThemeType::ThemeMode::AUTO;
 
     QRect adjustedRect = rect;
 
@@ -357,7 +357,7 @@ QPixmap FontIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State
 // FluentIconBase 实现
 // ============================================================================
 
-QIcon FluentIconBase::icon(Theme::ThemeType theme, const QColor& color) const {
+QIcon FluentIconBase::icon(ThemeType::ThemeMode theme, const QColor& color) const {
     QString iconPath = path(theme);
 
     if (!(iconPath.endsWith(".svg") && color.isValid())) {
@@ -378,7 +378,7 @@ QIcon FluentIconBase::qicon(bool reverse) const {
     return QIcon(new FluentIconEngine(this->clone(), reverse));
 }
 
-void FluentIconBase::render(QPainter* painter, const QRect& rect, Theme::ThemeType theme,
+void FluentIconBase::render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
                             const QList<int>& indexes,
                             const QMap<QString, QString>& attributes) const {
     if (!painter || !painter->isActive()) {
@@ -404,7 +404,7 @@ void FluentIconBase::render(QPainter* painter, const QRect& rect, Theme::ThemeTy
         drawSvgIcon(svgData, painter, rect);
     } else {
         QIcon icon(iconPath);
-        icon.paint(painter, rect, Qt::AlignCenter);
+        icon.paint(painter, rect.toRect(), Qt::AlignCenter);
     }
 }
 
@@ -424,7 +424,7 @@ FluentFontIconBase::FluentFontIconBase(const QString& charCode)
     loadFont();
 }
 
-QString FluentFontIconBase::path(Theme::ThemeType theme) const {
+QString FluentFontIconBase::path(ThemeType::ThemeMode theme) const {
     Q_UNUSED(theme)
     return QString();
 }
@@ -438,7 +438,7 @@ FluentFontIconBase::Ptr FluentFontIconBase::bold() {
     return cloned;
 }
 
-QIcon FluentFontIconBase::icon(Theme::ThemeType theme, const QColor& color) const {
+QIcon FluentFontIconBase::icon(ThemeType::ThemeMode theme, const QColor& color) const {
     QColor iconColor = color.isValid() ? color : getIconColor(theme);
     return QIcon(new FontIconEngine(s_fontFamily, m_char, iconColor, m_isBold));
 }
@@ -453,7 +453,7 @@ FluentFontIconBase::Ptr FluentFontIconBase::withColor(const QColor& lightColor, 
     return cloned;
 }
 
-void FluentFontIconBase::render(QPainter* painter, const QRect& rect, Theme::ThemeType theme,
+void FluentFontIconBase::render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
                                 const QList<int>& indexes,
                                 const QMap<QString, QString>& attributes) const {
     Q_UNUSED(indexes)
@@ -489,7 +489,7 @@ void FluentFontIconBase::render(QPainter* painter, const QRect& rect, Theme::The
 
 bool FluentFontIconBase::loadFont() {
     if (s_isFontLoaded && s_fontId != -1 &&
-        QFontDatabase::applicationFontFamilies(s_fontId).contains(s_fontFamily)) {
+            QFontDatabase::applicationFontFamilies(s_fontId).contains(s_fontFamily)) {
         return true;
     }
 
@@ -546,11 +546,11 @@ void FluentFontIconBase::cleanup() {
     }
 }
 
-QColor FluentFontIconBase::getIconColor(Theme::ThemeType theme) const {
-    if (theme == Theme::ThemeType::AUTO) {
-        return sTheme->isDarkMode() ? m_darkColor : m_lightColor;
+QColor FluentFontIconBase::getIconColor(ThemeType::ThemeMode theme) const {
+    if (theme == ThemeType::ThemeMode::AUTO) {
+        return Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor;
     } else {
-        return (theme == Theme::ThemeType::DARK) ? m_darkColor : m_lightColor;
+        return (theme == ThemeType::ThemeMode::DARK) ? m_darkColor : m_lightColor;
     }
 }
 
@@ -572,11 +572,11 @@ FluentIconBase::Ptr ColoredFluentIcon::clone() const {
     return Ptr(new ColoredFluentIcon(m_fluentIcon->clone(), m_lightColor, m_darkColor));
 }
 
-QString ColoredFluentIcon::path(Theme::ThemeType theme) const {
+QString ColoredFluentIcon::path(ThemeType::ThemeMode theme) const {
     return m_fluentIcon ? m_fluentIcon->path(theme) : QString();
 }
 
-void ColoredFluentIcon::render(QPainter* painter, const QRect& rect, Theme::ThemeType theme,
+void ColoredFluentIcon::render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
                                const QList<int>& indexes,
                                const QMap<QString, QString>& attributes) const {
     if (!m_fluentIcon) return;
@@ -587,9 +587,9 @@ void ColoredFluentIcon::render(QPainter* painter, const QRect& rect, Theme::Them
         return m_fluentIcon->render(painter, rect, theme, indexes, attributes);
     }
 
-    QColor color = (theme == Theme::ThemeType::AUTO) ?
-                       (sTheme->isDarkMode() ? m_darkColor : m_lightColor) :
-                       ((theme == Theme::ThemeType::DARK) ? m_darkColor : m_lightColor);
+    QColor color = (theme == ThemeType::ThemeMode::AUTO) ?
+                (Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor) :
+                ((theme == ThemeType::ThemeMode::DARK) ? m_darkColor : m_lightColor);
 
     QMap<QString, QString> newAttributes = attributes;
     newAttributes["fill"] = color.name();
@@ -602,32 +602,211 @@ void ColoredFluentIcon::render(QPainter* painter, const QRect& rect, Theme::Them
 // FluentIcon 实现
 // ============================================================================
 
-FluentIcon::FluentIcon(IconType type) : m_type(type) {
+FluentIcon::FluentIcon(FluentIconType::IconType type) : m_type(type) {
 }
+
+FluentIcon::FluentIcon(const QString& templatePath)
+    : m_type(FluentIconType::CUSTOM_PATH)
+    , m_templatePath(templatePath) {}
 
 FluentIconBase::Ptr FluentIcon::clone() const {
-    return Ptr(new FluentIcon(m_type));
+    auto icon = new FluentIcon(m_type);
+    icon->m_templatePath = this->m_templatePath;
+    return Ptr(icon);
 }
 
-QString FluentIcon::path(Theme::ThemeType theme) const {
+QString FluentIcon::path(ThemeType::ThemeMode theme) const {
     QString color = getIconColor(theme);
-    return QString(":/res/images/icons/%1_%2.svg")
-        .arg(iconName(m_type))
-        .arg(color);
+    if (m_type != FluentIconType::CUSTOM_PATH) {
+        return QString(":/res/images/icons/%1_%2.svg")
+                .arg(iconName(m_type))
+                .arg(color);
+    } else {
+        QString result = m_templatePath;
+        result.replace("{color}", color);
+        return result;
+    }
 }
 
-QString FluentIcon::iconName(IconType type) {
+QString FluentIcon::iconName(FluentIconType::IconType type) {
     switch (type) {
-    case UP: return "Up";
-    case ADD: return "Add";
-    case BUS: return "Bus";
-    case CAR: return "Car";
-    case CUT: return "Cut";
-    case DELETE: return "Delete";
-    case EDIT: return "Edit";
-    case SEARCH: return "Search";
+    case FluentIconType::UP: return "Up";
+    case FluentIconType::ADD: return "Add";
+    case FluentIconType::BUS: return "Bus";
+    case FluentIconType::CAR: return "Car";
+    case FluentIconType::CUT: return "Cut";
+    case FluentIconType::IOT: return "IOT";
+    case FluentIconType::PIN: return "Pin";
+    case FluentIconType::TAG: return "Tag";
+    case FluentIconType::VPN: return "VPN";
+    case FluentIconType::CAFE: return "Cafe";
+    case FluentIconType::CHAT: return "Chat";
+    case FluentIconType::COPY: return "Copy";
+    case FluentIconType::CODE: return "Code";
+    case FluentIconType::DOWN: return "Down";
+    case FluentIconType::EDIT: return "Edit";
+    case FluentIconType::FLAG: return "Flag";
+    case FluentIconType::FONT: return "Font";
+    case FluentIconType::GAME: return "Game";
+    case FluentIconType::HELP: return "Help";
+    case FluentIconType::HIDE: return "Hide";
+    case FluentIconType::HOME: return "Home";
+    case FluentIconType::INFO: return "Info";
+    case FluentIconType::LEAF: return "Leaf";
+    case FluentIconType::LINK: return "Link";
+    case FluentIconType::MAIL: return "Mail";
+    case FluentIconType::MENU: return "Menu";
+    case FluentIconType::MUTE: return "Mute";
+    case FluentIconType::MORE: return "More";
+    case FluentIconType::MOVE: return "Move";
+    case FluentIconType::PLAY: return "Play";
+    case FluentIconType::SAVE: return "Save";
+    case FluentIconType::SEND: return "Send";
+    case FluentIconType::SYNC: return "Sync";
+    case FluentIconType::UNIT: return "Unit";
+    case FluentIconType::VIEW: return "View";
+    case FluentIconType::WIFI: return "Wifi";
+    case FluentIconType::ZOOM: return "Zoom";
+    case FluentIconType::ALBUM: return "Album";
+    case FluentIconType::BRUSH: return "Brush";
+    case FluentIconType::BROOM: return "Broom";
+    case FluentIconType::CLOSE: return "Close";
+    case FluentIconType::CLOUD: return "Cloud";
+    case FluentIconType::EMBED: return "Embed";
+    case FluentIconType::GLOBE: return "Globe";
+    case FluentIconType::HEART: return "Heart";
+    case FluentIconType::LABEL: return "Label";
+    case FluentIconType::MEDIA: return "Media";
+    case FluentIconType::MOVIE: return "Movie";
+    case FluentIconType::MUSIC: return "Music";
+    case FluentIconType::ROBOT: return "Robot";
+    case FluentIconType::PAUSE: return "Pause";
+    case FluentIconType::PASTE: return "Paste";
+    case FluentIconType::PHOTO: return "Photo";
+    case FluentIconType::PHONE: return "Phone";
+    case FluentIconType::PRINT: return "Print";
+    case FluentIconType::SHARE: return "Share";
+    case FluentIconType::TILES: return "Tiles";
+    case FluentIconType::UNPIN: return "Unpin";
+    case FluentIconType::VIDEO: return "Video";
+    case FluentIconType::TRAIN: return "Train";
+    case FluentIconType::ADD_TO: return "AddTo";
+    case FluentIconType::ACCEPT: return "Accept";
+    case FluentIconType::CAMERA: return "Camera";
+    case FluentIconType::CANCEL: return "Cancel";
+    case FluentIconType::DELETE: return "Delete";
+    case FluentIconType::FOLDER: return "Folder";
+    case FluentIconType::FILTER: return "Filter";
+    case FluentIconType::MARKET: return "Market";
+    case FluentIconType::SCROLL: return "Scroll";
+    case FluentIconType::LAYOUT: return "Layout";
+    case FluentIconType::GITHUB: return "GitHub";
+    case FluentIconType::UPDATE: return "Update";
+    case FluentIconType::REMOVE: return "Remove";
+    case FluentIconType::RETURN: return "Return";
+    case FluentIconType::PEOPLE: return "People";
+    case FluentIconType::QRCODE: return "QRCode";
+    case FluentIconType::RINGER: return "Ringer";
+    case FluentIconType::ROTATE: return "Rotate";
+    case FluentIconType::SEARCH: return "Search";
+    case FluentIconType::VOLUME: return "Volume";
+    case FluentIconType::FRIGID : return "Frigid";
+    case FluentIconType::SAVE_AS: return "SaveAs";
+    case FluentIconType::ZOOM_IN: return "ZoomIn";
+    case FluentIconType::CONNECT: return "Connect";
+    case FluentIconType::HISTORY: return "History";
+    case FluentIconType::SETTING: return "Setting";
+    case FluentIconType::PALETTE: return "Palette";
+    case FluentIconType::MESSAGE: return "Message";
+    case FluentIconType::FIT_PAGE: return "FitPage";
+    case FluentIconType::ZOOM_OUT: return "ZoomOut";
+    case FluentIconType::AIRPLANE: return "Airplane";
+    case FluentIconType::ASTERISK: return "Asterisk";
+    case FluentIconType::CALORIES: return "Calories";
+    case FluentIconType::CALENDAR: return "Calendar";
+    case FluentIconType::FEEDBACK: return "Feedback";
+    case FluentIconType::LIBRARY: return "BookShelf";
+    case FluentIconType::MINIMIZE: return "Minimize";
+    case FluentIconType::CHECKBOX: return "CheckBox";
+    case FluentIconType::DOCUMENT: return "Document";
+    case FluentIconType::LANGUAGE: return "Language";
+    case FluentIconType::DOWNLOAD: return "Download";
+    case FluentIconType::QUESTION: return "Question";
+    case FluentIconType::SPEAKERS: return "Speakers";
+    case FluentIconType::DATE_TIME: return "DateTime";
+    case FluentIconType::FONT_SIZE: return "FontSize";
+    case FluentIconType::HOME_FILL: return "HomeFill";
+    case FluentIconType::PAGE_LEFT: return "PageLeft";
+    case FluentIconType::SAVE_COPY: return "SaveCopy";
+    case FluentIconType::SEND_FILL: return "SendFill";
+    case FluentIconType::SKIP_BACK: return "SkipBack";
+    case FluentIconType::SPEED_OFF: return "SpeedOff";
+    case FluentIconType::ALIGNMENT: return "Alignment";
+    case FluentIconType::BLUETOOTH: return "Bluetooth";
+    case FluentIconType::COMPLETED: return "Completed";
+    case FluentIconType::CONSTRACT: return "Constract";
+    case FluentIconType::HEADPHONE: return "Headphone";
+    case FluentIconType::MEGAPHONE: return "Megaphone";
+    case FluentIconType::PROJECTOR: return "Projector";
+    case FluentIconType::EDUCATION: return "Education";
+    case FluentIconType::LEFT_ARROW: return "LeftArrow";
+    case FluentIconType::ERASE_TOOL: return "EraseTool";
+    case FluentIconType::PAGE_RIGHT: return "PageRight";
+    case FluentIconType::PLAY_SOLID: return "PlaySolid";
+    case FluentIconType::BOOK_SHELF: return "BookShelf";
+    case FluentIconType::HIGHTLIGHT: return "Highlight";
+    case FluentIconType::FOLDER_ADD: return "FolderAdd";
+    case FluentIconType::PAUSE_BOLD: return "PauseBold";
+    case FluentIconType::PENCIL_INK: return "PencilInk";
+    case FluentIconType::PIE_SINGLE: return "PieSingle";
+    case FluentIconType::QUICK_NOTE: return "QuickNote";
+    case FluentIconType::SPEED_HIGH: return "SpeedHigh";
+    case FluentIconType::STOP_WATCH: return "StopWatch";
+    case FluentIconType::ZIP_FOLDER: return "ZipFolder";
+    case FluentIconType::BASKETBALL: return "Basketball";
+    case FluentIconType::BRIGHTNESS: return "Brightness";
+    case FluentIconType::DICTIONARY: return "Dictionary";
+    case FluentIconType::MICROPHONE: return "Microphone";
+    case FluentIconType::ARROW_DOWN: return "ChevronDown";
+    case FluentIconType::FULL_SCREEN: return "FullScreen";
+    case FluentIconType::MIX_VOLUMES: return "MixVolumes";
+    case FluentIconType::REMOVE_FROM: return "RemoveFrom";
+    case FluentIconType::RIGHT_ARROW: return "RightArrow";
+    case FluentIconType::QUIET_HOURS: return "QuietHours";
+    case FluentIconType::FINGERPRINT: return "Fingerprint";
+    case FluentIconType::APPLICATION: return "Application";
+    case FluentIconType::CERTIFICATE: return "Certificate";
+    case FluentIconType::TRANSPARENT: return "Transparent";
+    case FluentIconType::IMAGE_EXPORT: return "ImageExport";
+    case FluentIconType::SPEED_MEDIUM: return "SpeedMedium";
+    case FluentIconType::LIBRARY_FILL: return "LibraryFill";
+    case FluentIconType::MUSIC_FOLDER: return "MusicFolder";
+    case FluentIconType::POWER_BUTTON: return "PowerButton";
+    case FluentIconType::SKIP_FORWARD: return "SkipForward";
+    case FluentIconType::CARE_UP_SOLID: return "CareUpSolid";
+    case FluentIconType::ACCEPT_MEDIUM: return "AcceptMedium";
+    case FluentIconType::CANCEL_MEDIUM: return "CancelMedium";
+    case FluentIconType::CHEVRON_RIGHT: return "ChevronRight";
+    case FluentIconType::CLIPPING_TOOL: return "ClippingTool";
+    case FluentIconType::SEARCH_MIRROR: return "SearchMirror";
+    case FluentIconType::SHOPPING_CART: return "ShoppingCart";
+    case FluentIconType::FONT_INCREASE: return "FontIncrease";
+    case FluentIconType::BACK_TO_WINDOW: return "BackToWindow";
+    case FluentIconType::COMMAND_PROMPT: return "CommandPrompt";
+    case FluentIconType::CLOUD_DOWNLOAD: return "CloudDownload";
+    case FluentIconType::DICTIONARY_ADD: return "DictionaryAdd";
+    case FluentIconType::CARE_DOWN_SOLID: return "CareDownSolid";
+    case FluentIconType::CARE_LEFT_SOLID: return "CareLeftSolid";
+    case FluentIconType::CLEAR_SELECTION: return "ClearSelection";
+    case FluentIconType::DEVELOPER_TOOLS: return "DeveloperTools";
+    case FluentIconType::BACKGROUND_FILL: return "BackgroundColor";
+    case FluentIconType::CARE_RIGHT_SOLID: return "CareRightSolid";
+    case FluentIconType::CHEVRON_DOWN_MED: return "ChevronDownMed";
+    case FluentIconType::CHEVRON_RIGHT_MED: return "ChevronRightMed";
+    case FluentIconType::EMOJI_TAB_SYMBOLS: return "EmojiTabSymbols";
+    case FluentIconType::EXPRESSIVE_INPUT_ENTRY: return "ExpressiveInputEntry";
     default:
-        qWarning() << "Unknown IconType:" << type;
+        qWarning() << "Unknown FluentIconType::IconType:" << type;
         return "";
     }
 }
@@ -640,3 +819,37 @@ Icon::Icon(const FluentIcon& fluentIcon)
     : QIcon(fluentIcon.path())
     , m_fluentIcon(fluentIcon) {
 }
+
+// ============================================================================
+// Action 实现
+// ============================================================================
+Action::Action(QObject* parent) : QAction(parent)
+{
+}
+
+Action::Action(const QString& text, QObject* parent) : QAction(text, parent)
+{
+}
+
+Action::Action(const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent)
+{
+}
+
+Action::Action(const FluentIconType::IconType icon, const QString& text, QObject* parent)
+    : QAction(text, parent)
+{
+    setIcon(icon);
+}
+
+Action::~Action() = default;
+
+QIcon Action::icon() const
+{
+    return QAction::icon();
+}
+
+void Action::setIcon(const FluentIconType::IconType icon)
+{
+    QAction::setIcon(FluentIcon(icon).qicon());
+}
+

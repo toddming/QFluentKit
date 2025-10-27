@@ -11,7 +11,7 @@
 #include "Define.h"
 #include "QFluent/ToolButton.h"
 
-using FIF = IconType::FLuentIcon;
+using FIF = FluentIconType::IconType;
 
 class QHBoxLayout;
 class QVBoxLayout;

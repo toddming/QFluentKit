@@ -14,11 +14,11 @@ class QFLUENT_EXPORT PushButton : public QPushButton
 public:
     explicit PushButton(QWidget *parent = nullptr);
     explicit PushButton(const QString &text, QWidget *parent = nullptr,
-                        const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                        const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit PushButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
-    void setButtonIcon(const IconType::FLuentIcon iconType);
-    IconType::FLuentIcon buttonIcon() const;
+    void setButtonIcon(const FluentIconType::IconType iconType);
+    FluentIconType::IconType buttonIcon() const;
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -32,7 +32,7 @@ private:
 
     bool m_isPressed;
     bool m_isHover;
-    IconType::FLuentIcon m_iconType;
+    FluentIconType::IconType m_iconType;
 };
 
 
@@ -45,7 +45,7 @@ class QFLUENT_EXPORT PrimaryPushButton : public PushButton
 public:
     explicit PrimaryPushButton(QWidget *parent = nullptr);
     explicit PrimaryPushButton(const QString &text, QWidget *parent = nullptr,
-                               const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                               const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 };
 
 
@@ -56,7 +56,7 @@ class QFLUENT_EXPORT TransparentPushButton : public PushButton
 public:
     explicit TransparentPushButton(QWidget *parent = nullptr);
     explicit TransparentPushButton(const QString &text, QWidget *parent = nullptr,
-                               const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                               const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit TransparentPushButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
 };
@@ -71,7 +71,7 @@ class QFLUENT_EXPORT HyperlinkButton : public PushButton
 public:
     explicit HyperlinkButton(QWidget *parent = nullptr);
     explicit HyperlinkButton(const QString &text, QWidget *parent = nullptr,
-                               const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                               const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 };
 
 
@@ -82,7 +82,7 @@ class QFLUENT_EXPORT ToggleButton : public PushButton
 public:
     explicit ToggleButton(QWidget *parent = nullptr);
     explicit ToggleButton(const QString &text, QWidget *parent = nullptr,
-                             const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                             const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit ToggleButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
 
@@ -101,7 +101,7 @@ class QFLUENT_EXPORT TransparentTogglePushButton : public ToggleButton
 public:
     explicit TransparentTogglePushButton(QWidget *parent = nullptr);
     explicit TransparentTogglePushButton(const QString &text, QWidget *parent = nullptr,
-                          const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                          const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit TransparentTogglePushButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
 
@@ -115,7 +115,7 @@ class QFLUENT_EXPORT DropDownButtonBase : public PushButton
 public:
     explicit DropDownButtonBase(QWidget* parent = nullptr);
     explicit DropDownButtonBase(const QString &text, QWidget *parent = nullptr,
-                             const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                             const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 
 
     ~DropDownButtonBase();
@@ -155,7 +155,7 @@ class QFLUENT_EXPORT DropDownPushButton : public DropDownButtonBase
 public:
     explicit DropDownPushButton(QWidget *parent = nullptr);
     explicit DropDownPushButton(const QString &text, QWidget *parent = nullptr,
-                                const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                                const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 
 
 protected:
@@ -174,7 +174,7 @@ class QFLUENT_EXPORT TransparentDropDownPushButton : public DropDownPushButton
 public:
     explicit TransparentDropDownPushButton(QWidget *parent = nullptr);
     explicit TransparentDropDownPushButton(const QString &text, QWidget *parent = nullptr,
-                                const IconType::FLuentIcon iconType = IconType::FLuentIcon::NONE);
+                                const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 };
 
 #endif // PUSHBUTTON_H

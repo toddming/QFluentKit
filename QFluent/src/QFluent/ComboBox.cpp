@@ -8,7 +8,7 @@
 #include "Private/ComboBoxPrivate.h"
 #include "Animation.h"
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 
@@ -255,8 +255,7 @@ void ComboBox::paintEvent(QPaintEvent *event)
     }
 
     QRectF rect = QRectF(width()-22, height()/2-5+d->_arrowAni->y(), 10, 10);
-
-    Icon::drawSvgIcon(&painter, IconType::FLuentIcon::ARROW_DOWN, rect);
+    FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, rect);
 }
 
 void ComboBox::mouseReleaseEvent(QMouseEvent *event)

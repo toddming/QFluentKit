@@ -7,7 +7,7 @@
 #include <QStyleOptionButton>
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Define.h"
 #include "StyleSheet.h"
 
@@ -85,7 +85,8 @@ void CheckBox::paintEvent(QPaintEvent *event) {
 
 
     if (checkState() == Qt::Checked) {
-        Icon::drawSvgIcon(&painter, IconType::FLuentIcon::ACCEPT, rect.adjusted(3, 3, -3, -3));
+        FluentIcon(FluentIconType::ACCEPT).render(&painter, rect.adjusted(3, 3, -3, -3));
+
     } else if (checkState() == Qt::PartiallyChecked) {
 
     }

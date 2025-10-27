@@ -5,7 +5,7 @@
 #include <QStyleOptionViewItem>
 #include <QAction>
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "Define.h"
 
@@ -187,5 +187,5 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
         painter->setOpacity(0.75);
     }
 
-    Icon::drawSvgIcon(painter, IconType::FLuentIcon::ACCEPT, QRectF(x, y, s, s));
+    FluentIcon(FluentIconType::ACCEPT).render(painter, rect);
 }

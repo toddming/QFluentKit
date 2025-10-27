@@ -10,12 +10,11 @@ class QFLUENT_EXPORT ToolButton : public QToolButton
 
 public:
     explicit ToolButton(QWidget* parent = nullptr);
-    ToolButton(IconType::FLuentIcon icon, QWidget* parent = nullptr);
-    ToolButton(const QString& fillPath, const QString& baseName, const QString& lightSuffix, const QString& darkSuffix,
-               QWidget* parent = nullptr);
+    ToolButton(FluentIconType::IconType icon, QWidget* parent = nullptr);
+    ToolButton(const QString& templatePath, QWidget* parent = nullptr);
 
-    void setIcon(IconType::FLuentIcon icon);
-    void setIcon(const QString& fillPath, const QString& baseName, const QString& lightSuffix, const QString& darkSuffix);
+    void setIcon(FluentIconType::IconType icon);
+    void setIcon(const QString& templatePath);
     bool isPressed() const { return m_isPressed; }
     bool isHover() const { return m_isHover; }
 
@@ -34,12 +33,9 @@ private:
 
     bool m_isPressed;
     bool m_isHover;
-    IconType::FLuentIcon m_iconType;
+    FluentIconType::IconType m_iconType;
 
-    QString m_fillPath;
-    QString m_baseName;
-    QString m_lightSuffix;
-    QString m_darkSuffix;
+    QString m_templatePath;
 };
 
 

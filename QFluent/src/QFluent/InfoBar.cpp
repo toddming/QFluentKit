@@ -26,7 +26,7 @@
 #include "ToolButton.h"
 #include "TextWrap.h"
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 
@@ -69,8 +69,7 @@ void InfoIconWidget::paintEvent(QPaintEvent* event) {
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     QRectF rect(10, 10, 15, 15);
-
-    Icon::drawSvgIcon(&painter, ":/res/images/info_bar/%1_%2.svg", InfoBarManager::toString(m_type), "light", "dark", rect);
+    FluentIcon(QString(":/res/images/info_bar/%1_{color}.svg").arg(InfoBarManager::toString(m_type))).render(&painter, rect);
 }
 
 // InfoBar 实现
@@ -84,7 +83,7 @@ InfoBar::InfoBar(InfoBarType::BarType type, const QString& title, const QString&
 
     m_titleLabel = new QLabel(this);
     m_contentLabel = new QLabel(this);
-    m_closeButton = new TransparentToolButton(IconType::FLuentIcon::CLOSE, this);
+    m_closeButton = new TransparentToolButton(FluentIconType::IconType::CLOSE, this);
     m_iconWidget = new InfoIconWidget(type, this);
 
     m_hBoxLayout = new QHBoxLayout(this);

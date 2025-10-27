@@ -12,7 +12,7 @@
 #include <QDebug>
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 
@@ -109,6 +109,5 @@ void CalendarPicker::paintEvent(QPaintEvent* e)
 
     int w = 12;
     QRectF rect(this->width() - 23, this->height() / 2 - w / 2, w, w);
-
-    Icon::drawSvgIcon(&painter, IconType::FLuentIcon::CALENDAR, rect);
+    FluentIcon(FluentIconType::CALENDAR).render(&painter, rect);
 }

@@ -15,7 +15,7 @@
 
 #include "GalleryInterface.h"
 
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "Theme.h"
 #include "Define.h"
 #include "StyleSheet.h"
@@ -56,17 +56,17 @@ class IconCard : public QFrame {
     Q_OBJECT
 
 public:
-    explicit IconCard(IconType::FLuentIcon icon, QWidget* parent = nullptr);
+    explicit IconCard(FluentIconType::IconType icon, QWidget* parent = nullptr);
     void setSelected(bool isSelected, bool force = false);
 
 signals:
-    void clicked(IconType::FLuentIcon icon);
+    void clicked(FluentIconType::IconType icon);
 
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
-    IconType::FLuentIcon m_icon;
+    FluentIconType::IconType m_icon;
     bool m_isSelected;
     IconWidget* m_iconWidget;
     QLabel* m_nameLabel;
@@ -78,8 +78,8 @@ class IconInfoPanel : public QFrame {
     Q_OBJECT
 
 public:
-    explicit IconInfoPanel(IconType::FLuentIcon icon, QWidget* parent = nullptr);
-    void setIcon(IconType::FLuentIcon icon);
+    explicit IconInfoPanel(FluentIconType::IconType icon, QWidget* parent = nullptr);
+    void setIcon(FluentIconType::IconType icon);
 
 private:
     QLabel* m_nameLabel;
@@ -112,8 +112,8 @@ class IconCardView : public QWidget {
 
 public:
     explicit IconCardView(QWidget* parent = nullptr);
-    void addIcon(IconType::FLuentIcon icon, const QString &name);
-    void setSelectedIcon(IconType::FLuentIcon icon);
+    void addIcon(FluentIconType::IconType icon, const QString &name);
+    void setSelectedIcon(FluentIconType::IconType icon);
     void search(const QString& keyword);
     void showAllIcons();
 
@@ -133,7 +133,7 @@ private:
     FlowLayout* m_flowLayout;
 
     QVector<IconCard*> m_cards;
-    QVector<IconType::FLuentIcon> m_icons;
+    QVector<FluentIconType::IconType> m_icons;
     int m_currentIndex;
 };
 

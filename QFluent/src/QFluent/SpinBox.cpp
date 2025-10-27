@@ -10,7 +10,7 @@
 #include <QApplication>
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 
@@ -23,7 +23,7 @@ template class InlineSpinBoxBase<QDateEdit>;
 
 // --- SpinButton ---
 
-SpinButton::SpinButton(IconType::FLuentIcon iconType, QWidget* parent)
+SpinButton::SpinButton(FluentIconType::IconType iconType, QWidget* parent)
     : QToolButton(parent), m_iconType(iconType) {
     setFixedSize(sizeHint());
     setCursor(Qt::ArrowCursor);
@@ -55,7 +55,7 @@ void SpinButton::paintEvent(QPaintEvent* e) {
         painter.setOpacity(0.7);
     }
 
-    Icon::drawSvgIcon(&painter, m_iconType, QRectF(10, 6.5, 11, 11));
+    FluentIcon(m_iconType).render(&painter, QRectF(10, 6.5, 11, 11));
 }
 
 SpinBoxBase::SpinBoxBase(QWidget* host)
@@ -94,8 +94,8 @@ void SpinBoxBase::addUpDownButtons() {
     m_layout->setContentsMargins(10, 4, 4, 4);
     m_layout->setSpacing(5);
 
-    m_upButton = new SpinButton(IconType::FLuentIcon::UP, m_parentWidget);
-    m_downButton = new SpinButton(IconType::FLuentIcon::DOWN, m_parentWidget);
+    m_upButton = new SpinButton(FluentIconType::IconType::UP, m_parentWidget);
+    m_downButton = new SpinButton(FluentIconType::IconType::DOWN, m_parentWidget);
 
     m_layout->addWidget(le);
     m_layout->addWidget(m_upButton);

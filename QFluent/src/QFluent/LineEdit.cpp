@@ -15,7 +15,7 @@
 
 
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 #include "menu/MenuItemDelegate.h"
@@ -81,7 +81,7 @@ void LineEditButton::updateButtonState() {
 LineEdit::LineEdit(QWidget* parent) 
     : QLineEdit(parent),
       m_layout(new QHBoxLayout(this)),
-      m_clearButton(new LineEditButton(Icon::FluentIcon(IconType::FLuentIcon::CLOSE), this)),
+      m_clearButton(new LineEditButton(FluentIcon(FluentIconType::CLOSE).qicon(), this)),
       m_completerTimer(new QTimer(this)) {
     
     setFixedHeight(33);
@@ -286,7 +286,7 @@ void SearchLineEdit::initWidgets()
     clearButton = getClearButton();
     hBoxLayout = qobject_cast<QHBoxLayout*>(layout());
 
-    searchButton = new LineEditButton(Icon::FluentIcon(IconType::FLuentIcon::SEARCH), this);
+    searchButton = new LineEditButton(FluentIcon(FluentIconType::SEARCH).qicon(), this);
     hBoxLayout->addWidget(searchButton);
 
     connect(searchButton, &LineEditButton::clicked, this, &SearchLineEdit::search);

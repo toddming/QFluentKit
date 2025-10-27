@@ -31,7 +31,7 @@
 
 #include "Screen.h"
 #include "Theme.h"
-#include "Icon.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 
 
@@ -93,7 +93,7 @@ void ScrollButton::paintEvent(QPaintEvent* event)
 
     QMap<QString, QString> attrs;
     attrs["fill"] = Theme::instance()->isDarkTheme() ? "#5e5e5e" : "#9c9c9c";
-    Icon::drawSvgIcon(&painter, m_iconType, QRectF(x, y, w, h), attrs);
+    FluentIcon(m_iconType).render(&painter, QRectF(x, y, w, h), ThemeType::AUTO, QList<int>(), attrs);
 }
 
 
