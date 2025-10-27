@@ -1,7 +1,7 @@
 ﻿#include "IconInterface.h"
 #include <QApplication>
 #include <QFontMetrics>
-#include <QMap>
+#include <QMetaEnum>
 
 // 辅助函数（需要根据实际实现）
 FluentIconType::IconType getDefaultFluentIcon() {
@@ -79,7 +79,7 @@ void Trie::collectWords(TrieNode* node, const QString& prefix, QVector<QPair<QSt
 }
 
 // IconCard 实现
-IconCard::IconCard(FluentIconType::IconType icon, QWidget* parent)
+IconCard::IconCard(FluentIconType::IconType icon, const QString &name, QWidget* parent)
     : QFrame(parent), m_icon(icon), m_isSelected(false) {
 
     m_iconWidget = new IconWidget(icon, this);
@@ -97,8 +97,7 @@ IconCard::IconCard(FluentIconType::IconType icon, QWidget* parent)
     m_vBoxLayout->addWidget(m_nameLabel, 0, Qt::AlignHCenter);
 
     QFontMetrics metrics(m_nameLabel->font());
-    QString elidedText = "Icon";
-    // QString elidedText = metrics.elidedText(icon->value(), Qt::ElideRight, 90);
+    QString elidedText = metrics.elidedText(name, Qt::ElideRight, 90);
     m_nameLabel->setText(elidedText);
 }
 
@@ -122,8 +121,8 @@ void IconCard::setSelected(bool isSelected, bool force) {
         m_iconWidget->setIcon(m_icon);
     } else {
         // 假设 IconWidget 可以根据主题设置图标
-        // Theme theme = isDarkTheme() ? Theme::LIGHT : Theme::DARK;
-        // m_iconWidget->setIcon(m_icon, theme);
+        // ThemeType::ThemeMode theme = Theme::instance()->isDarkTheme() ? ThemeType::LIGHT : ThemeType::DARK;
+        // m_iconWidget->setIcon(m_icon);
     }
 
     setProperty("isSelected", isSelected);
@@ -137,9 +136,9 @@ IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
 
     m_nameLabel = new QLabel("value", this);
     m_iconWidget = new IconWidget(icon, this);
-    m_iconNameTitleLabel = new QLabel("Icon name", this);
+    m_iconNameTitleLabel = new QLabel("图标名字", this);
     m_iconNameLabel = new QLabel("value", this);
-    m_enumNameTitleLabel = new QLabel("Enum member", this);
+    m_enumNameTitleLabel = new QLabel("枚举成员", this);
     m_enumNameLabel = new QLabel("FluentIcon.name", this);
 
     m_vBoxLayout = new QVBoxLayout(this);
@@ -168,10 +167,19 @@ IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
 }
 
 void IconInfoPanel::setIcon(FluentIconType::IconType icon) {
+    static QHash<FluentIconType::IconType, QString> icons = FluentIcon::fluentIcons();
+
     m_iconWidget->setIcon(icon);
-    m_nameLabel->setText("value");
-    m_iconNameLabel->setText("value");
-    m_enumNameLabel->setText("FluentIcon.name");
+    m_nameLabel->setText(icons.value(icon));
+    m_iconNameLabel->setText(icons.value(icon));
+    QMetaEnum metaEnum = QMetaEnum::fromType<FluentIconType::IconType>();
+    QString enumQString;
+    if (metaEnum.isValid()) {
+        const char* enumName = metaEnum.valueToKey(static_cast<int>(icon));
+        enumQString = QString::fromUtf8(enumName);
+    }
+    enumQString = enumQString.isEmpty() ? "NONE" : enumQString;
+    m_enumNameLabel->setText(QString("FluentIconType::%1").arg(enumQString));
 }
 
 // LineEdit 实现
@@ -240,18 +248,18 @@ void IconCardView::initWidget() {
     // connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
     // 假设有一个获取所有 FluentIcon 的方法
-    // QMap<FluentIconType::IconType, QString> allIcons = Icon::fluentIcons();
-    // for (FluentIconType::IconType icon : allIcons.keys()) {
-    //     addIcon(icon, allIcons.value(icon));
-    // }
+    QHash<FluentIconType::IconType, QString> allIcons = FluentIcon::fluentIcons();
+    for (FluentIconType::IconType icon : allIcons.keys()) {
+        addIcon(icon, allIcons.value(icon));
+    }
 
-    // if (!m_icons.isEmpty()) {
-    //     setSelectedIcon(m_icons[0]);
-    // }
+    if (!m_icons.isEmpty()) {
+        setSelectedIcon(m_icons[0]);
+    }
 }
 
 void IconCardView::addIcon(FluentIconType::IconType icon, const QString &name) {
-    IconCard* card = new IconCard(icon, m_scrollWidget);
+    IconCard* card = new IconCard(icon, name, m_scrollWidget);
     connect(card, &IconCard::clicked, this, &IconCardView::setSelectedIcon);
 
     m_trie->insert(name, m_cards.size());

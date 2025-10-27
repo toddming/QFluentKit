@@ -56,7 +56,7 @@ class IconCard : public QFrame {
     Q_OBJECT
 
 public:
-    explicit IconCard(FluentIconType::IconType icon, QWidget* parent = nullptr);
+    explicit IconCard(FluentIconType::IconType icon, const QString &name, QWidget* parent = nullptr);
     void setSelected(bool isSelected, bool force = false);
 
 signals:

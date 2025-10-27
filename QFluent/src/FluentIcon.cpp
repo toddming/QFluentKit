@@ -853,6 +853,11 @@ QString FluentIcon::iconName(FluentIconType::IconType type) {
     return QString();
 }
 
+QHash<FluentIconType::IconType, QString> FluentIcon::fluentIcons()
+{
+    return iconNameMap();
+}
+
 // ============================================================================
 // Icon 实现
 // ============================================================================

@@ -229,6 +229,8 @@ public:
     QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) const override;
     FluentIconType::IconType type() const { return m_type; }
 
+    static QHash<FluentIconType::IconType, QString> fluentIcons();
+
 private:
     FluentIconType::IconType m_type;
     QString m_templatePath;
