@@ -5,6 +5,7 @@
 #include "FluentIcon.h"
 #include "Private/IconWidgetPrivate.h"
 
+Q_PROPERTY_CREATE_Q_CPP(IconWidget, ThemeType::ThemeMode, IconTheme)
 IconWidget::IconWidget(QWidget *parent)
     : QWidget(parent)
     , d_ptr(new IconWidgetPrivate())
@@ -13,6 +14,7 @@ IconWidget::IconWidget(QWidget *parent)
     d->q_ptr = this;
 
     d->_pIsFluentIcon = false;
+    d->_pIconTheme = ThemeType::ThemeMode::AUTO;
 
     setIcon(QIcon());
 }
@@ -88,7 +90,7 @@ void IconWidget::paintEvent(QPaintEvent *event)
     QRect rect = this->rect();
 
     if (d->_pIsFluentIcon && (d->_pFluentIcon != FluentIconType::IconType::NONE)) {
-        FluentIcon(d->_pFluentIcon).render(&painter, rect);
+        FluentIcon(d->_pFluentIcon).render(&painter, rect, d->_pIconTheme);
     } else {
         if (!d->_pIcon.isNull()) {
             d->_pIcon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);

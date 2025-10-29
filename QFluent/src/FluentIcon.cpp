@@ -98,7 +98,7 @@ QString getIconColor(ThemeType::ThemeMode theme, bool reverse) {
     if (theme == ThemeType::ThemeMode::AUTO) {
         return Theme::instance()->isDarkTheme() ? darkColor : lightColor;
     }
-    return (theme == ThemeType::ThemeMode::DARK) ? darkColor : lightColor;
+    return (theme == ThemeType::ThemeMode::DARK) ? "black" : "white";
 }
 
 // ============================================================================
@@ -651,7 +651,6 @@ FluentIconBase::Ptr FluentIcon::clone() const {
 QString FluentIcon::path(ThemeType::ThemeMode theme) const {
     const QString color = getIconColor(theme);
     if (m_type != FluentIconType::CUSTOM_PATH) {
-        // 使用 QStringLiteral 和 arg 优化字符串构建
         return QStringLiteral(":/res/images/icons/%1_%2.svg")
                 .arg(iconName(m_type), color);
     } else {

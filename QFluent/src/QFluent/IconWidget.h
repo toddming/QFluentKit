@@ -11,6 +11,7 @@ class QFLUENT_EXPORT IconWidget : public QWidget
 {
     Q_OBJECT
     Q_Q_CREATE(IconWidget)
+    Q_PROPERTY_CREATE_Q_H(ThemeType::ThemeMode, IconTheme)
 
 public:
     explicit IconWidget(QWidget *parent = nullptr);

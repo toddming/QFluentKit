@@ -99,6 +99,12 @@ IconCard::IconCard(FluentIconType::IconType icon, const QString &name, QWidget* 
     QFontMetrics metrics(m_nameLabel->font());
     QString elidedText = metrics.elidedText(name, Qt::ElideRight, 90);
     m_nameLabel->setText(elidedText);
+
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
+         if (m_isSelected) {
+             m_iconWidget->setIconTheme(theme);
+         }
+    });
 }
 
 void IconCard::mouseReleaseEvent(QMouseEvent* event) {
@@ -114,17 +120,14 @@ void IconCard::setSelected(bool isSelected, bool force) {
     if (isSelected == m_isSelected && !force) {
         return;
     }
-
     m_isSelected = isSelected;
 
     if (!isSelected) {
-        m_iconWidget->setIcon(m_icon);
+        m_iconWidget->setIconTheme(ThemeType::AUTO);
     } else {
-        // 假设 IconWidget 可以根据主题设置图标
-        // ThemeType::ThemeMode theme = Theme::instance()->isDarkTheme() ? ThemeType::LIGHT : ThemeType::DARK;
-        // m_iconWidget->setIcon(m_icon);
+        m_iconWidget->setIconTheme(Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
     }
-
+    m_iconWidget->update();
     setProperty("isSelected", isSelected);
     style()->unpolish(this);
     style()->polish(this);
