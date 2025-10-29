@@ -2,9 +2,9 @@
 #define EXPANDLAYOUT_H
 
 #include <QLayout>
+#include "Property.h"
 
-
-class ExpandLayout : public QLayout
+class QFLUENT_EXPORT ExpandLayout : public QLayout
 {
     Q_OBJECT
 

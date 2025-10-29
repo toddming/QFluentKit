@@ -12,6 +12,7 @@
 #include <QVector>
 #include <QString>
 #include <QMouseEvent>
+#include <QObject>
 
 #include "GalleryInterface.h"
 
@@ -49,6 +50,21 @@ public:
 
 private:
     void collectWords(TrieNode* node, const QString& prefix, QVector<QPair<QString, int>>& results);
+};
+
+// 搜索框
+class CustomLineEdit : public SearchLineEdit {
+    Q_OBJECT
+
+public:
+    explicit CustomLineEdit(QWidget* parent = nullptr);
+
+signals:
+    void search(const QString& text);
+    void clearSignal();
+
+private slots:
+    void onTextChanged(const QString& text);
 };
 
 // 图标卡片
@@ -91,20 +107,7 @@ private:
     QVBoxLayout* m_vBoxLayout;
 };
 
-// 搜索框
-class CustomLineEdit : public SearchLineEdit {
-    Q_OBJECT
 
-public:
-    explicit CustomLineEdit(QWidget* parent = nullptr);
-
-signals:
-    void search(const QString& text);
-    void clearSignal();
-
-private slots:
-    void onTextChanged(const QString& text);
-};
 
 // 图标卡片视图
 class IconCardView : public QWidget {
@@ -114,8 +117,11 @@ public:
     explicit IconCardView(QWidget* parent = nullptr);
     void addIcon(FluentIconType::IconType icon, const QString &name);
     void setSelectedIcon(FluentIconType::IconType icon);
-    void search(const QString& keyword);
+
     void showAllIcons();
+
+private slots:
+    void search(const QString& text);
 
 private:
     void initWidget();
@@ -123,7 +129,7 @@ private:
 
     Trie* m_trie;
     StrongBodyLabel* m_iconLibraryLabel;
-    LineEdit* m_searchLineEdit;
+    CustomLineEdit* m_searchLineEdit;
     QFrame* m_view;
     ScrollArea* m_scrollArea;
     QWidget* m_scrollWidget;

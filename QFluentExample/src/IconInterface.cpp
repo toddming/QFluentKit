@@ -2,6 +2,9 @@
 #include <QApplication>
 #include <QFontMetrics>
 #include <QMetaEnum>
+#include <QScrollBar>
+
+#include "QFluent/scrollbar/ScrollBar.h"
 
 // 辅助函数（需要根据实际实现）
 FluentIconType::IconType getDefaultFluentIcon() {
@@ -127,10 +130,14 @@ void IconCard::setSelected(bool isSelected, bool force) {
     } else {
         m_iconWidget->setIconTheme(Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
     }
-    m_iconWidget->update();
+
     setProperty("isSelected", isSelected);
+
     style()->unpolish(this);
     style()->polish(this);
+
+    m_nameLabel->style()->unpolish(m_nameLabel);
+    m_nameLabel->style()->polish(m_nameLabel);
 }
 
 // IconInfoPanel 实现
@@ -189,7 +196,7 @@ void IconInfoPanel::setIcon(FluentIconType::IconType icon) {
 CustomLineEdit::CustomLineEdit(QWidget* parent)
     : SearchLineEdit(parent) {
 
-    setPlaceholderText("Search icons");
+    setPlaceholderText("搜索图标");
     setFixedWidth(304);
     connect(this, &CustomLineEdit::textChanged, this, &CustomLineEdit::onTextChanged);
 }
@@ -207,19 +214,25 @@ IconCardView::IconCardView(QWidget* parent)
       m_currentIndex(-1) {
 
     m_trie = new Trie();
-    m_iconLibraryLabel = new StrongBodyLabel("Fluent Icons Library", this);
+    m_iconLibraryLabel = new StrongBodyLabel("流畅图标库", this);
     m_searchLineEdit = new CustomLineEdit(this);
 
     m_view = new QFrame(this);
     m_scrollArea = new ScrollArea(Qt::Vertical, m_view);
+
+
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ScrollBar* floatVScrollBar = new ScrollBar(m_scrollArea->verticalScrollBar(), m_scrollArea);
+    floatVScrollBar->setIsAnimation(true);
+
+
     m_scrollWidget = new QWidget(m_scrollArea);
-    m_infoPanel = new IconInfoPanel(getDefaultFluentIcon(), this); // 假设有一个获取默认图标的方法
+    m_infoPanel = new IconInfoPanel(getDefaultFluentIcon(), this);
 
     m_vBoxLayout = new QVBoxLayout(this);
     m_hBoxLayout = new QHBoxLayout(m_view);
 
-    // 假设 FlowLayout 已经实现
-    m_flowLayout = new FlowLayout(m_scrollWidget, true);
+    m_flowLayout = new FlowLayout(m_scrollWidget, false);
 
     initWidget();
 }
@@ -247,11 +260,10 @@ void IconCardView::initWidget() {
 
     setQss();
 
-    // connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
-    // connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
+    connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
+    connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
-    // 假设有一个获取所有 FluentIcon 的方法
-    QHash<FluentIconType::IconType, QString> allIcons = FluentIcon::fluentIcons();
+    const QHash<FluentIconType::IconType, QString> allIcons = FluentIcon::fluentIcons();
     for (FluentIconType::IconType icon : allIcons.keys()) {
         addIcon(icon, allIcons.value(icon));
     }
@@ -304,8 +316,8 @@ void IconCardView::setQss() {
     }
 }
 
-void IconCardView::search(const QString& keyword) {
-    QVector<QPair<QString, int>> items = m_trie->items(keyword.toLower());
+void IconCardView::search(const QString& text) {
+    QVector<QPair<QString, int>> items = m_trie->items(text.toLower());
     QSet<int> indexes;
     for (const auto& item : items) {
         indexes.insert(item.second);

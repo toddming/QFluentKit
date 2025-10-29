@@ -141,7 +141,7 @@ private:
     QList<QWidget *> widgets;
 };
 
-class SimpleExpandGroupSettingCard : public ExpandGroupSettingCard {
+class QFLUENT_EXPORT SimpleExpandGroupSettingCard : public ExpandGroupSettingCard {
     Q_OBJECT
 
 public:

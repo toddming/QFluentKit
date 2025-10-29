@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QPainter>
 
+#include "Property.h"
 #include "../IconWidget.h"
 
 class QLabel;
@@ -30,7 +31,7 @@ protected:
     }
 };
 
-class SettingCard : public QFrame
+class QFLUENT_EXPORT SettingCard : public QFrame
 {
     Q_OBJECT
 
@@ -61,7 +62,7 @@ private:
 
 
 
-class PushSettingCard : public SettingCard
+class QFLUENT_EXPORT PushSettingCard : public SettingCard
 {
     Q_OBJECT
 
@@ -83,7 +84,7 @@ private:
 
 
 
-class PrimaryPushSettingCard : public PushSettingCard
+class QFLUENT_EXPORT PrimaryPushSettingCard : public PushSettingCard
 {
     Q_OBJECT
 
@@ -97,7 +98,7 @@ public:
 
 
 
-class HyperlinkCard :  public SettingCard
+class QFLUENT_EXPORT HyperlinkCard :  public SettingCard
 {
     Q_OBJECT
 
@@ -112,7 +113,7 @@ public:
 
 
 
-class SwitchSettingCard : public SettingCard
+class QFLUENT_EXPORT SwitchSettingCard : public SettingCard
 {
     Q_OBJECT
 
@@ -139,7 +140,7 @@ private:
 
 
 
-class ComboBoxSettingCard : public SettingCard
+class QFLUENT_EXPORT ComboBoxSettingCard : public SettingCard
 {
     Q_OBJECT
 public:

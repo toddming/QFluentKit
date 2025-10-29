@@ -3,11 +3,12 @@
 
 #include <QWidget>
 
+#include "Property.h"
 #include "../layout/ExpandLayout.h"
 
 class QLabel;
 class QVBoxLayout;
-class SettingCardGroup : public QWidget
+class QFLUENT_EXPORT SettingCardGroup : public QWidget
 {
     Q_OBJECT
 

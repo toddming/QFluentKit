@@ -14,7 +14,6 @@
 #include <QDesktopServices>
 #include <QScrollArea>
 
-// 假设这些自定义模块在C++中也有对应的实现
 #include "QFluent/ScrollArea.h"
 #include "QFluent/PushButton.h"
 #include "QFluent/ToolButton.h"

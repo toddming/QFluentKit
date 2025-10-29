@@ -30,7 +30,7 @@ struct NavigationItem {
 };
 
 // 导航面板类
-class NavigationPanel : public QFrame {
+class QFLUENT_EXPORT NavigationPanel : public QFrame {
     Q_OBJECT
 
 public:

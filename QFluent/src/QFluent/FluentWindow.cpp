@@ -54,16 +54,15 @@ FluentWindow::FluentWindow(QMainWindow *parent)
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     d->windowAgent = agent;
 
-    //
     QWidget *w = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(w);
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
     d->_navPanel = new NavigationPanel(w);
     d->_stacked = new StackedWidget(w);
     layout->addWidget(d->_navPanel, 0);
     layout->addWidget(d->_stacked, 1);
     setCentralWidget(w);
-    //
 
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
     d->setDarkTheme(Theme::instance()->isDarkTheme());

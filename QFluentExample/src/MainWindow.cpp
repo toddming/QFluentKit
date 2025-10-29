@@ -1,18 +1,22 @@
 ﻿#include "MainWindow.h"
 
-#include "QFluent/PushButton.h"
+#include "QFluent/navigation/NavigationPanel.h"
 
-#include "IconInterface.h"
+
 #include "HomeInterface.h"
+#include "IconInterface.h"
+#include "BasicInputInterface.h"
+#include "SettingInterface.h"
 
 MainWindow::MainWindow()
 {
     setMinimumSize(866, 600);
+    addSubInterface("1", FluentIconType::HOME, "主页", new HomeInterface(this), true, NavigationType::TOP);
+    addSubInterface("2", FluentIconType::EMOJI_TAB_SYMBOLS, "图标", new IconInterface(this), true, NavigationType::TOP);
+    navigationInterface()->addSeparator();
+    addSubInterface("3", FluentIconType::CHECKBOX, "基本输入", new BasicInputInterface(this), true, NavigationType::SCROLL);
 
-    auto w = new HomeInterface(this);
-    addSubInterface("1", FluentIconType::IconType::HOME, "主页", w, true, NavigationType::NavigationItemPosition::TOP);
-
-    auto w2 = new IconInterface(this);
-    addSubInterface("2", FluentIconType::IconType::HOME, "图标", w2, true, NavigationType::NavigationItemPosition::TOP);
+    navigationInterface()->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
+    addSubInterface("11", FluentIconType::SETTING, "设置", new SettingInterface(this), true, NavigationType::BOTTOM);
 
 }

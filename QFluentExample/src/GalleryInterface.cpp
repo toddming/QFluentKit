@@ -3,6 +3,8 @@
 #include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
+#include "QFluent/scrollbar/ScrollBar.h"
+
 
 SeparatorWidget::SeparatorWidget(QWidget *parent)
     : QWidget(parent)
@@ -82,6 +84,7 @@ ExampleCard::ExampleCard(const QString &title, QWidget *widget, const QString &s
     , sourcePath(sourcePath)
 {
     titleLabel = new StrongBodyLabel(title, this);
+    Theme::instance()->setFont(titleLabel, 14, QFont::Normal);
     card = new QFrame(this);
     sourceWidget = new QFrame(card);
     sourcePathLabel = new BodyLabel("源代码", sourceWidget);
@@ -151,13 +154,16 @@ bool ExampleCard::eventFilter(QObject *obj, QEvent *e)
 }
 
 GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle, QWidget *parent)
-    : ScrollArea(Qt::Vertical, parent)
+    : ScrollArea(parent)
 {
     view = new QWidget(this);
     toolBar = new ToolBar(title, subtitle, this);
     vBoxLayout = new QVBoxLayout(view);
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
+    floatVScrollBar->setIsAnimation(true);
+
     setViewportMargins(0, toolBar->height(), 0, 0);
     setWidget(view);
     setWidgetResizable(true);

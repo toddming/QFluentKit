@@ -3,7 +3,7 @@
 #include "ExpandSettingCard.h"
 
 class RadioButton;
-class OptionsSettingCard : public ExpandSettingCard {
+class QFLUENT_EXPORT OptionsSettingCard : public ExpandSettingCard {
     Q_OBJECT
 
 public:
