@@ -10,7 +10,10 @@
 
 MainWindow::MainWindow()
 {
+    setWindowTitle("QFluentKit");
+    setWindowIcon(QPixmap(":/res/example.png"));
     setMinimumSize(866, 600);
+
     addSubInterface("1", FluentIconType::HOME, "主页", new HomeInterface(this), true, NavigationType::TOP);
     addSubInterface("2", FluentIconType::EMOJI_TAB_SYMBOLS, "图标", new IconInterface(this), true, NavigationType::TOP);
     navigationInterface()->addSeparator();

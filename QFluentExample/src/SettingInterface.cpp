@@ -1,4 +1,4 @@
-#include "SettingInterface.h"
+﻿#include "SettingInterface.h"
 
 #include <QLabel>
 #include "StyleSheet.h"
@@ -6,7 +6,9 @@
 #include "FluentIcon.h"
 #include "QFluent/settings/SettingCard.h"
 #include "QFluent/settings/SettingCardGroup.h"
-// #include "QFluent/settings/OptionsSettingCard.h"
+#include "QFluent/settings/OptionsSettingCard.h"
+
+#include "MainWindow.h"
 
 SettingInterface::SettingInterface(QWidget *parent)
     : ScrollArea(parent)
@@ -16,7 +18,12 @@ SettingInterface::SettingInterface(QWidget *parent)
     setObjectName("settingInterface");
     m_scrollWidget->setObjectName("scrollWidget");
 
-    setViewportMargins(0, 80, 0, 20);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
+    floatVScrollBar->setIsAnimation(true);
+
+
+    setViewportMargins(0, 80, 0, 0);
     setWidget(m_scrollWidget);
     setWidgetResizable(true);
 
@@ -54,17 +61,25 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                                 "Language",
                                                                 "Set your preferred language for UI",
                                                                 aboutGroup);
-    // OptionsSettingCard *zoomCard = new OptionsSettingCard(FluentIcon(FluentIconType::ZOOM).qicon(),
-    //                                                       "Interface zoom",
-    //                                                       "Change the size of widgets and fonts",
-    //                                                       QVector<QString>() << "100%" << "125%" << "150%",
-    //                                                       aboutGroup);
+    OptionsSettingCard *effectCard = new OptionsSettingCard(FluentIcon(FluentIconType::ZOOM).qicon(),
+                                                          "窗口效果",
+                                                          "改变窗口的显示效果",
+                                                          QVector<QString>() << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt",
+                                                          aboutGroup);
 
     aboutGroup->addSettingCard(feedbackCard);
     aboutGroup->addSettingCard(updateOnStartUpCard);
     aboutGroup->addSettingCard(helpCard);
     aboutGroup->addSettingCard(languageCard);
-    // aboutGroup->addSettingCard(zoomCard);
+    aboutGroup->addSettingCard(effectCard);
 
     m_expandLayout->addWidget(aboutGroup);
+
+    connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
+            (int index, const QString& text)
+    {
+        Q_UNUSED(text);
+        auto main = qobject_cast<MainWindow*>(this->parent()->parent()->parent()->parent());
+        main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
+    });
 }

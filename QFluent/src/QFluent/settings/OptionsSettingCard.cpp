@@ -1,4 +1,4 @@
-#include "OptionsSettingCard.h"
+﻿#include "OptionsSettingCard.h"
 #include <QVBoxLayout>
 #include <QObject>
 #include <QLabel>
@@ -35,15 +35,18 @@ OptionsSettingCard::OptionsSettingCard(const QIcon& icon,
 
     adjustViewSize();
 
-
-    //connect(buttonGroup, &QButtonGroup::buttonClicked, this, &OptionsSettingCard::onButtonClicked);
+    connect(buttonGroup, &QButtonGroup::buttonClicked, this, &OptionsSettingCard::onButtonClicked);
 }
 
-void OptionsSettingCard::onButtonClicked(RadioButton* button) {
+void OptionsSettingCard::onButtonClicked(QAbstractButton *button) {
     if (button->text() == choiceLabel->text())
         return;
 
-    QVariant value = button->property(configName.toUtf8().constData());
+    // QVariant value = button->property(configName.toUtf8().constData());
+
+    int index = buttonGroup->buttons().indexOf(button);
+    const QString text = button->text();
+    emit optionChanged(index, text);
 
     choiceLabel->setText(button->text());
     choiceLabel->adjustSize();

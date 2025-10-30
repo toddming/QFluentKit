@@ -76,7 +76,7 @@ protected:
     void paintEvent(QPaintEvent *e) override;
 };
 
-class ExpandSettingCard : public QScrollArea {
+class QFLUENT_EXPORT ExpandSettingCard : public QScrollArea {
     Q_OBJECT
 
 public:
