@@ -39,6 +39,12 @@ ToolButton::ToolButton(const QString& templatePath, QWidget* parent)
     setIcon(templatePath);
 }
 
+ToolButton::ToolButton(QIcon icon, QWidget* parent)
+    : ToolButton(parent)
+{
+    QToolButton::setIcon(icon);
+}
+
 void ToolButton::setIcon(FluentIconType::IconType icon)
 {
     m_iconType = icon;

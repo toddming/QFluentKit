@@ -12,6 +12,7 @@ public:
     explicit ToolButton(QWidget* parent = nullptr);
     ToolButton(FluentIconType::IconType icon, QWidget* parent = nullptr);
     ToolButton(const QString& templatePath, QWidget* parent = nullptr);
+    ToolButton(QIcon icon, QWidget* parent = nullptr);
 
     void setIcon(FluentIconType::IconType icon);
     void setIcon(const QString& templatePath);
@@ -36,6 +37,14 @@ private:
     FluentIconType::IconType m_iconType;
 
     QString m_templatePath;
+};
+
+
+class QFLUENT_EXPORT PrimaryToolButton : public ToolButton
+{
+    Q_OBJECT
+public:
+    using ToolButton::ToolButton;
 };
 
 

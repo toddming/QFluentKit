@@ -14,6 +14,8 @@ MainWindow::MainWindow()
     setWindowIcon(QPixmap(":/res/example.png"));
     setMinimumSize(866, 600);
 
+    setWindowButtonFlags(getWindowButtonFlags() | AppBarType::RouteBackButtonHint);
+
     addSubInterface("1", FluentIconType::HOME, "主页", new HomeInterface(this), true, NavigationType::TOP);
     addSubInterface("2", FluentIconType::EMOJI_TAB_SYMBOLS, "图标", new IconInterface(this), true, NavigationType::TOP);
     navigationInterface()->addSeparator();
@@ -22,4 +24,5 @@ MainWindow::MainWindow()
     navigationInterface()->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
     addSubInterface("11", FluentIconType::SETTING, "设置", new SettingInterface(this), true, NavigationType::BOTTOM);
 
+    navigationInterface()->setCurrentItem("1");
 }

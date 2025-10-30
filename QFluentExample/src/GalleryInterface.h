@@ -91,7 +91,7 @@ class GalleryInterface : public ScrollArea
 public:
     GalleryInterface(const QString &title, const QString &subtitle, QWidget *parent = nullptr);
 
-    ExampleCard* addExampleCard(const QString &title, QWidget *widget, const QString &sourcePath, int stretch = 0);
+    ExampleCard* addExampleCard(const QString &title, QWidget *widget, const QString &sourcePath = "", int stretch = 0);
     void scrollToCard(int index);
 
     QLayout *layout() const;

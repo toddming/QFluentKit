@@ -24,11 +24,17 @@ FluentWindow::FluentWindow(QMainWindow *parent)
 
     setAttribute(Qt::WA_DontCreateNativeAncestors);
 
+
     QWK::WidgetWindowAgent *agent = new QWK::WidgetWindowAgent(this);
     agent->setup(this);
 
     d->_windowBar = new FluentTitleBar(this);
     d->_windowBar->setHostWidget(this);
+
+    setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
+                         AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
+                         AppBarType::CloseButtonHint);
+
 
     agent->setTitleBar(d->_windowBar);
     agent->setHitTestVisible(d->_windowBar->themeButton(), true);

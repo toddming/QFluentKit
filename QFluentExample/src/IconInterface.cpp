@@ -215,6 +215,7 @@ IconCardView::IconCardView(QWidget* parent)
 
     m_trie = new Trie();
     m_iconLibraryLabel = new StrongBodyLabel("流畅图标库", this);
+    Theme::instance()->setFont(m_iconLibraryLabel, 14, QFont::Normal);
     m_searchLineEdit = new CustomLineEdit(this);
 
     m_view = new QFrame(this);
