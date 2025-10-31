@@ -20,12 +20,16 @@ public:
     void setButtonIcon(const FluentIconType::IconType iconType);
     FluentIconType::IconType buttonIcon() const;
 
+    bool isPressed() { return m_isPressed; }
+    bool isHover() { return m_isHover; }
+
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void enterEvent(QEnterEvent *e) override;
     void leaveEvent(QEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
+    virtual void drawIcon(QPainter* painter, const QRectF& rect);
 
 private:
     void initialize();
@@ -56,7 +60,7 @@ class QFLUENT_EXPORT TransparentPushButton : public PushButton
 public:
     explicit TransparentPushButton(QWidget *parent = nullptr);
     explicit TransparentPushButton(const QString &text, QWidget *parent = nullptr,
-                               const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+                                   const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit TransparentPushButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
 };
@@ -71,7 +75,7 @@ class QFLUENT_EXPORT HyperlinkButton : public PushButton
 public:
     explicit HyperlinkButton(QWidget *parent = nullptr);
     explicit HyperlinkButton(const QString &text, QWidget *parent = nullptr,
-                               const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+                             const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 };
 
 
@@ -82,9 +86,11 @@ class QFLUENT_EXPORT ToggleButton : public PushButton
 public:
     explicit ToggleButton(QWidget *parent = nullptr);
     explicit ToggleButton(const QString &text, QWidget *parent = nullptr,
-                             const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+                          const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit ToggleButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect) override;
 
 private:
     void postInit();
@@ -101,7 +107,7 @@ class QFLUENT_EXPORT TransparentTogglePushButton : public ToggleButton
 public:
     explicit TransparentTogglePushButton(QWidget *parent = nullptr);
     explicit TransparentTogglePushButton(const QString &text, QWidget *parent = nullptr,
-                          const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+                                         const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
     explicit TransparentTogglePushButton(const QString &fontFamily, QChar iconChar, QWidget *parent = nullptr);
 
 
@@ -115,7 +121,7 @@ class QFLUENT_EXPORT DropDownButtonBase : public PushButton
 public:
     explicit DropDownButtonBase(QWidget* parent = nullptr);
     explicit DropDownButtonBase(const QString &text, QWidget *parent = nullptr,
-                             const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+                                const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
 
 
     ~DropDownButtonBase();
@@ -174,7 +180,22 @@ class QFLUENT_EXPORT TransparentDropDownPushButton : public DropDownPushButton
 public:
     explicit TransparentDropDownPushButton(QWidget *parent = nullptr);
     explicit TransparentDropDownPushButton(const QString &text, QWidget *parent = nullptr,
-                                const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+                                           const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+};
+
+
+class QFLUENT_EXPORT PillPushButton : public ToggleButton
+{
+    Q_OBJECT
+public:
+    explicit PillPushButton(QWidget *parent = nullptr);
+    explicit PillPushButton(const QString &text, QWidget *parent = nullptr,
+                            const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+
+
 };
 
 #endif // PUSHBUTTON_H

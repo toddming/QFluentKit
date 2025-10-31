@@ -1,5 +1,4 @@
-﻿// FluentIcon.h
-#ifndef FLUENTICON_H
+﻿#ifndef FLUENTICON_H
 #define FLUENTICON_H
 
 #include <QIcon>
@@ -265,13 +264,13 @@ bool drawSvgIcon(const QByteArray& svgData, QPainter* painter, const QRectF& rec
 QByteArray writeSvg(const QString& iconPath, const QList<int>& indexes = QList<int>(),
                     const QMap<QString, QString>& attributes = QMap<QString, QString>());
 
-// 绘制图标
-void drawIcon(const QVariant& icon, QPainter* painter, const QRectF& rect,
-              QIcon::State state = QIcon::Off,
-              const QMap<QString, QString>& attributes = QMap<QString, QString>());
+// void drawIcon(const QIcon& icon, QPainter* painter, const QRectF& rect, QIcon::State state = QIcon::Off);
+// void drawIcon(const QString& iconPath, QPainter* painter, const QRectF& rect, QIcon::State state = QIcon::Off);
+// void drawIcon(const FluentIconBase* icon, QPainter* painter, const QRectF& rect, QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = QMap<QString, QString>());
 
-// 转换为QIcon
-QIcon toQIcon(const QVariant& icon);
+// QIcon toIcon(const QIcon& icon);
+// QIcon toIcon(const QString& iconPath);
+// QIcon toIcon(const FluentIconBase* icon);
 
 // ============================================================================
 // Action - QAction包装类

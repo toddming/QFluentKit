@@ -18,6 +18,8 @@ public:
     void setIcon(const QString& templatePath);
     bool isPressed() const { return m_isPressed; }
     bool isHover() const { return m_isHover; }
+    FluentIconType::IconType iconType() const { return m_iconType; }
+    QString templatePath() const { return m_templatePath; }
 
 signals:
     // No additional signals defined in the Python base ToolButton.
@@ -28,6 +30,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    virtual void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
 
 private:
     virtual void postInit();
@@ -45,6 +48,9 @@ class QFLUENT_EXPORT PrimaryToolButton : public ToolButton
     Q_OBJECT
 public:
     using ToolButton::ToolButton;
+
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
 };
 
 
@@ -64,6 +70,8 @@ class QFLUENT_EXPORT ToggleToolButton : public ToolButton
     Q_OBJECT
 public:
     using ToolButton::ToolButton;
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
 
 private:
     void postInit() override;
@@ -76,4 +84,15 @@ class QFLUENT_EXPORT TransparentToggleToolButton : public ToggleToolButton
 public:
     using ToggleToolButton::ToggleToolButton;
 
+};
+
+
+class QFLUENT_EXPORT PillToolButton : public ToggleToolButton
+{
+  Q_OBJECT
+public:
+    using ToggleToolButton::ToggleToolButton;
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
 };

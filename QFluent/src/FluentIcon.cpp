@@ -1,5 +1,4 @@
-﻿// FluentIcon.cpp
-#include "FluentIcon.h"
+﻿#include "FluentIcon.h"
 #include <QApplication>
 #include <QPalette>
 #include <QSvgRenderer>
@@ -188,40 +187,47 @@ QByteArray writeSvg(const QString& iconPath, const QList<int>& indexes,
     return modifiedSvg;
 }
 
-void drawIcon(const QVariant& iconVariant, QPainter* painter, const QRectF& rect,
-              QIcon::State state, const QMap<QString, QString>& attributes) {
-    if (!painter || !painter->isActive()) {
-        return;
-    }
+// 重载 drawIcon 函数
+// void drawIcon(const QIcon& icon, QPainter* painter, const QRectF& rect,
+//               QIcon::State state) {
+//     if (!painter || !painter->isActive()) {
+//         return;
+//     }
+//     icon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
+// }
 
-    // 优化类型检查顺序（最常用的放前面）
-    if (iconVariant.canConvert<QIcon>()) {
-        QIcon icon = iconVariant.value<QIcon>();
-        icon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
-    } else if (iconVariant.canConvert<QString>()) {
-        QIcon icon(iconVariant.toString());
-        icon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
-    } else if (iconVariant.canConvert<FluentIconBase*>()) {
-        FluentIconBase* icon = iconVariant.value<FluentIconBase*>();
-        if (icon) {
-            icon->render(painter, rect, ThemeType::ThemeMode::AUTO, QList<int>(), attributes);
-        }
-    }
-}
+// void drawIcon(const QString& iconPath, QPainter* painter, const QRectF& rect,
+//               QIcon::State state) {
+//     if (!painter || !painter->isActive()) {
+//         return;
+//     }
+//     QIcon icon(iconPath);
+//     icon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
+// }
 
-QIcon toQIcon(const QVariant& iconVariant) {
-    if (iconVariant.canConvert<QIcon>()) {
-        return iconVariant.value<QIcon>();
-    } else if (iconVariant.canConvert<QString>()) {
-        return QIcon(iconVariant.toString());
-    } else if (iconVariant.canConvert<FluentIconBase*>()) {
-        FluentIconBase* icon = iconVariant.value<FluentIconBase*>();
-        if (icon) {
-            return icon->icon();
-        }
-    }
-    return QIcon();
-}
+// void drawIcon(const FluentIconBase* icon, QPainter* painter, const QRectF& rect,
+//               QIcon::State state, const QMap<QString, QString>& attributes) {
+//     if (!painter || !painter->isActive() || !icon) {
+//         return;
+//     }
+//     icon->render(painter, rect, ThemeType::ThemeMode::AUTO, QList<int>(), attributes);
+// }
+
+// // 重载 toQIcon 函数
+// QIcon toQIcon(const QIcon& icon) {
+//     return icon;
+// }
+
+// QIcon toQIcon(const QString& iconPath) {
+//     return QIcon(iconPath);
+// }
+
+// QIcon toQIcon(const FluentIconBase* icon) {
+//     if (icon) {
+//         return icon->icon();
+//     }
+//     return QIcon();
+// }
 
 // ============================================================================
 // FluentIconEngine 实现

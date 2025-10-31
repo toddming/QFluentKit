@@ -33,7 +33,7 @@ FluentWindow::FluentWindow(QMainWindow *parent)
 
     setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
                          AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
-                         AppBarType::CloseButtonHint);
+                         AppBarType::CloseButtonHint | AppBarType::ThemeChangeButtonHint);
 
 
     agent->setTitleBar(d->_windowBar);

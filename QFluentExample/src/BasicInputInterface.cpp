@@ -1,6 +1,8 @@
 #include "BasicInputInterface.h"
 
+#include "QFluent/CheckBox.h"
 #include "QFluent/ToolButton.h"
+#include "QFluent/PushButton.h"
 
 BasicInputInterface::BasicInputInterface(QWidget *parent)
     : GalleryInterface("基本输入", "qfluentwidgets.components.widgets", parent)
@@ -16,4 +18,9 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
 
     addExampleCard("主题色按钮", new PrimaryPushButton("主题色按钮", this));
     addExampleCard("主题色工具按钮", new PrimaryToolButton(FluentIconType::IconType::BASKETBALL, this));
+    addExampleCard("椭圆按钮", new PillPushButton("标签", this, FluentIconType::IconType::TAG));
+    addExampleCard("椭圆工具按钮", new PillToolButton(FluentIconType::IconType::BASKETBALL, this));
+    addExampleCard("透明按钮", new TransparentPushButton("透明按钮", this, FluentIconType::BOOK_SHELF));
+    addExampleCard("透明按钮", new TransparentToolButton(FluentIconType::BOOK_SHELF, this));
+    addExampleCard("双态复选框", new CheckBox("双态复选框", this));
 }

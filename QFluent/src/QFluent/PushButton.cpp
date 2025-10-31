@@ -123,10 +123,13 @@ void PushButton::paintEvent(QPaintEvent *e)
         x = width() - w - x;
     }
 
-    FluentIcon(m_iconType).render(&painter, QRectF(x, y, w, h));
+    drawIcon(&painter, QRectF(x, y, w, h));
 }
 
-
+void PushButton::drawIcon(QPainter* painter, const QRectF& rect)
+{
+    FluentIcon(m_iconType).render(painter, rect);
+}
 
 
 
@@ -189,7 +192,7 @@ ToggleButton::ToggleButton(QWidget *parent) :
 }
 
 ToggleButton::ToggleButton(const QString &text, QWidget *parent, const FluentIconType::IconType iconType) :
-    PushButton(text, parent)
+    PushButton(text, parent, iconType)
 {
     setProperty("hasIcon", iconType != FluentIconType::IconType::NONE);
     postInit();
@@ -200,6 +203,15 @@ ToggleButton::ToggleButton(const QString &fontFamily, QChar iconChar, QWidget *p
 {
     setProperty("hasIcon", false);
     postInit();
+}
+
+void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
+{
+    if (Theme::instance()->isDarkTheme()) {
+        FluentIcon(buttonIcon()).render(painter, rect, isChecked() ? ThemeType::DARK : ThemeType::LIGHT);
+    } else {
+        FluentIcon(buttonIcon()).render(painter, rect, isChecked() ? ThemeType::LIGHT : ThemeType::DARK);
+    }
 }
 
 
@@ -390,4 +402,67 @@ TransparentDropDownPushButton::TransparentDropDownPushButton(const QString &text
     DropDownPushButton(text, parent, iconType)
 {
 
+}
+
+
+
+
+
+PillPushButton::PillPushButton(QWidget *parent) : ToggleButton(parent)
+{
+
+}
+
+PillPushButton::PillPushButton(const QString &text, QWidget *parent, const FluentIconType::IconType iconType) :
+    ToggleButton(text, parent, iconType)
+{
+
+}
+
+
+void PillPushButton::paintEvent(QPaintEvent* event)
+{
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    bool isDark = Theme::instance()->isDarkTheme();
+
+    QRect rect;
+    QColor borderColor;
+    QColor bgColor;
+
+    if (!isChecked()) {
+        rect = this->rect().adjusted(1, 1, -1, -1);
+        borderColor = isDark ? QColor(255, 255, 255, 18) : QColor(0, 0, 0, 15);
+
+        if (!isEnabled()) {
+            bgColor = isDark ? QColor(255, 255, 255, 11) : QColor(249, 249, 249, 75);
+        } else if (isPressed() || isHover()) {
+            bgColor = isDark ? QColor(255, 255, 255, 21) : QColor(249, 249, 249, 128);
+        } else {
+            bgColor = isDark ? QColor(255, 255, 255, 15) : QColor(243, 243, 243, 194);
+        }
+    } else {
+        if (!isEnabled()) {
+            bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
+        } else if (isPressed()) {
+            bgColor =  Theme::instance()->themeColor(isDark ? ThemeType::DARK_2 : ThemeType::LIGHT_3);
+        } else if (isHover()) {
+            bgColor =  Theme::instance()->themeColor(isDark ? ThemeType::DARK_1 : ThemeType::LIGHT_1);
+        } else {
+            bgColor = Theme::instance()->themeColor();
+        }
+
+        borderColor = Qt::transparent;
+        rect = this->rect();
+    }
+
+    painter.setPen(borderColor);
+    painter.setBrush(bgColor);
+
+    int r = rect.height() / 2;
+    painter.drawRoundedRect(rect, r, r);
+
+    ToggleButton::paintEvent(event);
 }
