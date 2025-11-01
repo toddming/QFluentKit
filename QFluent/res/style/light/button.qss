@@ -1,4 +1,4 @@
-PushButton, ToolButton, ToggleButton, ToggleToolButton {
+﻿PushButton, ToolButton, ToggleButton, ToggleToolButton {
     color: black;
     background: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
@@ -56,7 +56,8 @@ PushButton:disabled, ToolButton:disabled, ToggleButton:disabled, ToggleToolButto
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-
+PrimaryDropDownToolButton,
+PrimaryDropDownPushButton,
 PrimaryPushButton,
 PrimaryToolButton,
 ToggleButton:checked,
@@ -67,6 +68,8 @@ ToggleToolButton:checked {
     border-bottom: 1px solid --ThemeColorDark1;
 }
 
+PrimaryDropDownToolButton:hover,
+PrimaryDropDownPushButton:hover,
 PrimaryPushButton:hover,
 PrimaryToolButton:hover,
 ToggleButton:checked:hover,
@@ -76,6 +79,8 @@ ToggleToolButton:checked:hover {
     border-bottom: 1px solid --ThemeColorDark1;
 }
 
+PrimaryDropDownToolButton:pressed,
+PrimaryDropDownPushButton:pressed,
 PrimaryPushButton:pressed,
 PrimaryToolButton:pressed,
 ToggleButton:checked:pressed,
@@ -85,6 +90,8 @@ ToggleToolButton:checked:pressed {
     border: 1px solid --ThemeColorLight3;
 }
 
+PrimaryDropDownToolButton:disabled,
+PrimaryDropDownPushButton:disabled,
 PrimaryPushButton:disabled,
 PrimaryToolButton:disabled,
 ToggleButton:checked:disabled,

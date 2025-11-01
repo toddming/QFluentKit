@@ -76,6 +76,10 @@ public:
     explicit HyperlinkButton(QWidget *parent = nullptr);
     explicit HyperlinkButton(const QString &text, QWidget *parent = nullptr,
                              const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect) override;
+
 };
 
 
@@ -137,7 +141,6 @@ public:
 protected:
     virtual void drawDropDownIcon(QPainter* painter, const QRectF& rect);
 
-
     void paintEvent(QPaintEvent* event) override;
 
     void mousePressEvent(QMouseEvent* event) override;
@@ -197,5 +200,25 @@ protected:
 
 
 };
+
+
+
+class QFLUENT_EXPORT PrimaryDropDownPushButton : public DropDownButtonBase
+{
+  Q_OBJECT
+public:
+    explicit PrimaryDropDownPushButton(QWidget *parent = nullptr);
+    explicit PrimaryDropDownPushButton(const QString &text, QWidget *parent = nullptr,
+                                const FluentIconType::IconType iconType = FluentIconType::IconType::NONE);
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+    void drawDropDownIcon(QPainter* painter, const QRectF& rect) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void drawIcon(QPainter* painter, const QRectF& rect) override;
+};
+
+
+
 
 #endif // PUSHBUTTON_H

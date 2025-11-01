@@ -1,4 +1,4 @@
-PushButton, ToolButton, ToggleButton, ToggleToolButton {
+﻿PushButton, ToolButton, ToggleButton, ToggleToolButton {
     background: rgba(255, 255, 255, 0.0605);
     border: 1px solid rgba(255, 255, 255, 0.053);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -63,7 +63,8 @@ SplitDropButton:pressed {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-
+PrimaryDropDownToolButton,
+PrimaryDropDownPushButton,
 PrimaryPushButton,
 PrimaryToolButton,
 ToggleButton:checked,
@@ -74,6 +75,8 @@ ToggleToolButton:checked {
     border-bottom: 1px solid --ThemeColorLight2;
 }
 
+PrimaryDropDownToolButton:hover,
+PrimaryDropDownPushButton:hover,
 PrimaryPushButton:hover,
 PrimaryToolButton:hover,
 ToggleButton:checked:hover,
@@ -83,6 +86,8 @@ ToggleToolButton:checked:hover {
     border-bottom: 1px solid --ThemeColorLight2;
 }
 
+PrimaryDropDownToolButton:pressed,
+PrimaryDropDownPushButton:pressed,
 PrimaryPushButton:pressed,
 PrimaryToolButton:pressed,
 ToggleButton:checked:pressed,
@@ -92,6 +97,8 @@ ToggleToolButton:checked:pressed {
     border: 1px solid --ThemeColorDark2;
 }
 
+PrimaryDropDownToolButton:disabled,
+PrimaryDropDownPushButton:disabled,
 PrimaryPushButton:disabled,
 PrimaryToolButton:disabled,
 ToggleButton:checked:disabled,

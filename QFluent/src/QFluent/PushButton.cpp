@@ -5,8 +5,8 @@
 #include <QPainter>
 #include <QStyleOptionButton>
 
-#include "FluentIcon.h"
 #include "Theme.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "Animation.h"
 #include "menu/RoundMenu.h"
@@ -177,9 +177,20 @@ HyperlinkButton::HyperlinkButton(QWidget *parent) :
 }
 
 HyperlinkButton::HyperlinkButton(const QString &text, QWidget *parent, const FluentIconType::IconType iconType) :
-    PushButton(text, parent)
+    PushButton(text, parent, iconType)
 {
     setProperty("hasIcon", iconType != FluentIconType::IconType::NONE);
+}
+
+void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
+{
+    if (isEnabled()) {
+        QMap<QString, QString> attrs;
+        attrs["fill"] = Theme::instance()->themeColor().name();
+        FluentIcon(FluentIconType::LINK).render(painter, rect, ThemeType::AUTO, QList<int>(), attrs);
+    } else {
+        painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.3628 : 0.36);
+    }
 }
 
 
@@ -232,7 +243,7 @@ TransparentTogglePushButton::TransparentTogglePushButton(QWidget *parent) :
 }
 
 TransparentTogglePushButton::TransparentTogglePushButton(const QString &text, QWidget *parent, const FluentIconType::IconType iconType) :
-    ToggleButton(text, parent)
+    ToggleButton(text, parent, iconType)
 {
     setProperty("hasIcon", iconType != FluentIconType::IconType::NONE);
 }
@@ -466,3 +477,44 @@ void PillPushButton::paintEvent(QPaintEvent* event)
 
     ToggleButton::paintEvent(event);
 }
+
+
+
+
+
+
+PrimaryDropDownPushButton::PrimaryDropDownPushButton(QWidget *parent) : DropDownButtonBase(parent)
+{
+
+}
+
+PrimaryDropDownPushButton::PrimaryDropDownPushButton(const QString &text, QWidget *parent, const FluentIconType::IconType iconType) :
+    DropDownButtonBase(text, parent, iconType)
+{
+
+}
+
+void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
+{
+    PushButton::paintEvent(event);
+    DropDownButtonBase::paintEvent(event);
+}
+
+void PrimaryDropDownPushButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
+{
+    FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme()? ThemeType::DARK : ThemeType::LIGHT);
+}
+
+void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
+{
+    DropDownButtonBase::mouseReleaseEvent(e);
+    showMenu();
+}
+
+void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
+{
+    FluentIcon(buttonIcon()).render(painter, rect, Theme::instance()->isDarkTheme()? ThemeType::DARK : ThemeType::LIGHT);
+}
+
+
+

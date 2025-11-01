@@ -11,6 +11,9 @@
 #include "Theme.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
+#include "Animation.h"
+#include "menu/RoundMenu.h"
+#include "menu/MenuActionListWidget.h"
 
 
 ToolButton::ToolButton(QWidget* parent)
@@ -206,4 +209,179 @@ void PillToolButton::paintEvent(QPaintEvent* event)
     painter.drawRoundedRect(rect, r, r);
 
     ToggleToolButton::paintEvent(event);
+}
+
+
+
+
+DropDownToolButtonBase::DropDownToolButtonBase(QWidget *parent)
+    : ToolButton(parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+
+}
+
+
+DropDownToolButtonBase::DropDownToolButtonBase(FluentIconType::IconType icon, QWidget *parent)
+    : ToolButton(icon, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+
+}
+
+DropDownToolButtonBase::DropDownToolButtonBase(QIcon icon, QWidget *parent)
+    : ToolButton(icon, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+
+}
+
+DropDownToolButtonBase::DropDownToolButtonBase(const QString &templatePath, QWidget *parent)
+    : ToolButton(templatePath, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+
+}
+
+DropDownToolButtonBase::~DropDownToolButtonBase()
+{
+
+}
+
+void DropDownToolButtonBase::setMenu(RoundMenu* menu)
+{
+    m_menu = menu;
+}
+
+RoundMenu* DropDownToolButtonBase::menu() const
+{
+    return m_menu;
+}
+
+void DropDownToolButtonBase::showMenu()
+{
+    if (m_menu.isNull()) {
+        return;
+    }
+
+    RoundMenu *menu = m_menu;
+    menu->view()->setMinimumWidth(width());
+    menu->view()->adjustSize();
+    menu->adjustSize();
+
+    // Calculate position for DROP_DOWN
+    int x = - menu->view()->width() / 2 + menu->view()->contentsMargins().left() + width() / 2;
+
+    QPoint pd = mapToGlobal(QPoint(x, height()));
+    int hd = menu->view()->heightForAnimation(pd, MenuAnimationType::DROP_DOWN);
+
+    QPoint pu = mapToGlobal(QPoint(x, 0));
+    int hu = menu->view()->heightForAnimation(pu, MenuAnimationType::PULL_UP);
+
+    if (hd >= hu) {
+        menu->view()->adjustSize(pd, MenuAnimationType::DROP_DOWN);
+        menu->exec(pd, true, MenuAnimationType::DROP_DOWN);
+    } else {
+        menu->view()->adjustSize(pu, MenuAnimationType::PULL_UP);
+        menu->exec(pu, true, MenuAnimationType::PULL_UP);
+    }
+}
+
+void DropDownToolButtonBase::hideMenu()
+{
+    if (!m_menu.isNull()) {
+        m_menu->hide();
+    }
+}
+
+void DropDownToolButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
+{
+    if (Theme::instance()->isDarkTheme()) {
+        FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect);
+    } else {
+        QMap<QString, QString> attrs;
+        attrs["fill"] = "#646464";
+        FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect, ThemeType::AUTO, QList<int>(), attrs);
+    }
+}
+
+void DropDownToolButtonBase::paintEvent(QPaintEvent* /*event*/)
+{
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    if (m_isHover) {
+        painter.setOpacity(0.8);
+    } else if (m_isPressed) {
+        painter.setOpacity(0.7);
+    }
+
+    QRectF rect(width() - 22, height() / 2.0 - 5 + m_arrowAni->y(), 10, 10);
+
+    drawDropDownIcon(&painter, rect);
+}
+
+void DropDownToolButtonBase::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_isPressed = true;
+        update();
+    }
+    ToolButton::mousePressEvent(event);
+}
+
+void DropDownToolButtonBase::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_isPressed = false;
+        update();
+    }
+    ToolButton::mouseReleaseEvent(event);
+}
+
+
+
+
+void DropDownToolButton::mouseReleaseEvent(QMouseEvent* event)
+{
+    ToolButton::mouseReleaseEvent(event);
+    showMenu();
+}
+
+void DropDownToolButton::paintEvent(QPaintEvent* event)
+{
+    ToolButton::paintEvent(event);
+    DropDownToolButtonBase::paintEvent(event);
+}
+
+void DropDownToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
+{
+    QRectF r = rect;
+    r.moveLeft(12);
+    if (iconType() != FluentIconType::IconType::NONE) {
+        FluentIcon(iconType()).render(painter, r, theme);
+    } else {
+        FluentIcon(templatePath()).render(painter, r, theme);
+    }
+}
+
+void PrimaryDropDownToolButton::drawIcon(QPainter *painter, const QRectF &rect, ThemeType::ThemeMode theme)
+{
+    Q_UNUSED(theme);
+    QRectF r = rect;
+    r.moveLeft(12);
+    if (iconType() != FluentIconType::IconType::NONE) {
+        FluentIcon(iconType()).render(painter, r, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
+    } else {
+        FluentIcon(templatePath()).render(painter, r, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
+    }
+}
+
+void PrimaryDropDownToolButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
+{
+    FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
 }
