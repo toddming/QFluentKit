@@ -141,11 +141,11 @@ class QFLUENT_EXPORT DropDownToolButton : public DropDownToolButtonBase
 {
   Q_OBJECT
 public:
-    using DropDownToolButton::DropDownToolButton;
+    using DropDownToolButtonBase::DropDownToolButtonBase;
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
+    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
 };
 
 
@@ -155,7 +155,7 @@ class QFLUENT_EXPORT PrimaryDropDownToolButton : public DropDownToolButton
 public:
     using DropDownToolButton::DropDownToolButton;
 
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
+    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
     void drawDropDownIcon(QPainter* painter, const QRectF& rect) override;
 };
 

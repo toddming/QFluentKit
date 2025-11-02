@@ -237,7 +237,7 @@ protected:
     void _updateTitle() override;
 };
 
-class CalendarView : public QWidget {
+class QFLUENT_EXPORT CalendarView : public QWidget {
     Q_OBJECT
 signals:
     void resetted();
