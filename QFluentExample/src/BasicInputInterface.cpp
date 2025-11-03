@@ -100,4 +100,5 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("状态开关按钮", new TransparentTogglePushButton("开始练习", this, FluentIconType::BASKETBALL));
     addExampleCard("状态开关工具按钮", new TransparentToggleToolButton(FluentIconType::BASKETBALL, this));
 
+    addExampleCard("测试按钮", new ToolButton(FluentIcon(FluentIconType::HELP), this));
 }

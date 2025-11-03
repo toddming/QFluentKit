@@ -14,23 +14,33 @@
 
 #include "Define.h"
 
-// 获取图标颜色
-QString getIconColor(ThemeType::ThemeMode theme = ThemeType::AUTO, bool reverse = false);
-
-// 绘制SVG图标
-void drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect);
-void drawSvgIcon(const QString& iconPath, QPainter* painter, const QRectF& rect);
-
-// 写入SVG
-QString writeSvg(const QString& iconPath, const QList<int>& indexes = QList<int>(), const QMap<QString, QString>& attributes = QMap<QString, QString>());
-
 // 前向声明
+class FluentIcon;
 class FluentIconBase;
 class ColoredFluentIcon;
 class Icon;
 
+
+class FluentIconUtils {
+public:
+    // 获取图标颜色
+    static QString getIconColor(ThemeType::ThemeMode theme = ThemeType::AUTO, bool reverse = false);
+
+    // 绘制SVG图标（重载）
+    static void drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect);
+    static void drawSvgIcon(const QString& iconPath, QPainter* painter, const QRectF& rect);
+
+    // 写入SVG
+    static QString writeSvg(const QString& iconPath, const QList<int>& indexes = QList<int>(), const QMap<QString, QString>& attributes = QMap<QString, QString>());
+
+    // toQIcon 辅助函数
+    static QIcon toQIcon(const QVariant& icon);
+
+    static void drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = QMap<QString, QString>());
+
+};
+
 // 绘制图标
-// void drawIcon(const QVariant& icon, QPainter* painter, const QRectF& rect, QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = QMap<QString, QString>());
 
 // FluentIconEngine 类
 class FluentIconEngine : public QIconEngine {
@@ -93,6 +103,7 @@ public:
     virtual void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
                         const QList<int>& indexes = QList<int>(),
                         const QMap<QString, QString>& attributes = QMap<QString, QString>()) const;
+    virtual FluentIconBase* clone() const = 0;
 };
 
 // FluentFontIconBase 类
@@ -131,6 +142,15 @@ protected:
     static QMap<QString, QString> s_iconNames;
 
     QColor getIconColor(ThemeType::ThemeMode theme) const;
+
+    FluentIconBase* FluentFontIconBase::clone() const {
+        FluentFontIconBase* copy = new FluentFontIconBase(m_char);
+        copy->m_lightColor = m_lightColor;
+        copy->m_darkColor = m_darkColor;
+        copy->m_isBold = m_isBold;
+        return copy;
+    }
+
 };
 
 // ColoredFluentIcon 类
@@ -148,6 +168,10 @@ private:
     const FluentIconBase* m_fluentIcon;
     QColor m_lightColor;
     QColor m_darkColor;
+protected:
+    FluentIconBase* ColoredFluentIcon::clone() const {
+        return new ColoredFluentIcon(*m_fluentIcon->clone(), m_lightColor, m_darkColor);
+    }
 };
 
 // FluentIcon 类
@@ -163,10 +187,19 @@ public:
     static QMap<FluentIconType::IconType, QString> fluentIcons();
     QIcon qicon(bool reverse = false) const override;
 
+    FluentIconBase* FluentIcon::clone() const {
+        if (m_iconEnum == FluentIconType::CUSTOM_PATH) {
+            return new FluentIcon(m_templatePath);  // 拷贝自定义路径版本
+        } else {
+            return new FluentIcon(m_iconEnum);  // 拷贝枚举版本
+        }
+    }
+
 private:
     QString m_templatePath;
     FluentIconType::IconType m_iconEnum;
     QString enumToString(FluentIconType::IconType e) const;
+
 };
 
 // Icon 类

@@ -14,8 +14,7 @@
 
 #include "Theme.h"
 
-// 获取图标颜色
-QString getIconColor(ThemeType::ThemeMode theme, bool reverse) {
+QString FluentIconUtils::getIconColor(ThemeType::ThemeMode theme, bool reverse) {
     QString lc = reverse ? "white" : "black";
     QString dc = reverse ? "black" : "white";
 
@@ -29,19 +28,17 @@ QString getIconColor(ThemeType::ThemeMode theme, bool reverse) {
     return color;
 }
 
-// 绘制SVG图标
-void drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect) {
+void FluentIconUtils::drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect) {
     QSvgRenderer renderer(icon);
     renderer.render(painter, rect);
 }
 
-void drawSvgIcon(const QString& iconPath, QPainter* painter, const QRectF& rect) {
+void FluentIconUtils::drawSvgIcon(const QString& iconPath, QPainter* painter, const QRectF& rect) {
     QSvgRenderer renderer(iconPath);
     renderer.render(painter, rect);
 }
 
-// 写入SVG
-QString writeSvg(const QString& iconPath, const QList<int>& indexes, const QMap<QString, QString>& attributes) {
+QString FluentIconUtils::writeSvg(const QString& iconPath, const QList<int>& indexes, const QMap<QString, QString>& attributes) {
     if (!iconPath.toLower().endsWith(".svg")) {
         return QString();
     }
@@ -76,24 +73,44 @@ QString writeSvg(const QString& iconPath, const QList<int>& indexes, const QMap<
     return dom.toString();
 }
 
+QIcon FluentIconUtils::toQIcon(const QVariant& icon) {
+    if (icon.canConvert<QString>()) {
+        return QIcon(icon.toString());
+    }
+
+    if (icon.canConvert<FluentIconBase*>()) {
+        FluentIconBase* fluentIcon = icon.value<FluentIconBase*>();
+        if (fluentIcon) {
+            return fluentIcon->icon();
+        }
+    }
+
+    if (icon.canConvert<QIcon>()) {
+        return icon.value<QIcon>();
+    }
+
+    return QIcon();
+}
+
 // 绘制图标
-// void drawIcon(const QVariant& icon, QPainter* painter, const QRectF& rect, QIcon::State state, const QMap<QString, QString>& attributes) {
-//     if (icon.canConvert<FluentIconBase*>()) {
-//         FluentIconBase* fluentIcon = icon.value<FluentIconBase*>();
-//         if (fluentIcon) {
-//             fluentIcon->render(painter, rect, ThemeType::AUTO, QList<int>(), attributes);
-//         }
-//     } else if (icon.canConvert<Icon>()) {
-//         Icon iconObj = icon.value<Icon>();
-//         iconObj.fluentIcon().render(painter, rect, ThemeType::AUTO, QList<int>(), attributes);
-//     } else if (icon.canConvert<QIcon>()) {
-//         QIcon qicon = icon.value<QIcon>();
-//         qicon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
-//     } else if (icon.canConvert<QString>()) {
-//         QIcon qicon(icon.toString());
-//         qicon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
-//     }
-// }
+void FluentIconUtils::drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, QIcon::State state, const QMap<QString, QString>& attributes) {
+    icon.render(painter, rect, ThemeType::AUTO, QList<int>(), attributes);
+    // if (icon.canConvert<FluentIconBase*>()) {
+    //     FluentIconBase* fluentIcon = icon.value<FluentIconBase*>();
+    //     if (fluentIcon) {
+    //
+    //     }
+    // } else if (icon.canConvert<Icon>()) {
+    //     Icon iconObj = icon.value<Icon>();
+    //     iconObj.fluentIcon().render(painter, rect, ThemeType::AUTO, QList<int>(), attributes);
+    // } else if (icon.canConvert<QIcon>()) {
+    //     QIcon qicon = icon.value<QIcon>();
+    //     qicon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
+    // } else if (icon.canConvert<QString>()) {
+    //     QIcon qicon(icon.toString());
+    //     qicon.paint(painter, rect.toRect(), Qt::AlignCenter, QIcon::Normal, state);
+    // }
+}
 
 // FluentIconEngine 实现
 FluentIconEngine::FluentIconEngine(FluentIconType::IconType iconType, bool reverse)
@@ -134,15 +151,20 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect, QIcon::Mode m
 }
 
 QIconEngine* FluentIconEngine::clone() const {
+    // 创建新引擎
+    FluentIconEngine* engine;
     if (m_iconType == FluentIconType::CUSTOM_PATH) {
-        auto* engine = new FluentIconEngine(m_templatePath, m_isThemeReversed);
-        engine->m_iconBase = std::make_unique<FluentIcon>(m_templatePath);  // 克隆时重新创建
-        return engine;
+        engine = new FluentIconEngine(m_templatePath, m_isThemeReversed);
     } else {
-        auto* engine = new FluentIconEngine(m_iconType, m_isThemeReversed);
-        engine->m_iconBase = std::make_unique<FluentIcon>(m_iconType);  // 克隆时重新创建
-        return engine;
+        engine = new FluentIconEngine(m_iconType, m_isThemeReversed);
     }
+
+    // 使用 clone() 克隆 m_iconBase（多态拷贝）
+    if (m_iconBase) {
+        engine->m_iconBase = std::unique_ptr<FluentIconBase>(m_iconBase->clone());
+    }
+
+    return engine;
 }
 
 QPixmap FluentIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state) {
@@ -163,7 +185,7 @@ SvgIconEngine::SvgIconEngine(const QString& svg) : m_svg(svg) {
 void SvgIconEngine::paint(QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State state) {
     Q_UNUSED(mode)
     Q_UNUSED(state)
-    drawSvgIcon(m_svg.toUtf8(), painter, rect);
+    FluentIconUtils::drawSvgIcon(m_svg.toUtf8(), painter, rect);
 }
 
 QIconEngine* SvgIconEngine::clone() const {
@@ -228,7 +250,7 @@ QIcon FluentIconBase::icon(ThemeType::ThemeMode theme, const QColor& color) cons
 
     QMap<QString, QString> attrs;
     attrs["fill"] = color.name();
-    QString svg = writeSvg(iconPath, QList<int>(), attrs);
+    QString svg = FluentIconUtils::writeSvg(iconPath, QList<int>(), attrs);
     return QIcon(new SvgIconEngine(svg));
 }
 
@@ -247,7 +269,7 @@ void FluentIconBase::render(QPainter* painter, const QRectF& rect, ThemeType::Th
     if (iconPath.endsWith(".svg")) {
         QByteArray iconData;
         if (!attributes.isEmpty()) {
-            iconData = writeSvg(iconPath, indexes, attributes).toUtf8();
+            iconData = FluentIconUtils::writeSvg(iconPath, indexes, attributes).toUtf8();
         } else {
             QFile file(iconPath);
             if (file.open(QFile::ReadOnly)) {
@@ -257,7 +279,7 @@ void FluentIconBase::render(QPainter* painter, const QRectF& rect, ThemeType::Th
         }
 
         if (!iconData.isEmpty()) {
-            drawSvgIcon(iconData, painter, rect);
+            FluentIconUtils::drawSvgIcon(iconData, painter, rect);
         }
     } else {
         QIcon icon(iconPath);
@@ -419,8 +441,8 @@ void ColoredFluentIcon::render(QPainter* painter, const QRectF& rect, ThemeType:
     QMap<QString, QString> newAttributes = attributes;
     newAttributes["fill"] = color.name();
 
-    QByteArray iconData = writeSvg(iconPath, indexes, newAttributes).toUtf8();
-    drawSvgIcon(iconData, painter, rect);
+    QByteArray iconData = FluentIconUtils::writeSvg(iconPath, indexes, newAttributes).toUtf8();
+    FluentIconUtils::drawSvgIcon(iconData, painter, rect);
 }
 
 // FluentIcon 实现
@@ -432,7 +454,7 @@ FluentIcon::FluentIcon(const QString& templatePath)
     , m_templatePath(templatePath) {}
 
 QString FluentIcon::path(ThemeType::ThemeMode theme) const {
-    QString color = getIconColor(theme);
+    QString color = FluentIconUtils::getIconColor(theme);
 
     if (m_iconEnum != FluentIconType::CUSTOM_PATH) {
         QString iconName = enumToString(m_iconEnum);

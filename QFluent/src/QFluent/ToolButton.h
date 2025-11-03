@@ -3,6 +3,8 @@
 #include <QPointer>
 #include <QToolButton>
 #include "Define.h"
+#include "FluentIcon.h"
+#include <memory>
 
 class RoundMenu;
 class TranslateYAnimation;
@@ -15,13 +17,17 @@ public:
     explicit ToolButton(FluentIconType::IconType icon, QWidget* parent = nullptr);
     explicit ToolButton(const QString& templatePath, QWidget* parent = nullptr);
     explicit ToolButton(QIcon icon, QWidget* parent = nullptr);
+    explicit ToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
     void setIcon(FluentIconType::IconType icon);
     void setIcon(const QString& templatePath);
+    void setIcon(const FluentIconBase &icon);
     bool isPressed() const { return m_isPressed; }
     bool isHover() const { return m_isHover; }
     FluentIconType::IconType iconType() const { return m_iconType; }
     QString templatePath() const { return m_templatePath; }
+
+    void init();
 
 signals:
     // No additional signals defined in the Python base ToolButton.
@@ -40,7 +46,7 @@ private:
     bool m_isPressed;
     bool m_isHover;
     FluentIconType::IconType m_iconType;
-
+    std::unique_ptr<FluentIconBase> m_icon;
     QString m_templatePath;
 };
 

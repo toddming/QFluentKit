@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <memory>
 
 #include "Theme.h"
 #include "FluentIcon.h"
@@ -21,13 +22,7 @@ ToolButton::ToolButton(QWidget* parent)
     , m_isPressed(false)
     , m_isHover(false)
 {
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
-
-    setIcon(FluentIconType::IconType::NONE);
-
-    QTimer::singleShot(0, this, [this]() {
-        postInit();
-    });
+    init();
 }
 
 ToolButton::ToolButton(FluentIconType::IconType icon, QWidget* parent)
@@ -48,6 +43,26 @@ ToolButton::ToolButton(QIcon icon, QWidget* parent)
     QToolButton::setIcon(icon);
 }
 
+
+ToolButton::ToolButton(const FluentIconBase &icon, QWidget* parent)
+    : QToolButton(parent)
+    , m_icon(icon.clone())
+{
+    qDebug() << "333";
+    init();
+}
+
+void ToolButton::init()
+{
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
+
+    setIcon(FluentIconType::IconType::NONE);
+
+    QTimer::singleShot(0, this, [this]() {
+        postInit();
+    });
+}
+
 void ToolButton::setIcon(FluentIconType::IconType icon)
 {
     m_iconType = icon;
@@ -60,6 +75,11 @@ void ToolButton::setIcon(const QString& templatePath)
     m_iconType = FluentIconType::IconType::NONE;
 
     update();
+}
+
+void ToolButton::setIcon(const FluentIconBase &icon)
+{
+
 }
 
 void ToolButton::mousePressEvent(QMouseEvent* event)
@@ -92,7 +112,7 @@ void ToolButton::paintEvent(QPaintEvent* event)
 {
     QToolButton::paintEvent(event);
 
-    if (m_iconType == FluentIconType::IconType::NONE && m_templatePath.isEmpty()) {
+    if (m_iconType == FluentIconType::IconType::NONE && m_templatePath.isEmpty() && !m_icon) {
         return;
     }
 
@@ -131,10 +151,16 @@ void ToolButton::postInit()
 
 void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
-    if (m_iconType != FluentIconType::IconType::NONE) {
-        FluentIcon(m_iconType).render(painter, rect, theme);
+    // if (m_iconType != FluentIconType::IconType::NONE) {
+    //     FluentIcon(m_iconType).render(painter, rect, theme);
+    // } else {
+    //     FluentIcon(m_templatePath).render(painter, rect, theme);
+    // }
+    if (m_icon) {
+        qDebug() << "111";
+        FluentIconUtils::drawIcon(*m_icon, painter, rect);
     } else {
-        FluentIcon(m_templatePath).render(painter, rect, theme);
+        qDebug() << "000";
     }
 }
 
