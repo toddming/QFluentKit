@@ -26,6 +26,7 @@ public:
     bool isHover() const { return m_isHover; }
     FluentIconType::IconType iconType() const { return m_iconType; }
     QString templatePath() const { return m_templatePath; }
+    FluentIconBase& fluentIcon() const;
 
     void init();
 
@@ -43,8 +44,8 @@ protected:
 private:
     virtual void postInit();
 
-    bool m_isPressed;
-    bool m_isHover;
+    bool m_isPressed = false;
+    bool m_isHover = false;
     FluentIconType::IconType m_iconType;
     std::unique_ptr<FluentIconBase> m_icon;
     QString m_templatePath;

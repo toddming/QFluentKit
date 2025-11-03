@@ -48,7 +48,6 @@ ToolButton::ToolButton(const FluentIconBase &icon, QWidget* parent)
     : QToolButton(parent)
     , m_icon(icon.clone())
 {
-    qDebug() << "333";
     init();
 }
 
@@ -82,6 +81,11 @@ void ToolButton::setIcon(const FluentIconBase &icon)
 
 }
 
+FluentIconBase& ToolButton::fluentIcon() const
+{
+    return *m_icon;
+}
+
 void ToolButton::mousePressEvent(QMouseEvent* event)
 {
     m_isPressed = true;
@@ -112,9 +116,7 @@ void ToolButton::paintEvent(QPaintEvent* event)
 {
     QToolButton::paintEvent(event);
 
-    if (m_iconType == FluentIconType::IconType::NONE && m_templatePath.isEmpty() && !m_icon) {
-        return;
-    }
+    if (!m_icon) return;
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -133,17 +135,6 @@ void ToolButton::paintEvent(QPaintEvent* event)
     drawIcon(&painter, QRectF(x, y, w, h));
 }
 
-void PrimaryToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
-{
-    if (iconType() != FluentIconType::IconType::NONE) {
-        FluentIcon(iconType()).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
-    } else {
-        FluentIcon(templatePath()).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
-    }
-}
-
-
-
 void ToolButton::postInit()
 {
 
@@ -151,13 +142,15 @@ void ToolButton::postInit()
 
 void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
-    // if (m_iconType != FluentIconType::IconType::NONE) {
-    //     FluentIcon(m_iconType).render(painter, rect, theme);
-    // } else {
-    //     FluentIcon(m_templatePath).render(painter, rect, theme);
-    // }
-    if (m_icon) {
-        FluentIconUtils::drawIcon(*m_icon, painter, rect);
+    FluentIconUtils::drawIcon(*m_icon, painter, rect);
+}
+
+void PrimaryToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
+{
+    if (iconType() != FluentIconType::IconType::NONE) {
+        FluentIcon(iconType()).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
+    } else {
+        FluentIcon(templatePath()).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
     }
 }
 
