@@ -130,6 +130,14 @@ public:
     void loadFont();
     void loadIconNames();
 
+    FluentIconBase* FluentFontIconBase::clone() const {
+        FluentFontIconBase* copy = new FluentFontIconBase(m_char);
+        copy->m_lightColor = m_lightColor;
+        copy->m_darkColor = m_darkColor;
+        copy->m_isBold = m_isBold;
+        return copy;
+    }
+
 protected:
     QString m_char;
     QColor m_lightColor;
@@ -142,15 +150,6 @@ protected:
     static QMap<QString, QString> s_iconNames;
 
     QColor getIconColor(ThemeType::ThemeMode theme) const;
-
-    FluentIconBase* FluentFontIconBase::clone() const {
-        FluentFontIconBase* copy = new FluentFontIconBase(m_char);
-        copy->m_lightColor = m_lightColor;
-        copy->m_darkColor = m_darkColor;
-        copy->m_isBold = m_isBold;
-        return copy;
-    }
-
 };
 
 // ColoredFluentIcon 类
@@ -163,15 +162,14 @@ public:
     void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
                 const QList<int>& indexes = QList<int>(),
                 const QMap<QString, QString>& attributes = QMap<QString, QString>()) const override;
+    FluentIconBase* ColoredFluentIcon::clone() const {
+        return new ColoredFluentIcon(*m_fluentIcon->clone(), m_lightColor, m_darkColor);
+    }
 
 private:
     const FluentIconBase* m_fluentIcon;
     QColor m_lightColor;
-    QColor m_darkColor;
-protected:
-    FluentIconBase* ColoredFluentIcon::clone() const {
-        return new ColoredFluentIcon(*m_fluentIcon->clone(), m_lightColor, m_darkColor);
-    }
+    QColor m_darkColor;    
 };
 
 // FluentIcon 类
