@@ -49,8 +49,8 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("可编辑的下拉框", editableComboBox);
 
     auto dropDownPushButtonMenu = new RoundMenu("menu", this);
-    dropDownPushButtonMenu->addAction(new Action(FluentIconType::SEND, "发送"));
-    dropDownPushButtonMenu->addAction(new Action(FluentIconType::EDUCATION, "保存"));
+    dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::SEND), "发送"));
+    dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::EDUCATION), "保存"));
 
     auto dropDownPushButton = new DropDownPushButton("邮件", this, FluentIconType::MAIL);
     dropDownPushButton->setMenu(dropDownPushButtonMenu);

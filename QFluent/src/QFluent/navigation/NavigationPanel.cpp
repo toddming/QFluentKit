@@ -45,11 +45,11 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
         menu->view()->setMaxVisibleItems(0);
         menu->addWidget(card);
         menu->addSeparator();
-        menu->addAction(new Action(FluentIconType::IconType::PEOPLE, "管理账户和设置"));
-        menu->addAction(new Action(FluentIconType::IconType::SHOPPING_CART, "支付方式"));
-        menu->addAction(new Action(FluentIconType::IconType::CODE, "兑换代码和礼品卡"));
+        menu->addAction(new Action(FluentIcon(FluentIconType::PEOPLE), "管理账户和设置"));
+        menu->addAction(new Action(FluentIcon(FluentIconType::SHOPPING_CART), "支付方式"));
+        menu->addAction(new Action(FluentIcon(FluentIconType::CODE), "兑换代码和礼品卡"));
         menu->addSeparator();
-        menu->addAction(new Action(FluentIconType::IconType::SETTING, "设置"));
+        menu->addAction(new Action(FluentIcon(FluentIconType::SETTING), "设置"));
 
         menu->exec(m_avatarWidget->mapToGlobal(QPoint(m_avatarWidget->width()+5, -100)));
     });

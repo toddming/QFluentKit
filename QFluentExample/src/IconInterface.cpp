@@ -177,7 +177,7 @@ IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
 }
 
 void IconInfoPanel::setIcon(FluentIconType::IconType icon) {
-    static QHash<FluentIconType::IconType, QString> icons = FluentIcon::fluentIcons();
+    static QMap<FluentIconType::IconType, QString> icons = FluentIcon::fluentIcons();
 
     m_iconWidget->setIcon(icon);
     m_nameLabel->setText(icons.value(icon));
@@ -264,7 +264,7 @@ void IconCardView::initWidget() {
     connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
     connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
-    const QHash<FluentIconType::IconType, QString> allIcons = FluentIcon::fluentIcons();
+    const QMap<FluentIconType::IconType, QString> allIcons = FluentIcon::fluentIcons();
     for (FluentIconType::IconType icon : allIcons.keys()) {
         addIcon(icon, allIcons.value(icon));
     }
