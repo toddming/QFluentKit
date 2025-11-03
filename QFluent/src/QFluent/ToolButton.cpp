@@ -157,10 +157,7 @@ void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::Them
     //     FluentIcon(m_templatePath).render(painter, rect, theme);
     // }
     if (m_icon) {
-        qDebug() << "111";
         FluentIconUtils::drawIcon(*m_icon, painter, rect);
-    } else {
-        qDebug() << "000";
     }
 }
 
