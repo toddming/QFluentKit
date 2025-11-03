@@ -34,12 +34,12 @@ ToolBar::ToolBar(const QString &title, const QString &subtitle, QWidget *parent)
     subtitleLabel = new CaptionLabel(subtitle, this);
     subtitleLabel->setTextColor(QColor(96, 96, 96), QColor(216, 216, 216));
 
-    documentButton = new PushButton("在线文档", this, FluentIconType::IconType::DOCUMENT);
-    sourceButton = new PushButton("源代码", this, FluentIconType::IconType::GITHUB);
-    themeButton = new ToolButton(FluentIconType::IconType::CONSTRACT, this);
+    documentButton = new PushButton("在线文档", FluentIcon(FluentIconType::DOCUMENT), this);
+    sourceButton = new PushButton("源代码", FluentIcon(FluentIconType::GITHUB), this);
+    themeButton = new ToolButton(FluentIcon(FluentIconType::CONSTRACT), this);
     separator = new SeparatorWidget(this);
-    supportButton = new ToolButton(FluentIconType::IconType::HEART, this);
-    feedbackButton = new ToolButton(FluentIconType::IconType::FEEDBACK, this);
+    supportButton = new ToolButton(FluentIcon(FluentIconType::HEART), this);
+    feedbackButton = new ToolButton(FluentIcon(FluentIconType::FEEDBACK), this);
 
     vBoxLayout = new QVBoxLayout(this);
     buttonLayout = new QHBoxLayout();

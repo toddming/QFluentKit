@@ -72,13 +72,13 @@ void PagiNation::init () {
     TH_left = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
     TH_right = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    prevFBtn = new TransparentToolButton(QString(":/res/images/pagination/%1_{color}.svg").arg("Begin"), this);
+    prevFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Begin")), this);
     prevFBtn->setFocusPolicy(Qt::NoFocus);
     prevFBtn->setIconSize(QSize(10, 10));
     prevFBtn->setFixedSize(_height, _height);
     connect(prevFBtn, SIGNAL(clicked()), this, SLOT(toPrev5()));
 
-    prevBtn = new TransparentToolButton(QString(":/res/images/pagination/%1_{color}.svg").arg("Previous"), this);
+    prevBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Previous")), this);
     prevBtn->setFocusPolicy(Qt::NoFocus);
     prevBtn->setIconSize(QSize(10, 10));
     prevBtn->setFixedSize(_height, _height);
@@ -96,13 +96,13 @@ void PagiNation::init () {
     mainBox->setObjectName("mainBox");
     mainBox->setStyleSheet("QFrame#mainBox{margin-left: 4px; margin-right: 4px;}");
 
-    nextBtn = new TransparentToolButton(QString(":/res/images/pagination/%1_{color}.svg").arg("Next"), this);
+    nextBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Next")), this);
     nextBtn->setFocusPolicy(Qt::NoFocus);
     nextBtn->setIconSize(QSize(10, 10));
     nextBtn->setFixedSize(_height, _height);
     connect(nextBtn, SIGNAL(clicked()), this, SLOT(toNext1()));
 
-    nextFBtn = new TransparentToolButton(QString(":/res/images/pagination/%1_{color}.svg").arg("End"), this);
+    nextFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("End")), this);
     nextFBtn->setFocusPolicy(Qt::NoFocus);
     nextFBtn->setIconSize(QSize(10, 10));
     nextFBtn->setFixedSize(_height, _height);

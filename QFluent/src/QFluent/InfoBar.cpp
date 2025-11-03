@@ -83,7 +83,7 @@ InfoBar::InfoBar(InfoBarType::BarType type, const QString& title, const QString&
 
     m_titleLabel = new QLabel(this);
     m_contentLabel = new QLabel(this);
-    m_closeButton = new TransparentToolButton(FluentIconType::IconType::CLOSE, this);
+    m_closeButton = new TransparentToolButton(FluentIcon(FluentIconType::CLOSE), this);
     m_iconWidget = new InfoIconWidget(type, this);
 
     m_hBoxLayout = new QHBoxLayout(this);

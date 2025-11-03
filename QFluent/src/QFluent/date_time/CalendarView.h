@@ -38,13 +38,10 @@ private:
 class ScrollButton : public TransparentToolButton {
     Q_OBJECT
 public:
-    ScrollButton(FIF icon, QWidget* parent = nullptr);
+    ScrollButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
-
-private:
-    FIF m_iconType;
 };
 
 

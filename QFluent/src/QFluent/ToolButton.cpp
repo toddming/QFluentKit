@@ -16,74 +16,48 @@
 #include "menu/RoundMenu.h"
 #include "menu/MenuActionListWidget.h"
 
-
+// ToolButton
 ToolButton::ToolButton(QWidget* parent)
     : QToolButton(parent)
-    , m_isPressed(false)
-    , m_isHover(false)
 {
     init();
 }
 
-ToolButton::ToolButton(FluentIconType::IconType icon, QWidget* parent)
-    : ToolButton(parent)
+ToolButton::ToolButton(const QIcon &icon, QWidget* parent)
+    : QToolButton(parent)
 {
     setIcon(icon);
-}
-
-ToolButton::ToolButton(const QString& templatePath, QWidget* parent)
-    : ToolButton(parent)
-{
-    setIcon(templatePath);
-}
-
-ToolButton::ToolButton(QIcon icon, QWidget* parent)
-    : ToolButton(parent)
-{
-    QToolButton::setIcon(icon);
+    init();
 }
 
 
 ToolButton::ToolButton(const FluentIconBase &icon, QWidget* parent)
     : QToolButton(parent)
-    , m_icon(icon.clone())
+    , m_fluentIcon(icon.clone())
 {
     init();
 }
 
 void ToolButton::init()
 {
+    m_isPressed = false;
+    m_isHovered = false;
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
-
-    setIcon(FluentIconType::IconType::NONE);
 
     QTimer::singleShot(0, this, [this]() {
         postInit();
     });
 }
 
-void ToolButton::setIcon(FluentIconType::IconType icon)
+
+void ToolButton::setFluentIcon(const FluentIconBase &icon)
 {
-    m_iconType = icon;
-    update();
-}
-
-void ToolButton::setIcon(const QString& templatePath)
-{
-    m_templatePath = templatePath;
-    m_iconType = FluentIconType::IconType::NONE;
-
-    update();
-}
-
-void ToolButton::setIcon(const FluentIconBase &icon)
-{
-
+    m_fluentIcon.reset(icon.clone());
 }
 
 FluentIconBase& ToolButton::fluentIcon() const
 {
-    return *m_icon;
+    return *m_fluentIcon;
 }
 
 void ToolButton::mousePressEvent(QMouseEvent* event)
@@ -100,14 +74,14 @@ void ToolButton::mouseReleaseEvent(QMouseEvent* event)
 
 void ToolButton::enterEvent(QEnterEvent* event)
 {
-    m_isHover = true;
+    m_isHovered = true;
     update();
     QToolButton::enterEvent(event);
 }
 
 void ToolButton::leaveEvent(QEvent* event)
 {
-    m_isHover = false;
+    m_isHovered = false;
     update();
     QToolButton::leaveEvent(event);
 }
@@ -116,7 +90,7 @@ void ToolButton::paintEvent(QPaintEvent* event)
 {
     QToolButton::paintEvent(event);
 
-    if (!m_icon) return;
+    if (!m_fluentIcon) return;
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -142,36 +116,28 @@ void ToolButton::postInit()
 
 void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
-    FluentIconUtils::drawIcon(*m_icon, painter, rect);
+    FluentIconUtils::drawIcon(*m_fluentIcon, painter, rect);
 }
 
+// PrimaryToolButton
 void PrimaryToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
-    if (iconType() != FluentIconType::IconType::NONE) {
-        FluentIcon(iconType()).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
-    } else {
-        FluentIcon(templatePath()).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
-    }
+    Q_UNUSED(theme);
+    ThemeType::ThemeMode _theme = Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT;
+    FluentIconUtils::drawIcon(fluentIcon(), painter, rect, _theme);
 }
 
-
+// ToggleToolButton
 void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
-    if (iconType() != FluentIconType::IconType::NONE) {
-        if (Theme::instance()->isDarkTheme()) {
-            FluentIcon(iconType()).render(painter, rect, isChecked() ? ThemeType::DARK : ThemeType::LIGHT);
-        } else {
-            FluentIcon(iconType()).render(painter, rect, isChecked() ? ThemeType::LIGHT : ThemeType::DARK);
-        }
+    ThemeType::ThemeMode _theme = theme;
+    if (Theme::instance()->isDarkTheme()) {
+        _theme = isChecked() ? ThemeType::DARK : ThemeType::LIGHT;
     } else {
-        if (Theme::instance()->isDarkTheme()) {
-            FluentIcon(templatePath()).render(painter, rect, isChecked() ? ThemeType::DARK : ThemeType::LIGHT);
-        } else {
-            FluentIcon(templatePath()).render(painter, rect, isChecked() ? ThemeType::LIGHT : ThemeType::DARK);
-        }
+        _theme = isChecked() ? ThemeType::LIGHT : ThemeType::DARK;
     }
+    FluentIconUtils::drawIcon(fluentIcon(), painter, rect, _theme);
 }
-
 
 void ToggleToolButton::postInit()
 {
@@ -179,10 +145,9 @@ void ToggleToolButton::postInit()
     setChecked(false);
 }
 
-
+// PillToolButton
 void PillToolButton::paintEvent(QPaintEvent* event)
 {
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -198,7 +163,7 @@ void PillToolButton::paintEvent(QPaintEvent* event)
 
         if (!isEnabled()) {
             bgColor = isDark ? QColor(255, 255, 255, 11) : QColor(249, 249, 249, 75);
-        } else if (isPressed() || isHover()) {
+        } else if (isPressed() || isHovered()) {
             bgColor = isDark ? QColor(255, 255, 255, 21) : QColor(249, 249, 249, 128);
         } else {
             bgColor = isDark ? QColor(255, 255, 255, 15) : QColor(243, 243, 243, 194);
@@ -208,7 +173,7 @@ void PillToolButton::paintEvent(QPaintEvent* event)
             bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         } else if (isPressed()) {
             bgColor =  Theme::instance()->themeColor(isDark ? ThemeType::DARK_2 : ThemeType::LIGHT_3);
-        } else if (isHover()) {
+        } else if (isHovered()) {
             bgColor =  Theme::instance()->themeColor(isDark ? ThemeType::DARK_1 : ThemeType::LIGHT_1);
         } else {
             bgColor = Theme::instance()->themeColor();
@@ -227,9 +192,7 @@ void PillToolButton::paintEvent(QPaintEvent* event)
     ToggleToolButton::paintEvent(event);
 }
 
-
-
-
+// DropDownToolButtonBase
 DropDownToolButtonBase::DropDownToolButtonBase(QWidget *parent)
     : ToolButton(parent)
     , m_menu(nullptr)
@@ -238,32 +201,10 @@ DropDownToolButtonBase::DropDownToolButtonBase(QWidget *parent)
 
 }
 
-
-DropDownToolButtonBase::DropDownToolButtonBase(FluentIconType::IconType icon, QWidget *parent)
+DropDownToolButtonBase::DropDownToolButtonBase(const FluentIconBase &icon, QWidget* parent)
     : ToolButton(icon, parent)
     , m_menu(nullptr)
     , m_arrowAni(new TranslateYAnimation(this))
-{
-
-}
-
-DropDownToolButtonBase::DropDownToolButtonBase(QIcon icon, QWidget *parent)
-    : ToolButton(icon, parent)
-    , m_menu(nullptr)
-    , m_arrowAni(new TranslateYAnimation(this))
-{
-
-}
-
-DropDownToolButtonBase::DropDownToolButtonBase(const QString &templatePath, QWidget *parent)
-    : ToolButton(templatePath, parent)
-    , m_menu(nullptr)
-    , m_arrowAni(new TranslateYAnimation(this))
-{
-
-}
-
-DropDownToolButtonBase::~DropDownToolButtonBase()
 {
 
 }
@@ -289,7 +230,6 @@ void DropDownToolButtonBase::showMenu()
     menu->view()->adjustSize();
     menu->adjustSize();
 
-    // Calculate position for DROP_DOWN
     int x = - menu->view()->width() / 2 + menu->view()->contentsMargins().left() + width() / 2;
 
     QPoint pd = mapToGlobal(QPoint(x, height()));
@@ -317,11 +257,11 @@ void DropDownToolButtonBase::hideMenu()
 void DropDownToolButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
     if (Theme::instance()->isDarkTheme()) {
-        FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect);
+        FluentIconUtils::drawIcon(FluentIcon(FluentIconType::ARROW_DOWN), painter, rect);
     } else {
         QMap<QString, QString> attrs;
         attrs["fill"] = "#646464";
-        FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect, ThemeType::AUTO, QList<int>(), attrs);
+        FluentIconUtils::drawIcon(FluentIcon(FluentIconType::ARROW_DOWN), painter, rect, ThemeType::AUTO,  QIcon::Off, attrs);
     }
 }
 
@@ -330,7 +270,7 @@ void DropDownToolButtonBase::paintEvent(QPaintEvent* /*event*/)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_isHover) {
+    if (m_isHovered) {
         painter.setOpacity(0.8);
     } else if (m_isPressed) {
         painter.setOpacity(0.7);
@@ -359,9 +299,7 @@ void DropDownToolButtonBase::mouseReleaseEvent(QMouseEvent* event)
     ToolButton::mouseReleaseEvent(event);
 }
 
-
-
-
+// DropDownToolButton
 void DropDownToolButton::mouseReleaseEvent(QMouseEvent* event)
 {
     ToolButton::mouseReleaseEvent(event);
@@ -378,23 +316,18 @@ void DropDownToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeTy
 {
     QRectF r = rect;
     r.moveLeft(12);
-    if (iconType() != FluentIconType::IconType::NONE) {
-        FluentIcon(iconType()).render(painter, r, theme);
-    } else {
-        FluentIcon(templatePath()).render(painter, r, theme);
-    }
+    FluentIconUtils::drawIcon(fluentIcon(), painter, r, theme);
 }
 
+// PrimaryDropDownToolButton
 void PrimaryDropDownToolButton::drawIcon(QPainter *painter, const QRectF &rect, ThemeType::ThemeMode theme)
 {
     Q_UNUSED(theme);
     QRectF r = rect;
     r.moveLeft(12);
-    if (iconType() != FluentIconType::IconType::NONE) {
-        FluentIcon(iconType()).render(painter, r, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
-    } else {
-        FluentIcon(templatePath()).render(painter, r, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
-    }
+
+    ThemeType::ThemeMode _theme = Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT;
+    FluentIconUtils::drawIcon(fluentIcon(), painter, r, _theme);
 }
 
 void PrimaryDropDownToolButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)

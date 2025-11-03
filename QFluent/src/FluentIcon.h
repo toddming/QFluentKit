@@ -29,7 +29,8 @@ public:
     static void drawSvgIcon(const QString& iconPath, QPainter* painter, const QRectF& rect);
     static QString writeSvg(const QString& iconPath, const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {});
     static QIcon toQIcon(const QVariant& icon);
-    static void drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = {});
+    static void drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
+                         QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = {});
 
 private:
     // 缓存着色后的 SVG 字节数组

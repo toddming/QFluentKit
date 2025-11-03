@@ -25,11 +25,11 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("带有图标的按钮", button);
 
     addExampleCard("主题色按钮", new PrimaryPushButton("主题色按钮", this));
-    addExampleCard("主题色工具按钮", new PrimaryToolButton(FluentIconType::IconType::BASKETBALL, this));
-    addExampleCard("椭圆按钮", new PillPushButton("标签", this, FluentIconType::IconType::TAG));
-    addExampleCard("椭圆工具按钮", new PillToolButton(FluentIconType::IconType::BASKETBALL, this));
-    addExampleCard("透明按钮", new TransparentPushButton("透明按钮", this, FluentIconType::BOOK_SHELF));
-    addExampleCard("透明按钮", new TransparentToolButton(FluentIconType::BOOK_SHELF, this));
+    addExampleCard("主题色工具按钮", new PrimaryToolButton(FluentIcon(FluentIconType::BASKETBALL), this));
+    addExampleCard("椭圆按钮", new PillPushButton("标签", FluentIcon(FluentIconType::TAG), this));
+    addExampleCard("椭圆工具按钮", new PillToolButton(FluentIcon(FluentIconType::BASKETBALL), this));
+    addExampleCard("透明按钮", new TransparentPushButton("透明按钮", FluentIcon(FluentIconType::BOOK_SHELF), this));
+    addExampleCard("透明按钮", new TransparentToolButton(FluentIcon(FluentIconType::BOOK_SHELF), this));
     addExampleCard("双态复选框", new CheckBox("双态复选框", this));
 
     auto checkBox = new CheckBox("三态复选框", this);
@@ -52,31 +52,31 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::SEND), "发送"));
     dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::EDUCATION), "保存"));
 
-    auto dropDownPushButton = new DropDownPushButton("邮件", this, FluentIconType::MAIL);
+    auto dropDownPushButton = new DropDownPushButton("邮件", FluentIcon(FluentIconType::MAIL), this);
     dropDownPushButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的按钮", dropDownPushButton);
 
-    auto drowDownToolButton = new DropDownToolButton(FluentIconType::MAIL, this);
+    auto drowDownToolButton = new DropDownToolButton(FluentIcon(FluentIconType::MAIL), this);
     drowDownToolButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的工具按钮", drowDownToolButton);
 
-    auto primaryDropDownPushButton = new PrimaryDropDownPushButton("邮件", this, FluentIconType::MAIL);
+    auto primaryDropDownPushButton = new PrimaryDropDownPushButton("邮件", FluentIcon(FluentIconType::MAIL), this);
     primaryDropDownPushButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的主题色按钮", primaryDropDownPushButton);
 
-    auto primaryDropDownToolButton = new PrimaryDropDownToolButton(FluentIconType::MAIL, this);
+    auto primaryDropDownToolButton = new PrimaryDropDownToolButton(FluentIcon(FluentIconType::MAIL), this);
     primaryDropDownToolButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的主题色工具按钮", primaryDropDownToolButton);
 
-    auto transparentDropDownPushButton = new TransparentDropDownPushButton("邮件", this, FluentIconType::MAIL);
+    auto transparentDropDownPushButton = new TransparentDropDownPushButton("邮件", FluentIcon(FluentIconType::MAIL), this);
     transparentDropDownPushButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的透明按钮", transparentDropDownPushButton);
 
-    auto transparentDropDownToolButton = new TransparentDropDownToolButton(FluentIconType::MAIL, this);
+    auto transparentDropDownToolButton = new TransparentDropDownToolButton(FluentIcon(FluentIconType::MAIL), this);
     transparentDropDownToolButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的透明工具按钮", transparentDropDownToolButton);
 
-    auto hyperlinkButton = new HyperlinkButton("GitHub", this, FluentIconType::LINK);
+    auto hyperlinkButton = new HyperlinkButton("GitHub", FluentIcon(FluentIconType::LINK), this);
     addExampleCard("导航到一个超链接的按钮", hyperlinkButton);
 
     auto radioWidget = new QWidget();
@@ -97,8 +97,8 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("单选按钮", radioWidget);
 
     addExampleCard("开关按钮", new SwitchButton(this));
-    addExampleCard("状态开关按钮", new TransparentTogglePushButton("开始练习", this, FluentIconType::BASKETBALL));
-    addExampleCard("状态开关工具按钮", new TransparentToggleToolButton(FluentIconType::BASKETBALL, this));
+    addExampleCard("状态开关按钮", new TransparentTogglePushButton("开始练习", FluentIcon(FluentIconType::BASKETBALL), this));
+    addExampleCard("状态开关工具按钮", new TransparentToggleToolButton(FluentIcon(FluentIconType::BASKETBALL), this));
 
     addExampleCard("测试按钮", new ToolButton(FluentIcon(FluentIconType::HELP), this));
 }

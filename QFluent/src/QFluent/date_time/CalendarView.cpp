@@ -28,6 +28,7 @@
 #include <QtMath>
 #include <QWheelEvent>
 #include <QMouseEvent>
+#include <memory>
 
 #include "Screen.h"
 #include "Theme.h"
@@ -64,18 +65,13 @@ QPropertyAnimation* SmoothScrollBar::ani() const
 }
 
 
-ScrollButton::ScrollButton(FIF icon, QWidget* parent)
+ScrollButton::ScrollButton(const FluentIconBase &icon, QWidget* parent)
     : TransparentToolButton(icon, parent) {
-    m_iconType = icon;
 }
 
 void ScrollButton::paintEvent(QPaintEvent* event)
 {
     QToolButton::paintEvent(event);
-
-    if (m_iconType == FIF::NONE) {
-        return;
-    }
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -93,7 +89,7 @@ void ScrollButton::paintEvent(QPaintEvent* event)
 
     QMap<QString, QString> attrs;
     attrs["fill"] = Theme::instance()->isDarkTheme() ? "#5e5e5e" : "#9c9c9c";
-    FluentIcon(m_iconType).render(&painter, QRectF(x, y, w, h), ThemeType::AUTO, QList<int>(), attrs);
+    FluentIconUtils::drawIcon(fluentIcon(), &painter, QRectF(x, y, w, h), ThemeType::AUTO, QIcon::Off, attrs);
 }
 
 
@@ -281,8 +277,8 @@ void ScrollViewBase::mouseReleaseEvent(QMouseEvent* e) {
 
 // CalendarViewBase
 CalendarViewBase::CalendarViewBase(QWidget* parent)
-    : QFrame(parent), titleButton(new QPushButton(this)), resetButton(new ScrollButton(FIF::CANCEL, this)),
-      upButton(new ScrollButton(FIF::CARE_UP_SOLID, this)), downButton(new ScrollButton(FIF::CARE_DOWN_SOLID, this)),
+    : QFrame(parent), titleButton(new QPushButton(this)), resetButton(new ScrollButton(FluentIcon(FIF::CANCEL), this)),
+    upButton(new ScrollButton(FluentIcon(FIF::CARE_UP_SOLID), this)), downButton(new ScrollButton(FluentIcon(FIF::CARE_DOWN_SOLID), this)),
       hBoxLayout(new QHBoxLayout()), vBoxLayout(new QVBoxLayout(this)) {
 
     initWidget();

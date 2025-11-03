@@ -1,11 +1,13 @@
 ﻿#pragma once
 
+#include <memory>
 #include <QPointer>
 #include <QToolButton>
+
 #include "Define.h"
 #include "FluentIcon.h"
-#include <memory>
 
+// ToolButton
 class RoundMenu;
 class TranslateYAnimation;
 class QFLUENT_EXPORT ToolButton : public QToolButton
@@ -14,24 +16,15 @@ class QFLUENT_EXPORT ToolButton : public QToolButton
 
 public:
     explicit ToolButton(QWidget* parent = nullptr);
-    explicit ToolButton(FluentIconType::IconType icon, QWidget* parent = nullptr);
-    explicit ToolButton(const QString& templatePath, QWidget* parent = nullptr);
-    explicit ToolButton(QIcon icon, QWidget* parent = nullptr);
+    explicit ToolButton(const QIcon &icon, QWidget* parent = nullptr);
     explicit ToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
-    void setIcon(FluentIconType::IconType icon);
-    void setIcon(const QString& templatePath);
-    void setIcon(const FluentIconBase &icon);
-    bool isPressed() const { return m_isPressed; }
-    bool isHover() const { return m_isHover; }
-    FluentIconType::IconType iconType() const { return m_iconType; }
-    QString templatePath() const { return m_templatePath; }
+    void setFluentIcon(const FluentIconBase &icon);
     FluentIconBase& fluentIcon() const;
 
-    void init();
+    bool isPressed() const { return m_isPressed; }
+    bool isHovered() const { return m_isHovered; }
 
-signals:
-    // No additional signals defined in the Python base ToolButton.
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -42,16 +35,15 @@ protected:
     virtual void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
 
 private:
+    void init();
     virtual void postInit();
 
-    bool m_isPressed = false;
-    bool m_isHover = false;
-    FluentIconType::IconType m_iconType;
-    std::unique_ptr<FluentIconBase> m_icon;
-    QString m_templatePath;
+    bool m_isPressed;
+    bool m_isHovered;
+    std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
-
+// PrimaryToolButton
 class QFLUENT_EXPORT PrimaryToolButton : public ToolButton
 {
     Q_OBJECT
@@ -62,7 +54,7 @@ protected:
     void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
 };
 
-
+// TransparentToolButton
 class QFLUENT_EXPORT TransparentToolButton : public ToolButton
 {
     Q_OBJECT
@@ -70,10 +62,7 @@ public:
     using ToolButton::ToolButton;
 };
 
-
-
-
-
+// ToggleToolButton
 class QFLUENT_EXPORT ToggleToolButton : public ToolButton
 {
     Q_OBJECT
@@ -86,7 +75,7 @@ private:
     void postInit() override;
 };
 
-
+// TransparentToggleToolButton
 class QFLUENT_EXPORT TransparentToggleToolButton : public ToggleToolButton
 {
     Q_OBJECT
@@ -95,10 +84,10 @@ public:
 
 };
 
-
+// PillToolButton
 class QFLUENT_EXPORT PillToolButton : public ToggleToolButton
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
     using ToggleToolButton::ToggleToolButton;
 
@@ -106,17 +95,13 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 };
 
-
+// DropDownToolButtonBase
 class QFLUENT_EXPORT DropDownToolButtonBase : public ToolButton
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
     explicit DropDownToolButtonBase(QWidget* parent = nullptr);
-    explicit DropDownToolButtonBase(FluentIconType::IconType icon, QWidget* parent = nullptr);
-    explicit DropDownToolButtonBase(const QString& templatePath, QWidget* parent = nullptr);
-    explicit DropDownToolButtonBase(QIcon icon, QWidget* parent = nullptr);
-
-    ~DropDownToolButtonBase();
+    explicit DropDownToolButtonBase(const FluentIconBase &icon, QWidget* parent = nullptr);
 
     void setMenu(RoundMenu* menu);
 
@@ -138,27 +123,28 @@ private:
     QPointer<RoundMenu> m_menu;
     TranslateYAnimation* m_arrowAni;
 
-    bool m_isHover = false;
+    bool m_isHovered = false;
     bool m_isPressed = false;
 };
 
 
-
+// DropDownToolButton
 class QFLUENT_EXPORT DropDownToolButton : public DropDownToolButtonBase
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
     using DropDownToolButtonBase::DropDownToolButtonBase;
+
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
     void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
 };
 
-
+// PrimaryDropDownToolButton
 class QFLUENT_EXPORT PrimaryDropDownToolButton : public DropDownToolButton
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
     using DropDownToolButton::DropDownToolButton;
 
@@ -167,11 +153,11 @@ public:
 };
 
 
-
+// TransparentDropDownToolButton
 class QFLUENT_EXPORT TransparentDropDownToolButton : public DropDownToolButton
 {
     Q_OBJECT
-  public:
-      using DropDownToolButton::DropDownToolButton;
+public:
+    using DropDownToolButton::DropDownToolButton;
 
 };

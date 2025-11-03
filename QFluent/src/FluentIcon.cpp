@@ -24,7 +24,7 @@ QString FluentIconUtils::getIconColor(ThemeType::ThemeMode theme, bool reverse) 
     if (theme == ThemeType::AUTO) {
         return Theme::instance()->isDarkTheme() ? dc : lc;
     }
-    return (theme == ThemeType::DARK) ? dc : lc;
+    return (theme == ThemeType::DARK) ? "black" : "white";
 }
 
 void FluentIconUtils::drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect) {
@@ -95,9 +95,10 @@ QIcon FluentIconUtils::toQIcon(const QVariant& icon) {
     return QIcon();
 }
 
-void FluentIconUtils::drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, QIcon::State state, const QMap<QString, QString>& attributes) {
+void FluentIconUtils::drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
+                               QIcon::State state, const QMap<QString, QString>& attributes) {
     Q_UNUSED(state)
-    icon.render(painter, rect, ThemeType::AUTO, {}, attributes);
+    icon.render(painter, rect, theme, {}, attributes);
 }
 
 // ====================== FluentIconEngine ======================
