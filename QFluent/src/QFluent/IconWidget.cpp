@@ -12,7 +12,6 @@ IconWidget::IconWidget(QWidget *parent)
 {
     Q_D(IconWidget);
     d->q_ptr = this;
-    d->m_fluentIcon = nullptr;
     d->_pIconTheme = ThemeType::ThemeMode::AUTO;
 
     setIcon(QIcon());
@@ -39,8 +38,6 @@ IconWidget::IconWidget(const FluentIconBase &icon, QWidget* parent)
 IconWidget::~IconWidget()
 {
     Q_D(IconWidget);
-
-    delete d->m_fluentIcon;
 }
 
 void IconWidget::setIcon(const QIcon &icon)
@@ -61,7 +58,10 @@ void IconWidget::setFluentIcon(const FluentIconBase &icon)
 {
     Q_D(IconWidget);
 
-    d->m_fluentIcon = icon.clone();
+    if (d->m_fluentIcon.get() != &icon) {
+        d->m_fluentIcon.reset(icon.clone());
+        update();
+    }
 
     d->_pIcon = QIcon();
     update();

@@ -12,6 +12,7 @@ public:
     Q_PROPERTY_CREATE_D(QIcon, Icon)
     Q_PROPERTY_CREATE_D(ThemeType::ThemeMode, IconTheme)
 
+    // 在IconWidget.h中
 private:
-    FluentIconBase* m_fluentIcon;
+    QScopedPointer<FluentIconBase> m_fluentIcon;
 };
