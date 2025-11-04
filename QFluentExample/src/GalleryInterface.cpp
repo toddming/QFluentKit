@@ -88,7 +88,7 @@ ExampleCard::ExampleCard(const QString &title, QWidget *widget, const QString &s
     card = new QFrame(this);
     sourceWidget = new QFrame(card);
     sourcePathLabel = new BodyLabel("源代码", sourceWidget);
-    linkIcon = new IconWidget(FluentIconType::IconType::LINK, sourceWidget);
+    linkIcon = new IconWidget(FluentIcon(FluentIconType::LINK), sourceWidget);
 
     vBoxLayout = new QVBoxLayout(this);
     cardLayout = new QVBoxLayout(card);

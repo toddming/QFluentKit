@@ -36,7 +36,7 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     m_scrollArea = new QScrollArea(this);
     m_scrollWidget = new QWidget();
 
-    m_menuButton = new NavigationToolButton(FluentIconType::IconType::MENU, this);
+    m_menuButton = new NavigationToolButton(FluentIcon(FluentIconType::MENU), this);
     m_avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/app/avatar.png"), this);
     connect(m_avatarWidget, &NavigationAvatarWidget::clicked, this, [=](){
         auto menu = new RoundMenu("menu", this);
@@ -151,7 +151,7 @@ NavigationWidget* NavigationPanel::widget(const QString& routeKey) {
     return m_items[routeKey].widget;
 }
 
-void NavigationPanel::addItem(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+void NavigationPanel::addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                             const std::function<void()>& onClick, bool selectable,
                             NavigationType::NavigationItemPosition position, const QString& tooltip,
                             const QString& parentRouteKey) {
@@ -165,7 +165,7 @@ void NavigationPanel::addWidget(const QString& routeKey, NavigationWidget* widge
     insertWidget(-1, routeKey, widget, onClick, position, tooltip, parentRouteKey);
 }
 
-void NavigationPanel::insertItem(int index, const QString& routeKey, FluentIconType::IconType icon,
+void NavigationPanel::insertItem(int index, const QString& routeKey, const FluentIconBase& icon,
                                const QString& text, const std::function<void()>& onClick,
                                bool selectable, NavigationType::NavigationItemPosition position,
                                const QString& tooltip, const QString& parentRouteKey) {
@@ -173,7 +173,7 @@ void NavigationPanel::insertItem(int index, const QString& routeKey, FluentIconT
         return;
     }
 
-    NavigationTreeWidget* w = new NavigationTreeWidget(icon, text, selectable, this);
+    NavigationTreeWidget* w = new NavigationTreeWidget(text, icon, selectable, this);
     w->setExpandWidth(m_expandWidth);
     insertWidget(index, routeKey, w, onClick, position, tooltip, parentRouteKey);
 }

@@ -85,7 +85,7 @@ void Trie::collectWords(TrieNode* node, const QString& prefix, QVector<QPair<QSt
 IconCard::IconCard(FluentIconType::IconType icon, const QString &name, QWidget* parent)
     : QFrame(parent), m_icon(icon), m_isSelected(false) {
 
-    m_iconWidget = new IconWidget(icon, this);
+    m_iconWidget = new IconWidget(FluentIcon(icon), this);
     m_nameLabel = new QLabel(this);
     m_vBoxLayout = new QVBoxLayout(this);
 
@@ -145,7 +145,7 @@ IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
     : QFrame(parent) {
 
     m_nameLabel = new QLabel("value", this);
-    m_iconWidget = new IconWidget(icon, this);
+    m_iconWidget = new IconWidget(FluentIcon(icon), this);
     m_iconNameTitleLabel = new QLabel("图标名字", this);
     m_iconNameLabel = new QLabel("value", this);
     m_enumNameTitleLabel = new QLabel("枚举成员", this);
@@ -179,7 +179,7 @@ IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
 void IconInfoPanel::setIcon(FluentIconType::IconType icon) {
     static QMap<FluentIconType::IconType, QString> icons = FluentIcon::fluentIcons();
 
-    m_iconWidget->setIcon(icon);
+    m_iconWidget->setFluentIcon(FluentIcon(icon));
     m_nameLabel->setText(icons.value(icon));
     m_iconNameLabel->setText(icons.value(icon));
     QMetaEnum metaEnum = QMetaEnum::fromType<FluentIconType::IconType>();

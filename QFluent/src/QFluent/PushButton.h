@@ -20,9 +20,8 @@ public:
     explicit PushButton(const QString &text, QWidget* parent = nullptr);
     explicit PushButton(const QString &text, const FluentIconBase &icon, QWidget* parent = nullptr);
 
-
     void setFluentIcon(const FluentIconBase &icon);
-    FluentIconBase& fluentIcon() const;
+    FluentIconBase* fluentIcon() const;
 
     bool isPressed() { return m_isPressed; }
     bool isHovered() { return m_isHovered; }

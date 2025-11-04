@@ -24,7 +24,11 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     button->resize(70, 70);
     addExampleCard("带有图标的按钮", button);
 
-    addExampleCard("主题色按钮", new PrimaryPushButton("主题色按钮", this));
+    auto btn = new PrimaryPushButton("主题色按钮", this);
+    connect(btn, &PrimaryPushButton::clicked, this, [=](){
+        qDebug() << btn->styleSheet();
+    });
+    addExampleCard("主题色按钮", btn);
     addExampleCard("主题色工具按钮", new PrimaryToolButton(FluentIcon(FluentIconType::BASKETBALL), this));
     addExampleCard("椭圆按钮", new PillPushButton("标签", FluentIcon(FluentIconType::TAG), this));
     addExampleCard("椭圆工具按钮", new PillToolButton(FluentIcon(FluentIconType::BASKETBALL), this));
@@ -49,8 +53,8 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("可编辑的下拉框", editableComboBox);
 
     auto dropDownPushButtonMenu = new RoundMenu("menu", this);
-    dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::SEND), "发送"));
-    dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::EDUCATION), "保存"));
+    dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::SEND).qicon(), "发送"));
+    dropDownPushButtonMenu->addAction(new Action(FluentIcon(FluentIconType::EDUCATION).qicon(), "保存"));
 
     auto dropDownPushButton = new DropDownPushButton("邮件", FluentIcon(FluentIconType::MAIL), this);
     dropDownPushButton->setMenu(dropDownPushButtonMenu);

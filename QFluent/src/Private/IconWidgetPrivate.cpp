@@ -1,6 +1,3 @@
-#include "IconWidgetPrivate.h"
+﻿#include "IconWidgetPrivate.h"
 
-IconWidgetPrivate::IconWidgetPrivate()
-{
-
-}
+#include "FluentIcon.h"

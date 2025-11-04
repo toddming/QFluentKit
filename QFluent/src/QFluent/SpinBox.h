@@ -8,15 +8,15 @@
 #include <QToolButton>
 #include <QPainter>
 
-
 #include "Define.h"
+#include "FluentIcon.h"
 
 class QHBoxLayout;
 class SpinButton : public QToolButton {
     Q_OBJECT
 
 public:
-    explicit SpinButton(FluentIconType::IconType iconType, QWidget* parent = nullptr);
+    explicit SpinButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
     QSize sizeHint() const override { return QSize(31, 23); }
 
@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent* e) override;
 
 private:
-    FluentIconType::IconType m_iconType;
+    std::unique_ptr<FluentIconBase> m_fluentIcon;
     bool m_isPressed = false;
 };
 

@@ -65,9 +65,9 @@ void PushButton::setFluentIcon(const FluentIconBase &icon)
     update();
 }
 
-FluentIconBase& PushButton::fluentIcon() const
+FluentIconBase* PushButton::fluentIcon() const
 {
-    return *m_fluentIcon;
+    return m_fluentIcon.get();
 }
 
 void PushButton::mousePressEvent(QMouseEvent *e)
@@ -138,7 +138,7 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
     if (isEnabled()) {
         QMap<QString, QString> attrs;
         attrs["fill"] = Theme::instance()->themeColor().name();
-        FluentIconUtils::drawIcon(fluentIcon(), painter, rect, ThemeType::AUTO, QIcon::Off, attrs);
+        FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, ThemeType::AUTO, QIcon::Off, attrs);
     } else {
         painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.3628 : 0.36);
     }
@@ -154,7 +154,7 @@ void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
     } else {
         _theme = isChecked() ? ThemeType::LIGHT : ThemeType::DARK;
     }
-    FluentIconUtils::drawIcon(fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
 }
 
 
@@ -341,7 +341,6 @@ void PillPushButton::paintEvent(QPaintEvent* event)
 }
 
 
-
 // PrimaryDropDownPushButton
 void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
 {
@@ -351,7 +350,7 @@ void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
 
 void PrimaryDropDownPushButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIconUtils::drawIcon(FluentIcon(FluentIconType::ARROW_DOWN), painter, rect);
+    FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
 }
 
 void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
@@ -363,7 +362,7 @@ void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
 void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 {
     ThemeType::ThemeMode _theme = Theme::instance()->isDarkTheme()? ThemeType::DARK : ThemeType::LIGHT;
-    FluentIconUtils::drawIcon(fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
 }
 
 

@@ -3,10 +3,11 @@
 
 #include <QWidget>
 #include <QScrollArea>
-#include <QIcon>
 
 #include "Define.h"
+#include "FluentIcon.h"
 
+// NavigationWidget
 class AvatarWidget;
 class QVBoxLayout;
 class QPropertyAnimation;
@@ -50,15 +51,19 @@ private:
 
 };
 
+
+// NavigationPushButton
 class NavigationPushButton : public NavigationWidget {
     Q_OBJECT
 public:
-    NavigationPushButton(FluentIconType::IconType icon, const QString& text, bool isSelectable, QWidget* parent = nullptr);
+    NavigationPushButton(const QString &text, const FluentIconBase &icon, bool isSelectable, QWidget* parent = nullptr);
 
     QString text() const;
     void setText(const QString& text);
-    QIcon icon() const;
-    void setIcon(FluentIconType::IconType icon);
+
+    void setFluentIcon(const FluentIconBase &icon);
+    FluentIconBase* fluentIcon() const;
+
     void setIndicatorColor(const QColor& light, const QColor& dark);
 
 protected:
@@ -66,21 +71,19 @@ protected:
     virtual QMargins _margins();
     virtual bool _canDrawIndicator();
 
-    FluentIconType::IconType fluentButton();
-
-
 private:
-    FluentIconType::IconType m_icon;
+    std::unique_ptr<FluentIconBase> m_fluentIcon;
     QString m_text;
     QColor lightIndicatorColor;
     QColor darkIndicatorColor;
-
 };
 
+
+// NavigationToolButton
 class NavigationToolButton : public NavigationPushButton {
     Q_OBJECT
 public:
-    NavigationToolButton(FluentIconType::IconType icon, QWidget* parent = nullptr);
+    NavigationToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
     void setCompacted(bool isCompacted) override;
 };
 
@@ -96,11 +99,12 @@ protected:
 
 class NavigationTreeWidget; // 前向声明
 
+// NavigationTreeItem
 class NavigationTreeItem : public NavigationPushButton {
     Q_OBJECT
     Q_PROPERTY(float arrowAngle READ getArrowAngle WRITE setArrowAngle)
 public:
-    NavigationTreeItem(FluentIconType::IconType icon, const QString& text, bool isSelectable, NavigationTreeWidget* parent = nullptr);
+    NavigationTreeItem(const QString &text, const FluentIconBase &icon, bool isSelectable, NavigationTreeWidget* parent = nullptr);
 
     void setExpanded(bool isExpanded);
     float getArrowAngle() const;
@@ -120,6 +124,7 @@ private:
     QPropertyAnimation* rotateAni;
 };
 
+// NavigationTreeWidgetBase
 class NavigationTreeWidgetBase : public NavigationWidget {
     Q_OBJECT
 public:
@@ -134,10 +139,11 @@ public:
     virtual std::vector<NavigationWidget*> childItems() = 0;
 };
 
+// NavigationTreeWidget
 class NavigationTreeWidget : public NavigationTreeWidgetBase {
     Q_OBJECT
 public:
-    NavigationTreeWidget(FluentIconType::IconType icon, const QString& text, bool isSelectable, QWidget* parent = nullptr);
+    NavigationTreeWidget(const QString &text, const FluentIconBase &icon, bool isSelectable, QWidget* parent = nullptr);
 
     void addChild(NavigationWidget* child) override;
     void insertChild(int index, NavigationWidget* child) override;
@@ -148,9 +154,9 @@ public:
     void setExpanded(bool isExpanded, bool ani);
 
     QString text() const;
-    QIcon icon() const;
     void setText(const QString& text);
-    void setIcon(FluentIconType::IconType icon);
+    void setFluentIcon(const FluentIconBase &icon);
+    FluentIconBase* fluentIcon() const;
     void setIndicatorColor(const QColor& light, const QColor& dark);
     void setFont(const QFont& font);
     NavigationTreeWidget* clone();
@@ -175,7 +181,7 @@ private:
     void __initWidget();
 
     bool isExpanded;
-    FluentIconType::IconType m_icon;
+    std::unique_ptr<FluentIconBase> m_fluentIcon;
 
     QVBoxLayout* vBoxLayout;
     QPropertyAnimation* expandAni;
@@ -186,8 +192,7 @@ private:
 };
 
 
-
-
+// NavigationFlyoutMenu
 class NavigationFlyoutMenu : public QScrollArea {
     Q_OBJECT
 public:
@@ -209,9 +214,7 @@ private:
 };
 
 
-
-
-
+// NavigationAvatarWidget
 class NavigationAvatarWidget : public NavigationWidget
 {
     Q_OBJECT

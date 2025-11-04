@@ -89,7 +89,7 @@ void ScrollButton::paintEvent(QPaintEvent* event)
 
     QMap<QString, QString> attrs;
     attrs["fill"] = Theme::instance()->isDarkTheme() ? "#5e5e5e" : "#9c9c9c";
-    FluentIconUtils::drawIcon(fluentIcon(), &painter, QRectF(x, y, w, h), ThemeType::AUTO, QIcon::Off, attrs);
+    FluentIconUtils::drawIcon(*fluentIcon(), &painter, QRectF(x, y, w, h), ThemeType::AUTO, QIcon::Off, attrs);
 }
 
 

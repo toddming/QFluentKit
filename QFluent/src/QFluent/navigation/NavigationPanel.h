@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 
 #include "Define.h"
+#include "FluentIcon.h"
 
 class QScrollArea;
 class ProfileCard;
@@ -38,7 +39,7 @@ public:
 
     // 公共方法
     NavigationWidget* widget(const QString& routeKey);
-    void addItem(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+    void addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                  const std::function<void()>& onClick = nullptr, bool selectable = true,
                  NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                  const QString& tooltip = QString(), const QString& parentRouteKey = QString());
@@ -48,7 +49,7 @@ public:
                    NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                    const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
-    void insertItem(int index, const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+    void insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
                    const std::function<void()>& onClick = nullptr, bool selectable = true,
                    NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
                    const QString& tooltip = QString(), const QString& parentRouteKey = QString());

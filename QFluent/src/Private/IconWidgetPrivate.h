@@ -4,14 +4,14 @@
 #include <QIcon>
 
 class IconWidget;
+class FluentIconBase;
 class IconWidgetPrivate {
 
 public:
     Q_D_CREATE(IconWidget)
     Q_PROPERTY_CREATE_D(QIcon, Icon)
-    Q_PROPERTY_CREATE_D(bool, IsFluentIcon)
-    Q_PROPERTY_CREATE_D(FluentIconType::IconType, FluentIcon)
     Q_PROPERTY_CREATE_D(ThemeType::ThemeMode, IconTheme)
 
-    explicit IconWidgetPrivate();
+private:
+    FluentIconBase* m_fluentIcon;
 };

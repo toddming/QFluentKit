@@ -163,7 +163,7 @@ NavigationPanel *FluentWindow::navigationInterface() const
     return d->_navPanel;
 }
 
-void FluentWindow::addSubInterface(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+void FluentWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                                    QWidget* widget, bool selectable,
                                    NavigationType::NavigationItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)

@@ -12,8 +12,7 @@ IconWidget::IconWidget(QWidget *parent)
 {
     Q_D(IconWidget);
     d->q_ptr = this;
-
-    d->_pIsFluentIcon = false;
+    d->m_fluentIcon = nullptr;
     d->_pIconTheme = ThemeType::ThemeMode::AUTO;
 
     setIcon(QIcon());
@@ -31,15 +30,17 @@ IconWidget::IconWidget(const QString &iconPath, QWidget *parent)
     setIcon(iconPath);
 }
 
-IconWidget::IconWidget(FluentIconType::IconType icon, QWidget *parent)
+IconWidget::IconWidget(const FluentIconBase &icon, QWidget* parent)
     : IconWidget(parent)
 {
-    setIcon(icon);
+    setFluentIcon(icon);
 }
 
 IconWidget::~IconWidget()
 {
+    Q_D(IconWidget);
 
+    delete d->m_fluentIcon;
 }
 
 void IconWidget::setIcon(const QIcon &icon)
@@ -47,8 +48,6 @@ void IconWidget::setIcon(const QIcon &icon)
     Q_D(IconWidget);
 
     d->_pIcon = icon;
-    d->_pIsFluentIcon = false;
-    d->_pFluentIcon = FluentIconType::IconType::NONE;
     update();
 }
 
@@ -57,12 +56,13 @@ void IconWidget::setIcon(const QString &iconPath)
     setIcon(QIcon(iconPath));
 }
 
-void IconWidget::setIcon(FluentIconType::IconType icon)
+
+void IconWidget::setFluentIcon(const FluentIconBase &icon)
 {
     Q_D(IconWidget);
 
-    d->_pFluentIcon = icon;
-    d->_pIsFluentIcon = true;
+    d->m_fluentIcon = icon.clone();
+
     d->_pIcon = QIcon();
     update();
 }
@@ -89,17 +89,11 @@ void IconWidget::paintEvent(QPaintEvent *event)
 
     QRect rect = this->rect();
 
-    if (d->_pIsFluentIcon && (d->_pFluentIcon != FluentIconType::IconType::NONE)) {
-        FluentIcon(d->_pFluentIcon).render(&painter, rect, d->_pIconTheme);
-    } else {
-        if (!d->_pIcon.isNull()) {
-            d->_pIcon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);
-        }
+    if (d->m_fluentIcon) {
+        FluentIconUtils::drawIcon(*d->m_fluentIcon, &painter, rect, d->_pIconTheme);
+    } else if (!d->_pIcon.isNull()) {
+        d->_pIcon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);
     }
 }
 
-bool IconWidget::isFluentIcon()
-{
-    Q_D(IconWidget);
-    return d->_pIsFluentIcon;
-}
+

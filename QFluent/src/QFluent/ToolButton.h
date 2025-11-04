@@ -20,7 +20,7 @@ public:
     explicit ToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
     void setFluentIcon(const FluentIconBase &icon);
-    FluentIconBase& fluentIcon() const;
+    FluentIconBase* fluentIcon() const;
 
     bool isPressed() const { return m_isPressed; }
     bool isHovered() const { return m_isHovered; }

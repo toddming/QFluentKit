@@ -20,29 +20,24 @@
 
 QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
     static QHash<QString, QString> colorMap;
-    static bool initialized = false;
 
-    if (!initialized) {
-        Theme* theme = Theme::instance();
-        colorMap.reserve(7); // 预留空间
+    Theme* theme = Theme::instance();
+    colorMap.reserve(7);
 
-        colorMap.insert("--ThemeColorPrimary",
-            theme->themeColor(ThemeType::ThemeColor::PRIMARY).name());
-        colorMap.insert("--ThemeColorDark1",
-            theme->themeColor(ThemeType::ThemeColor::DARK_1).name());
-        colorMap.insert("--ThemeColorDark2",
-            theme->themeColor(ThemeType::ThemeColor::DARK_2).name());
-        colorMap.insert("--ThemeColorDark3",
-            theme->themeColor(ThemeType::ThemeColor::DARK_3).name());
-        colorMap.insert("--ThemeColorLight1",
-            theme->themeColor(ThemeType::ThemeColor::LIGHT_1).name());
-        colorMap.insert("--ThemeColorLight2",
-            theme->themeColor(ThemeType::ThemeColor::LIGHT_2).name());
-        colorMap.insert("--ThemeColorLight3",
-            theme->themeColor(ThemeType::ThemeColor::LIGHT_3).name());
-
-        initialized = true;
-    }
+    colorMap.insert("--ThemeColorPrimary",
+                    theme->themeColor(ThemeType::ThemeColor::PRIMARY).name());
+    colorMap.insert("--ThemeColorDark1",
+                    theme->themeColor(ThemeType::ThemeColor::DARK_1).name());
+    colorMap.insert("--ThemeColorDark2",
+                    theme->themeColor(ThemeType::ThemeColor::DARK_2).name());
+    colorMap.insert("--ThemeColorDark3",
+                    theme->themeColor(ThemeType::ThemeColor::DARK_3).name());
+    colorMap.insert("--ThemeColorLight1",
+                    theme->themeColor(ThemeType::ThemeColor::LIGHT_1).name());
+    colorMap.insert("--ThemeColorLight2",
+                    theme->themeColor(ThemeType::ThemeColor::LIGHT_2).name());
+    colorMap.insert("--ThemeColorLight3",
+                    theme->themeColor(ThemeType::ThemeColor::LIGHT_3).name());
 
     return colorMap;
 }
@@ -87,7 +82,7 @@ QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
 }
 
 QString StyleSheetHelper::getStyleSheet(const std::shared_ptr<StyleSheetBase>& source,
-                                       ThemeType::ThemeMode theme) {
+                                        ThemeType::ThemeMode theme) {
     if (!source) {
         return QString();
     }
@@ -99,8 +94,8 @@ QString StyleSheetHelper::getStyleSheet(const QString& source, ThemeType::ThemeM
 }
 
 void StyleSheetHelper::setStyleSheet(QWidget* widget,
-                                    const std::shared_ptr<StyleSheetBase>& source,
-                                    ThemeType::ThemeMode theme, bool registerWidget) {
+                                     const std::shared_ptr<StyleSheetBase>& source,
+                                     ThemeType::ThemeMode theme, bool registerWidget) {
     if (!widget) {
         return;
     }
@@ -113,12 +108,12 @@ void StyleSheetHelper::setStyleSheet(QWidget* widget,
 }
 
 void StyleSheetHelper::setStyleSheet(QWidget* widget, const QString& source,
-                                    ThemeType::ThemeMode theme, bool registerWidget) {
+                                     ThemeType::ThemeMode theme, bool registerWidget) {
     setStyleSheet(widget, std::make_shared<StyleSheetFile>(source), theme, registerWidget);
 }
 
 void StyleSheetHelper::setCustomStyleSheet(QWidget* widget, const QString& lightQss,
-                                          const QString& darkQss) {
+                                           const QString& darkQss) {
     if (!widget) {
         return;
     }
@@ -126,8 +121,8 @@ void StyleSheetHelper::setCustomStyleSheet(QWidget* widget, const QString& light
 }
 
 void StyleSheetHelper::addStyleSheet(QWidget* widget,
-                                    const std::shared_ptr<StyleSheetBase>& source,
-                                    ThemeType::ThemeMode theme, bool registerWidget) {
+                                     const std::shared_ptr<StyleSheetBase>& source,
+                                     ThemeType::ThemeMode theme, bool registerWidget) {
     if (!widget) {
         return;
     }
@@ -146,7 +141,7 @@ void StyleSheetHelper::addStyleSheet(QWidget* widget,
 }
 
 void StyleSheetHelper::addStyleSheet(QWidget* widget, const QString& source,
-                                    ThemeType::ThemeMode theme, bool registerWidget) {
+                                     ThemeType::ThemeMode theme, bool registerWidget) {
     addStyleSheet(widget, std::make_shared<StyleSheetFile>(source), theme, registerWidget);
 }
 
@@ -175,7 +170,7 @@ StyleSheetFile::StyleSheetFile(const QString& lightPath, const QString& darkPath
 
 QString StyleSheetFile::path(ThemeType::ThemeMode theme) {
     ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
-        ? Theme::instance()->theme() : theme;
+            ? Theme::instance()->theme() : theme;
 
     if (m_isMultiPath) {
         return (actualTheme == ThemeType::ThemeMode::LIGHT) ? m_lightPath : m_darkPath;
@@ -192,7 +187,7 @@ TemplateStyleSheetFile::TemplateStyleSheetFile(const QString& templatePath)
 
 QString TemplateStyleSheetFile::path(ThemeType::ThemeMode theme) {
     ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
-        ? Theme::instance()->theme() : theme;
+            ? Theme::instance()->theme() : theme;
 
     // 使用缓存避免重复字符串操作
     if (actualTheme == ThemeType::ThemeMode::LIGHT) {
@@ -265,10 +260,10 @@ const QHash<ThemeType::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
 
 QString FluentStyleSheet::path(ThemeType::ThemeMode theme) {
     ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
-        ? Theme::instance()->theme() : theme;
+            ? Theme::instance()->theme() : theme;
 
     const QString& themeStr = (actualTheme == ThemeType::ThemeMode::LIGHT) ?
-        QStringLiteral("light") : QStringLiteral("dark");
+                QStringLiteral("light") : QStringLiteral("dark");
     const QString& typeStr = typeToString(m_type);
 
     return QString(":/res/style/%1/%2.qss").arg(themeStr, typeStr);
@@ -292,10 +287,10 @@ QString CustomStyleSheet::path(ThemeType::ThemeMode theme) {
 
 QString CustomStyleSheet::content(ThemeType::ThemeMode theme) {
     ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
-        ? Theme::instance()->theme() : theme;
+            ? Theme::instance()->theme() : theme;
 
     return (actualTheme == ThemeType::ThemeMode::LIGHT) ?
-        lightStyleSheet() : darkStyleSheet();
+                lightStyleSheet() : darkStyleSheet();
 }
 
 CustomStyleSheet* CustomStyleSheet::setCustomStyleSheet(const QString& lightQss,
@@ -365,9 +360,9 @@ void StyleSheetCompose::add(const std::shared_ptr<StyleSheetBase>& source) {
 
     // 使用std::find_if代替手动循环
     auto it = std::find_if(m_sources.begin(), m_sources.end(),
-        [source](const std::shared_ptr<StyleSheetBase>& existing) {
-            return existing.get() == source.get();
-        });
+                           [source](const std::shared_ptr<StyleSheetBase>& existing) {
+        return existing.get() == source.get();
+    });
 
     if (it == m_sources.end()) {
         m_sources.push_back(source);
@@ -376,9 +371,9 @@ void StyleSheetCompose::add(const std::shared_ptr<StyleSheetBase>& source) {
 
 void StyleSheetCompose::remove(const std::shared_ptr<StyleSheetBase>& source) {
     auto new_end = std::remove_if(m_sources.begin(), m_sources.end(),
-        [source](const std::shared_ptr<StyleSheetBase>& item) {
-            return item.get() == source.get();
-        });
+                                  [source](const std::shared_ptr<StyleSheetBase>& item) {
+        return item.get() == source.get();
+    });
     m_sources.erase(new_end, m_sources.end());
 }
 
@@ -400,11 +395,11 @@ bool CustomStyleSheetWatcher::eventFilter(QObject* obj, QEvent* event) {
     const QByteArray& propName = propEvent->propertyName();
 
     if (propName == CustomStyleSheet::LIGHT_QSS_KEY ||
-        propName == CustomStyleSheet::DARK_QSS_KEY) {
+            propName == CustomStyleSheet::DARK_QSS_KEY) {
         QWidget* widget = qobject_cast<QWidget*>(obj);
         if (widget) {
             StyleSheetHelper::addStyleSheet(widget,
-                std::make_shared<CustomStyleSheet>(widget));
+                                            std::make_shared<CustomStyleSheet>(widget));
         }
     }
 
@@ -431,7 +426,7 @@ StyleSheetManager* StyleSheetManager::instance() {
 }
 
 void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& source,
-                                      QWidget* widget, bool reset) {
+                                       QWidget* widget, bool reset) {
     if (!widget || !source) {
         return;
     }
@@ -519,28 +514,28 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
 
 // StyleSheetManager 的静态便捷方法
 void StyleSheetManager::setStyleSheet(QWidget* widget,
-                                     const std::shared_ptr<StyleSheetBase>& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                      const std::shared_ptr<StyleSheetBase>& source,
+                                      ThemeType::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::setStyleSheet(widget, source, theme, registerWidget);
 }
 
 void StyleSheetManager::setStyleSheet(QWidget* widget, const QString& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                      ThemeType::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::setStyleSheet(widget, source, theme, registerWidget);
 }
 
 void StyleSheetManager::setCustomStyleSheet(QWidget* widget, const QString& lightQss,
-                                           const QString& darkQss) {
+                                            const QString& darkQss) {
     StyleSheetHelper::setCustomStyleSheet(widget, lightQss, darkQss);
 }
 
 void StyleSheetManager::addStyleSheet(QWidget* widget,
-                                     const std::shared_ptr<StyleSheetBase>& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                      const std::shared_ptr<StyleSheetBase>& source,
+                                      ThemeType::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::addStyleSheet(widget, source, theme, registerWidget);
 }
 
 void StyleSheetManager::addStyleSheet(QWidget* widget, const QString& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                      ThemeType::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::addStyleSheet(widget, source, theme, registerWidget);
 }
