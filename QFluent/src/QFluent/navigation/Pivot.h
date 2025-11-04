@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QPushButton>
 
+#include "Define.h"
+
 class QHBoxLayout;
 class FluentAnimation;
 class PivotItem : public QPushButton {
@@ -26,7 +28,7 @@ private:
     bool _isSelected = false;
 };
 
-class Pivot : public QWidget {
+class QFLUENT_EXPORT Pivot : public QWidget {
     Q_OBJECT
     Q_PROPERTY(QString currentRouteKey READ currentRouteKey NOTIFY currentRouteKeyChanged)
 
