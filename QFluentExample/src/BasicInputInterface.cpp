@@ -24,11 +24,7 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     button->resize(70, 70);
     addExampleCard("带有图标的按钮", button);
 
-    auto btn = new PrimaryPushButton("主题色按钮", this);
-    connect(btn, &PrimaryPushButton::clicked, this, [=](){
-        qDebug() << btn->styleSheet();
-    });
-    addExampleCard("主题色按钮", btn);
+    addExampleCard("主题色按钮", new PrimaryPushButton("主题色按钮", this));
     addExampleCard("主题色工具按钮", new PrimaryToolButton(FluentIcon(FluentIconType::BASKETBALL), this));
     addExampleCard("椭圆按钮", new PillPushButton("标签", FluentIcon(FluentIconType::TAG), this));
     addExampleCard("椭圆工具按钮", new PillToolButton(FluentIcon(FluentIconType::BASKETBALL), this));

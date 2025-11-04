@@ -44,10 +44,7 @@ void PushButton::init()
 
     setIconSize(QSize(16, 16));
 
-    QTimer::singleShot(0, this, [this]() {
-        postInit();
-    });
-
+    postInit();
 }
 
 void PushButton::postInit()

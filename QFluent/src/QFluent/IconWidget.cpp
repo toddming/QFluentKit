@@ -37,7 +37,6 @@ IconWidget::IconWidget(const FluentIconBase &icon, QWidget* parent)
 
 IconWidget::~IconWidget()
 {
-    Q_D(IconWidget);
 }
 
 void IconWidget::setIcon(const QIcon &icon)
@@ -58,10 +57,7 @@ void IconWidget::setFluentIcon(const FluentIconBase &icon)
 {
     Q_D(IconWidget);
 
-    if (d->m_fluentIcon.get() != &icon) {
-        d->m_fluentIcon.reset(icon.clone());
-        update();
-    }
+    d->m_fluentIcon.reset(icon.clone());
 
     d->_pIcon = QIcon();
     update();
