@@ -476,3 +476,74 @@ void CompleterMenu::popup()
     p->setFocus(Qt::OtherFocusReason);
 }
 
+
+
+
+
+
+PasswordLineEdit::PasswordLineEdit(QWidget *parent)
+    : LineEdit(parent)
+{
+    viewButton = new LineEditButton(FluentIcon(FluentIconType::VIEW).qicon(), this);
+
+    setEchoMode(QLineEdit::Password);
+    setContextMenuPolicy(Qt::NoContextMenu);
+
+    hBoxLayout()->addWidget(viewButton, 0, Qt::AlignRight);
+
+    viewButton->installEventFilter(this);
+    viewButton->setIconSize(QSize(13, 13));
+    viewButton->setFixedSize(29, 25);
+}
+
+void PasswordLineEdit::setPasswordVisible(bool isVisible)
+{
+    setEchoMode(isVisible ? QLineEdit::Normal : QLineEdit::Password);
+}
+
+bool PasswordLineEdit::isPasswordVisible() const
+{
+    return echoMode() == QLineEdit::Normal;
+}
+
+void PasswordLineEdit::setClearButtonEnabled(bool enable)
+{
+    m_clearButtonEnabled = enable;
+
+    const int clearWidth = 28 * enable;
+    const int viewWidth = viewButton->isHidden() ? 0 : 30;
+    setTextMargins(0, 0, clearWidth + viewWidth, 0);
+}
+
+void PasswordLineEdit::setViewPasswordButtonVisible(bool isVisible)
+{
+    viewButton->setVisible(isVisible);
+    // 重新调整边距
+    setClearButtonEnabled(m_clearButtonEnabled);
+}
+
+bool PasswordLineEdit::eventFilter(QObject *obj, QEvent *e)
+{
+    if (obj != viewButton || !isEnabled()) {
+        return LineEdit::eventFilter(obj, e);
+    }
+
+    if (e->type() == QEvent::MouseButtonPress) {
+        setPasswordVisible(true);
+        return true;
+    }
+    else if (e->type() == QEvent::MouseButtonRelease) {
+        setPasswordVisible(false);
+        return true;
+    }
+
+    return LineEdit::eventFilter(obj, e);
+}
+
+QVariant PasswordLineEdit::inputMethodQuery(Qt::InputMethodQuery query) const
+{
+    if (query == Qt::ImEnabled) {
+        return false;  // 禁用输入法（如拼音）
+    }
+    return LineEdit::inputMethodQuery(query);
+}

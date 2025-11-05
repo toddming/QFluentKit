@@ -3,6 +3,7 @@
 #include <QCompleter>
 #include "QFluent/LineEdit.h"
 #include "QFluent/SpinBox.h"
+#include "QFluent/TextEdit.h"
 
 TextInterface::TextInterface(QWidget *parent)
     : GalleryInterface("文本", "qfluentwidgets.components.widgets", parent)
@@ -14,6 +15,12 @@ TextInterface::TextInterface(QWidget *parent)
     lineEdit->setClearButtonEnabled(true);
     lineEdit->setText("ko no dio da!");
     addExampleCard("带清空按钮的输入框", lineEdit);
+
+    auto passwordLineEdit = new PasswordLineEdit(this);
+    passwordLineEdit->setFixedWidth(230);
+    passwordLineEdit->setViewPasswordButtonVisible(true);
+    passwordLineEdit->setPlaceholderText("请输入密码");
+    addExampleCard("密码输入框", passwordLineEdit);
 
     QStringList items = {
             "Star Platinum", "Hierophant Green",
@@ -50,6 +57,11 @@ TextInterface::TextInterface(QWidget *parent)
     addExampleCard("时间编辑框", new TimeEdit(this));
     addExampleCard("日期编辑框", new DateEdit(this));
     addExampleCard("日期时间编辑框", new DateTimeEdit(this));
+
+    auto textEdit = new TextEdit(this);
+    textEdit->setMarkdown("## Steel Ball Run \n * Johnny Joestar 🦄 \n * Gyro Zeppeli 🐴 ");
+    textEdit->setFixedHeight(150);
+    addExampleCard("富文本框", textEdit, "", 1);
 }
 
 

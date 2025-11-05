@@ -21,7 +21,7 @@ public:
     explicit LineEdit(QWidget* parent = nullptr);
     ~LineEdit() = default;
 
-    void setClearButtonEnabled(bool enable);
+    virtual void setClearButtonEnabled(bool enable);
     bool isClearButtonEnabled() const;
 
     void setCompleter(QCompleter* completer);
@@ -158,4 +158,35 @@ private:
     QStringList m_items;
     QVector<QModelIndex> m_indexes;
 
+};
+
+
+
+
+
+
+class QFLUENT_EXPORT PasswordLineEdit : public LineEdit
+{
+    Q_OBJECT
+
+public:
+    explicit PasswordLineEdit(QWidget *parent = nullptr);
+
+    // 设置/获取密码是否可见
+    void setPasswordVisible(bool isVisible);
+    bool isPasswordVisible() const;
+
+    // 控制清除按钮（覆盖父类行为，考虑 viewButton 可见性）
+    void setClearButtonEnabled(bool enable) override;
+
+    // 控制“查看密码”按钮是否显示
+    void setViewPasswordButtonVisible(bool isVisible);
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *e) override;
+    QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
+
+private:
+    LineEditButton *viewButton = nullptr;
+    bool m_clearButtonEnabled = false;
 };
