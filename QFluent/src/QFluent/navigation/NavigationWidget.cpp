@@ -17,7 +17,7 @@
 
 #include "FluentIcon.h"
 #include "Theme.h"
-#include "AvatarWidget.h"
+#include "QFluent/AvatarWidget.h"
 
 NavigationWidget::NavigationWidget(bool isSelectable, QWidget* parent)
     : QWidget(parent)

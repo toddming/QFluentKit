@@ -197,9 +197,9 @@ class QFLUENT_EXPORT Action : public QAction {
     Q_OBJECT
 public:
     explicit Action(QObject* parent = nullptr);
-    Action(const QString& text, QObject* parent = nullptr);
-    Action(const QIcon& icon, const QString& text, QObject* parent = nullptr);
-    Action(const FluentIconBase& icon, const QString& text, QObject* parent = nullptr);
+    explicit Action(const QString& text, QObject* parent = nullptr);
+    explicit Action(const QIcon& icon, const QString& text, QObject* parent = nullptr);
+    explicit Action(const FluentIconBase& icon, const QString& text, QObject* parent = nullptr);
     ~Action() override = default;
 
     QIcon icon() const;

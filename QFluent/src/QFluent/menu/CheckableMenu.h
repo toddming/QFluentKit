@@ -4,7 +4,7 @@
 
 class QAction;
 class QListWidgetItem;
-class CheckableMenu : public RoundMenu {
+class QFLUENT_EXPORT CheckableMenu : public RoundMenu {
     Q_OBJECT
 
 public:

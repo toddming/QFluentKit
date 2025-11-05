@@ -2,12 +2,13 @@
 #define PROFILECARD_H
 
 #include <QWidget>
+#include "Property.h"
 
 class BodyLabel;
 class CaptionLabel;
 class AvatarWidget;
 class HyperlinkButton;
-class ProfileCard : public QWidget
+class QFLUENT_EXPORT ProfileCard : public QWidget
 {
     Q_OBJECT
 

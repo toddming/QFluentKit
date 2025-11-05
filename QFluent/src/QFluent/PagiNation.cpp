@@ -8,7 +8,6 @@
 
 Button::Button (QString text, QWidget *parent): TransparentTogglePushButton(text, parent)
 {
-    setCheckable(false);
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
     setSizePolicy(CL);
 
@@ -258,6 +257,8 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list) {
         QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding); // 布局策略
         if (data.type == 1) {
             Button *btn = new Button(QString::number(data.labelNum), mainBox);
+            btn->setCheckable(false);
+
             btn->setFocusPolicy(Qt::NoFocus);
             btn->setFixedHeight(_height);
             btn->setSizePolicy(CL);

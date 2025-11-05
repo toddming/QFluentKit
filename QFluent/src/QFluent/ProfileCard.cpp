@@ -4,8 +4,8 @@
 
 #include "Theme.h"
 #include "AvatarWidget.h"
-#include "../Label.h"
-#include "../PushButton.h"
+#include "Label.h"
+#include "PushButton.h"
 
 ProfileCard::ProfileCard(const QString& avatarPath,
                          const QString& name,

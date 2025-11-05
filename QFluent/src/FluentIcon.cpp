@@ -570,11 +570,19 @@ Icon::Icon(const FluentIcon& fluentIcon)
 
 QIcon toQIcon(const QVariant& icon) { return FluentIconUtils::toQIcon(icon); }
 
-Action::Action(QObject* parent) : QAction(parent), m_fluentIcon(nullptr) {}
-Action::Action(const QString& text, QObject* parent) : QAction(text, parent), m_fluentIcon(nullptr) {}
-Action::Action(const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent), m_fluentIcon(nullptr) {}
+Action::Action(QObject* parent) : QAction(parent), m_fluentIcon(nullptr) {
+
+}
+Action::Action(const QString& text, QObject* parent) : QAction(text, parent), m_fluentIcon(nullptr) {
+
+}
+Action::Action(const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent), m_fluentIcon(nullptr) {
+
+}
 Action::Action(const FluentIconBase& icon, const QString& text, QObject* parent)
-    : QAction(icon.icon(), text, parent), m_fluentIcon(icon.clone()) {}
+    : QAction(icon.icon(), text, parent), m_fluentIcon(icon.clone()) {
+
+}
 
 QIcon Action::icon() const {
     return m_fluentIcon ? m_fluentIcon->icon() : QAction::icon();

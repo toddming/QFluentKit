@@ -18,10 +18,9 @@
 
 #include "FluentIcon.h"
 #include "Theme.h"
-#include "ProfileCard.h"
 #include "NavigationWidget.h"
 #include "StyleSheet.h"
-
+#include "QFluent/ProfileCard.h"
 #include "../scrollbar/ScrollBar.h"
 #include "QFluent/menu/RoundMenu.h"
 #include "QFluent/menu/MenuActionListWidget.h"

@@ -44,7 +44,9 @@ void PushButton::init()
 
     setIconSize(QSize(16, 16));
 
-    postInit();
+    QTimer::singleShot(0, this, [=](){
+        postInit();
+    });
 }
 
 void PushButton::postInit()
@@ -162,7 +164,7 @@ void ToggleButton::postInit()
 }
 
 
-
+// DropDownButtonBase
 DropDownButtonBase::DropDownButtonBase(QWidget *parent) :
     PushButton(parent)
     , m_menu(nullptr)
@@ -183,7 +185,6 @@ DropDownButtonBase::DropDownButtonBase(const QString &text, const FluentIconBase
     , m_arrowAni(new TranslateYAnimation(this))
 {
 }
-
 
 void DropDownButtonBase::setMenu(RoundMenu* menu)
 {
