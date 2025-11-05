@@ -1,12 +1,13 @@
 ﻿#include "PagiNation.h"
+
 #include "Label.h"
 #include "ToolButton.h"
 #include <QLayout>
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-Button::Button (QString text, QWidget *parent): TransparentTogglePushButton(text, parent)
+Button::Button(const QString& text, QWidget *parent)
+    : TransparentTogglePushButton(text, parent)
 {
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
     setSizePolicy(CL);
@@ -14,7 +15,7 @@ Button::Button (QString text, QWidget *parent): TransparentTogglePushButton(text
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
 }
 
-void Button::handleClick ()
+void Button::handleClick()
 {
     if (this->isCheckable()) {
         this->setChecked(true);
@@ -257,8 +258,6 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list) {
         QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding); // 布局策略
         if (data.type == 1) {
             Button *btn = new Button(QString::number(data.labelNum), mainBox);
-            btn->setCheckable(false);
-
             btn->setFocusPolicy(Qt::NoFocus);
             btn->setFixedHeight(_height);
             btn->setSizePolicy(CL);

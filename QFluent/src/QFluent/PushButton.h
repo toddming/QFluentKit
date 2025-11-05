@@ -36,7 +36,6 @@ protected:
 
 private:
     void init();
-    virtual void postInit();
 
     bool m_isPressed;
     bool m_isHovered;
@@ -81,14 +80,13 @@ class QFLUENT_EXPORT ToggleButton : public PushButton
     Q_OBJECT
 
 public:
-    using PushButton::PushButton;
+    explicit ToggleButton(QWidget *parent = nullptr);
+    explicit ToggleButton(const QString &text, QWidget* parent = nullptr);
+    explicit ToggleButton(const QString &text, const FluentIconBase &icon, QWidget* parent = nullptr);
+
 
 protected:
     void drawIcon(QPainter* painter, const QRectF& rect) override;
-
-private:
-    void postInit() override;
-
 };
 
 // TransparentTogglePushButton

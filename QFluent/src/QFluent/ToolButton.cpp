@@ -43,10 +43,6 @@ void ToolButton::init()
     m_isPressed = false;
     m_isHovered = false;
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
-
-    QTimer::singleShot(0, this, [this]() {
-        postInit();
-    });
 }
 
 
@@ -109,10 +105,6 @@ void ToolButton::paintEvent(QPaintEvent* event)
     drawIcon(&painter, QRectF(x, y, w, h));
 }
 
-void ToolButton::postInit()
-{
-
-}
 
 void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
@@ -128,6 +120,28 @@ void PrimaryToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeTyp
 }
 
 // ToggleToolButton
+ToggleToolButton::ToggleToolButton(QWidget* parent)
+    : ToolButton(parent)
+{
+    setCheckable(true);
+    setChecked(false);
+}
+
+ToggleToolButton::ToggleToolButton(const QIcon &icon, QWidget* parent)
+    : ToolButton(icon, parent)
+{
+    setCheckable(true);
+    setChecked(false);
+}
+
+ToggleToolButton::ToggleToolButton(const FluentIconBase &icon, QWidget* parent)
+    : ToolButton(icon, parent)
+{
+    setCheckable(true);
+    setChecked(false);
+}
+
+
 void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme)
 {
     ThemeType::ThemeMode _theme = theme;
@@ -137,12 +151,6 @@ void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType
         _theme = isChecked() ? ThemeType::LIGHT : ThemeType::DARK;
     }
     FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
-}
-
-void ToggleToolButton::postInit()
-{
-    setCheckable(true);
-    setChecked(false);
 }
 
 // PillToolButton

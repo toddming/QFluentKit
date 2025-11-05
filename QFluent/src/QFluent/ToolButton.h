@@ -36,7 +36,6 @@ protected:
 
 private:
     void init();
-    virtual void postInit();
 
     bool m_isPressed;
     bool m_isHovered;
@@ -67,12 +66,13 @@ class QFLUENT_EXPORT ToggleToolButton : public ToolButton
 {
     Q_OBJECT
 public:
-    using ToolButton::ToolButton;
+    explicit ToggleToolButton(QWidget* parent = nullptr);
+    explicit ToggleToolButton(const QIcon &icon, QWidget* parent = nullptr);
+    explicit ToggleToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
+
 protected:
     void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
 
-private:
-    void postInit() override;
 };
 
 // TransparentToggleToolButton

@@ -43,15 +43,6 @@ void PushButton::init()
     setProperty("hasIcon", false);
 
     setIconSize(QSize(16, 16));
-
-    QTimer::singleShot(0, this, [=](){
-        postInit();
-    });
-}
-
-void PushButton::postInit()
-{
-
 }
 
 void PushButton::setFluentIcon(const FluentIconBase &icon)
@@ -145,6 +136,27 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
 
 
 // ToggleButton
+ToggleButton::ToggleButton(QWidget *parent) :
+    PushButton(parent)
+{
+    setCheckable(true);
+    setChecked(false);
+}
+
+ToggleButton::ToggleButton(const QString &text, QWidget* parent) :
+    PushButton(text, parent)
+{
+    setCheckable(true);
+    setChecked(false);
+}
+
+ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWidget* parent) :
+    PushButton(text, icon, parent)
+{
+    setCheckable(true);
+    setChecked(false);
+}
+
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
     ThemeType::ThemeMode _theme;
@@ -154,13 +166,6 @@ void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
         _theme = isChecked() ? ThemeType::LIGHT : ThemeType::DARK;
     }
     FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
-}
-
-
-void ToggleButton::postInit()
-{
-    setCheckable(true);
-    setChecked(false);
 }
 
 
