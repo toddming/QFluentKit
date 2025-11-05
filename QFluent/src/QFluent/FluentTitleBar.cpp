@@ -7,7 +7,9 @@
 #include <QTimer>
 #include <QLabel>
 #include <QPushButton>
-#include <QDebug>
+#include <QCoreApplication>
+#include <QGuiApplication>
+
 #include "Theme.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
