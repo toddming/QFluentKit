@@ -6,11 +6,10 @@
 #include <QPushButton>
 #include <QFrame>
 
-#include "Theme.h"
+#include "StyleSheet.h"
 #include "QFluent/Label.h"
 #include "QFluent/PushButton.h"
 #include "Private/dialog/MessageDialogPrivate.h"
-
 
 MessageDialog::MessageDialog(const QString &title, const QString &content, QWidget *parent)
     : MaskDialogBase(*new MessageDialogPrivate(), parent)
@@ -56,15 +55,22 @@ MessageDialog::MessageDialog(const QString &title, const QString &content, QWidg
     vBoxLayout->setSizeConstraint(QVBoxLayout::SetMinimumSize);
 
     d->yesButton->setFocus();
+    //
+    d->titleLabel->setObjectName("titleLabel");
+    d->contentLabel->setObjectName("contentLabel");
+    d->buttonGroup->setObjectName("buttonGroup");
+    d->cancelButton->setObjectName("cancelButton");
 
-    d->setQss();
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::DIALOG);
+
+    d->yesButton->adjustSize();
+
     d->adjustText();
 
     centerWidget()->installEventFilter(centerWidget());
 
-    setMaskColor(QColor(0, 0, 0, 76));
-
     setShadowEffect(60, QPoint(0, 10), QColor(0, 0, 0, 50));
+    setMaskColor(QColor(0, 0, 0, 76));
 
     connect(d->yesButton, &QPushButton::clicked, this, [this]() {
         accept();

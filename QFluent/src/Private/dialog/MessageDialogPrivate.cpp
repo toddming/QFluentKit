@@ -4,7 +4,6 @@
 #include <QPushButton>
 #include <QFrame>
 
-#include "Theme.h"
 #include "StyleSheet.h"
 #include "TextWrap.h"
 #include "QFluent/Label.h"

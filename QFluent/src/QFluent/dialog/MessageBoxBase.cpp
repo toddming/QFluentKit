@@ -5,7 +5,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include "Theme.h"
 #include "StyleSheet.h"
 
 #include "QFluent/PushButton.h"
