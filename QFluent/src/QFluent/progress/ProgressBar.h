@@ -2,10 +2,9 @@
 
 #include <QProgressBar>
 #include <QPropertyAnimation>
+#include "Property.h"
 
-
-
-class ProgressBar : public QProgressBar
+class QFLUENT_EXPORT ProgressBar : public QProgressBar
 {
     Q_OBJECT
     Q_PROPERTY(bool useAni READ isUseAni WRITE setUseAni NOTIFY useAniChanged)

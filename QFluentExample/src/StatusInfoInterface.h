@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 
+#include <QProgressBar>
 #include "GalleryInterface.h"
 
 class StatusInfoInterface : public GalleryInterface
@@ -8,5 +9,6 @@ class StatusInfoInterface : public GalleryInterface
 public:
     explicit StatusInfoInterface(QWidget *parent = nullptr);
 
-
+private:
+    QWidget* createProgressWidget(QProgressBar *widget);
 };

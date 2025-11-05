@@ -2,11 +2,12 @@
 #define INDETERMINATEPROGRESSBAR_H
 
 #include <QProgressBar>
+#include "Property.h"
 
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 class QSequentialAnimationGroup;
-class IndeterminateProgressBar : public QProgressBar
+class QFLUENT_EXPORT IndeterminateProgressBar : public QProgressBar
 {
     Q_OBJECT
     Q_PROPERTY(qreal shortPos READ shortPos WRITE setShortPos)

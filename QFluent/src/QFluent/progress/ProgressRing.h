@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include "ProgressBar.h"
+#include "Property.h"
 
-class ProgressRing : public ProgressBar
+class QFLUENT_EXPORT ProgressRing : public ProgressBar
 {
     Q_OBJECT
     Q_PROPERTY(int strokeWidth READ getStrokeWidth WRITE setStrokeWidth NOTIFY strokeWidthChanged)
