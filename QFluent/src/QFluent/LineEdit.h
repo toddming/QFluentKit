@@ -4,7 +4,7 @@
 #include <QToolButton>
 #include <QPointer>
 
-#include "Property.h"
+#include "Define.h"
 #include "menu/RoundMenu.h"
 
 class QAction;
@@ -21,7 +21,7 @@ public:
     explicit LineEdit(QWidget* parent = nullptr);
     ~LineEdit() = default;
 
-    virtual void setClearButtonEnabled(bool enable);
+    void setClearButtonEnabled(bool enable);
     bool isClearButtonEnabled() const;
 
     void setCompleter(QCompleter* completer);
@@ -42,7 +42,6 @@ protected:
     void focusInEvent(QFocusEvent* e) override;
     void contextMenuEvent(QContextMenuEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
-    void resizeEvent(QResizeEvent* e) override;
 
 private slots:
     void handleTextChanged(const QString& text);
@@ -76,6 +75,8 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
 
 private slots:
     void updateButtonState();
@@ -176,8 +177,7 @@ public:
     void setPasswordVisible(bool isVisible);
     bool isPasswordVisible() const;
 
-    // 控制清除按钮（覆盖父类行为，考虑 viewButton 可见性）
-    void setClearButtonEnabled(bool enable) override;
+    void setClearButtonEnabled(bool enable);
 
     // 控制“查看密码”按钮是否显示
     void setViewPasswordButtonVisible(bool isVisible);
@@ -188,5 +188,4 @@ protected:
 
 private:
     LineEditButton *viewButton = nullptr;
-    bool m_clearButtonEnabled = false;
 };

@@ -13,7 +13,6 @@
 #include <QPainterPath>
 #include <QTimer>
 
-
 #include "Theme.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
@@ -60,11 +59,23 @@ void LineEditButton::paintEvent(QPaintEvent* event) {
     const QSize iconSize = this->iconSize();
     const QRect iconRect(rect.center() - QPoint(iconSize.width()/2, iconSize.height()/2), iconSize);
 
-    if (isDown()) {
+    if (property("isPressed").toBool()) {
         painter.setOpacity(0.7);
     }
 
     m_icon.paint(&painter, iconRect, Qt::AlignCenter);
+}
+
+void LineEditButton::mousePressEvent(QMouseEvent *e)
+{
+    setProperty("isPressed", true);
+    QToolButton::mousePressEvent(e);
+}
+
+void LineEditButton::mouseReleaseEvent(QMouseEvent *e)
+{
+    setProperty("isPressed", false);
+    QToolButton::mouseReleaseEvent(e);
 }
 
 void LineEditButton::updateButtonState() {
@@ -209,9 +220,9 @@ void LineEdit::setCompleterMenu(CompleterMenu *menu)
 
     connect(menu, &CompleterMenu::indexActivated,
             [this](const QModelIndex& idx) {
-                QMetaObject::invokeMethod(m_completer, "activated", Qt::DirectConnection,
-                                          Q_ARG(QModelIndex, idx));
-            });
+        QMetaObject::invokeMethod(m_completer, "activated", Qt::DirectConnection,
+                                  Q_ARG(QModelIndex, idx));
+    });
 }
 
 void LineEdit::showCompleterMenu() {
@@ -253,11 +264,6 @@ void LineEdit::paintEvent(QPaintEvent* e) {
     path = path.subtracted(rectPath);
 
     painter.fillPath(path, Theme::instance()->themeColor());
-}
-
-void LineEdit::resizeEvent(QResizeEvent* e) {
-    QLineEdit::resizeEvent(e);
-    adjustTextMargins();
 }
 
 LineEditButton* LineEdit::getClearButton()
@@ -320,13 +326,6 @@ void SearchLineEdit::onClearButtonClicked()
 {
     emit clearSignal();  // 发出清除信号
 }
-
-
-
-
-
-
-
 
 
 
@@ -404,7 +403,7 @@ bool CompleterMenu::eventFilter(QObject* obj, QEvent* event)
     }
 
     if ((keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) &&
-        view()->currentRow() >= 0) {
+            view()->currentRow() >= 0) {
         QListWidgetItem* currentItem = view()->currentItem();
         if (currentItem) {
             _onCompletionItemSelected(currentItem->text(), view()->currentRow());
@@ -488,7 +487,7 @@ PasswordLineEdit::PasswordLineEdit(QWidget *parent)
 
     setEchoMode(QLineEdit::Password);
     setContextMenuPolicy(Qt::NoContextMenu);
-
+    setClearButtonEnabled(false);
     hBoxLayout()->addWidget(viewButton, 0, Qt::AlignRight);
 
     viewButton->installEventFilter(this);
@@ -508,7 +507,7 @@ bool PasswordLineEdit::isPasswordVisible() const
 
 void PasswordLineEdit::setClearButtonEnabled(bool enable)
 {
-    m_clearButtonEnabled = enable;
+    LineEdit::setClearButtonEnabled(enable);
 
     const int clearWidth = 28 * enable;
     const int viewWidth = viewButton->isHidden() ? 0 : 30;
@@ -519,7 +518,7 @@ void PasswordLineEdit::setViewPasswordButtonVisible(bool isVisible)
 {
     viewButton->setVisible(isVisible);
     // 重新调整边距
-    setClearButtonEnabled(m_clearButtonEnabled);
+    setClearButtonEnabled(isClearButtonEnabled());
 }
 
 bool PasswordLineEdit::eventFilter(QObject *obj, QEvent *e)
@@ -529,10 +528,12 @@ bool PasswordLineEdit::eventFilter(QObject *obj, QEvent *e)
     }
 
     if (e->type() == QEvent::MouseButtonPress) {
+        viewButton->setProperty("isPressed", true);
         setPasswordVisible(true);
         return true;
     }
     else if (e->type() == QEvent::MouseButtonRelease) {
+        viewButton->setProperty("isPressed", false);
         setPasswordVisible(false);
         return true;
     }
