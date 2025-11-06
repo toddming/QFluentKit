@@ -5,12 +5,6 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Svg Xml)
 
 qt_standard_project_setup()
 
-option(EXTERNAL_QFLUENT "Enable QFluentKit support" ON)
-
-if(EXTERNAL_QFLUENT)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/src)
-endif()
-
 file(GLOB_RECURSE SOURCES
     CONFIGURE_DEPENDS
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -47,23 +41,7 @@ qt_add_resources(
     FILES ${AUTO_RESOURCE_FILES}
 )
 
-if(EXTERNAL_QFLUENT)
-    set(DLL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/bin/$<CONFIG>")
-    add_custom_command(TARGET QFluentExample POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${DLL_SOURCE_DIR}
-            $<TARGET_FILE_DIR:QFluentExample>
-        COMMENT "Copying DLLs from ${DLL_SOURCE_DIR}"
-    )
-
-    target_link_libraries(QFluentExample PRIVATE
-        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/libs/lib/Debug/QFluent.lib>
-        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/libs/lib/Release/QFluent.lib>
-    )
-else()
-    target_link_libraries(QFluentExample PRIVATE QFluent)
-endif()
-
+target_link_libraries(QFluentExample PRIVATE QFluent)
 
 target_link_libraries(QFluentExample
     PRIVATE
