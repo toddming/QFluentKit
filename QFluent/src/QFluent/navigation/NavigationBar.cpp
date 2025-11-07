@@ -13,11 +13,10 @@
 #include <QIcon>
 #include <QColor>
 
-#include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
 
-#include "../scrollbar/ScrollBar.h"
+#include "QFluent/scrollbar/ScrollBar.h"
 
 
 IconSlideAnimation::IconSlideAnimation(QWidget* parent)
@@ -56,14 +55,15 @@ QVariant IconSlideAnimation::animateValue(const QVariant& startValue, const QVar
 }
 
 // NavigationBarPushButton 实现
-NavigationBarPushButton::NavigationBarPushButton(FluentIconType::IconType icon, const QString& text, bool isSelectable,
-                                              FluentIconType::IconType selectedIcon, QWidget* parent)
-    : NavigationPushButton(icon, text, isSelectable, parent),
-      m_iconAni(new IconSlideAnimation(this)),
-      _selectedIcon(selectedIcon),
-      _isSelectedTextVisible(true),
-      lightSelectedColor(QColor()),
-      darkSelectedColor(QColor()) {
+NavigationBarPushButton::NavigationBarPushButton(const FluentIconBase& icon, const QString& text,
+                                                 bool isSelectable, QWidget* parent)
+    : NavigationPushButton(text, icon, isSelectable, parent)
+    , m_iconAni(new IconSlideAnimation(this))
+    , m_fluentIcon(icon.clone())
+    , _isSelectedTextVisible(true)
+    , lightSelectedColor(QColor())
+    , darkSelectedColor(QColor()) {
+
     setFixedSize(64, 58);
 
     setIndicatorColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
@@ -73,11 +73,6 @@ NavigationBarPushButton::NavigationBarPushButton(FluentIconType::IconType icon, 
 void NavigationBarPushButton::setSelectedColor(const QColor& light, const QColor& dark) {
     lightSelectedColor = light;
     darkSelectedColor = dark;
-    update();
-}
-
-void NavigationBarPushButton::setSelectedIcon(FluentIconType::IconType icon) {
-    _selectedIcon = icon;
     update();
 }
 
@@ -143,15 +138,13 @@ void NavigationBarPushButton::_drawIcon(QPainter& painter) {
         rect = QRectF(22, 13 + m_iconAni->getOffset(), 20, 20);
     }
 
-    FluentIconType::IconType selectedIcon = _selectedIcon != FluentIconType::IconType::NONE ? _selectedIcon : fluentButton();
     if (property("isSelected").toBool()) {
-        if (selectedIcon != FluentIconType::IconType::NONE) {
             QMap<QString, QString> attrs;
             attrs["fill"] = Theme::instance()->themeColor().name();
-            FluentIcon(selectedIcon).render(&painter, rect, ThemeType::AUTO, QList<int>(), attrs);
-        }
+
+            FluentIconUtils::drawIcon(*m_fluentIcon, &painter, rect, ThemeType::AUTO, QIcon::Off, attrs);
     } else {
-        FluentIcon(fluentButton()).render(&painter, rect);
+        FluentIconUtils::drawIcon(*m_fluentIcon, &painter, rect);
     }
 }
 
@@ -247,11 +240,10 @@ NavigationWidget* NavigationBar::widget(const QString& routeKey) {
     return m_items[routeKey].widget;
 }
 
-void NavigationBar::addItem(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+void NavigationBar::addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                           const std::function<void()>& onClick, bool selectable,
-                          FluentIconType::IconType selectedIcon,
                           NavigationType::NavigationItemPosition position) {
-    insertItem(-1, routeKey, icon, text, onClick, selectable, selectedIcon, position);
+    insertItem(-1, routeKey, icon, text, onClick, selectable, position);
 }
 
 void NavigationBar::addWidget(const QString& routeKey, NavigationWidget* widget,
@@ -260,15 +252,14 @@ void NavigationBar::addWidget(const QString& routeKey, NavigationWidget* widget,
     insertWidget(-1, routeKey, widget, onClick, position);
 }
 
-void NavigationBar::insertItem(int index, const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+void NavigationBar::insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
                              const std::function<void()>& onClick, bool selectable,
-                             FluentIconType::IconType selectedIcon,
                              NavigationType::NavigationItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;
     }
 
-    NavigationBarPushButton* w = new NavigationBarPushButton(icon, text, selectable, selectedIcon, this);
+    NavigationBarPushButton* w = new NavigationBarPushButton(icon, text, selectable, this);
     w->setSelectedColor(m_lightSelectedColor, m_darkSelectedColor);
     insertWidget(index, routeKey, w, onClick, position);
 }
@@ -337,13 +328,15 @@ void NavigationBar::setCurrentItem(const QString& routeKey) {
 
 void NavigationBar::setFont(const QFont& font) {
     QWidget::setFont(font);
-    for (NavigationBarPushButton* button : buttons()) {
+    const auto& btns = buttons();
+    for (NavigationBarPushButton* button : btns) {
         button->setFont(font);
     }
 }
 
 void NavigationBar::setSelectedTextVisible(bool isVisible) {
-    for (NavigationBarPushButton* button : buttons()) {
+    const auto& btns = buttons();
+    for (NavigationBarPushButton* button : btns) {
         button->setSelectedTextVisible(isVisible);
     }
 }
@@ -351,14 +344,15 @@ void NavigationBar::setSelectedTextVisible(bool isVisible) {
 void NavigationBar::setSelectedColor(const QColor& light, const QColor& dark) {
     m_lightSelectedColor = light;
     m_darkSelectedColor = dark;
-    for (NavigationBarPushButton* button : buttons()) {
+    const auto& btns = buttons();
+    for (NavigationBarPushButton* button : btns) {
         button->setSelectedColor(light, dark);
     }
 }
 
 QList<NavigationBarPushButton*> NavigationBar::buttons() const {
     QList<NavigationBarPushButton*> result;
-    for (auto item : m_items) {
+    for (const auto& item : m_items) {
         if (NavigationBarPushButton* button = qobject_cast<NavigationBarPushButton*>(item.widget)) {
             result.append(button);
         }
@@ -374,7 +368,7 @@ void NavigationBar::_onWidgetClicked() {
 }
 
 void NavigationBar::setWidgetCompacted(bool isCompacted) {
-    for (auto item : m_items) {
+    for (const auto& item : std::as_const(m_items)) {
         item.widget->setCompacted(isCompacted);
     }
 }
@@ -384,8 +378,5 @@ void NavigationBar::paintEvent(QPaintEvent* e) {
 }
 
 bool NavigationBar::eventFilter(QObject* obj, QEvent* e) {
-    // This is a placeholder for the event filter
-    // The Python version had some event filtering for window resizing and mouse clicks
-    // We'll implement it later if needed
     return QWidget::eventFilter(obj, e);
 }

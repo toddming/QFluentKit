@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QPropertyAnimation>
 
+#include "Property.h"
+#include "FluentIcon.h"
 #include "NavigationWidget.h"
 #include "NavigationPanel.h"
 
@@ -31,10 +33,10 @@ private:
 class NavigationBarPushButton : public NavigationPushButton {
     Q_OBJECT
 public:
-    explicit NavigationBarPushButton(FluentIconType::IconType icon, const QString& text, bool isSelectable = true,
-                                   FluentIconType::IconType selectedIcon = FluentIconType::IconType::NONE, QWidget* parent = nullptr);
+    explicit NavigationBarPushButton(const FluentIconBase& icon, const QString& text,
+                                     bool isSelectable = true, QWidget* parent = nullptr);
+
     void setSelectedColor(const QColor& light, const QColor& dark);
-    void setSelectedIcon(FluentIconType::IconType icon);
     void setSelectedTextVisible(bool isVisible);
     void setSelected(bool isSelected);
     IconSlideAnimation* iconAni() { return m_iconAni; }
@@ -48,15 +50,16 @@ private:
     void _drawText(QPainter& painter);
 
 private:
-    FluentIconType::IconType _selectedIcon;
+    IconSlideAnimation *m_iconAni;
+    std::unique_ptr<FluentIconBase> m_fluentIcon;
+
     bool _isSelectedTextVisible;
     QColor lightSelectedColor;
     QColor darkSelectedColor;
-    IconSlideAnimation *m_iconAni;
 };
 
 // NavigationBar 类
-class NavigationBar : public QWidget {
+class QFLUENT_EXPORT NavigationBar : public QWidget {
     Q_OBJECT
 
 public:
@@ -65,22 +68,26 @@ public:
 
     // 公共方法
     NavigationWidget* widget(const QString& routeKey);
-    void addItem(const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+    void addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                  const std::function<void()>& onClick = nullptr, bool selectable = true,
-                 FluentIconType::IconType selectedIcon = FluentIconType::IconType::NONE,
                  NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+
     void addWidget(const QString& routeKey, NavigationWidget* widget,
                    const std::function<void()>& onClick = nullptr,
                    NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
-    void insertItem(int index, const QString& routeKey, FluentIconType::IconType icon, const QString& text,
+
+    void insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
                    const std::function<void()>& onClick = nullptr, bool selectable = true,
-                   FluentIconType::IconType selectedIcon = FluentIconType::IconType::NONE,
                    NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+
     void insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
                      const std::function<void()>& onClick = nullptr,
                      NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+
     void addSeparator(NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+
     void insertSeparator(int index, NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
+
     void removeWidget(const QString& routeKey);
     void setCurrentItem(const QString& routeKey);
     void setFont(const QFont& font);
