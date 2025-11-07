@@ -16,6 +16,7 @@
 #include "StatusInfoInterface.h"
 #include "TextInterface.h"
 #include "ViewInterface.h"
+#include "WindowInterface.h"
 
 MainWindow::MainWindow()
 {
@@ -35,13 +36,14 @@ MainWindow::MainWindow()
     addSubInterface("6", FluentIcon(FluentIconType::LAYOUT), "布局", new LayoutInterface(this), true, NavigationType::SCROLL);
     addSubInterface("7", FluentIcon(iconPath.arg("Menu")), "菜单", new MenuInterface(this), true, NavigationType::SCROLL);
     addSubInterface("8", FluentIcon(FluentIconType::MENU), "导航", new NavigationViewInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("9", FluentIcon(FluentIconType::SCROLL), "滚动", new ScrollInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("10", FluentIcon(FluentIconType::CHAT), "状态", new StatusInfoInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("11", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("12", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NavigationType::SCROLL);
+    addSubInterface("9", FluentIcon(FluentIconType::APPLICATION), "窗口", new WindowInterface(this), true, NavigationType::SCROLL);
+    addSubInterface("10", FluentIcon(FluentIconType::SCROLL), "滚动", new ScrollInterface(this), true, NavigationType::SCROLL);
+    addSubInterface("11", FluentIcon(FluentIconType::CHAT), "状态", new StatusInfoInterface(this), true, NavigationType::SCROLL);
+    addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, NavigationType::SCROLL);
+    addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NavigationType::SCROLL);
 
     navigationInterface()->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
-    addSubInterface("13", FluentIcon(FluentIconType::SETTING), "设置", new SettingInterface(this), true, NavigationType::BOTTOM);
+    addSubInterface("14", FluentIcon(FluentIconType::SETTING), "设置", new SettingInterface(this), true, NavigationType::BOTTOM);
 
     navigationInterface()->setCurrentItem("1");
 }
