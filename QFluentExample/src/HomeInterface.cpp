@@ -18,7 +18,7 @@ void BannerWidget::setupUI()
     setFixedHeight(336);
 
     m_vBoxLayout = new QVBoxLayout(this);
-    m_galleryLabel = new QLabel("Fluent Gallery", this);
+    m_galleryLabel = new QLabel("QFluentKit", this);
     m_banner = QPixmap(":/res/header.png");
     m_linkCardView = new LinkCardView(this);
     m_linkCardView->setMinimumHeight(300);
