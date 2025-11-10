@@ -38,12 +38,21 @@ void RadioButton::paintEvent(QPaintEvent *event)
     drawText(painter);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void RadioButton::enterEvent(QEnterEvent *event)
 {
     isHover_ = true;
     update();
     QRadioButton::enterEvent(event);
 }
+#else
+void RadioButton::enterEvent(QEvent *event)
+{
+    isHover_ = true;
+    update();
+    QRadioButton::event(event);
+}
+#endif
 
 void RadioButton::leaveEvent(QEvent *event)
 {

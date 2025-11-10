@@ -15,7 +15,11 @@ public:
     explicit AnimationBase(QWidget *parent = nullptr);
 
 protected:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     virtual void _onHover(QEnterEvent *e);
+#else
+    virtual void _onHover(QEvent *e);
+#endif
     virtual void _onLeave(QEvent *e);
     virtual void _onPress(QMouseEvent *e);
     virtual void _onRelease(QMouseEvent *e);
@@ -69,7 +73,11 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     void enterEvent(QEnterEvent *e) override;
+#else
+    void enterEvent(QEvent *e) override;
+#endif
     void leaveEvent(QEvent *e) override;
     void focusInEvent(QFocusEvent *e) override;
 

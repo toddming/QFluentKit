@@ -3,8 +3,11 @@
 #include <QObject>
 #include <QColor>
 #include <QPointF>
+#include <QListWidgetItem>
 
 #include "Define.h"
+
+Q_DECLARE_METATYPE(QListWidgetItem*)
 
 class QTimer;
 class QAction;

@@ -86,12 +86,12 @@ QString FluentIconUtils::writeSvg(const QString& iconPath, const QList<int>& ind
 }
 
 QIcon FluentIconUtils::toQIcon(const QVariant& icon) {
-    if (icon.canConvert<QString>()) return QIcon(icon.toString());
-    if (icon.canConvert<FluentIconBase*>()) {
-        auto* fi = icon.value<FluentIconBase*>();
-        return fi ? fi->icon() : QIcon();
-    }
-    if (icon.canConvert<QIcon>()) return icon.value<QIcon>();
+    // if (icon.canConvert<QString>()) return QIcon(icon.toString());
+    // if (icon.canConvert<FluentIconBase*>()) {
+    //     auto* fi = icon.value<FluentIconBase*>();
+    //     return fi ? fi->icon() : QIcon();
+    // }
+    // if (icon.canConvert<QIcon>()) return icon.value<QIcon>();
     return QIcon();
 }
 

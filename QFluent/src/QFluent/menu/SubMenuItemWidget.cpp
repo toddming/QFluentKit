@@ -22,11 +22,19 @@ SubMenuItemWidget::SubMenuItemWidget(RoundMenu* menu, QListWidgetItem* item, QWi
 {
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void SubMenuItemWidget::enterEvent(QEnterEvent* event)
 {
     QWidget::enterEvent(event);
     emit showMenuSig(item);
 }
+#else
+void SubMenuItemWidget::enterEvent(QEvent* event)
+{
+    QWidget::event(event);
+    emit showMenuSig(item);
+}
+#endif
 
 void SubMenuItemWidget::paintEvent(QPaintEvent* event)
 {

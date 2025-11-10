@@ -33,7 +33,11 @@ signals:
     void selectedChanged(bool selected);
 
 protected:
+    #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     void enterEvent(QEnterEvent* e) override;
+#else
+    void enterEvent(QEvent* e) override;
+#endif
     void leaveEvent(QEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;

@@ -63,9 +63,15 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void ExpandButton::enterEvent(QEnterEvent *e) {
     setHover(true);
 }
+#else
+void ExpandButton::enterEvent(QEvent *e) {
+    setHover(true);
+}
+#endif
 
 void ExpandButton::leaveEvent(QEvent *e) {
     setHover(false);

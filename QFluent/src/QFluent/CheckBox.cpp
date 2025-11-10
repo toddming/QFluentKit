@@ -44,6 +44,7 @@ void CheckBox::mouseReleaseEvent(QMouseEvent *event) {
     QCheckBox::mouseReleaseEvent(event);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void CheckBox::enterEvent(QEnterEvent *event) {
     Q_D(CheckBox);
 
@@ -51,6 +52,15 @@ void CheckBox::enterEvent(QEnterEvent *event) {
     update();
     QCheckBox::enterEvent(event);
 }
+#else
+void CheckBox::enterEvent(QEvent *event) {
+    Q_D(CheckBox);
+
+    d->_isHover = true;
+    update();
+    QCheckBox::event(event);
+}
+#endif
 
 void CheckBox::leaveEvent(QEvent *event) {
     Q_D(CheckBox);

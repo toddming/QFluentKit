@@ -32,20 +32,25 @@ void TextWrap::initCacheIfNeeded()
     }
 }
 
-
+// 兼容Qt5和Qt6的哈希函数实现
 uint qHash(const TextWrap::WidthKey &key, uint seed)
 {
-    return qHashMulti(seed, key.str);
+    // Qt 5兼容实现：使用qHash组合
+    return qHash(key.str, seed);
 }
 
 uint qHash(const TextWrap::TokenizeKey &key, uint seed)
 {
-    return qHashMulti(seed, key.line);
+    // Qt 5兼容实现：使用qHash组合
+    return qHash(key.line, seed);
 }
 
 uint qHash(const TextWrap::SplitKey &key, uint seed)
 {
-    return qHashMulti(seed, key.token, key.width);
+    // Qt 5兼容实现：手动组合多个值的哈希
+    seed = qHash(key.token, seed);
+    seed = qHash(key.width, seed);
+    return seed;
 }
 
 // textwrap.cpp 中的 getCharWidth 函数（修复版）
@@ -74,7 +79,7 @@ int TextWrap::getCharWidth(QChar ch)
     // 常见全角（Wide）字符范围
     if (
         (ucs4 >= 0x1100 && ucs4 <= 0x115F) || // Hangul Jamo
-        (ucs4 >= 0x2329 && ucs4 <= 0x232A) || // ⟨ ⟩
+        (ucs4 >= 0x2329 && ucs4 <= 0x232A) || // ⟨ ⟩⟩
         (ucs4 >= 0x2E80 && ucs4 <= 0x303E) ||
         (ucs4 >= 0x3040 && ucs4 <= 0x3247) ||
         (ucs4 >= 0x3250 && ucs4 <= 0x4DBF) ||

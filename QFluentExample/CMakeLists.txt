@@ -24,12 +24,7 @@ foreach(file ${SOURCES})
         list(APPEND HEADER_SOURCES ${file})
     endif()
 endforeach()
-add_executable(QFluentExample
-    WIN32 MACOSX_BUNDLE
-    ${CPP_SOURCES}
-    ${HEADER_SOURCES}
-    version.rc
-)
+
 file(GLOB_RECURSE AUTO_RESOURCE_FILES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     res/*.png res/*.jpg res/*.jpeg res/*.gif res/*.svg res/*.ico res/*.ttf res/*.qss
@@ -43,8 +38,13 @@ if(${QT_VERSION_MAJOR} EQUAL 6)
     )
 else()
     # 对于Qt5，需要生成RCC源文件
-    qt5_add_resources(RCC_SOURCES "QFluentExample" res/res.qrc)
-    target_sources(QFluentExample PRIVATE ${RCC_SOURCES})
+    add_executable(QFluentExample
+        WIN32 MACOSX_BUNDLE
+        ${CPP_SOURCES}
+        ${HEADER_SOURCES}
+        version.rc
+        res/res.qrc
+    )
 endif()
 
 target_link_libraries(QFluentExample PRIVATE QFluent)

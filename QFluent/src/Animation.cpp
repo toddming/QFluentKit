@@ -9,27 +9,27 @@ QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject
 QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> FluentAnimation::animations;
 
 namespace {
-    struct RegisterProperObjects {
-        RegisterProperObjects() {
-            FluentAnimationProperObject::registerObject(FluentAnimationProperty::POSITION, [](QObject* parent) { return new PositionObject(parent); });
-            FluentAnimationProperObject::registerObject(FluentAnimationProperty::SCALE, [](QObject* parent) { return new ScaleObject(parent); });
-            FluentAnimationProperObject::registerObject(FluentAnimationProperty::ANGLE, [](QObject* parent) { return new AngleObject(parent); });
-            FluentAnimationProperObject::registerObject(FluentAnimationProperty::OPACITY, [](QObject* parent) { return new OpacityObject(parent); });
-        }
-    };
-    static RegisterProperObjects registerProperObjects;
+struct RegisterProperObjects {
+    RegisterProperObjects() {
+        FluentAnimationProperObject::registerObject(FluentAnimationProperty::POSITION, [](QObject* parent) { return new PositionObject(parent); });
+        FluentAnimationProperObject::registerObject(FluentAnimationProperty::SCALE, [](QObject* parent) { return new ScaleObject(parent); });
+        FluentAnimationProperObject::registerObject(FluentAnimationProperty::ANGLE, [](QObject* parent) { return new AngleObject(parent); });
+        FluentAnimationProperObject::registerObject(FluentAnimationProperty::OPACITY, [](QObject* parent) { return new OpacityObject(parent); });
+    }
+};
+static RegisterProperObjects registerProperObjects;
 
-    struct RegisterAnimations {
-        RegisterAnimations() {
-            FluentAnimation::registerAnimation(FluentAnimationType::FAST_INVOKE, [](QObject* parent) { return new FastInvokeAnimation(parent); });
-            FluentAnimation::registerAnimation(FluentAnimationType::STRONG_INVOKE, [](QObject* parent) { return new StrongInvokeAnimation(parent); });
-            FluentAnimation::registerAnimation(FluentAnimationType::FAST_DISMISS, [](QObject* parent) { return new FastDismissAnimation(parent); });
-            FluentAnimation::registerAnimation(FluentAnimationType::SOFT_DISMISS, [](QObject* parent) { return new SoftDismissAnimation(parent); });
-            FluentAnimation::registerAnimation(FluentAnimationType::POINT_TO_POINT, [](QObject* parent) { return new PointToPointAnimation(parent); });
-            FluentAnimation::registerAnimation(FluentAnimationType::FADE_IN_OUT, [](QObject* parent) { return new FadeInOutAnimation(parent); });
-        }
-    };
-    static RegisterAnimations registerAnimations;
+struct RegisterAnimations {
+    RegisterAnimations() {
+        FluentAnimation::registerAnimation(FluentAnimationType::FAST_INVOKE, [](QObject* parent) { return new FastInvokeAnimation(parent); });
+        FluentAnimation::registerAnimation(FluentAnimationType::STRONG_INVOKE, [](QObject* parent) { return new StrongInvokeAnimation(parent); });
+        FluentAnimation::registerAnimation(FluentAnimationType::FAST_DISMISS, [](QObject* parent) { return new FastDismissAnimation(parent); });
+        FluentAnimation::registerAnimation(FluentAnimationType::SOFT_DISMISS, [](QObject* parent) { return new SoftDismissAnimation(parent); });
+        FluentAnimation::registerAnimation(FluentAnimationType::POINT_TO_POINT, [](QObject* parent) { return new PointToPointAnimation(parent); });
+        FluentAnimation::registerAnimation(FluentAnimationType::FADE_IN_OUT, [](QObject* parent) { return new FadeInOutAnimation(parent); });
+    }
+};
+static RegisterAnimations registerAnimations;
 }
 
 AnimationBase::AnimationBase(QWidget *parent) : QObject(parent) {
@@ -38,7 +38,7 @@ AnimationBase::AnimationBase(QWidget *parent) : QObject(parent) {
     }
 }
 
-void AnimationBase::_onHover(QEnterEvent *e) {
+void AnimationBase::_onHover(QEvent *e) {
     Q_UNUSED(e);
 }
 
@@ -61,7 +61,11 @@ bool AnimationBase::eventFilter(QObject *obj, QEvent *e) {
         } else if (e->type() == QEvent::MouseButtonRelease) {
             _onRelease(static_cast<QMouseEvent*>(e));
         } else if (e->type() == QEvent::Enter) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             _onHover(static_cast<QEnterEvent*>(e));
+#else
+            _onHover(e);
+#endif
         } else if (e->type() == QEvent::Leave) {
             _onLeave(e);
         }
@@ -172,11 +176,19 @@ void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
     QWidget::mouseReleaseEvent(e);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void BackgroundAnimationWidget::enterEvent(QEnterEvent *e) {
     m_isHover = true;
     _updateBackgroundColor();
     QWidget::enterEvent(e);
 }
+#else
+void BackgroundAnimationWidget::enterEvent(QEvent *e) {
+    m_isHover = true;
+    _updateBackgroundColor();
+    QWidget::event(e);
+}
+#endif
 
 void BackgroundAnimationWidget::leaveEvent(QEvent *e) {
     m_isHover = false;
@@ -310,7 +322,7 @@ void FluentAnimationProperObject::registerObject(FluentAnimationProperty name, s
 
 FluentAnimationProperObject *FluentAnimationProperObject::create(FluentAnimationProperty propertyType, QObject *parent) {
     if (!objects.contains(propertyType)) {
-        qWarning() << "FluentAnimationProperObject: " << static_cast<int>(propertyType) << " has not been registered";
+        // qWarning() << "FluentAnimationProperObject: " << static_cast<int>(propertyType) << " has not been registered";
         return nullptr;
     }
     return objects[propertyType](parent);
@@ -419,7 +431,7 @@ void FluentAnimation::registerAnimation(FluentAnimationType name, std::function<
 FluentAnimation *FluentAnimation::create(FluentAnimationType aniType, FluentAnimationProperty propertyType,
                                          FluentAnimationSpeed speed, const QVariant &value, QObject *parent) {
     if (!animations.contains(aniType)) {
-        qWarning() << "FluentAnimation: " << static_cast<int>(aniType) << " has not been registered.";
+        // qWarning() << "FluentAnimation: " << static_cast<int>(aniType) << " has not been registered.";
         return nullptr;
     }
     FluentAnimationProperObject *obj = FluentAnimationProperObject::create(propertyType, parent);
@@ -430,8 +442,8 @@ FluentAnimation *FluentAnimation::create(FluentAnimationType aniType, FluentAnim
     ani->setSpeed(speed);
     ani->setTargetObject(obj);
     ani->setPropertyName(QByteArray(propertyType == FluentAnimationProperty::POSITION ? "position" :
-                                    propertyType == FluentAnimationProperty::SCALE ? "scale" :
-                                    propertyType == FluentAnimationProperty::ANGLE ? "angle" : "opacity"));
+                                                                                        propertyType == FluentAnimationProperty::SCALE ? "scale" :
+                                                                                                                                         propertyType == FluentAnimationProperty::ANGLE ? "angle" : "opacity"));
     if (value.isValid()) {
         ani->setValue(value);
     }

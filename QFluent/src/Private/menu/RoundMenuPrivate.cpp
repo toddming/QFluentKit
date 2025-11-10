@@ -74,7 +74,7 @@ QListWidgetItem* RoundMenuPrivate::createActionItem(QAction* action, QAction* be
         int index = _actions.indexOf(before);
         _actions.insert(index, action);
     } else {
-        qDebug() << "`before` is not in the action list";
+        // qWarning() << "`before` is not in the action list";
     }
     QListWidgetItem* item = new QListWidgetItem(action->icon(), action->text());
 

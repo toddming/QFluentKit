@@ -46,7 +46,7 @@ void MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation type
 MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, MenuAnimationType::MenuAnimation aniType)
 {
     if (!managers.contains(aniType)) {
-        qWarning() << "Invalid animation type:" << static_cast<int>(aniType);
+        // qWarning() << "Invalid animation type:" << static_cast<int>(aniType);
         return nullptr;
     }
     return managers[aniType](menu);

@@ -68,12 +68,21 @@ void ToolButton::mouseReleaseEvent(QMouseEvent* event)
     QToolButton::mouseReleaseEvent(event);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void ToolButton::enterEvent(QEnterEvent* event)
 {
     m_isHovered = true;
     update();
     QToolButton::enterEvent(event);
 }
+#else
+void ToolButton::enterEvent(QEvent* event)
+{
+    m_isHovered = true;
+    update();
+    QToolButton::event(event);
+}
+#endif
 
 void ToolButton::leaveEvent(QEvent* event)
 {

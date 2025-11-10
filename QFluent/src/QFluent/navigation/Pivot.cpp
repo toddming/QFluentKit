@@ -210,7 +210,7 @@ void Pivot::_adjustIndicatorPos() {
 
 PivotItem *Pivot::widget(const QString &routeKey) const {
     if (!items.contains(routeKey)) {
-        qWarning() << "Route key" << routeKey << "is not valid";
+        // qWarning() << "Route key" << routeKey << "is not valid";
         return nullptr;
     }
     return items[routeKey];

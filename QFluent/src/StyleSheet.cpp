@@ -16,6 +16,23 @@
 
 #include "Theme.h"
 
+
+
+// 添加Qt版本检测支持
+#include <QtGlobal>
+#include <type_traits>
+
+// Qt5/Qt6兼容的qHash函数
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+inline uint qHash(ThemeType::ThemeStyle key, uint seed = 0) {
+    return ::qHash(static_cast<int>(key), seed);
+}
+#else
+inline size_t qHash(ThemeType::ThemeStyle key, size_t seed = 0) {
+    return ::qHash(static_cast<int>(key), seed);
+}
+#endif
+
 // ==================== StyleSheetHelper 实现 ====================
 
 QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
@@ -70,7 +87,7 @@ QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Cannot open QSS file:" << filePath;
+        // qWarning() << "Cannot open QSS file:" << filePath;
         return QString();
     }
 

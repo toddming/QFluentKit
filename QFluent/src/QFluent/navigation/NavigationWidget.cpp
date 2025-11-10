@@ -40,10 +40,17 @@ void NavigationWidget::insertChild(int index, NavigationWidget* child)
 
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void NavigationWidget::enterEvent(QEnterEvent* e) {
     setProperty("isEnter", true);
     update();
 }
+#else
+void NavigationWidget::enterEvent(QEvent* e) {
+    setProperty("isEnter", true);
+    update();
+}
+#endif
 
 void NavigationWidget::leaveEvent(QEvent* e) {
     setProperty("isEnter", false);
@@ -268,7 +275,7 @@ void NavigationTreeItem::setExpanded(bool isExpanded) {
 
 void NavigationTreeItem::mouseReleaseEvent(QMouseEvent* e) {
     NavigationPushButton::mouseReleaseEvent(e);
-    bool clickArrow = QRectF(width() - 30, 8, 20, 20).contains(e->position());
+    bool clickArrow = QRectF(width() - 30, 8, 20, 20).contains(e->localPos());
     NavigationTreeWidget* p = qobject_cast<NavigationTreeWidget*>(parent());
     if (p) {
         emit itemClicked(true, clickArrow && !p->isLeaf());

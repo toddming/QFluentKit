@@ -10,6 +10,7 @@
 
 // PushButton
 class RoundMenu;
+class QEnterEvent;
 class TranslateYAnimation;
 class QFLUENT_EXPORT PushButton : public QPushButton
 {
@@ -29,7 +30,11 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     void enterEvent(QEnterEvent *e) override;
+#else
+    void enterEvent(QEvent *e) override;
+#endif
     void leaveEvent(QEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
     virtual void drawIcon(QPainter* painter, const QRectF& rect);
@@ -170,9 +175,9 @@ protected:
 // PrimaryDropDownPushButton
 class QFLUENT_EXPORT PrimaryDropDownPushButton : public DropDownButtonBase
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  using DropDownButtonBase::DropDownButtonBase;
+    using DropDownButtonBase::DropDownButtonBase;
 
 protected:
     void paintEvent(QPaintEvent* event) override;

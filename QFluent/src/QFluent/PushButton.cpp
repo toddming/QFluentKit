@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QStyleOptionButton>
 #include <QTimer>
+#include <QEnterEvent>
 
 #include "Theme.h"
 #include "FluentIcon.h"
@@ -28,7 +29,7 @@ PushButton::PushButton(const QString &text, QWidget* parent) :
 
 PushButton::PushButton(const QString &text, const FluentIconBase &icon, QWidget* parent) :
     QPushButton(text, parent)
-    , m_fluentIcon(icon.clone())
+  , m_fluentIcon(icon.clone())
 {
     init();
     setProperty("hasIcon", true);
@@ -72,12 +73,21 @@ void PushButton::mouseReleaseEvent(QMouseEvent *e)
     QPushButton::mouseReleaseEvent(e);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void PushButton::enterEvent(QEnterEvent *e)
 {
     m_isHovered = true;
     update();
     QPushButton::enterEvent(e);
 }
+#else
+void PushButton::enterEvent(QEvent *e)
+{
+    m_isHovered = true;
+    update();
+    QPushButton::event(e);
+}
+#endif
 
 void PushButton::leaveEvent(QEvent *e)
 {
@@ -172,22 +182,22 @@ void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 // DropDownButtonBase
 DropDownButtonBase::DropDownButtonBase(QWidget *parent) :
     PushButton(parent)
-    , m_menu(nullptr)
-    , m_arrowAni(new TranslateYAnimation(this))
+  , m_menu(nullptr)
+  , m_arrowAni(new TranslateYAnimation(this))
 {
 }
 
 DropDownButtonBase::DropDownButtonBase(const QString &text, QWidget* parent) :
     PushButton(parent)
-    , m_menu(nullptr)
-    , m_arrowAni(new TranslateYAnimation(this))
+  , m_menu(nullptr)
+  , m_arrowAni(new TranslateYAnimation(this))
 {
 }
 
 DropDownButtonBase::DropDownButtonBase(const QString &text, const FluentIconBase &icon, QWidget* parent) :
     PushButton(text, parent)
-    , m_menu(nullptr)
-    , m_arrowAni(new TranslateYAnimation(this))
+  , m_menu(nullptr)
+  , m_arrowAni(new TranslateYAnimation(this))
 {
 }
 

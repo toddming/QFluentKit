@@ -288,7 +288,7 @@ void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
     }
 
     // 获取鼠标全局位置
-    QPoint pos = e->globalPosition().toPoint();
+    QPoint pos = e->globalPos();  // 直接使用 globalPos() 函数
 
     auto view = d->_parentMenu->view();
     // 获取当前菜单项的矩形区域

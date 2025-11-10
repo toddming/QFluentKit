@@ -35,7 +35,8 @@ OptionsSettingCard::OptionsSettingCard(const QIcon& icon,
 
     adjustViewSize();
 
-    connect(buttonGroup, &QButtonGroup::buttonClicked, this, &OptionsSettingCard::onButtonClicked);
+    connect(buttonGroup, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this, &OptionsSettingCard::onButtonClicked);
 }
 
 void OptionsSettingCard::onButtonClicked(QAbstractButton *button) {

@@ -92,7 +92,7 @@ QWidget* StatusInfoInterface::createProgressWidget(QProgressBar *widget)
     hBoxLayout->addWidget(spinBox);
     setContentsMargins(0, 0, 0, 0);
 
-    connect(spinBox, &SpinBox::valueChanged, this, [this, widget](int value){
+    connect(spinBox, QOverload<int>::of(&SpinBox::valueChanged), this, [this, widget](int value){
         widget->setValue(value);
     });
 
