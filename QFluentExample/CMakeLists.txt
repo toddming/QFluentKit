@@ -32,6 +32,12 @@ file(GLOB_RECURSE AUTO_RESOURCE_FILES
 
 # 资源处理：兼容Qt5和Qt6
 if(${QT_VERSION_MAJOR} EQUAL 6)
+    add_executable(QFluentExample
+        WIN32 MACOSX_BUNDLE
+        ${CPP_SOURCES}
+        ${HEADER_SOURCES}
+        version.rc
+    )
     qt_add_resources(QFluentExample "QFluentExample"
         PREFIX "/"
         FILES ${AUTO_RESOURCE_FILES}

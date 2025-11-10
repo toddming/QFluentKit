@@ -50,7 +50,7 @@ void RadioButton::enterEvent(QEvent *event)
 {
     isHover_ = true;
     update();
-    QRadioButton::event(event);
+    QRadioButton::enterEvent(event);
 }
 #endif
 

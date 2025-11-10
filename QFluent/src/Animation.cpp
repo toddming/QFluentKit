@@ -38,9 +38,15 @@ AnimationBase::AnimationBase(QWidget *parent) : QObject(parent) {
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void AnimationBase::_onHover(QEnterEvent *e) {
+    Q_UNUSED(e);
+}
+#else
 void AnimationBase::_onHover(QEvent *e) {
     Q_UNUSED(e);
 }
+#endif
 
 void AnimationBase::_onLeave(QEvent *e) {
     Q_UNUSED(e);
@@ -186,7 +192,7 @@ void BackgroundAnimationWidget::enterEvent(QEnterEvent *e) {
 void BackgroundAnimationWidget::enterEvent(QEvent *e) {
     m_isHover = true;
     _updateBackgroundColor();
-    QWidget::event(e);
+    QWidget::enterEvent(e);
 }
 #endif
 

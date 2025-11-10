@@ -31,7 +31,7 @@ void SubMenuItemWidget::enterEvent(QEnterEvent* event)
 #else
 void SubMenuItemWidget::enterEvent(QEvent* event)
 {
-    QWidget::event(event);
+    QWidget::enterEvent(event);
     emit showMenuSig(item);
 }
 #endif

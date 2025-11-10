@@ -12,7 +12,13 @@ QColor ThemePrivate::calculateThemeColor(ThemeType::ThemeColor type) const {
 
     QColor color = _themeColor;
     qreal h, s, v, a;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    float h_f, s_f, v_f, a_f;
+    color.getHsvF(&h_f, &s_f, &v_f, &a_f);
+    h = h_f; s = s_f; v = v_f; a = a_f;
+#else
     color.getHsvF(&h, &s, &v, &a);
+#endif
 
     if (_currentTheme == ThemeType::ThemeMode::DARK) {
         s *= 0.84f;

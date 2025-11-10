@@ -85,7 +85,7 @@ void PushButton::enterEvent(QEvent *e)
 {
     m_isHovered = true;
     update();
-    QPushButton::event(e);
+    QPushButton::enterEvent(e);
 }
 #endif
 

@@ -58,7 +58,7 @@ void CheckBox::enterEvent(QEvent *event) {
 
     d->_isHover = true;
     update();
-    QCheckBox::event(event);
+    QCheckBox::enterEvent(event);
 }
 #endif
 

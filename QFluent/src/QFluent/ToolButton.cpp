@@ -80,7 +80,7 @@ void ToolButton::enterEvent(QEvent* event)
 {
     m_isHovered = true;
     update();
-    QToolButton::event(event);
+    QToolButton::enterEvent(event);
 }
 #endif
 
