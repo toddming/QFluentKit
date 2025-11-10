@@ -1,6 +1,7 @@
 ﻿#ifndef INFO_BAR_H
 #define INFO_BAR_H
 
+#include <QMap>
 #include <QFrame>
 
 #include "Define.h"

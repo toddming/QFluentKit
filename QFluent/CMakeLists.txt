@@ -1,9 +1,13 @@
-﻿cmake_minimum_required(VERSION 3.19)
+﻿cmake_minimum_required(VERSION 3.5)
 project(QFluent LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Svg Xml)
+# 支持Qt5和Qt6
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Svg Xml)
 
-qt_standard_project_setup()
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 # 递归查找 src 目录下所有 .cpp 和 .h 文件
 file(GLOB_RECURSE SOURCES
@@ -12,7 +16,6 @@ file(GLOB_RECURSE SOURCES
     src/*.cpp
     src/*.h
 )
-
 set(CPP_SOURCES "")
 set(HEADER_SOURCES "")
 foreach(file ${SOURCES})
@@ -22,58 +25,41 @@ foreach(file ${SOURCES})
         list(APPEND HEADER_SOURCES ${file})
     endif()
 endforeach()
-
-
 add_library(QFluent SHARED ${CPP_SOURCES})
 target_sources(QFluent PRIVATE ${HEADER_SOURCES})
-
-
 target_include_directories(QFluent PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
-
 target_compile_definitions(QFluent PRIVATE QFLUENT_LIBRARY)
-
 file(GLOB_RECURSE AUTO_RESOURCE_FILES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     res/*.png res/*.jpg res/*.jpeg res/*.gif res/*.svg res/*.ico res/*.ttf res/*.qss
 )
 
-qt_add_resources(
-    ${PROJECT_NAME}
-    "QFluent"
-    PREFIX "/"
-    FILES ${AUTO_RESOURCE_FILES}
-)
-
-# 把生成的资源源文件加入库
-target_sources(QFluent PRIVATE ${AUTO_RESOURCE_FILES})
-
+# 资源处理：兼容Qt5和Qt6
+if(${QT_VERSION_MAJOR} EQUAL 6)
+    qt_add_resources(QFluent "QFluent"
+        PREFIX "/"
+        FILES ${AUTO_RESOURCE_FILES}
+    )
+else()
+    # 对于Qt5，需要生成RCC源文件
+    qt5_add_resources(RCC_SOURCES res/res.qrc)
+    target_sources(QFluent PRIVATE ${RCC_SOURCES})
+endif()
 
 target_link_libraries(QFluent
     PRIVATE
-        Qt::Core
-        Qt::Widgets
-        Qt::Svg
-        Qt::Xml
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Svg
+        Qt${QT_VERSION_MAJOR}::Xml
 )
-
 add_subdirectory(libs/qwindowkit)
-
 target_link_libraries(QFluent PRIVATE QWindowKit::Widgets)
-
-
 include(GNUInstallDirs)
-
 install(TARGETS QFluent
-    BUNDLE  DESTINATION .
+    BUNDLE DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
-
-qt_generate_deploy_app_script(
-    TARGET QFluent
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})

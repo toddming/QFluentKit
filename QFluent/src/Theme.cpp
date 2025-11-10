@@ -14,6 +14,7 @@ Theme::Theme(QObject* parent) : QObject(parent), d_ptr(new ThemePrivate())
     Q_D(Theme);
     d->q_ptr = this;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
     qWarning() << "当前主题:" << (currentScheme == Qt::ColorScheme::Dark ? "深色" : "浅色");
     d->_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
@@ -26,7 +27,7 @@ Theme::Theme(QObject* parent) : QObject(parent), d_ptr(new ThemePrivate())
             d->_sysIsDarkMode = false;
         }
     });
-
+#endif
 }
 
 Theme::~Theme()

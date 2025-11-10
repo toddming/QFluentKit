@@ -1,6 +1,7 @@
 ﻿#ifndef PIVOT_H
 #define PIVOT_H
 
+#include <QMap>
 #include <QWidget>
 #include <QPushButton>
 

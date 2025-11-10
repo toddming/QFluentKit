@@ -55,7 +55,7 @@ void RoundMenuPrivate::handleItemClicked(QListWidgetItem* item) {
                 QRect itemRect = _view->visualItemRect(item);
                 QPointF localPos = itemRect.center();
                 QPointF globalPos = _view->mapToGlobal(localPos.toPoint());
-                QHoverEvent hoverLeave(QEvent::HoverLeave, localPos, globalPos, localPos);
+                QHoverEvent hoverLeave(QEvent::HoverLeave, localPos, globalPos);
                 QApplication::sendEvent(_view->viewport(), &hoverLeave);
                 _view->update();
             }
