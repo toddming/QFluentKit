@@ -124,7 +124,7 @@ QVariant EditableComboBox::currentData() const
     if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
         return d->_items[d->_pCurrentIndex].userData;
     }
-    return QVariant(NULL);
+    return {};
 }
 
 void EditableComboBox::setCurrentIndex(int index)
@@ -189,7 +189,7 @@ QVariant EditableComboBox::itemData(int index) const
     if (index >= 0 && index < count()) {
         return d->_items[index].userData;
     }
-    return QVariant(NULL);
+    return {};
 }
 
 int EditableComboBox::findText(const QString &text) const

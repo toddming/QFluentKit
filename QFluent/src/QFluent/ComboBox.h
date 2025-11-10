@@ -21,13 +21,13 @@ public:
     // 添加项目
     void addItem(const QString &text,
                 const QIcon &icon = QIcon(),
-                const QVariant &userData = QVariant(NULL));
+                const QVariant &userData = {});
     void addItems(const QStringList &texts);
 
     // 插入项目
     void insertItem(int index, const QString &text,
                    const QIcon &icon = QIcon(),
-                   const QVariant &userData = QVariant(NULL));
+                   const QVariant &userData = {});
     void insertItems(int index, const QStringList &texts);
 
     // 移除项目

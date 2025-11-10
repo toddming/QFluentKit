@@ -122,7 +122,7 @@ QVariant ComboBox::currentData() const
     if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
         return d->_items[d->_pCurrentIndex].userData;
     }
-    return QVariant(NULL);
+    return {};
 }
 
 void ComboBox::setCurrentIndex(int index)
@@ -190,7 +190,7 @@ QVariant ComboBox::itemData(int index) const
     if (index >= 0 && index < count()) {
         return d->_items[index].userData;
     }
-    return QVariant(NULL);
+    return {};
 }
 
 int ComboBox::findText(const QString &text) const

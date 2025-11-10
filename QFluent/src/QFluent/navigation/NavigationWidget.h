@@ -221,7 +221,7 @@ class NavigationAvatarWidget : public NavigationWidget
 
 public:
     explicit NavigationAvatarWidget(const QString &name,
-                                    const QVariant &avatar = NULL,
+                                    const QVariant &avatar = {},
                                     QWidget *parent = nullptr);
 
     void setName(const QString &name);

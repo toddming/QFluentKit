@@ -16,7 +16,7 @@ struct ComboItem {
 
     ComboItem(const QString &text = "",
               const QIcon &icon = QIcon(),
-              const QVariant &userData = QVariant(NULL))
+              const QVariant &userData = {})
         : text(text), icon(icon), userData(userData) {}
 };
 }

@@ -204,7 +204,7 @@ void RoundMenuPrivate::setParentMenu(RoundMenu *parent, QListWidgetItem *item)
 void RoundMenuPrivate::removeItem(QListWidgetItem *item)
 {
     _view->takeItem(_view->row(item));
-    item->setData(Qt::UserRole, QVariant(NULL));
+    item->setData(Qt::UserRole, {});
     QWidget *widget = _view->itemWidget(item);
     if (widget)
         widget->deleteLater();
