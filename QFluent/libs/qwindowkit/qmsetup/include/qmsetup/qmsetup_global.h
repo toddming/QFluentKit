@@ -2,7 +2,7 @@
 #define QMSETUP_GLOBAL_H
 
 // Export define
-#ifdef _MSC_VER
+#ifdef _WIN32
 #  define QMSETUP_DECL_EXPORT __declspec(dllexport)
 #  define QMSETUP_DECL_IMPORT __declspec(dllimport)
 #else

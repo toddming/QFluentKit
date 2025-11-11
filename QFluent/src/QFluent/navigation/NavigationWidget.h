@@ -219,7 +219,7 @@ private:
 
 
 // NavigationAvatarWidget
-class NavigationAvatarWidget : public NavigationWidget
+class QFLUENT_EXPORT NavigationAvatarWidget : public NavigationWidget
 {
     Q_OBJECT
 

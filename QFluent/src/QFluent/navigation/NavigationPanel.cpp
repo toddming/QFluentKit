@@ -16,13 +16,11 @@
 #include <QMargins>
 #include <QScrollArea>
 
-#include "FluentIcon.h"
 #include "Theme.h"
-#include "NavigationWidget.h"
+#include "FluentIcon.h"
 #include "StyleSheet.h"
-#include "QFluent/ProfileCard.h"
-#include "../scrollbar/ScrollBar.h"
-#include "QFluent/menu/RoundMenu.h"
+#include "NavigationWidget.h"
+#include "QFluent/scrollbar/ScrollBar.h"
 #include "QFluent/menu/MenuActionListWidget.h"
 
 
@@ -37,21 +35,6 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
 
     m_menuButton = new NavigationToolButton(FluentIcon(FluentIconType::MENU), this);
     m_avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/app/avatar.png"), this);
-    connect(m_avatarWidget, &NavigationAvatarWidget::clicked, this, [=](){
-        auto menu = new RoundMenu("menu", this);
-        auto card = new ProfileCard(":/res/app/avatar.png", "硝子酱", "shokokawaii@outlook.com", menu);
-        menu->setItemHeight(36);
-        menu->view()->setMaxVisibleItems(0);
-        menu->addWidget(card);
-        menu->addSeparator();
-        menu->addAction(new Action(FluentIcon(FluentIconType::PEOPLE), "管理账户和设置"));
-        menu->addAction(new Action(FluentIcon(FluentIconType::SHOPPING_CART), "支付方式"));
-        menu->addAction(new Action(FluentIcon(FluentIconType::CODE), "兑换代码和礼品卡"));
-        menu->addSeparator();
-        menu->addAction(new Action(FluentIcon(FluentIconType::SETTING), "设置"));
-
-        menu->exec(m_avatarWidget->mapToGlobal(QPoint(m_avatarWidget->width()+5, -100)));
-    });
 
     m_vBoxLayout = new NavigationItemLayout(this);
     m_topLayout = new QVBoxLayout();
@@ -566,6 +549,10 @@ void NavigationPanel::paintEvent(QPaintEvent* e) {
     // m_acrylicBrush->paint();
 
     QFrame::paintEvent(e);
+}
+
+NavigationAvatarWidget* NavigationPanel::avatarWidget() const {
+    return m_avatarWidget;
 }
 
 void NavigationItemLayout::setGeometry(const QRect& rect) {

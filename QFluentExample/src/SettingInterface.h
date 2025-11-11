@@ -13,4 +13,6 @@ public:
 private:
     QWidget *m_scrollWidget;
     ExpandLayout *m_expandLayout;
+
+    void initConf();
 };

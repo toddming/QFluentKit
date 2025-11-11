@@ -8,7 +8,6 @@
 #include "FluentIcon.h"
 
 class QScrollArea;
-class ProfileCard;
 class NavigationWidget;
 class QPropertyAnimation;
 class NavigationToolButton;
@@ -50,14 +49,14 @@ public:
                    const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
-                   const std::function<void()>& onClick = nullptr, bool selectable = true,
-                   NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
-                   const QString& tooltip = QString(), const QString& parentRouteKey = QString());
+                    const std::function<void()>& onClick = nullptr, bool selectable = true,
+                    NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
+                    const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
-                     const std::function<void()>& onClick = nullptr,
-                     NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
-                     const QString& tooltip = QString(), const QString& parentRouteKey = QString());
+                      const std::function<void()>& onClick = nullptr,
+                      NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
+                      const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void addSeparator(NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
     void insertSeparator(int index, NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP);
@@ -76,8 +75,9 @@ public:
     void toggle();
     bool isCollapsed() const;
 
+    NavigationAvatarWidget *avatarWidget() const;
     // 信号
-    signals:
+signals:
     void displayModeChanged(NavigationType::NavigationDisplayMode mode);
 
 protected:
@@ -89,8 +89,8 @@ private:
     void initLayout();
     void updateAcrylicColor();
     void registerWidget(const QString& routeKey, const QString& parentRouteKey,
-                       NavigationWidget* widget, const std::function<void()>& onClick,
-                       const QString& tooltip);
+                        NavigationWidget* widget, const std::function<void()>& onClick,
+                        const QString& tooltip);
     void insertWidgetToLayout(int index, NavigationWidget* widget, NavigationType::NavigationItemPosition position);
     void onWidgetClicked();
     void onExpandAniFinished();
@@ -112,7 +112,7 @@ private:
     QWidget* m_scrollWidget;
 
     NavigationToolButton* m_menuButton;
-    NavigationAvatarWidget * m_avatarWidget;
+    NavigationAvatarWidget* m_avatarWidget;
 
     QVBoxLayout* m_vBoxLayout;
     QVBoxLayout* m_topLayout;

@@ -8,6 +8,7 @@
 
 class NavigationPanel;
 class FluentWindowPrivate;
+class NavigationAvatarWidget;
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
     Q_OBJECT
@@ -30,6 +31,7 @@ public:
                          const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     NavigationPanel *navigationInterface() const;
+
 
 protected:
     bool event(QEvent *event) override;

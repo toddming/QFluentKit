@@ -18,7 +18,7 @@ set "FILES="
 set "EXTRA_PLUGIN_PATHS="
 set "PLUGINS=" & set /a "PLUGIN_COUNT=0"
 set "QML_REL_PATHS="
-set "ARGS="
+set "ARGS=" & set /a "ARG_COUNT=0"
 
 :: Parse command line
 :parse_args
@@ -32,14 +32,14 @@ if "%1"=="--qmake" set "QMAKE_PATH=%~2" & shift & shift & goto :parse_args
 if "%1"=="--extra" set "EXTRA_PLUGIN_PATHS=!EXTRA_PLUGIN_PATHS! %~2" & shift & shift & goto :parse_args
 if "%1"=="--plugin" set /a "PLUGIN_COUNT+=1" & set "PLUGINS[!PLUGIN_COUNT!]=%~2" & shift & shift & goto :parse_args
 if "%1"=="--qml" set "QML_REL_PATHS=!QML_REL_PATHS! %~2" & shift & shift & goto :parse_args
-if "%1"=="--copy" set "ARGS=!ARGS! -c %~2 %~3" & shift & shift & shift & goto :parse_args
-if "%1"=="-f" set "ARGS=!ARGS! -f" & shift & goto :parse_args
-if "%1"=="-s" set "ARGS=!ARGS! -s" & shift & goto :parse_args
+if "%1"=="--copy" call :push_args -c %~2 %~3 & shift & shift & shift & goto :parse_args
+if "%1"=="-f" call :push_args -f & shift & goto :parse_args
+if "%1"=="-s" call :push_args -s & shift & goto :parse_args
 if "%1"=="-V" set "VERBOSE=-V" & shift & goto :parse_args
 if "%1"=="-h" call :usage & exit /b
 
-if "%1"=="-@" set "ARGS=!ARGS! -@ %~2" & shift & shift & goto :parse_args
-if "%1"=="-L" set "ARGS=!ARGS! -L %~2" & shift & shift & goto :parse_args
+if "%1"=="--linkdirs-file" call :push_args --linkdirs-file %~2 & shift & shift & goto :parse_args
+if "%1"=="-L" call :push_args -L %~2 & shift & shift & goto :parse_args
 
 shift
 goto :parse_args
@@ -70,7 +70,7 @@ if defined QMAKE_PATH (
 
     :: Add Qt bin directory
     for /f "tokens=*" %%a in ('!QMAKE_PATH! -query QT_INSTALL_BINS') do set "QT_BIN_PATH=%%a"
-    set "ARGS=!ARGS! -L !QT_BIN_PATH!"
+    call :push_args -L !QT_BIN_PATH!
 )
 
 :: Add extra plugin searching paths
@@ -126,14 +126,37 @@ for %%q in (%QML_REL_PATHS%) do (
     call :search_qml_dir "%%q"
 )
 
-:: Build and execute the deploy command
-set "DEPLOY_CMD=!CORECMD_PATH! deploy !FILES! !ARGS! -o !LIB_DIR! !VERBOSE!"
-if "!VERBOSE!"=="-V" echo Executing: !DEPLOY_CMD!
+:: Build and execute the deploy
+set "ARGS_FILE=windeps_args.txt"
+if exist "%ARGS_FILE%" del %ARGS_FILE%
+for %%a in (!FILES!) do (
+    echo %%a >> %ARGS_FILE%
+)
+for /L %%i in (1,1,%ARG_COUNT%) do (
+    echo !ARGS[%%i]! >> %ARGS_FILE%
+)
+echo -o >> %ARGS_FILE%
+echo !LIB_DIR! >> %ARGS_FILE%
+echo !VERBOSE! >> %ARGS_FILE%
+set "DEPLOY_CMD=!CORECMD_PATH! deploy @!ARGS_FILE!"
 call !DEPLOY_CMD!
 
 :: Check the deployment result
 if %errorlevel% neq 0 exit /b
+del %ARGS_FILE%
 exit /b
+
+
+
+
+
+:: ----------------------------------------------------------------------------------
+:: Add args
+:push_args
+for %%x in (%*) do set /a "ARG_COUNT+=1" & set "ARGS[!ARG_COUNT!]=%%x"
+exit /b
+:: ----------------------------------------------------------------------------------
+
 
 
 
@@ -169,7 +192,7 @@ for %%i in (!FOUND_PLUGINS!) do (
     )
 )
 set "FOUND_PLUGINS=!FOUND_PLUGINS! !plugin_name!"
-set "ARGS=!ARGS! -c !plugin! !DESTINATION_DIR!"
+call :push_args -c !plugin! !DESTINATION_DIR!
 exit /b
 :: ----------------------------------------------------------------------------------
 
@@ -241,9 +264,9 @@ set "target_dir=%QML_DIR%\%rel_dir_path%"
 
 :: Determine whether it is an executable binary file and handle it accordingly
 if "%file:~-4%"==".dll" (
-    set "ARGS=!ARGS! -c !file! !target_dir!"
+    call :push_args -c !file! !target_dir!
 ) else if "%file:~-4%"==".exe" (
-    set "ARGS=!ARGS! -c !file! !target_dir!"
+    call :push_args -c !file! !target_dir!
 ) else (
     if not exist "%target%" (
         mkdir "%target_dir%" >nul 2>&1
@@ -265,7 +288,7 @@ echo Usage: %~n0 -i ^<dir^> -m ^<path^>
 echo                --plugindir ^<plugin_dir^> --libdir ^<lib_dir^> --qmldir ^<qml_dir^>
 echo               [--qmake ^<qmake_path^>] [--extra ^<extra_path^>]...
 echo               [--qml ^<qml_module^>]... [--plugin ^<plugin^>]... [--copy ^<src^> ^<dest^>]...
-echo               [-@ ^<file^>]... [-L ^<path^>]...
+echo               [--linkdirs-file ^<file^>]... [-L ^<path^>]...
 echo               [-f] [-s] [-V] [-h]
 exit /b
 :: ----------------------------------------------------------------------------------

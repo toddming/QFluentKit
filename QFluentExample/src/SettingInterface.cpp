@@ -79,7 +79,9 @@ SettingInterface::SettingInterface(QWidget *parent)
             (int index, const QString& text)
     {
         Q_UNUSED(text);
-        auto main = qobject_cast<MainWindow*>(this->parent()->parent()->parent()->parent());
+        auto main = qobject_cast<MainWindow*>(this->window());
         main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
     });
+
+    effectCard->setValue("mica");
 }

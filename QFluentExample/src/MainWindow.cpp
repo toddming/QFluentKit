@@ -1,6 +1,7 @@
 ﻿#include "MainWindow.h"
 
 #include "QFluent/navigation/NavigationPanel.h"
+#include "QFluent/navigation/NavigationWidget.h"
 
 #include "FluentIcon.h"
 #include "HomeInterface.h"
@@ -46,4 +47,8 @@ MainWindow::MainWindow()
     addSubInterface("14", FluentIcon(FluentIconType::SETTING), "设置", new SettingInterface(this), true, NavigationType::BOTTOM);
 
     navigationInterface()->setCurrentItem("1");
+
+    NavigationAvatarWidget* avatar = navigationInterface()->avatarWidget();
+    avatar->setName("Administrator");
+    avatar->setAvatar(QImage(":/res/avatar.png"));
 }

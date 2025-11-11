@@ -13,7 +13,7 @@ NavbarWidget::NavbarWidget()
                          AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
                          AppBarType::CloseButtonHint | AppBarType::ThemeChangeButtonHint);
 
-    setWindowDisplayMode(ApplicationType::Mica);
+    // setWindowDisplayMode(ApplicationType::Mica);
 
     setContentsMargins(0, 0, 0, 0);
 

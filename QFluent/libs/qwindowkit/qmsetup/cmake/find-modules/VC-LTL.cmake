@@ -1,4 +1,11 @@
-﻿# https://github.com/Chuyu-Team/VC-LTL5
+# https://github.com/Chuyu-Team/VC-LTL5
+
+cmake_minimum_required(VERSION 3.13)
+
+if(NOT MSVC OR DEFINED __VC_LTL_CMAKE_INCLUDE_GUARD)
+    return()
+endif()
+set(__VC_LTL_CMAKE_INCLUDE_GUARD 1)
 
 #
 #  VC-LTL自动化加载配置，建议你将此文件单独复制到你的工程再使用，该文件能自动识别当前环境是否存在VC-LTL，并且自动应用。
@@ -19,23 +26,24 @@
 #  如果你对默认搜索顺序不满，你可以修改此文件。你也可以直接指定${VC_LTL_Root}宏更加任性的去加载VC-LTL。
 #
 
-if(NOT MSVC OR DEFINED __VC_LTL_CMAKE_INCLUDE_GUARD)
-    return()
-endif()
-set(__VC_LTL_CMAKE_INCLUDE_GUARD 1)
-
 #####################################################################VC-LTL设置#####################################################################
 
-#控制TargetPlatform版本，目前可用版本为5.1.2600.0     6.0.6000.0（默认）    6.2.9200.0     10.0.10240.0    10.0.19041.0
+#控制最小兼容系统版本，目前可用版本为5.1.2600.0     6.0.6000.0（默认）    6.2.9200.0     10.0.10240.0    10.0.19041.0
+#注意：VC-LTL依赖YY-Thunks，否则可能无法兼容早期系统。如果需要支持Windows XP，该值必须为5.1.2600.0。
 if(NOT DEFINED WindowsTargetPlatformMinVersion)
     set(WindowsTargetPlatformMinVersion "10.0.19041.0" CACHE STRING "" FORCE)
 endif()
 
-#启用干净的导入表，消除 ucrt apiset(如：api-ms-win-crt-time-l1-1-0.dll)，满足强迫症患者。
-if(NOT DEFINED CleanImport)
-    set(CleanImport "true" CACHE STRING "" FORCE)
-endif()
+#VC-LTL使用的CRT模式，SupportLTL可能值为：
+#  * false：禁用VC_LTL
+#  * true：默认值，让VC-LTL自动适应。当最小兼容版本>=10.0时使用ucrt模式，其他系统使用msvcrt模式。
+#  * msvcrt：使用msvcrt.dll作为CRT。注意：msvcrt模式可能不完全支持所有ucrt的新功能。比如setloacl不支持UTF8。
+#  * ucrt：使用ucrtbase.dll作为CRT。注意：早期系统可能需要下载VC-LTL.Redist.Dlls.zip，感谢msvcr14x项目提供兼容XP系统的ucrtbase.dll。
+#如果需要兼容XP时也使用ucrt，请指定SupportLTL=ucrt。
+#set(SupportLTL "ucrt")
 
+#(PR#70 引入)，默认关，开启后将使用cmake `INTERFACE`能力，然后单独`target_link_directories(工程名称 VC_LTL)` 即可引用
+#option(VC_LTL_EnableCMakeInterface "VC_LTL_EnableCMakeInterface" on)
 ####################################################################################################################################################
 
 if(NOT VC_LTL_Root)

@@ -79,8 +79,8 @@ git clone --recursive git@github.com:stdware/qmsetup.git
 ```sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
                -DCMAKE_INSTALL_PREFIX=/path/to
-cmake -B build --target all
-cmake -B build --target install
+cmake --build build --target all
+cmake --build build --target install
 ```
 
 #### Import

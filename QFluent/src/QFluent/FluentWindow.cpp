@@ -172,3 +172,4 @@ void FluentWindow::addSubInterface(const QString& routeKey, const FluentIconBase
     d->_navPanel->addItem(routeKey, icon, text, [d, widget](){d->_stacked->setCurrentWidget(widget, false);}, selectable, position, tooltip, parentRouteKey);
     d->_stacked->addWidget(widget);
 }
+

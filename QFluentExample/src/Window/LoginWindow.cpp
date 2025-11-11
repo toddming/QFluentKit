@@ -15,7 +15,7 @@ LoginWidget::LoginWidget(bool autoLogin)
     AppBarType::ButtonFlags buttonFlags = AppBarType::MinimizeButtonHint |
             AppBarType::CloseButtonHint;
     setWindowButtonFlags(buttonFlags);
-    setWindowDisplayMode(ApplicationType::Mica);
+    // setWindowDisplayMode(ApplicationType::Mica);
 
     setContentsMargins(0, 0, 0, 0);
     setFixedSize(380, 300);

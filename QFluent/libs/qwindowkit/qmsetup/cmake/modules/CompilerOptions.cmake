@@ -6,32 +6,27 @@ include_guard(DIRECTORY)
     qm_compiler_no_warnings()
 ]] #
 macro(qm_compiler_no_warnings)
-    if(NOT "x${CMAKE_C_FLAGS}" STREQUAL "x")
-        if(MSVC)
-            string(REGEX REPLACE "[/|-]W[0|1|2|3|4]" " " CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
-        else()
-            string(REGEX REPLACE "-W[all|extra]" " " CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
-            string(REGEX REPLACE "-[W]?pedantic" " " CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+    foreach(__lang C CXX)
+        if(NOT "x${CMAKE_${__lang}_FLAGS}" STREQUAL "x")
+            if(MSVC)
+                string(REGEX REPLACE " [/-]W[01234] " " " CMAKE_${__lang}_FLAGS ${CMAKE_${__lang}_FLAGS})
+            else()
+                string(REGEX REPLACE " -W(all)?(extra)? " " " CMAKE_${__lang}_FLAGS ${CMAKE_${__lang}_FLAGS})
+                string(REGEX REPLACE " -[W]?pedantic " " " CMAKE_${__lang}_FLAGS ${CMAKE_${__lang}_FLAGS})
+            endif()
         endif()
-    endif()
-    if(NOT "x${CMAKE_CXX_FLAGS}" STREQUAL "x")
-        if(MSVC)
-            string(REGEX REPLACE "[/|-]W[0|1|2|3|4]" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-        else()
-            string(REGEX REPLACE "-W[all|extra]" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-            string(REGEX REPLACE "-[W]?pedantic" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-        endif()
-    endif()
-    string(APPEND CMAKE_C_FLAGS " -w ")
-    string(APPEND CMAKE_CXX_FLAGS " -w ")
+        string(APPEND CMAKE_${__lang}_FLAGS " -w ")
+    endforeach()
     if(MSVC)
         add_compile_definitions(-D_CRT_NON_CONFORMING_SWPRINTFS)
         add_compile_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
         add_compile_definitions(-D_CRT_NONSTDC_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE)
         add_compile_definitions(-D_SCL_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_DEPRECATE)
+        add_compile_definitions(-D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS)
     else()
-        string(APPEND CMAKE_C_FLAGS " -fpermissive ")
-        string(APPEND CMAKE_CXX_FLAGS " -fpermissive ")
+        foreach(__lang C CXX)
+            string(APPEND CMAKE_${__lang}_FLAGS " -fpermissive ")
+        endforeach()
     endif()
 endmacro()
 
@@ -139,6 +134,9 @@ macro(qm_compiler_enable_secure_code)
                 add_link_options(-guard:ehcont)
             endif()
         endif()
+        if(MSVC_VERSION GREATER_EQUAL 1930) # Visual Studio 2022 version 17.0
+            add_compile_options(-Qspectre-jmp)
+        endif()
     elseif(MINGW)
         if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang")
             add_compile_options(-mguard=cf)
@@ -146,7 +144,10 @@ macro(qm_compiler_enable_secure_code)
         else()
         endif()
     else()
-        add_compile_options(-mshstk)
+        add_compile_options(-mshstk -ftrivial-auto-var-init=pattern
+            -fstack-protector-strong -fstack-clash-protection
+            -fcf-protection=full)
+        add_link_options(-Wl,-z,relro,-z,now)
         if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang")
             add_compile_options(-mretpoline -mspeculative-load-hardening)
             if(NOT APPLE)
@@ -190,23 +191,26 @@ function(qm_compiler_enable_strict_qt)
             QT_NO_CAST_FROM_BYTEARRAY
             QT_NO_URL_CAST_FROM_STRING
             QT_NO_NARROWING_CONVERSIONS_IN_CONNECT
-            QT_NO_FOREACH
             QT_NO_JAVA_STYLE_ITERATORS
-            QT_NO_AS_CONST
-            QT_NO_QEXCHANGE
+            QT_NO_FOREACH QT_NO_QFOREACH
+            QT_NO_AS_CONST QT_NO_QASCONST
+            QT_NO_EXCHANGE QT_NO_QEXCHANGE
+            QT_NO_QPAIR
+            QT_NO_INTEGRAL_STRINGS
             QT_NO_USING_NAMESPACE
             QT_NO_CONTEXTLESS_CONNECT
             QT_EXPLICIT_QFILE_CONSTRUCTION_FROM_PATH
+            QT_USE_NODISCARD_FILE_OPEN
             QT_USE_QSTRINGBUILDER
             QT_USE_FAST_OPERATOR_PLUS
             QT_DEPRECATED_WARNINGS # Have no effect since 5.13
-            QT_DEPRECATED_WARNINGS_SINCE=0x070000 # Deprecated since 6.5
-            QT_WARN_DEPRECATED_UP_TO=0x070000 # Available since 6.5
+            QT_DEPRECATED_WARNINGS_SINCE=0x0A0000 # Deprecated since 6.5
+            QT_WARN_DEPRECATED_UP_TO=0x0A0000 # Available since 6.5
         )
         if(arg_NO_DEPRECATED_API)
             target_compile_definitions(${_target} PRIVATE
-                QT_DISABLE_DEPRECATED_BEFORE=0x070000 # Deprecated since 6.5
-                QT_DISABLE_DEPRECATED_UP_TO=0x070000 # Available since 6.5
+                QT_DISABLE_DEPRECATED_BEFORE=0x0A0000 # Deprecated since 6.5
+                QT_DISABLE_DEPRECATED_UP_TO=0x0A0000 # Available since 6.5
             )
         endif()
         # On Windows enabling this flag requires us re-compile Qt with this flag enabled,

@@ -56,7 +56,8 @@ void OptionsSettingCard::onButtonClicked(QAbstractButton *button) {
 void OptionsSettingCard::setValue(const QVariant& value) {
 
     for (auto btn : buttonGroup->buttons()) {
-        bool isChecked = btn->property(configName.toUtf8().constData()).toString() == value.toString();
+        bool isChecked = btn->text() == value.toString();
+
         btn->setChecked(isChecked);
 
         if (isChecked) {
