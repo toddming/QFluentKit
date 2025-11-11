@@ -4,11 +4,13 @@
 #include "StyleSheet.h"
 
 #include "FluentIcon.h"
+#include "QFluent/scrollbar/ScrollBar.h"
 #include "QFluent/settings/SettingCard.h"
 #include "QFluent/settings/SettingCardGroup.h"
 #include "QFluent/settings/OptionsSettingCard.h"
 
 #include "MainWindow.h"
+#include"ConfigManager.h"
 
 SettingInterface::SettingInterface(QWidget *parent)
     : ScrollArea(parent)
@@ -81,7 +83,15 @@ SettingInterface::SettingInterface(QWidget *parent)
         Q_UNUSED(text);
         auto main = qobject_cast<MainWindow*>(this->window());
         main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
+        ConfigManager::instance().setValue("Window/effect", text);
     });
 
-    effectCard->setValue("mica");
+    const QString effect = ConfigManager::instance().getValue("Window/effect", "none").toString();
+    effectCard->setValue(effect);
+    QStringList modes; modes << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt";
+    int var = modes.indexOf(effect);
+    if (var > 0) {
+        auto main = qobject_cast<MainWindow*>(this->window());
+        main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(var));
+    }
 }

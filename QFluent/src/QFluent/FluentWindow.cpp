@@ -72,7 +72,6 @@ FluentWindow::FluentWindow(QMainWindow *parent)
 
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
     d->setDarkTheme(Theme::instance()->isDarkTheme());
-
 }
 
 FluentWindow::~FluentWindow()
@@ -143,6 +142,7 @@ void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     if (data == QStringLiteral("none")) {
         setProperty("custom-style", false);
     } else if (!data.isEmpty()) {
+        agent->setWindowAttribute("dark-mode", Theme::instance()->isDarkTheme());
         agent->setWindowAttribute(data, true);
         setProperty("custom-style", true);
     }
