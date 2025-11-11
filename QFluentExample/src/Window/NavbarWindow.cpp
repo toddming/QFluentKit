@@ -11,9 +11,7 @@ NavbarWidget::NavbarWidget()
 {
     setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
                          AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
-                         AppBarType::CloseButtonHint | AppBarType::ThemeChangeButtonHint);
-
-    // setWindowDisplayMode(ApplicationType::Mica);
+                         AppBarType::CloseButtonHint);
 
     setContentsMargins(0, 0, 0, 0);
 

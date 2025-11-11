@@ -114,6 +114,9 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     if (agent == nullptr) {
         return;
     }
+    bool dark = Theme::instance()->isDarkTheme();
+    d->_windowBar->themeButton()->setChecked(!dark);
+
     QStringList names = {"none", "dwm-blur", "acrylic-material", "mica", "mica-alt"};
     foreach (QString name, names) {
         agent->setWindowAttribute(name, false);
@@ -123,6 +126,7 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     if (data == QStringLiteral("none")) {
         setProperty("custom-style", false);
     } else if (!data.isEmpty()) {
+        agent->setWindowAttribute("dark-mode", dark);
         agent->setWindowAttribute(data, true);
         setProperty("custom-style", true);
     }

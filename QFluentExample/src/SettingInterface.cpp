@@ -63,30 +63,45 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                                 "Language",
                                                                 "Set your preferred language for UI",
                                                                 aboutGroup);
+
     OptionsSettingCard *effectCard = new OptionsSettingCard(FluentIcon(FluentIconType::ZOOM).qicon(),
-                                                          "窗口效果",
-                                                          "改变窗口的显示效果",
-                                                          QVector<QString>() << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt",
-                                                          aboutGroup);
+                                                            "窗口效果",
+                                                            "改变窗口的显示效果",
+                                                            QVector<QString>() << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt",
+                                                            aboutGroup);
+
+    OptionsSettingCard *themeCard = new OptionsSettingCard(FluentIcon(FluentIconType::BRUSH).qicon(),
+                                                           "用用主题",
+                                                           "调整你的应用的外观",
+                                                           QVector<QString>() << "深色" << "浅色",
+                                                           aboutGroup);
 
     aboutGroup->addSettingCard(feedbackCard);
     aboutGroup->addSettingCard(updateOnStartUpCard);
     aboutGroup->addSettingCard(helpCard);
     aboutGroup->addSettingCard(languageCard);
+    aboutGroup->addSettingCard(themeCard);
     aboutGroup->addSettingCard(effectCard);
 
     m_expandLayout->addWidget(aboutGroup);
 
+    connect(themeCard, &OptionsSettingCard::optionChanged, this, [=]
+            (int index, const QString& text)
+            {
+
+            });
+
     connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text)
-    {
-        Q_UNUSED(text);
-        auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
-        ConfigManager::instance().setValue("Window/effect", text);
-    });
+            {
+                Q_UNUSED(text);
+                auto main = qobject_cast<MainWindow*>(this->window());
+                main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
+                ConfigManager::instance().setValue("Window/effect", text);
+            });
 
-    const QString effect = ConfigManager::instance().getValue("Window/effect", "none").toString();
+    const QString value  = ConfigManager::instance().isWin11() ? "mica" : "none";
+    const QString effect = ConfigManager::instance().getValue("Window/effect", value).toString();
     effectCard->setValue(effect);
     QStringList modes; modes << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt";
     int var = modes.indexOf(effect);

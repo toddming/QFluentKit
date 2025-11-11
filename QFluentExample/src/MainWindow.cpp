@@ -27,7 +27,7 @@ MainWindow::MainWindow()
 
     setWindowButtonFlags(getWindowButtonFlags() | AppBarType::RouteBackButtonHint);
 
-    Theme::instance()->setTheme(ThemeType::DARK);
+    Theme::instance()->setTheme(ThemeType::LIGHT);
 
     QString iconPath = QString(":/res/icons/%1_{color}.svg");
     addSubInterface("1", FluentIcon(FluentIconType::HOME), "主页", new HomeInterface(this), true, NavigationType::TOP);
