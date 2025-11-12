@@ -51,7 +51,7 @@ private:
     NavigationWidget* m_treeParent;
     QColor lightTextColor;
     QColor darkTextColor;
-    int m_expandWidth{160};
+    int m_expandWidth;
 
 };
 

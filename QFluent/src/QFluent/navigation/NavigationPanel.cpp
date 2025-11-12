@@ -44,7 +44,7 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     // m_history = qrouter;
 
     m_expandAni = new QPropertyAnimation(this, "minimumWidth", this);
-    m_expandWidth = 160;
+    m_expandWidth = 260;
 
     if (isMinimalEnabled) {
         m_displayMode = NavigationType::NavigationDisplayMode::MINIMAL;
@@ -157,6 +157,7 @@ void NavigationPanel::insertItem(int index, const QString& routeKey, const Fluen
 
     NavigationTreeWidget* w = new NavigationTreeWidget(text, icon, selectable, this);
     w->setExpandWidth(m_expandWidth);
+    // qDebug() << text << m_expandWidth;
     insertWidget(index, routeKey, w, onClick, position, tooltip, parentRouteKey);
 }
 

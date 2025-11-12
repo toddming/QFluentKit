@@ -26,6 +26,7 @@ NavigationWidget::NavigationWidget(bool isSelectable, QWidget* parent)
     , m_treeParent(nullptr)
 {
     setFixedSize(40, 36);
+    m_expandWidth = 160;
 
     setProperty("nodeDepth", 0);
     setProperty("isCompacted", true);
@@ -139,6 +140,7 @@ void NavigationWidget::setExpandWidth(int width) {
     }
 
     m_expandWidth = width;
+    setFixedSize(m_expandWidth, 36);
 }
 
 // NavigationPushButton 实现
