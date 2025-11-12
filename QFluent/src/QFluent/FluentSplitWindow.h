@@ -1,5 +1,4 @@
-﻿#ifndef FLUENTWINDOW_H
-#define FLUENTWINDOW_H
+﻿#pragma once
 
 #include <QMainWindow>
 
@@ -7,16 +6,16 @@
 #include "FluentIcon.h"
 
 class NavigationPanel;
-class FluentWindowPrivate;
+class FluentSplitWindowPrivate;
 class NavigationAvatarWidget;
-class QFLUENT_EXPORT FluentWindow : public QMainWindow
+class QFLUENT_EXPORT FluentSplitWindow : public QMainWindow
 {
     Q_OBJECT
-    Q_Q_CREATE(FluentWindow)
+    Q_Q_CREATE(FluentSplitWindow)
 
 public:
-    FluentWindow(QMainWindow *parent = nullptr);
-    ~FluentWindow();
+    FluentSplitWindow(QMainWindow *parent = nullptr);
+    ~FluentSplitWindow();
 
     void setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable = true);
     void setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags);
@@ -37,6 +36,5 @@ public:
 
 protected:
     bool event(QEvent *event) override;
-
+    void resizeEvent(QResizeEvent *e) override;
 };
-#endif // FLUENTWINDOW_H

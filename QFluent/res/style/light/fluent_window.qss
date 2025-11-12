@@ -11,19 +11,21 @@ StackedWidget[isTransparent=true] {
     border: none;
 }
 
-SplitFluentWindow>StackedWidget {
+StackedWidget[noRadius=true] {
     border-top-left-radius: 0px;
     border-top: none;
 }
 
 
 FluentWidget,
-FluentWindow {
+FluentWindow,
+FluentSplitWindow{
     background-color: #F0F4F9;
 }
 
 FluentWidget[custom-style=true],
-FluentWindow[custom-style=true] {
+FluentWindow[custom-style=true],
+FluentSplitWindow[custom-style=true]{
     background-color: transparent;
 }
 

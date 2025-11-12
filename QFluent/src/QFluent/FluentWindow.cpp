@@ -70,8 +70,12 @@ FluentWindow::FluentWindow(QMainWindow *parent)
     layout->addWidget(d->_stacked, 1);
     setCentralWidget(w);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
     d->setDarkTheme(Theme::instance()->isDarkTheme());
+    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
+
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](ThemeType::ThemeMode theme) {
+        agent->setWindowAttribute("dark-mode", theme == ThemeType::DARK);
+    });
 }
 
 FluentWindow::~FluentWindow()
@@ -133,6 +137,8 @@ void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     if (agent == nullptr) {
         return;
     }
+    d->_windowDisplayMode = windowDisplayType;
+
     bool dark = Theme::instance()->isDarkTheme();
     d->_windowBar->themeButton()->setChecked(!dark);
 
@@ -142,14 +148,20 @@ void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     }
     const QString data = names.at(static_cast<int>(windowDisplayType) % names.size());
 
+    agent->setWindowAttribute("dark-mode", dark);
     if (data == QStringLiteral("none")) {
         setProperty("custom-style", false);
     } else if (!data.isEmpty()) {
-        agent->setWindowAttribute("dark-mode", dark);
         agent->setWindowAttribute(data, true);
         setProperty("custom-style", true);
     }
     style()->polish(this);
+}
+
+ApplicationType::WindowDisplayMode FluentWindow::windowDisplayMode() const
+{
+    Q_D_CONST(FluentWindow);
+    return d->_windowDisplayMode;
 }
 
 void FluentWindow::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)

@@ -1,8 +1,8 @@
 ﻿#include "SettingInterface.h"
 
 #include <QLabel>
+#include "Theme.h"
 #include "StyleSheet.h"
-
 #include "FluentIcon.h"
 #include "QFluent/scrollbar/ScrollBar.h"
 #include "QFluent/settings/SettingCard.h"
@@ -10,7 +10,7 @@
 #include "QFluent/settings/OptionsSettingCard.h"
 
 #include "MainWindow.h"
-#include"ConfigManager.h"
+#include "ConfigManager.h"
 
 SettingInterface::SettingInterface(QWidget *parent)
     : ScrollArea(parent)
@@ -38,9 +38,6 @@ SettingInterface::SettingInterface(QWidget *parent)
 
     auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/setting_interface.qss");
     StyleSheetManager::instance()->registerWidget(styleSource, this);
-
-
-
 
     SettingCardGroup *aboutGroup = new SettingCardGroup("关于", m_scrollWidget);
 
@@ -71,7 +68,7 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                             aboutGroup);
 
     OptionsSettingCard *themeCard = new OptionsSettingCard(FluentIcon(FluentIconType::BRUSH).qicon(),
-                                                           "用用主题",
+                                                           "应用主题",
                                                            "调整你的应用的外观",
                                                            QVector<QString>() << "深色" << "浅色",
                                                            aboutGroup);
@@ -86,26 +83,28 @@ SettingInterface::SettingInterface(QWidget *parent)
     m_expandLayout->addWidget(aboutGroup);
 
     connect(themeCard, &OptionsSettingCard::optionChanged, this, [=]
-            (int index, const QString& text)
-            {
-
-            });
+            (int index, const QString& text) {
+        Q_UNUSED(text);
+        Theme::instance()->setTheme(index == 0 ? ThemeType::DARK : ThemeType::LIGHT);
+        ConfigManager::instance().setValue("Window/theme", index);
+    });
 
     connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
-            (int index, const QString& text)
-            {
-                Q_UNUSED(text);
-                auto main = qobject_cast<MainWindow*>(this->window());
-                main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
-                ConfigManager::instance().setValue("Window/effect", text);
-            });
+            (int index, const QString& text) {
+        auto main = qobject_cast<MainWindow*>(this->window());
+        main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
+        ConfigManager::instance().setValue("Window/effect", text);
+    });
 
+    const QString theme  = ConfigManager::instance().getValue("Window/theme").toInt() == 0 ? "深色" : "浅色";
     const QString value  = ConfigManager::instance().isWin11() ? "mica" : "none";
     const QString effect = ConfigManager::instance().getValue("Window/effect", value).toString();
+    themeCard->setValue(theme);
     effectCard->setValue(effect);
+
     QStringList modes; modes << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt";
     int var = modes.indexOf(effect);
-    if (var > 0) {
+    if (var >= 0) {
         auto main = qobject_cast<MainWindow*>(this->window());
         main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(var));
     }

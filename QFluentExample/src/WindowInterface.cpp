@@ -3,7 +3,9 @@
 #include "QFluent/PushButton.h"
 #include "Window/LoginWindow.h"
 #include "Window/NavbarWindow.h"
+#include "Window/SplitWindow.h"
 
+#include "MainWindow.h"
 #include "ConfigManager.h"
 
 WindowInterface::WindowInterface(QWidget *parent)
@@ -11,16 +13,13 @@ WindowInterface::WindowInterface(QWidget *parent)
 {
     setObjectName("WindowInterface");
 
-    const QString effect = ConfigManager::instance().getValue("Window/effect", "none").toString();
-    QStringList modes; modes << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt";
-    static int windowMode = modes.indexOf(effect);
-
+    auto mainWindow = qobject_cast<MainWindow*>(this->window());
 
     auto button1 = new PushButton("弹出窗口", this);
     connect(button1, &PushButton::clicked, this, [=](){
         auto loginWindow = new LoginWidget(false);
         loginWindow->setWindowModality(Qt::ApplicationModal);
-        loginWindow->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(windowMode));
+        loginWindow->setWindowDisplayMode(mainWindow->windowDisplayMode());
         loginWindow->show();
     });
     addExampleCard("登录窗口", button1);
@@ -28,10 +27,18 @@ WindowInterface::WindowInterface(QWidget *parent)
     auto button2 = new PushButton("弹出窗口", this);
     connect(button2, &PushButton::clicked, this, [=](){
         auto navWidget = new NavbarWidget();
-        navWidget->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(windowMode));
+        navWidget->setWindowDisplayMode(mainWindow->windowDisplayMode());
         navWidget->show();
     });
     addExampleCard("带导航栏的窗口", button2);
+
+    auto button3 = new PushButton("弹出窗口", this);
+    connect(button3, &PushButton::clicked, this, [=](){
+        auto splitWindow = new SplitWidget();
+        splitWindow->setWindowDisplayMode(mainWindow->windowDisplayMode());
+        splitWindow->show();
+    });
+    addExampleCard("分割风格的窗口", button3);
 }
 
 

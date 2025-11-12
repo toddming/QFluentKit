@@ -11,18 +11,21 @@ StackedWidget {
     background-color: rgba(255, 255, 255, 0.0314);
 }
 
-SplitFluentWindow > StackedWidget {
+StackedWidget[noRadius=true] {
     border-top-left-radius: 0px;
     border-top: none;
 }
 
 FluentWidget,
-FluentWindow{
+FluentWindow,
+FluentSplitWindow
+{
     background-color: #202020;
 }
 
 FluentWidget[custom-style=true],
-FluentWindow[custom-style=true] {
+FluentWindow[custom-style=true],
+FluentSplitWindow[custom-style=true]{
     background-color: transparent;
 }
 

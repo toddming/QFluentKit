@@ -21,4 +21,6 @@ private:
     StackedWidget *_stacked;
 
     NavigationPanel *_navPanel;
+
+    ApplicationType::WindowDisplayMode _windowDisplayMode;
 };

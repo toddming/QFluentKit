@@ -1,32 +1,40 @@
-﻿#include "FluentWidget.h"
+﻿#include "FluentSplitWindow.h"
 
-#include <QEvent>
-#include <QStyle>
+#include <QVBoxLayout>
 #include <QLabel>
+#include <QStyle>
+#include <QFile>
 
 #include "Theme.h"
 #include "StyleSheet.h"
+#include "StackedWidget.h"
 #include "FluentTitleBar.h"
-#include "Private/FluentWidgetPrivate.h"
+#include "navigation/NavigationPanel.h"
+#include "Private/FluentSplitWindowPrivate.h"
 #include "QWKWidgets/widgetwindowagent.h"
 
-
-FluentWidget::FluentWidget(QMainWindow *parent)
+FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
     : QMainWindow(parent)
-    , d_ptr(new FluentWidgetPrivate())
+    , d_ptr(new FluentSplitWindowPrivate())
 {
-    Q_D(FluentWidget);
+    Q_D(FluentSplitWindow);
     d->q_ptr = this;
 
     setObjectName("FluentWindow");
 
     setAttribute(Qt::WA_DontCreateNativeAncestors);
 
+
     QWK::WidgetWindowAgent *agent = new QWK::WidgetWindowAgent(this);
     agent->setup(this);
 
     d->_windowBar = new FluentTitleBar(this);
     d->_windowBar->setHostWidget(this);
+
+    setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
+                         AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
+                         AppBarType::CloseButtonHint | AppBarType::ThemeChangeButtonHint);
+
 
     agent->setTitleBar(d->_windowBar);
     agent->setHitTestVisible(d->_windowBar->themeButton(), true);
@@ -52,6 +60,22 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     d->windowAgent = agent;
 
+    d->_userWidget = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(d->_userWidget);
+    layout->setContentsMargins(0, -48, 0, 0);
+    layout->setSpacing(0);
+    d->_navPanel = new NavigationPanel(d->_userWidget);
+    d->_stacked = new StackedWidget(d->_userWidget);
+    d->_stacked->setProperty("noRadius", true);
+
+    auto vBoxLayout = new QVBoxLayout();
+    vBoxLayout->addWidget(d->_navPanel);
+    vBoxLayout->setSpacing(0);
+    vBoxLayout->setContentsMargins(0, 48, 0, 0);
+
+    layout->addLayout(vBoxLayout, 0);
+    layout->addWidget(d->_stacked, 1);
+
     d->setDarkTheme(Theme::instance()->isDarkTheme());
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
 
@@ -60,11 +84,12 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     });
 }
 
-FluentWidget::~FluentWidget()
+FluentSplitWindow::~FluentSplitWindow()
 {
 }
 
-bool FluentWidget::event(QEvent *event) {
+
+bool FluentSplitWindow::event(QEvent *event) {
     switch (event->type()) {
     case QEvent::WindowActivate: {
         auto menu = menuWidget();
@@ -91,33 +116,35 @@ bool FluentWidget::event(QEvent *event) {
 }
 
 
-void FluentWidget::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
+void FluentSplitWindow::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
 {
-    Q_D(FluentWidget);
+    Q_D(FluentSplitWindow);
     d->_windowBar->setWindowButtonFlag(buttonFlag, isEnable);
 }
 
-void FluentWidget::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
+void FluentSplitWindow::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
 {
-    Q_D(FluentWidget);
+    Q_D(FluentSplitWindow);
     d->_windowBar->setWindowButtonFlags(buttonFlags);
 }
 
-AppBarType::ButtonFlags FluentWidget::getWindowButtonFlags() const
+AppBarType::ButtonFlags FluentSplitWindow::getWindowButtonFlags() const
 {
-    Q_D_CONST(FluentWidget);
+    Q_D_CONST(FluentSplitWindow);
     return d->_windowBar->getWindowButtonFlags();
 }
 
 
-void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType)
+void FluentSplitWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType)
 {
-    Q_D(FluentWidget);
+    Q_D(FluentSplitWindow);
 
     QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->windowAgent);
     if (agent == nullptr) {
         return;
     }
+    d->_windowDisplayMode = windowDisplayType;
+
     bool dark = Theme::instance()->isDarkTheme();
     d->_windowBar->themeButton()->setChecked(!dark);
 
@@ -137,16 +164,40 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     style()->polish(this);
 }
 
-ApplicationType::WindowDisplayMode FluentWidget::windowDisplayMode() const
+ApplicationType::WindowDisplayMode FluentSplitWindow::windowDisplayMode() const
 {
-    Q_D_CONST(FluentWidget);
+    Q_D_CONST(FluentSplitWindow);
     return d->_windowDisplayMode;
 }
 
-void FluentWidget::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
+void FluentSplitWindow::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
 {
-    Q_D(FluentWidget);
+    Q_D(FluentSplitWindow);
 
     d->_windowBar->iconLabel()->setPixmap(pixmap);
     d->_windowBar->iconLabel()->setFixedSize(size);
+}
+
+NavigationPanel *FluentSplitWindow::navigationInterface() const
+{
+    Q_D_CONST(FluentSplitWindow);
+    return d->_navPanel;
+}
+
+void FluentSplitWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
+                                   QWidget* widget, bool selectable,
+                                   NavigationType::NavigationItemPosition position, const QString& tooltip,
+                                   const QString& parentRouteKey)
+{
+    Q_D(FluentSplitWindow);
+    d->_navPanel->addItem(routeKey, icon, text, [d, widget](){d->_stacked->setCurrentWidget(widget, false);}, selectable, position, tooltip, parentRouteKey);
+    d->_stacked->addWidget(widget);
+}
+
+void FluentSplitWindow::resizeEvent(QResizeEvent *e)
+{
+    Q_D(FluentSplitWindow);
+    d->_userWidget->setGeometry(0, -10, window()->width(), window()->height()+10);
+    d->_windowBar->raise();
+    QMainWindow::resizeEvent(e);
 }

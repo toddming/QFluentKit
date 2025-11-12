@@ -19,6 +19,8 @@ public:
     AppBarType::ButtonFlags getWindowButtonFlags() const;
 
     void setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType);
+    ApplicationType::WindowDisplayMode windowDisplayMode() const;
+
     void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
 
 protected:
