@@ -102,7 +102,6 @@ void NavigationWidget::setCompacted(bool isCompacted) {
     } else {
         setFixedSize(m_expandWidth, 36);
     }
-
     update();
 }
 
@@ -140,7 +139,7 @@ void NavigationWidget::setExpandWidth(int width) {
     }
 
     m_expandWidth = width;
-    setFixedSize(m_expandWidth, 36);
+    // setFixedSize(m_expandWidth, 36);
 }
 
 // NavigationPushButton 实现
@@ -564,6 +563,10 @@ void NavigationTreeWidget::_onClicked(bool triggerByUser, bool clickArrow) {
     }
 }
 
+void NavigationTreeWidget::setExpandWidth(int width) {
+    NavigationTreeWidgetBase::setExpandWidth(width);
+    m_itemWidget->setExpandWidth(width);
+}
 
 
 

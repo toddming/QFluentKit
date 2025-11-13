@@ -18,8 +18,6 @@ EditableComboBox::EditableComboBox(QWidget *parent)
 
     installEventFilter(this);
 
-    // StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
-
     d->_pCurrentIndex = -1;
     d->_pMaxVisibleItems = -1;
     d->_arrowAni = new TranslateYAnimation(this);
@@ -27,8 +25,8 @@ EditableComboBox::EditableComboBox(QWidget *parent)
     d->_dropButton = new LineEditButton(FluentIcon(FluentIconType::ARROW_DOWN).qicon(), this);
     d->_dropButton->setFixedSize(30, 25);
     hBoxLayout()->addWidget(d->_dropButton, 0, Qt::AlignRight);
-    setTextMargins(0, 0, 29, 0);
     setClearButtonEnabled(false);
+    setTextMargins(0, 0, 29, 0);
 
     connect(d->_dropButton, &LineEditButton::clicked, d, &EditableComboBoxPrivate::toggleComboMenu);
     connect(this, &LineEdit::textChanged, d, &EditableComboBoxPrivate::onComboTextChanged);

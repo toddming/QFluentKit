@@ -44,7 +44,7 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     // m_history = qrouter;
 
     m_expandAni = new QPropertyAnimation(this, "minimumWidth", this);
-    m_expandWidth = 260;
+    m_expandWidth = 160;
 
     if (isMinimalEnabled) {
         m_displayMode = NavigationType::NavigationDisplayMode::MINIMAL;
@@ -134,23 +134,23 @@ NavigationWidget* NavigationPanel::widget(const QString& routeKey) {
 }
 
 void NavigationPanel::addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
-                            const std::function<void()>& onClick, bool selectable,
-                            NavigationType::NavigationItemPosition position, const QString& tooltip,
-                            const QString& parentRouteKey) {
+                              const std::function<void()>& onClick, bool selectable,
+                              NavigationType::NavigationItemPosition position, const QString& tooltip,
+                              const QString& parentRouteKey) {
     insertItem(-1, routeKey, icon, text, onClick, selectable, position, tooltip, parentRouteKey);
 }
 
 void NavigationPanel::addWidget(const QString& routeKey, NavigationWidget* widget,
-                              const std::function<void()>& onClick,
-                              NavigationType::NavigationItemPosition position, const QString& tooltip,
-                              const QString& parentRouteKey) {
+                                const std::function<void()>& onClick,
+                                NavigationType::NavigationItemPosition position, const QString& tooltip,
+                                const QString& parentRouteKey) {
     insertWidget(-1, routeKey, widget, onClick, position, tooltip, parentRouteKey);
 }
 
 void NavigationPanel::insertItem(int index, const QString& routeKey, const FluentIconBase& icon,
-                               const QString& text, const std::function<void()>& onClick,
-                               bool selectable, NavigationType::NavigationItemPosition position,
-                               const QString& tooltip, const QString& parentRouteKey) {
+                                 const QString& text, const std::function<void()>& onClick,
+                                 bool selectable, NavigationType::NavigationItemPosition position,
+                                 const QString& tooltip, const QString& parentRouteKey) {
     if (m_items.contains(routeKey)) {
         return;
     }
@@ -162,9 +162,9 @@ void NavigationPanel::insertItem(int index, const QString& routeKey, const Fluen
 }
 
 void NavigationPanel::insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
-                                 const std::function<void()>& onClick,
-                                 NavigationType::NavigationItemPosition position, const QString& tooltip,
-                                 const QString& parentRouteKey) {
+                                   const std::function<void()>& onClick,
+                                   NavigationType::NavigationItemPosition position, const QString& tooltip,
+                                   const QString& parentRouteKey) {
     if (m_items.contains(routeKey)) {
         return;
     }
@@ -184,12 +184,13 @@ void NavigationPanel::addSeparator(NavigationType::NavigationItemPosition positi
 
 void NavigationPanel::insertSeparator(int index, NavigationType::NavigationItemPosition position) {
     NavigationSeparator* separator = new NavigationSeparator(this);
+    separator->setExpandWidth(m_expandWidth);
     insertWidgetToLayout(index, separator, position);
 }
 
 void NavigationPanel::registerWidget(const QString& routeKey, const QString& parentRouteKey,
-                                   NavigationWidget* widget, const std::function<void()>& onClick,
-                                   const QString& tooltip) {
+                                     NavigationWidget* widget, const std::function<void()>& onClick,
+                                     const QString& tooltip) {
     connect(widget, &NavigationWidget::clicked, this, &NavigationPanel::onWidgetClicked);
 
     if (onClick) {
@@ -520,12 +521,13 @@ int NavigationPanel::layoutMinHeight() {
 
     QList<NavigationSeparator*> separators = this->findChildren<NavigationSeparator*>();
     int sh = 0;
+
     for (NavigationSeparator* separator : separators) {
         sh += separator->height();
     }
 
     int spacing = m_topLayout->count() * m_topLayout->spacing() +
-                 m_bottomLayout->count() * m_bottomLayout->spacing();
+            m_bottomLayout->count() * m_bottomLayout->spacing();
 
     return 36 + th + bh + sh + spacing;
 }

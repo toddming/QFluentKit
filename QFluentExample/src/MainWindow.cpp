@@ -25,12 +25,14 @@ MainWindow::MainWindow()
 {
     setWindowTitle("QFluentKit");
     setWindowIcon(QPixmap(":/res/example.png"));
-    setMinimumSize(866, 600);
+    setMinimumSize(1024, 600);
 
     setWindowButtonFlags(getWindowButtonFlags() | AppBarType::RouteBackButtonHint);
 
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
     Theme::instance()->setTheme(theme == 0 ? ThemeType::DARK : ThemeType::LIGHT);
+
+    navigationInterface()->setExpandWidth(200);
 
     QString iconPath = QString(":/res/icons/%1_{color}.svg");
     addSubInterface("1", FluentIcon(FluentIconType::HOME), "主页", new HomeInterface(this), true, NavigationType::TOP);

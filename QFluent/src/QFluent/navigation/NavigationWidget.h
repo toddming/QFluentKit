@@ -91,6 +91,7 @@ public:
     void setCompacted(bool isCompacted) override;
 };
 
+// NavigationSeparator
 class NavigationSeparator : public NavigationWidget {
     Q_OBJECT
 public:
@@ -171,6 +172,8 @@ public:
 
     std::vector<NavigationTreeWidget*> treeChildren();
     NavigationTreeItem* itemWidget();
+
+    void setExpandWidth(int width);
 
 signals:
     void expanded();

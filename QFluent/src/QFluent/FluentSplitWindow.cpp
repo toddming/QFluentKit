@@ -62,7 +62,7 @@ FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
 
     d->_userWidget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(d->_userWidget);
-    layout->setContentsMargins(0, -48, 0, 0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     d->_navPanel = new NavigationPanel(d->_userWidget);
     d->_stacked = new StackedWidget(d->_userWidget);
@@ -197,7 +197,7 @@ void FluentSplitWindow::addSubInterface(const QString& routeKey, const FluentIco
 void FluentSplitWindow::resizeEvent(QResizeEvent *e)
 {
     Q_D(FluentSplitWindow);
-    d->_userWidget->setGeometry(0, -10, window()->width(), window()->height()+10);
+    d->_userWidget->setGeometry(0, 0, window()->width(), window()->height());
     d->_windowBar->raise();
     QMainWindow::resizeEvent(e);
 }
