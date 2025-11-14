@@ -8,14 +8,15 @@
 #include "QFluent/dialog/MessageBoxBase.h"
 
 DialogInputInterface::DialogInputInterface(QWidget *parent)
-    : GalleryInterface("对话框", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("对话框", "", parent)
 {
     setObjectName("DialogInputInterface");
 
     auto messageDialogBtn = new PushButton("显示对话框", this);
     connect(messageDialogBtn, &PushButton::clicked, this, [this](){
         auto box = new MessageDialog("这是一个带有遮罩的对话框",
-                                     "一生消えない傷でいいな，絆創膏の様にいつも包んでよ。貴方のそばでわがまま言いたいな，一分一秒刻み貴方を知り，あたしをあげる~",
+                                     "这是一个带有遮罩的对话框这是一个带有遮罩的对话框这是一个带有遮罩的对话框这是一个带有遮罩的对话框"
+                                     "这是一个带有遮罩的对话框这是一个带有遮罩的对话框这是一个带有遮罩的对话框这是一个带有遮罩的对话框",
                                      this->window());
         box->setIsClosableOnMaskClicked(true);
         box->exec();

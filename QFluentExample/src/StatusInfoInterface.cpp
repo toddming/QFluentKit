@@ -11,7 +11,7 @@
 #include "QFluent/progress/IndeterminateProgressRing.h"
 
 StatusInfoInterface::StatusInfoInterface(QWidget *parent)
-    : GalleryInterface("状态", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("状态", "", parent)
 {
     setObjectName("StatusInfoInterface");
 
@@ -27,7 +27,9 @@ StatusInfoInterface::StatusInfoInterface(QWidget *parent)
         InfoBar::info("你看", "我有几分像从前?", Qt::Horizontal, false, 2000, InfoBarType::BarPosition::TOP_RIGHT, this);
     });
     connect(btn2, &PushButton::clicked, this, [=](){
-        InfoBar::success("你看", "我有几分像从前?", Qt::Horizontal, true, 2000, InfoBarType::BarPosition::TOP, this);
+        InfoBar::success("你看", "我有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分"
+                               "有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分有几分像从前?",
+                         Qt::Horizontal, true, 2000, InfoBarType::BarPosition::TOP, this);
     });
     connect(btn3, &PushButton::clicked, this, [=](){
         InfoBar::warning("你看", "我有几分像从前?", Qt::Horizontal, false, 2000, InfoBarType::BarPosition::TOP_LEFT, this);

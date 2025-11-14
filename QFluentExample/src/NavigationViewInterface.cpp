@@ -4,7 +4,7 @@
 #include "QFluent/navigation/Pivot.h"
 
 NavigationViewInterface::NavigationViewInterface(QWidget *parent)
-    : GalleryInterface("导航", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("导航", "", parent)
 {
     setObjectName("NavigationViewInterface");
 

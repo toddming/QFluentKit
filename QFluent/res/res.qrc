@@ -1,8 +1,5 @@
 <RCC>
     <qresource prefix="/res">
-        <file>app/avatar.png</file>
-        <file>app/example.ico</file>
-        <file>app/example.png</file>
         <file>images/check_box/Accept_black.svg</file>
         <file>images/check_box/Accept_white.svg</file>
         <file>images/check_box/PartialAccept_black.svg</file>

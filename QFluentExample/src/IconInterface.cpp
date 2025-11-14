@@ -345,7 +345,7 @@ void IconCardView::showAllIcons() {
 
 // IconInterface 实现
 IconInterface::IconInterface(QWidget* parent)
-    : GalleryInterface("图标", "qfluentwidgets.common.icon", parent) {
+    : GalleryInterface("图标", "", parent) {
 
     setObjectName("iconInterface");
     m_iconView = new IconCardView(this);

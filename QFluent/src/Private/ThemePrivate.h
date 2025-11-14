@@ -14,7 +14,7 @@ public:
 private:
     ThemeType::ThemeMode _currentTheme{ThemeType::ThemeMode::DARK};
 
-    QColor _themeColor{0x009faa};
+    QColor _themeColor{0x0066b4};
 
     bool _sysIsDarkMode;
 

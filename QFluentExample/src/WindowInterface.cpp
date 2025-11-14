@@ -9,7 +9,7 @@
 #include "ConfigManager.h"
 
 WindowInterface::WindowInterface(QWidget *parent)
-    : GalleryInterface("滚动", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("滚动", "", parent)
 {
     setObjectName("WindowInterface");
 

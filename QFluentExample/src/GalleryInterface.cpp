@@ -157,7 +157,7 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
     : ScrollArea(parent)
 {
     view = new QWidget(this);
-    toolBar = new ToolBar(title, subtitle, this);
+    toolBar = new ToolBar(title, subtitle.isEmpty() ? "https://github.com/toddming/QFluentExample" : subtitle, this);
     vBoxLayout = new QVBoxLayout(view);
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

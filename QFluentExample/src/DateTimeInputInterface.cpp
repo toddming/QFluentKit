@@ -3,7 +3,7 @@
 #include "QFluent/date_time/CalendarPicker.h"
 
 DateTimeInputInterface::DateTimeInputInterface(QWidget *parent)
-    : GalleryInterface("基本输入", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("基本输入", "", parent)
 {
     setObjectName("DateTimeInputInterface");
 

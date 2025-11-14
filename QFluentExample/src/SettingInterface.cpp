@@ -39,21 +39,16 @@ SettingInterface::SettingInterface(QWidget *parent)
     auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/setting_interface.qss");
     StyleSheetManager::instance()->registerWidget(styleSource, this);
 
+    SettingCardGroup *personalGroup = new SettingCardGroup("个性化", m_scrollWidget);
     SettingCardGroup *aboutGroup = new SettingCardGroup("关于", m_scrollWidget);
 
-    PrimaryPushSettingCard *feedbackCard = new PrimaryPushSettingCard("Provide feedback",
-                                                                      FluentIcon(FluentIconType::FEEDBACK).qicon(),
-                                                                      "Provide feedback",
-                                                                      "Help us improve PyQt-Fluent-Widgets by providing feedback",
-                                                                      aboutGroup);
+
     SwitchSettingCard *updateOnStartUpCard = new SwitchSettingCard(FluentIcon(FluentIconType::UPDATE).qicon(),
                                                                    "Check for updates when the application starts",
                                                                    "The new version will be more stable and have more features",
                                                                    aboutGroup);
 
-    HyperlinkCard *helpCard = new HyperlinkCard("", "Open help page", FluentIcon(FluentIconType::HELP).qicon(),
-                                                "Help",
-                                                "Discover new features and learn useful tips about PyQt-Fluent-Widgets");
+
 
     ComboBoxSettingCard *languageCard = new ComboBoxSettingCard({"简体中文", "繁體中文", "English", "系统设置"},
                                                                 FluentIcon(FluentIconType::LANGUAGE).qicon(),
@@ -73,13 +68,26 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                            QVector<QString>() << "深色" << "浅色",
                                                            aboutGroup);
 
-    aboutGroup->addSettingCard(feedbackCard);
-    aboutGroup->addSettingCard(updateOnStartUpCard);
-    aboutGroup->addSettingCard(helpCard);
-    aboutGroup->addSettingCard(languageCard);
-    aboutGroup->addSettingCard(themeCard);
-    aboutGroup->addSettingCard(effectCard);
+    PrimaryPushSettingCard *feedbackCard = new PrimaryPushSettingCard("联系作者",
+                                                                      FluentIcon(FluentIconType::FEEDBACK).qicon(),
+                                                                      "联系作者",
+                                                                      "QQ:1912229135",
+                                                                      aboutGroup);
 
+    HyperlinkCard *helpCard = new HyperlinkCard("", "打开帮助页面", FluentIcon(FluentIconType::HELP).qicon(),
+                                                "帮助",
+                                                "https://github.com/toddming/QFluentExample");
+
+    personalGroup->addSettingCard(updateOnStartUpCard);
+    personalGroup->addSettingCard(languageCard);
+    personalGroup->addSettingCard(themeCard);
+    personalGroup->addSettingCard(effectCard);
+
+    aboutGroup->addSettingCard(feedbackCard);
+    aboutGroup->addSettingCard(helpCard);
+
+
+    m_expandLayout->addWidget(personalGroup);
     m_expandLayout->addWidget(aboutGroup);
 
     connect(themeCard, &OptionsSettingCard::optionChanged, this, [=]

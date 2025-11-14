@@ -6,7 +6,7 @@
 #include "QFluent/layout/FlowLayout.h"
 
 LayoutInterface::LayoutInterface(QWidget *parent)
-    : GalleryInterface("布局", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("布局", "", parent)
 {
     setObjectName("LayoutInterface");
 
@@ -18,16 +18,24 @@ LayoutInterface::LayoutInterface(QWidget *parent)
 QWidget *LayoutInterface::createWidget(bool animation)
 {
     QStringList texts;
-    texts << "白金之星"
-          << "法皇之绿"
-          << "银色战车"
-          << "疯狂钻石"
-          << "黄金体验"
-          << "天堂之门"
-          << "杀手皇后"
-          << "石之自由"
-          << "绯红之王"
-          << "性感手枪";
+    texts << "随便点点"
+          << "点到为止"
+          << "手滑勿怪"
+          << "假装很忙"
+          << "正在摸鱼"
+          << "别信这个"
+          << "纯属虚构"
+          << "演示专用"
+          << "点完就跑"
+          << "无效操作"
+          << "仅供观赏"
+          << "点击无效"
+          << "看看就好"
+          << "莫当真啊"
+          << "稍后上线"
+          << "假装成功"
+          << "快点我呀"
+          << "其实没用";
     auto widget = new QWidget();
     auto layout = new FlowLayout(widget, animation);
 

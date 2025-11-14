@@ -127,6 +127,7 @@
         <file>avatar.png</file>
         <file>example.png</file>
         <file>header.png</file>
-        <file>kunkun.png</file>
+        <file>Slices.png</file>
+		<file>Shizuka.png</file>
     </qresource>
 </RCC>

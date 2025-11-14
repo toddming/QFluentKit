@@ -25,7 +25,7 @@ MainWindow::MainWindow()
 {
     setWindowTitle("QFluentKit");
     setWindowIcon(QPixmap(":/res/example.png"));
-    setMinimumSize(1024, 600);
+    resize(1024, 768);
 
     setWindowButtonFlags(getWindowButtonFlags() | AppBarType::RouteBackButtonHint);
 

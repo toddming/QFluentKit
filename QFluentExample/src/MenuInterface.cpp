@@ -9,7 +9,7 @@
 #include "QFluent/menu/MenuActionListWidget.h"
 
 MenuInterface::MenuInterface(QWidget *parent)
-    : GalleryInterface("菜单", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("菜单", "", parent)
 {
     setObjectName("MenuInterface");
 
@@ -100,7 +100,7 @@ void MenuInterface::createCheckableMenu(QPoint pos)
 void MenuInterface::createCustomWidgetMenu(QPoint pos)
 {
     auto menu = new RoundMenu("menu", this);
-    auto card = new ProfileCard(":/res/app/avatar.png", "硝子酱", "shokokawaii@outlook.com", menu);
+    auto card = new ProfileCard(":/res/Shizuka.png", "源静香", "shizuka@gmail.com", menu);
     menu->setItemHeight(36);
     menu->view()->setMaxVisibleItems(0);
     menu->addWidget(card);

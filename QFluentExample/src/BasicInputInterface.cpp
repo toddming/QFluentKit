@@ -13,13 +13,13 @@
 #include "QFluent/EditableComboBox.h"
 
 BasicInputInterface::BasicInputInterface(QWidget *parent)
-    : GalleryInterface("基本输入", "qfluentwidgets.components.widgets", parent)
+    : GalleryInterface("基本输入", "", parent)
 {
     setObjectName("basicInputInterface");
 
     addExampleCard("带有文本的简单按钮", new PushButton("标准按钮", this));
 
-    auto button = new ToolButton(QIcon(":/res/kunkun.png"), this);
+    auto button = new ToolButton(QIcon(":/res/Slices.png"), this);
     button->setIconSize(QSize(40, 40));
     button->resize(70, 70);
     addExampleCard("带有图标的按钮", button);
@@ -37,14 +37,14 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("三态复选框", checkBox);
 
     auto comboBox = new ComboBox(this);
-    comboBox->addItems({"shoko🥰", "西宫硝子😊", "一级棒卡哇伊的硝子酱😘"});
+    comboBox->addItems({"请选择你的项目😍", "请选择你的项目😘", "请选择你的项目😜"});
     comboBox->setCurrentIndex(0);
     comboBox->setMinimumWidth(210);
     addExampleCard("下拉框", comboBox);
 
     auto editableComboBox = new EditableComboBox(this);
-    editableComboBox->setPlaceholderText("Choose your stand");
-    editableComboBox->addItems({"Star Platinum" , "Crazy Diamond", "Gold Experience", "Sticky Fingers"});
+    editableComboBox->setPlaceholderText("可编辑的下拉框");
+    editableComboBox->addItems({"可编辑的项目_1" , "可编辑的项目_2", "可编辑的项目_3", "可编辑的项目_4"});
     editableComboBox->setMinimumWidth(210);
     addExampleCard("可编辑的下拉框", editableComboBox);
 
@@ -83,9 +83,9 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     auto radioLayout = new QVBoxLayout(radioWidget);
     radioLayout->setContentsMargins(2, 0, 0, 0);
     radioLayout->setSpacing(15);
-    auto radioBtn1 = new RadioButton("白金之星", radioWidget);
-    auto radioBtn2 = new RadioButton("疯狂钻石", radioWidget);
-    auto radioBtn3 = new RadioButton("黄金体验", radioWidget);
+    auto radioBtn1 = new RadioButton("单选按钮_1", radioWidget);
+    auto radioBtn2 = new RadioButton("单选按钮_2", radioWidget);
+    auto radioBtn3 = new RadioButton("单选按钮_3", radioWidget);
     auto btnGroup = new QButtonGroup(radioWidget);
     btnGroup->addButton(radioBtn1);
     btnGroup->addButton(radioBtn2);
