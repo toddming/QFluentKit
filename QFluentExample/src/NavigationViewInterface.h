@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "GalleryInterface.h"
 
@@ -8,5 +8,6 @@ class NavigationViewInterface : public GalleryInterface
 public:
     explicit NavigationViewInterface(QWidget *parent = nullptr);
 
-
+private:
+    QWidget* createTabWidget();
 };
