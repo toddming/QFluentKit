@@ -7,7 +7,7 @@
 #include <QHash>
 #include <QChar>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT TextWrap
 {

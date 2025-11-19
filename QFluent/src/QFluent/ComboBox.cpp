@@ -12,12 +12,12 @@
 #include "StyleSheet.h"
 
 
-Q_PROPERTY_CREATE_Q_CPP(ComboBox, int, MaxVisibleItems)
 ComboBox::ComboBox(QWidget *parent)
-    : QPushButton(parent), d_ptr(new ComboBoxPrivate())
+    : QPushButton(parent)
+    , d_ptr(new ComboBoxPrivate(this))
 {
-    Q_D(ComboBox);
-    d->q_ptr = this;
+    // Q_D(ComboBox);
+    // d->q_ptr = this;
 
     setCurrentIndex(-1);
 
@@ -54,8 +54,8 @@ void ComboBox::insertItem(int index, const QString &text, const QIcon &icon, con
 
     d->_items.insert(index, ComboBoxDetail::ComboItem(text, icon, userData));
 
-    if (index <= d->_pCurrentIndex) {
-        setCurrentIndex(d->_pCurrentIndex + 1);
+    if (index <= d->_currentIndex) {
+        setCurrentIndex(d->_currentIndex + 1);
     }
 }
 
@@ -74,11 +74,11 @@ void ComboBox::removeItem(int index)
 
     d->_items.removeAt(index);
 
-    if (index < d->_pCurrentIndex) {
-        setCurrentIndex(d->_pCurrentIndex - 1);
-    } else if (index == d->_pCurrentIndex) {
+    if (index < d->_currentIndex) {
+        setCurrentIndex(d->_currentIndex - 1);
+    } else if (index == d->_currentIndex) {
         if (index > 0) {
-            setCurrentIndex(d->_pCurrentIndex - 1);
+            setCurrentIndex(d->_currentIndex - 1);
         } else if (count() > 0) {
             setCurrentIndex(0);
         } else {
@@ -91,36 +91,36 @@ void ComboBox::clear()
 {
     Q_D(ComboBox);
 
-    if (d->_pCurrentIndex >= 0) {
+    if (d->_currentIndex >= 0) {
         setText("");
-        d->_pCurrentIndex = -1;
+        d->_currentIndex = -1;
     }
     d->_items.clear();
 }
 
 int ComboBox::currentIndex() const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
 
-    return d->_pCurrentIndex;
+    return d->_currentIndex;
 }
 
 QString ComboBox::currentText() const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
 
-    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
-        return d->_items[d->_pCurrentIndex].text;
+    if (d->_currentIndex >= 0 && d->_currentIndex < count()) {
+        return d->_items[d->_currentIndex].text;
     }
     return "";
 }
 
 QVariant ComboBox::currentData() const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
 
-    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
-        return d->_items[d->_pCurrentIndex].userData;
+    if (d->_currentIndex >= 0 && d->_currentIndex < count()) {
+        return d->_items[d->_currentIndex].userData;
     }
     return {};
 }
@@ -128,16 +128,16 @@ QVariant ComboBox::currentData() const
 void ComboBox::setCurrentIndex(int index)
 {
     Q_D(ComboBox);
-    if (index < -1 || index >= count() || index == d->_pCurrentIndex)
+    if (index < -1 || index >= count() || index == d->_currentIndex)
         return;
 
     QString oldText = currentText();
 
     if (index == -1) {
-        d->_pCurrentIndex = -1;
-        setPlaceholderText(d->_pPlaceholderText);
+        d->_currentIndex = -1;
+        setPlaceholderText(d->_placeholderText);
     } else {
-        d->_pCurrentIndex = index;
+        d->_currentIndex = index;
         setText(d->_items[index].text);
         d->updateTextState(false);
     }
@@ -161,13 +161,13 @@ void ComboBox::setCurrentText(const QString &text)
 
 int ComboBox::count() const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
     return d->_items.size();
 }
 
 QString ComboBox::itemText(int index) const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
     if (index >= 0 && index < count()) {
         return d->_items[index].text;
     }
@@ -176,7 +176,7 @@ QString ComboBox::itemText(int index) const
 
 QIcon ComboBox::itemIcon(int index) const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
     if (index >= 0 && index < count()) {
         return d->_items[index].icon;
     }
@@ -185,7 +185,7 @@ QIcon ComboBox::itemIcon(int index) const
 
 QVariant ComboBox::itemData(int index) const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
 
     if (index >= 0 && index < count()) {
         return d->_items[index].userData;
@@ -195,7 +195,7 @@ QVariant ComboBox::itemData(int index) const
 
 int ComboBox::findText(const QString &text) const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
 
     for (int i = 0; i < count(); ++i) {
         if (d->_items[i].text == text) {
@@ -207,7 +207,7 @@ int ComboBox::findText(const QString &text) const
 
 int ComboBox::findData(const QVariant &data) const
 {
-    Q_D_CONST(ComboBox);
+    Q_D(const ComboBox);
 
     for (int i = 0; i < count(); ++i) {
         if (d->_items[i].userData == data) {
@@ -220,8 +220,8 @@ int ComboBox::findData(const QVariant &data) const
 void ComboBox::setPlaceholderText(const QString &text)
 {
     Q_D(ComboBox);
-    d->_pPlaceholderText = text;
-    if (d->_pCurrentIndex == -1) {
+    d->_placeholderText = text;
+    if (d->_currentIndex == -1) {
         setText(text);
         d->updateTextState(true);
     }
@@ -229,8 +229,8 @@ void ComboBox::setPlaceholderText(const QString &text)
 
 QString ComboBox::placeholderText() const
 {
-    Q_D_CONST(ComboBox);
-    return d->_pPlaceholderText;
+    Q_D(const ComboBox);
+    return d->_placeholderText;
 }
 
 void ComboBox::setText(const QString &text)
@@ -248,9 +248,9 @@ void ComboBox::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (d->_pIsHover) {
+    if (d->_isHover) {
         painter.setOpacity(0.8);
-    } else if (d->_pIsPressed) {
+    } else if (d->_isPressed) {
         painter.setOpacity(0.7);
     }
 
@@ -272,19 +272,19 @@ bool ComboBox::eventFilter(QObject *watched, QEvent *event)
     if (watched == this) {
         switch (event->type()) {
         case QEvent::MouseButtonPress:
-            d->_pIsPressed = true;
+            d->_isPressed = true;
             update();
             break;
         case QEvent::MouseButtonRelease:
-            d->_pIsPressed = false;
+            d->_isPressed = false;
             update();
             break;
         case QEvent::Enter:
-            d->_pIsHover = true;
+            d->_isHover = true;
             update();
             break;
         case QEvent::Leave:
-            d->_pIsHover = false;
+            d->_isHover = false;
             update();
             break;
         default:
@@ -294,4 +294,15 @@ bool ComboBox::eventFilter(QObject *watched, QEvent *event)
     return QPushButton::eventFilter(watched, event);
 }
 
+void ComboBox::setMaxVisibleItems(int count)
+{
+    Q_D(ComboBox);
+    d->_maxVisibleItems = count;
+}
+
+int ComboBox::getMaxVisibleItems()
+{
+    Q_D(ComboBox);
+    return d->_maxVisibleItems;
+}
 

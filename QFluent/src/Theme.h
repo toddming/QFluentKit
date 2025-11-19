@@ -1,16 +1,17 @@
-﻿#ifndef THEME_H
-#define THEME_H
+﻿#pragma once
 
+#include <QtGlobal>
 #include <QObject>
 #include <QFont>
+#include <QScopedPointer>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 class ThemePrivate;
 class QFLUENT_EXPORT Theme : public QObject
 {
     Q_OBJECT
-    Q_Q_CREATE(Theme)
+    Q_DECLARE_PRIVATE_D(d_ptr, Theme)
 
 public:
     explicit Theme(QObject* parent = nullptr);
@@ -35,7 +36,6 @@ public:
 Q_SIGNALS:
     Q_SIGNAL void themeModeChanged(ThemeType::ThemeMode themeType);
 
+private:
+    QScopedPointer<ThemePrivate> d_ptr;
 };
-
-
-#endif // THEME_H

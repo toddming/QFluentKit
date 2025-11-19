@@ -54,7 +54,7 @@ static inline void emulateLeaveEvent(QWidget *widget) {
 
 FluentTitleBar::FluentTitleBar(QWidget *parent)
     : QFrame(parent)
-    , d_ptr(new FluentTitleBarPrivate())
+    , d_ptr(new FluentTitleBarPrivate)
 {
     Q_D(FluentTitleBar);
     d->q_ptr = this;
@@ -148,48 +148,48 @@ FluentTitleBar::~FluentTitleBar()
 
 
 QLabel *FluentTitleBar::titleLabel() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_titleLabel;
 }
 
 QLabel *FluentTitleBar::iconLabel() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_iconLabel;
 }
 
 QAbstractButton *FluentTitleBar::iconButton() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_iconButton;
 }
 
 QAbstractButton *FluentTitleBar::backButton() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_backButton;
 }
 
 QAbstractButton *FluentTitleBar::themeButton() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_themeButton;
 }
 
 QAbstractButton *FluentTitleBar::minButton() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_minButton;
 }
 
 QAbstractButton *FluentTitleBar::maxButton() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_maxButton;
 }
 
 QAbstractButton *FluentTitleBar::closeButton() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_closeButton;
 }
 
 
 QWidget *FluentTitleBar::hostWidget() const {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
     return d->_hostWidget;
 }
 
@@ -209,7 +209,7 @@ void FluentTitleBar::setHostWidget(QWidget *w) {
 
 
 bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
-    Q_D_CONST(FluentTitleBar);
+    Q_D(const FluentTitleBar);
 
     auto w = d->_hostWidget;
     if (obj == w) {

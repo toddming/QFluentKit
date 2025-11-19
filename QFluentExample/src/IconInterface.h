@@ -18,7 +18,7 @@
 
 #include "FluentIcon.h"
 #include "Theme.h"
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "StyleSheet.h"
 #include "QFluent/Label.h"
 #include "QFluent/LineEdit.h"

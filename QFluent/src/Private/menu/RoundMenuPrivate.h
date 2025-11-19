@@ -5,13 +5,13 @@
 #include <QPointF>
 #include <QListWidgetItem>
 
-#include "Define.h"
+#include "FluentGlobal.h"
+#include "QFluent/menu/RoundMenu.h"
 
 Q_DECLARE_METATYPE(QListWidgetItem*)
 
 class QTimer;
 class QAction;
-class RoundMenu;
 class QHBoxLayout;
 class QListWidgetItem;
 class MenuActionListWidget;
@@ -19,11 +19,10 @@ class QGraphicsDropShadowEffect;
 class RoundMenuPrivate : public QObject
 {
     Q_OBJECT
-    Q_D_CREATE(RoundMenu)
-    Q_PROPERTY_CREATE_D(bool, IsSubMenu)
+    Q_DECLARE_PUBLIC(RoundMenu)
 
 public:
-    explicit RoundMenuPrivate(QObject* parent = nullptr);
+    RoundMenu *q_ptr{nullptr};
 
     void handleItemClicked(QListWidgetItem* item);
 
@@ -34,6 +33,7 @@ public:
     void handleItemEntered(QListWidgetItem* item);
 
 private:
+    bool _isSubMenu{false};
     MenuActionListWidget* _view;
     QHBoxLayout* _layout;
     QTimer* _showTimer;

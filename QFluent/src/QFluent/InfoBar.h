@@ -4,7 +4,7 @@
 #include <QMap>
 #include <QFrame>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 class QLabel;
 class QBoxLayout;

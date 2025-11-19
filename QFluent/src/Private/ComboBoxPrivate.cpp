@@ -7,11 +7,6 @@
 #include <QCursor>
 #include <QAction>
 
-ComboBoxPrivate::ComboBoxPrivate(QObject* parent) : QObject{parent}
-{
-
-}
-
 ComboBoxMenu* ComboBoxPrivate::createComboMenu()
 {
     Q_Q(ComboBox);
@@ -22,13 +17,13 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
         QAction *action = new QAction(_items[i].icon, _items[i].text, menu);
         action->setData(i);
         action->setCheckable(true);
-        if (i == _pCurrentIndex) {
+        if (i == _currentIndex) {
             action->setChecked(true);
         }
         menu->addAction(action);
         connect(action, &QAction::triggered, q, [=](){
             int index = action->property("index").toInt();
-            if (index != _pCurrentIndex) {
+            if (index != _currentIndex) {
                 q->setCurrentIndex(index);
                 emit q->activated(index);
                 emit q->textActivated(action->text());

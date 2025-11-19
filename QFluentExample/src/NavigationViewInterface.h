@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "GalleryInterface.h"
+#include "QFluent/TabView.h"
 
 class NavigationViewInterface : public GalleryInterface
 {
@@ -10,4 +11,10 @@ public:
 
 private:
     QWidget* createTabWidget();
+
+    void addTab();
+    void removeTab(int index);
+
+    TabBar* tabBar;
+    int tabCount = 0;
 };

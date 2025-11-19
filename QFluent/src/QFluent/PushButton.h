@@ -5,7 +5,7 @@
 #include <QPointer>
 #include <QPushButton>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 // PushButton

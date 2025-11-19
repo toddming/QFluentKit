@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "MaskDialogBase.h"
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QEvent;
 class MessageDialogPrivate;
@@ -20,5 +20,8 @@ signals:
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
+
+private:
+    QScopedPointer<MessageDialogPrivate> d_ptr;
 
 };

@@ -2,7 +2,11 @@
 
 #include <QObject>
 
-#include "Property.h"
+#if defined(QFLUENT_LIBRARY)
+#  define QFLUENT_EXPORT Q_DECL_EXPORT
+#else
+#  define QFLUENT_EXPORT Q_DECL_IMPORT
+#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 #define Q_BEGIN_ENUM_CREATE(CLASS) \

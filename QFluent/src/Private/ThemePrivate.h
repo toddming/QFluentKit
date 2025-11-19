@@ -1,15 +1,15 @@
 ﻿#pragma once
 
 #include <QColor>
+#include "Theme.h"
+#include "FluentGlobal.h"
 
-#include "Define.h"
-
-class Theme;
 class ThemePrivate
 {
+    Q_DECLARE_PUBLIC(Theme)
 public:
+    Theme *q_ptr{nullptr};
     explicit ThemePrivate();
-    Q_D_CREATE(Theme)
 
 private:
     ThemeType::ThemeMode _currentTheme{ThemeType::ThemeMode::DARK};

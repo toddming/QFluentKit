@@ -13,7 +13,7 @@
 
 FluentWidget::FluentWidget(QMainWindow *parent)
     : QMainWindow(parent)
-    , d_ptr(new FluentWidgetPrivate())
+    , d_ptr(new FluentWidgetPrivate)
 {
     Q_D(FluentWidget);
     d->q_ptr = this;
@@ -50,7 +50,7 @@ FluentWidget::FluentWidget(QMainWindow *parent)
         }
     });
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
-    d->windowAgent = agent;
+    d->_windowAgent = agent;
 
     d->setDarkTheme(Theme::instance()->isDarkTheme());
     StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
@@ -105,7 +105,7 @@ void FluentWidget::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
 
 AppBarType::ButtonFlags FluentWidget::getWindowButtonFlags() const
 {
-    Q_D_CONST(FluentWidget);
+    Q_D(const FluentWidget);
     return d->_windowBar->getWindowButtonFlags();
 }
 
@@ -114,7 +114,7 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
 {
     Q_D(FluentWidget);
 
-    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->windowAgent);
+    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->_windowAgent);
     if (agent == nullptr) {
         return;
     }
@@ -139,7 +139,7 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
 
 ApplicationType::WindowDisplayMode FluentWidget::windowDisplayMode() const
 {
-    Q_D_CONST(FluentWidget);
+    Q_D(const FluentWidget);
     return d->_windowDisplayMode;
 }
 

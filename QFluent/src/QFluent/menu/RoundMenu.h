@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <QStyleOption>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 
 class QListWidgetItem;
@@ -14,7 +14,7 @@ class RoundMenuPrivate;
 class MenuActionListWidget;
 class QFLUENT_EXPORT RoundMenu : public QMenu {
     Q_OBJECT
-    Q_Q_CREATE(RoundMenu)
+    Q_DECLARE_PRIVATE_D(d_ptr, RoundMenu)
 
 public:
     explicit RoundMenu(const QString& title = "", QWidget* parent = nullptr);
@@ -52,5 +52,9 @@ protected:
     void mouseMoveEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     virtual int adjustItemText(QListWidgetItem *item, QAction *action);
+
+private:
+    QScopedPointer<RoundMenuPrivate> d_ptr;
+
 
 };

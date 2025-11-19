@@ -4,7 +4,8 @@
 #include <QIcon>
 #include <QVariant>
 
-#include "Define.h"
+#include "FluentGlobal.h"
+#include "QFluent/ComboBox.h"
 
 namespace ComboBoxDetail {
 struct ComboItem {
@@ -20,23 +21,22 @@ struct ComboItem {
 }
 
 class QAction;
-class ComboBox;
 class ComboBoxMenu;
 class TranslateYAnimation;
 class ComboBoxPrivate : public QObject {
 public:
-    Q_D_CREATE(ComboBox)
-    Q_PROPERTY_CREATE_D(bool, IsPressed)
-    Q_PROPERTY_CREATE_D(bool, IsHover)
-    Q_PROPERTY_CREATE_D(QString, PlaceholderText)
-    Q_PROPERTY_CREATE_D(int, CurrentIndex)
-    Q_PROPERTY_CREATE_D(int, MaxVisibleItems)
-
-    explicit ComboBoxPrivate(QObject* parent = nullptr);
+    Q_DECLARE_PUBLIC(ComboBox)
 
     void handleMenuAction(QAction *action);
 
 private:
+
+    bool _isPressed;
+    bool _isHover;
+    QString _placeholderText;
+    int _currentIndex;
+    int _maxVisibleItems;
+
     ComboBoxMenu *_dropMenu = nullptr;
     TranslateYAnimation *_arrowAni = nullptr;
     QVector<ComboBoxDetail::ComboItem> _items;

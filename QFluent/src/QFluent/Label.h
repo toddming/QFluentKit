@@ -2,7 +2,7 @@
 
 #include <QLabel>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT FluentLabelBase : public QLabel {
     Q_OBJECT

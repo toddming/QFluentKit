@@ -3,7 +3,7 @@
 
 #include <QRadioButton>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT RadioButton : public QRadioButton
 {

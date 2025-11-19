@@ -4,7 +4,7 @@
 #include <QToolButton>
 #include <QPointer>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "menu/RoundMenu.h"
 
 class QAction;

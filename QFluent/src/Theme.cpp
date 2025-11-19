@@ -9,7 +9,8 @@
 
 Q_GLOBAL_STATIC(Theme, qtheme)
 
-Theme::Theme(QObject* parent) : QObject(parent), d_ptr(new ThemePrivate())
+Theme::Theme(QObject* parent) : QObject(parent)
+  , d_ptr(new ThemePrivate)
 {
     Q_D(Theme);
     d->q_ptr = this;
@@ -41,7 +42,7 @@ Theme *Theme::instance()
 }
 
 ThemeType::ThemeMode Theme::theme() const {
-    Q_D_CONST(Theme);
+    Q_D(const Theme);
     return d->_currentTheme;
 }
 
@@ -62,12 +63,12 @@ void Theme::toggleTheme(bool save, bool lazy) {
 }
 
 QColor Theme::themeColor() const {
-    Q_D_CONST(Theme);
+    Q_D(const Theme);
     return d->_themeColor;
 }
 
 QColor Theme::themeColor(ThemeType::ThemeColor type) const {
-    Q_D_CONST(Theme);
+    Q_D(const Theme);
     return d->calculateThemeColor(type);
 }
 
@@ -84,7 +85,7 @@ void Theme::setThemeColor(const QColor& color, bool save, bool lazy) {
 }
 
 bool Theme::isDarkTheme() const {
-    Q_D_CONST(Theme);
+    Q_D(const Theme);
     return d->_currentTheme == ThemeType::ThemeMode::DARK;
 }
 

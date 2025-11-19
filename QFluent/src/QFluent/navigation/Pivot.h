@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QPushButton>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 class QHBoxLayout;
 class FluentAnimation;

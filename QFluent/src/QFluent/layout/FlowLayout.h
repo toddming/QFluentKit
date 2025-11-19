@@ -5,7 +5,7 @@
 #include <QLayout>
 #include <QEasingCurve>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 QT_BEGIN_NAMESPACE
 

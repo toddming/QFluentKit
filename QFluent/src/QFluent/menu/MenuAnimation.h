@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 class RoundMenu;
 class QPropertyAnimation;

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "ProgressBar.h"
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT ProgressRing : public ProgressBar
 {

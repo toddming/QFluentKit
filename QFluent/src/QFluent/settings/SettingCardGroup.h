@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 #include "../layout/ExpandLayout.h"
 
 class QLabel;

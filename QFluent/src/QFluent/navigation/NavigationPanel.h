@@ -4,7 +4,7 @@
 #include <QFrame>
 #include <QVBoxLayout>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 class QScrollArea;

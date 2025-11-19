@@ -338,6 +338,7 @@ void TabBar::initWidget() {
     setFixedHeight(46);
     setWidget(view);
     setWidgetResizable(true);
+    setViewportMargins(0, 0, 0, 0);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 

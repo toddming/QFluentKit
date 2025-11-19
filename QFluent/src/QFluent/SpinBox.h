@@ -8,7 +8,7 @@
 #include <QToolButton>
 #include <QPainter>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 class QHBoxLayout;

@@ -4,7 +4,7 @@
 #include <QToolButton>
 
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QLabel;
 class QHBoxLayout;

@@ -8,7 +8,7 @@
 #include <QPainterPath>
 #include <QEvent>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 // ============================================================
 // EditLayer
 // ============================================================

@@ -2,7 +2,7 @@
 
 #include <QMainWindow>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 class NavigationPanel;
@@ -11,7 +11,7 @@ class NavigationAvatarWidget;
 class QFLUENT_EXPORT FluentSplitWindow : public QMainWindow
 {
     Q_OBJECT
-    Q_Q_CREATE(FluentSplitWindow)
+    Q_DECLARE_PRIVATE_D(d_ptr, FluentSplitWindow)
 
 public:
     FluentSplitWindow(QMainWindow *parent = nullptr);
@@ -37,4 +37,8 @@ public:
 protected:
     bool event(QEvent *event) override;
     void resizeEvent(QResizeEvent *e) override;
+
+private:
+    QScopedPointer<FluentSplitWindowPrivate> d_ptr;
+
 };

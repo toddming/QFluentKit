@@ -1,10 +1,10 @@
 ﻿#include "FluentWidgetPrivate.h"
 #include "QWKWidgets/widgetwindowagent.h"
-#include "QFluent/FluentWidget.h"
+
 #include "Theme.h"
 
 void FluentWidgetPrivate::setDarkTheme(bool dark) {
-    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(windowAgent);
+    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(_windowAgent);
     if (agent == nullptr) {
         return;
     }

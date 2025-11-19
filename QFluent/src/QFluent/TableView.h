@@ -15,7 +15,7 @@
 #include <QMouseEvent>
 
 #include "Theme.h"
-#include "Property.h"
+#include "FluentGlobal.h"
 #include "StyleSheet.h"
 
 

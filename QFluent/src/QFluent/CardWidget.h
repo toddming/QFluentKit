@@ -8,7 +8,7 @@
 #include <QMouseEvent>
 #include <QColor>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT CardWidget : public BackgroundAnimationWidget
 {

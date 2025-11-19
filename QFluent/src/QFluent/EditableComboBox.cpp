@@ -105,7 +105,7 @@ void EditableComboBox::clear()
 
 int EditableComboBox::currentIndex() const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     return d->_pCurrentIndex;
 }
@@ -117,7 +117,7 @@ QString EditableComboBox::currentText() const
 
 QVariant EditableComboBox::currentData() const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
         return d->_items[d->_pCurrentIndex].userData;
@@ -155,14 +155,14 @@ void EditableComboBox::setCurrentText(const QString &text)
 
 int EditableComboBox::count() const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     return d->_items.size();
 }
 
 QString EditableComboBox::itemText(int index) const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     if (index >= 0 && index < count()) {
         return d->_items[index].text;
@@ -172,7 +172,7 @@ QString EditableComboBox::itemText(int index) const
 
 QIcon EditableComboBox::itemIcon(int index) const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     if (index >= 0 && index < count()) {
         return d->_items[index].icon;
@@ -182,7 +182,7 @@ QIcon EditableComboBox::itemIcon(int index) const
 
 QVariant EditableComboBox::itemData(int index) const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     if (index >= 0 && index < count()) {
         return d->_items[index].userData;
@@ -192,7 +192,7 @@ QVariant EditableComboBox::itemData(int index) const
 
 int EditableComboBox::findText(const QString &text) const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     for (int i = 0; i < count(); ++i) {
         if (d->_items[i].text == text) {
@@ -204,7 +204,7 @@ int EditableComboBox::findText(const QString &text) const
 
 int EditableComboBox::findData(const QVariant &data) const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     for (int i = 0; i < count(); ++i) {
         if (d->_items[i].userData == data) {
@@ -226,7 +226,7 @@ void EditableComboBox::setPlaceholderText(const QString &text)
 
 QString EditableComboBox::placeholderText() const
 {
-    Q_D_CONST(EditableComboBox);
+    Q_D(const EditableComboBox);
 
     return d->_pPlaceholderText;
 }

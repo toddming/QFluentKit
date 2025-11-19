@@ -6,7 +6,7 @@
 #include <QMenu>
 
 #include "FluentIcon.h"
-#include "Define.h"
+#include "FluentGlobal.h"
 
 SubMenuItemWidget::SubMenuItemWidget(QMenu* menu, QListWidgetItem* item, QWidget* parent)
     : QWidget(parent)

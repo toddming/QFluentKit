@@ -3,7 +3,7 @@
 
 #include <QProgressBar>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QPropertyAnimation;
 class QParallelAnimationGroup;

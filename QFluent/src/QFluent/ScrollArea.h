@@ -3,7 +3,7 @@
 
 #include <QScrollArea>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT ScrollArea : public QScrollArea
 {

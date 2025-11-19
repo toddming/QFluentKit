@@ -1,22 +1,19 @@
 ﻿#pragma once
 
-#include "Property.h"
+#include "FluentGlobal.h"
+#include "QFluent/dialog/MaskDialogBase.h"
 
 class QFrame;
 class QWidget;
 class QHBoxLayout;
-class MaskDialogBase;
 class MaskDialogBasePrivate
 {
-    Q_D_CREATE(MaskDialogBase)
-    Q_PROPERTY_CREATE_D(bool, IsClosableOnMaskClicked)
+    Q_DECLARE_PUBLIC(MaskDialogBase)
 
 public:
-    explicit MaskDialogBasePrivate();
+    MaskDialogBase *q_ptr{nullptr};
 
-private:
-    void init(QWidget* parent);
-
+    bool _isClosableOnMaskClicked;
     QHBoxLayout *_hBoxLayout;
     QWidget* _windowMask = nullptr;
     QFrame* _centerWidget = nullptr;

@@ -6,15 +6,15 @@
 #include <QVector>
 #include <QIcon>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class ComboBoxMenu;
 class ComboBoxPrivate;
 class QFLUENT_EXPORT ComboBox : public QPushButton
 {
     Q_OBJECT
-    Q_Q_CREATE(ComboBox)
-    Q_PROPERTY_CREATE_Q_H(int, MaxVisibleItems)
+    Q_DECLARE_PRIVATE_D(d_ptr, ComboBox)
+
 public:
     explicit ComboBox(QWidget *parent = nullptr);
     ~ComboBox();
@@ -59,6 +59,10 @@ public:
     QString placeholderText() const;
 
     void setText(const QString &text);
+
+    void setMaxVisibleItems(int count);
+
+    int getMaxVisibleItems();
 
 signals:
     void currentIndexChanged(int index);

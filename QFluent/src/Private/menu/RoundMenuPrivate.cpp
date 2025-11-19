@@ -16,10 +16,6 @@
 #include "QFluent/menu/MenuActionListWidget.h"
 #include "QFluent/menu/SubMenuItemWidget.h"
 
-RoundMenuPrivate::RoundMenuPrivate(QObject* parent) : QObject{parent}
-{
-
-}
 
 bool RoundMenuPrivate::hasItemIcon() const
 {
@@ -32,7 +28,7 @@ bool RoundMenuPrivate::hasItemIcon() const
 
 int RoundMenuPrivate::longestShortcutWidth() const
 {
-    Q_Q_CONST(RoundMenu);
+    Q_Q(const RoundMenu);
 
     QFontMetrics fm(q->font());
     int maxWidth = 0;
@@ -197,8 +193,7 @@ void RoundMenuPrivate::setParentMenu(RoundMenu *parent, QListWidgetItem *item)
 {
     _parentMenu = parent;
     _menuItem = item;
-    _pIsSubMenu = (parent != nullptr);
-
+    _isSubMenu = (parent != nullptr);
 }
 
 void RoundMenuPrivate::removeItem(QListWidgetItem *item)

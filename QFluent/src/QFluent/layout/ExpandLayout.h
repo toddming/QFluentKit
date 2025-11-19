@@ -2,7 +2,7 @@
 #define EXPANDLAYOUT_H
 
 #include <QLayout>
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT ExpandLayout : public QLayout
 {

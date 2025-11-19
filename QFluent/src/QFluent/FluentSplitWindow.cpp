@@ -15,7 +15,7 @@
 
 FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
     : QMainWindow(parent)
-    , d_ptr(new FluentSplitWindowPrivate())
+    , d_ptr(new FluentSplitWindowPrivate)
 {
     Q_D(FluentSplitWindow);
     d->q_ptr = this;
@@ -58,7 +58,7 @@ FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
         }
     });
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
-    d->windowAgent = agent;
+    d->_windowAgent = agent;
 
     d->_userWidget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(d->_userWidget);
@@ -130,7 +130,7 @@ void FluentSplitWindow::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags
 
 AppBarType::ButtonFlags FluentSplitWindow::getWindowButtonFlags() const
 {
-    Q_D_CONST(FluentSplitWindow);
+    Q_D(const FluentSplitWindow);
     return d->_windowBar->getWindowButtonFlags();
 }
 
@@ -139,7 +139,7 @@ void FluentSplitWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode 
 {
     Q_D(FluentSplitWindow);
 
-    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->windowAgent);
+    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->_windowAgent);
     if (agent == nullptr) {
         return;
     }
@@ -166,7 +166,7 @@ void FluentSplitWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode 
 
 ApplicationType::WindowDisplayMode FluentSplitWindow::windowDisplayMode() const
 {
-    Q_D_CONST(FluentSplitWindow);
+    Q_D(const FluentSplitWindow);
     return d->_windowDisplayMode;
 }
 
@@ -180,7 +180,7 @@ void FluentSplitWindow::setCustomWindowIcon(const QPixmap &pixmap, const QSize &
 
 NavigationPanel *FluentSplitWindow::navigationInterface() const
 {
-    Q_D_CONST(FluentSplitWindow);
+    Q_D(const FluentSplitWindow);
     return d->_navPanel;
 }
 

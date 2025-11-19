@@ -9,11 +9,6 @@
 #include "QFluent/Label.h"
 #include "QFluent/PushButton.h"
 
-MessageDialogPrivate::MessageDialogPrivate()
-    : MaskDialogBasePrivate()
-{
-    // 特有初始化
-}
 
 void MessageDialogPrivate::setQss()
 {

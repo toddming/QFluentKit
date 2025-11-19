@@ -2,7 +2,7 @@
 #define PAGINATION_H
 
 #include <QFrame>
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "PushButton.h"
 
 using namespace std;

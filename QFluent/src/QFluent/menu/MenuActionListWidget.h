@@ -2,7 +2,7 @@
 
 #include <QListWidget>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 class MenuAnimation;
 class QFLUENT_EXPORT MenuActionListWidget : public QListWidget {

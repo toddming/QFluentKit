@@ -3,7 +3,6 @@
 #include "FluentIcon.h"
 #include "QFluent/Label.h"
 #include "QFluent/SpinBox.h"
-#include "QFluent/TabView.h"
 #include "QFluent/CheckBox.h"
 #include "QFluent/ComboBox.h"
 #include "QFluent/navigation/Pivot.h"
@@ -21,34 +20,36 @@ NavigationViewInterface::NavigationViewInterface(QWidget *parent)
 
     addExampleCard("顶部导航栏", pivot);
 
-    addExampleCard("标签导航", createTabWidget());
+    addExampleCard("标签导航", createTabWidget(), "", 1);
 }
 
 QWidget* NavigationViewInterface::createTabWidget()
 {
-    TabBar* tabBar = new TabBar(this);
-    // tabBar->setMinimumHeight(80);
+    tabBar = new TabBar(this);
     tabBar->setMovable(true);          // 允许拖拽标签
     tabBar->setTabsClosable(true);     // 显示关闭按钮
     tabBar->setAddButtonVisible(true); // 显示添加按钮
 
-    // 基本添加
-    tabBar->addTab("1", "标签文字x1", QIcon(":/res/example.png"));
-    tabBar->addTab("2", "标签文字x2", QIcon(":/res/example.png"));
+    addTab();
+    addTab();
 
-    auto tabView = new QWidget(this);
-    auto controlPanel = new QFrame(this);
+    auto widget = new QWidget(this);
+    auto tabView = new QWidget(widget);
+    auto controlPanel = new QFrame(widget);
+    controlPanel->setObjectName("controlPanel");
     controlPanel->setFixedWidth(220);
-    auto movableCheckBox = new CheckBox("启用标签拖拽", controlPanel);
-    auto scrollableCheckBox = new CheckBox("启用标签滚动", controlPanel);
-    auto shadowEnabledCheckBox = new CheckBox("启用标签阴影", controlPanel);
-    auto tabMaxWidthLabel = new BodyLabel("标签最大宽度", controlPanel);
-    auto tabMaxWidthSpinBox = new SpinBox(controlPanel);
-    auto closeDisplayModeLabel = new BodyLabel("关闭按钮显示模式", controlPanel);
-    auto closeDisplayModeComboBox = new ComboBox(this);
-
-    auto hBoxLayout = new QHBoxLayout(tabView);
-    auto vBoxLayout = new QVBoxLayout();
+    auto movableCheckBox = new CheckBox("启用标签拖拽", widget);
+    auto scrollableCheckBox = new CheckBox("启用标签滚动", widget);
+    auto shadowEnabledCheckBox = new CheckBox("启用标签阴影", widget);
+    auto tabMaxWidthLabel = new BodyLabel("标签最大宽度", widget);
+    auto tabMaxWidthSpinBox = new SpinBox(widget);
+    auto closeDisplayModeLabel = new BodyLabel("关闭按钮显示模式", widget);
+    auto closeDisplayModeComboBox = new ComboBox(widget);
+    movableCheckBox->setChecked(true);
+    scrollableCheckBox->setChecked(true);
+    shadowEnabledCheckBox->setChecked(true);
+    auto hBoxLayout = new QHBoxLayout(widget);
+    auto vBoxLayout = new QVBoxLayout(tabView);
     auto panelLayout = new QVBoxLayout(controlPanel);
     hBoxLayout->setContentsMargins(0, 0, 0, 0);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);
@@ -58,8 +59,6 @@ QWidget* NavigationViewInterface::createTabWidget()
 
     vBoxLayout->addWidget(tabBar);
     vBoxLayout->addStretch();
-    hBoxLayout->addLayout(vBoxLayout, 1);
-    hBoxLayout->addWidget(controlPanel, 0);
     panelLayout->addWidget(movableCheckBox);
     panelLayout->addWidget(scrollableCheckBox);
     panelLayout->addWidget(shadowEnabledCheckBox);
@@ -69,6 +68,9 @@ QWidget* NavigationViewInterface::createTabWidget()
     panelLayout->addSpacing(4);
     panelLayout->addWidget(closeDisplayModeLabel);
     panelLayout->addWidget(closeDisplayModeComboBox);
+
+    hBoxLayout->addWidget(tabView, 1);
+    hBoxLayout->addWidget(controlPanel, 0);
 
     connect(movableCheckBox, &CheckBox::clicked, this, [=](bool checked){
         tabBar->setMovable(checked);
@@ -80,5 +82,22 @@ QWidget* NavigationViewInterface::createTabWidget()
         tabBar->setTabShadowEnabled(checked);
     });
 
-    return tabView;
+    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/navigation_view_interface.qss");
+    StyleSheetManager::instance()->registerWidget(styleSource, widget);
+
+    connect(tabBar, &TabBar::tabAddRequested, this, [=](){ addTab(); });
+    connect(tabBar, &TabBar::tabCloseRequested, this, [=](int index){ removeTab(index); });
+
+    return widget;
+}
+
+void NavigationViewInterface::addTab()
+{
+    int count = ++tabCount;
+    tabBar->addTab(QString::number(count), QString("新建标签x%1").arg(count), QIcon(":/res/example.png"));
+}
+
+void NavigationViewInterface::removeTab(int index)
+{
+    tabBar->removeTab(index);
 }

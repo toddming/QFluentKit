@@ -15,7 +15,7 @@
 #include <QCache>
 #include <memory>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 
 // 前向声明
 class FluentIconBase;

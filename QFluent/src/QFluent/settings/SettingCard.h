@@ -4,7 +4,7 @@
 #include <QFrame>
 #include <QPainter>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 #include "../IconWidget.h"
 
 class QLabel;

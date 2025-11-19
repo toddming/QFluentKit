@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QScrollArea>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 // NavigationWidget

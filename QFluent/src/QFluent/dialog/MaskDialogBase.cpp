@@ -9,21 +9,19 @@
 #include <QTimer>
 #include <QFrame>
 #include <QResizeEvent>
-#include <QDebug>
 
 #include "Theme.h"
 #include "Private/dialog/MaskDialogBasePrivate.h"
 
 
-Q_PROPERTY_CREATE_Q_CPP(MaskDialogBase, bool, IsClosableOnMaskClicked)
 MaskDialogBase::MaskDialogBase(QWidget* parent)
     : QDialog(parent)
-, d_ptr(new MaskDialogBasePrivate())
+    , d_ptr(new MaskDialogBasePrivate)
 {
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
-    d->_pIsClosableOnMaskClicked = false;
+    d->_isClosableOnMaskClicked = false;
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -61,7 +59,7 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
-    d->_pIsClosableOnMaskClicked = false;
+    d->_isClosableOnMaskClicked = false;
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -104,7 +102,7 @@ QHBoxLayout* MaskDialogBase::hBoxLayout()
 
 QWidget* MaskDialogBase::centerWidget() const
 {
-    Q_D_CONST(MaskDialogBase);
+    Q_D(const MaskDialogBase);
 
     return d->_centerWidget;
 }
@@ -113,8 +111,8 @@ void MaskDialogBase::setMaskColor(const QColor& color)
 {
     Q_D(MaskDialogBase);
     d->_windowMask->setStyleSheet(QString(
-                                    "background: rgba(%1, %2, %3, %4);"
-                                    ).arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha()));
+                                      "background: rgba(%1, %2, %3, %4);"
+                                      ).arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha()));
     update();
 }
 
@@ -201,7 +199,7 @@ bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
         });
     } else if (obj == d->_windowMask && event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        if (mouseEvent->button() == Qt::LeftButton && d->_pIsClosableOnMaskClicked) {
+        if (mouseEvent->button() == Qt::LeftButton && d->_isClosableOnMaskClicked) {
             reject();
         }
     }

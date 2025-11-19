@@ -8,12 +8,13 @@
 
 #include "Theme.h"
 #include "FluentIcon.h"
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "StyleSheet.h"
 
 #include "Private/CheckBoxPrivate.h"
 
-CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent), d_ptr(new CheckBoxPrivate())
+CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
+  , d_ptr(new CheckBoxPrivate)
 {
     Q_D(CheckBox);
     d->q_ptr = this;

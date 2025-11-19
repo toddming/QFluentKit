@@ -1,20 +1,22 @@
 ﻿#pragma once
 
-#include "Define.h"
+#include "FluentGlobal.h"
+#include "QFluent/FluentWindow.h"
 
 class QObject;
 class StackedWidget;
-class FluentWindow;
 class FluentTitleBar;
 class NavigationPanel;
 class FluentWindowPrivate
 {
-    Q_D_CREATE(FluentWindow)
+    Q_DECLARE_PUBLIC(FluentWindow)
 
-private:
+public:
+    FluentWindow *q_ptr{nullptr};
+
     void setDarkTheme(bool dark);
 
-    QObject *windowAgent{nullptr};
+    QObject *_windowAgent{nullptr};
 
     FluentTitleBar *_windowBar;
 

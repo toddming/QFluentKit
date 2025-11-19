@@ -4,7 +4,7 @@
 #include <QScrollArea>
 #include <QAbstractButton>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 #include "SettingCard.h"
 
 class QPropertyAnimation;

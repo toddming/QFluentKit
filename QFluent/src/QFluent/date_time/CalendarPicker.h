@@ -3,7 +3,7 @@
 
 #include <QPushButton>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 #include "CalendarView.h"
 
 using FIF = FluentIconType::IconType;

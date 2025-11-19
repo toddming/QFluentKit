@@ -1,17 +1,18 @@
 ﻿#pragma once
 
-#include "Define.h"
 #include <QIcon>
+#include "FluentGlobal.h"
+#include "QFluent/IconWidget.h"
 
-class IconWidget;
 class FluentIconBase;
 class IconWidgetPrivate {
+    Q_DECLARE_PUBLIC(IconWidget)
 
 public:
-    Q_D_CREATE(IconWidget)
-    Q_PROPERTY_CREATE_D(QIcon, Icon)
-    Q_PROPERTY_CREATE_D(ThemeType::ThemeMode, IconTheme)
+    IconWidget *q_ptr{nullptr};
 
 private:
-    std::unique_ptr<FluentIconBase> m_fluentIcon;
+    std::unique_ptr<FluentIconBase> _fluentIcon;
+    QIcon _Icon;
+    ThemeType::ThemeMode _IconTheme;
 };

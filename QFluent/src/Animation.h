@@ -6,7 +6,7 @@
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QGraphicsDropShadowEffect;
 class AnimationBase : public QObject {

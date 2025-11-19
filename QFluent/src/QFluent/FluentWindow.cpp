@@ -15,7 +15,7 @@
 
 FluentWindow::FluentWindow(QMainWindow *parent)
     : QMainWindow(parent)
-    , d_ptr(new FluentWindowPrivate())
+    , d_ptr(new FluentWindowPrivate)
 {
     Q_D(FluentWindow);
     d->q_ptr = this;
@@ -58,7 +58,7 @@ FluentWindow::FluentWindow(QMainWindow *parent)
         }
     });
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
-    d->windowAgent = agent;
+    d->_windowAgent = agent;
 
     QWidget *w = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(w);
@@ -124,7 +124,7 @@ void FluentWindow::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
 
 AppBarType::ButtonFlags FluentWindow::getWindowButtonFlags() const
 {
-    Q_D_CONST(FluentWindow);
+    Q_D(const FluentWindow);
     return d->_windowBar->getWindowButtonFlags();
 }
 
@@ -133,7 +133,7 @@ void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
 {
     Q_D(FluentWindow);
 
-    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->windowAgent);
+    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->_windowAgent);
     if (agent == nullptr) {
         return;
     }
@@ -160,7 +160,7 @@ void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
 
 ApplicationType::WindowDisplayMode FluentWindow::windowDisplayMode() const
 {
-    Q_D_CONST(FluentWindow);
+    Q_D(const FluentWindow);
     return d->_windowDisplayMode;
 }
 
@@ -174,7 +174,7 @@ void FluentWindow::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
 
 NavigationPanel *FluentWindow::navigationInterface() const
 {
-    Q_D_CONST(FluentWindow);
+    Q_D(const FluentWindow);
     return d->_navPanel;
 }
 

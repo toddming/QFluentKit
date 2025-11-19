@@ -1,14 +1,15 @@
-#pragma once
+﻿#pragma once
 
-#include "Define.h"
+#include "FluentGlobal.h"
+#include "QFluent/CheckBox.h"
 
-class CheckBox;
 class CheckBoxPrivate
 {
-public:
-    Q_D_CREATE(CheckBox)
+    Q_DECLARE_PUBLIC(CheckBox)
 
-private:
+public:
+    CheckBox *q_ptr{nullptr};
+
     QColor borderColor();
     QColor backgroundColor();
     CheckBoxType::CheckBoxState state();

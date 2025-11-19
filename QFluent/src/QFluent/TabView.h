@@ -14,7 +14,7 @@
 #include <QPoint>
 
 #include "Theme.h"
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "ScrollArea.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
@@ -41,7 +41,7 @@ protected:
 };
 
 // Tab项
-class TabItem : public QPushButton {
+class QFLUENT_EXPORT TabItem : public QPushButton {
     Q_OBJECT
     Q_PROPERTY(QPoint pos READ pos WRITE move)
 

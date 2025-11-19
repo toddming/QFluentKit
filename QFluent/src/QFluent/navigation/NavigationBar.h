@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QPropertyAnimation>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 #include "NavigationWidget.h"
 #include "NavigationPanel.h"

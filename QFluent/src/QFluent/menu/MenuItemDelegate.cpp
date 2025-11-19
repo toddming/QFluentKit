@@ -7,7 +7,7 @@
 
 #include "FluentIcon.h"
 #include "Theme.h"
-#include "Define.h"
+#include "FluentGlobal.h"
 
 MenuItemDelegate::MenuItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)

@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QToolButton>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 // ToolButton

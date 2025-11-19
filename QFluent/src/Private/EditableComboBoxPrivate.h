@@ -4,7 +4,7 @@
 #include <QIcon>
 #include <QVariant>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "QFluent/LineEdit.h"
 
 
@@ -27,7 +27,7 @@ class EditableComboBox;
 class TranslateYAnimation;
 class EditableComboBoxPrivate : public QObject {
 public:
-    Q_D_CREATE(EditableComboBox)
+    Q_DECLARE_PUBLIC(EditableComboBox)
     Q_PROPERTY_CREATE_D(bool, IsPressed)
     Q_PROPERTY_CREATE_D(bool, IsHover)
     Q_PROPERTY_CREATE_D(QString, PlaceholderText)

@@ -8,7 +8,7 @@ ThemePrivate::ThemePrivate()
 }
 
 QColor ThemePrivate::calculateThemeColor(ThemeType::ThemeColor type) const {
-    Q_Q_CONST(Theme);
+    Q_Q(const Theme);
 
     QColor color = _themeColor;
     qreal h, s, v, a;

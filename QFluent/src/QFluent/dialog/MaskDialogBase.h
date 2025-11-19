@@ -2,7 +2,7 @@
 
 #include <QDialog>
 
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QEvent;
 class QColor;
@@ -13,8 +13,7 @@ class MaskDialogBasePrivate;
 class QFLUENT_EXPORT MaskDialogBase : public QDialog
 {
     Q_OBJECT
-    Q_Q_CREATE(MaskDialogBase)
-    Q_PROPERTY_CREATE_Q_H(bool, IsClosableOnMaskClicked)
+    Q_DECLARE_PRIVATE_D(d_ptr, MaskDialogBase)
 
 public:
     explicit MaskDialogBase(QWidget* parent = nullptr);
@@ -39,9 +38,18 @@ public:
     // 重写 resizeEvent 同步遮罩大小
     void resizeEvent(QResizeEvent* event) override;
 
+    void setIsClosableOnMaskClicked(bool enable);
+
+    bool getIsClosableOnMaskClicked();
+
+protected:
+    explicit MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent = nullptr);
+    void onDone(int code);
     // 事件过滤器：处理父窗口 resize 和遮罩点击
     bool eventFilter(QObject* obj, QEvent* event) override;
 
-protected:
-    void onDone(int code);
+
+private:
+    QScopedPointer<MaskDialogBasePrivate> d_ptr;
+
 };

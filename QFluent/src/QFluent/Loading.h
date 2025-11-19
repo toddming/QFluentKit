@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "dialog/MaskDialogBase.h"
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT Loading : public MaskDialogBase
 {

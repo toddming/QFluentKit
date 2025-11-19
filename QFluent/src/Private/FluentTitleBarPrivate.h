@@ -1,15 +1,18 @@
 ﻿#pragma once
 
 #include <QPointer>
-#include "Define.h"
+#include "FluentGlobal.h"
+#include "QFluent/FluentTitleBar.h"
 
 class QLabel;
 class QWidget;
 class QPushButton;
-class FluentTitleBar;
 class FluentTitleBarPrivate
 {
-    Q_D_CREATE(FluentTitleBar)
+    Q_DECLARE_PUBLIC(FluentTitleBar)
+public:
+    FluentTitleBar *q_ptr{nullptr};
+
 private:
     QPushButton *_minButton;
     QPushButton *_maxButton;

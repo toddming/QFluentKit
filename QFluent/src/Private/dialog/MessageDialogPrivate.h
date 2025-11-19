@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "MaskDialogBasePrivate.h"
-
+#include "QFluent/dialog/MessageDialog.h"
 #include <QString>
 
 class QLabel;
@@ -8,15 +8,12 @@ class QFrame;
 class BodyLabel;
 class QPushButton;
 class PrimaryPushButton;
-class MessageDialog;
 class MessageDialogPrivate : public MaskDialogBasePrivate
 {
-    Q_D_CREATE(MessageDialog)
+    Q_DECLARE_PUBLIC(MessageDialog)
 public:
-    explicit MessageDialogPrivate();
-    // 添加MessageDialog特有的私有成员
+    MessageDialog *q_ptr{nullptr};
 
-private:
     QLabel *titleLabel;
     BodyLabel *contentLabel;
     QFrame *buttonGroup;

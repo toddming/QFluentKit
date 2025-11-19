@@ -8,7 +8,7 @@
 #include <QFrame>
 #include <QDate>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "QFluent/ToolButton.h"
 
 using FIF = FluentIconType::IconType;

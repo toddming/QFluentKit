@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 class QIcon;
@@ -11,8 +11,7 @@ class IconWidgetPrivate;
 class QFLUENT_EXPORT IconWidget : public QWidget
 {
     Q_OBJECT
-    Q_Q_CREATE(IconWidget)
-    Q_PROPERTY_CREATE_Q_H(ThemeType::ThemeMode, IconTheme)
+    Q_DECLARE_PRIVATE_D(d_ptr, IconWidget)
 
 public:
     explicit IconWidget(QWidget *parent = nullptr);
@@ -26,10 +25,16 @@ public:
     void setFluentIcon(const FluentIconBase &icon);
     QIcon getIcon() const;
 
+    void setIconTheme(ThemeType::ThemeMode theme);
+    ThemeType::ThemeMode getIconTheme();
+
     QSize sizeHint() const override;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+
+private:
+    QScopedPointer<IconWidgetPrivate> d_ptr;
 
 };
 

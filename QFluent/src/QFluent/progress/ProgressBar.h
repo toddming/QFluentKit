@@ -2,7 +2,7 @@
 
 #include <QProgressBar>
 #include <QPropertyAnimation>
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class QFLUENT_EXPORT ProgressBar : public QProgressBar
 {

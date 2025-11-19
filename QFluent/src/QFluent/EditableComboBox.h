@@ -5,14 +5,14 @@
 #include <QIcon>
 
 #include "LineEdit.h"
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class ComboBoxMenu;
 class EditableComboBoxPrivate;
 class QFLUENT_EXPORT EditableComboBox : public LineEdit
 {
     Q_OBJECT
-    Q_Q_CREATE(EditableComboBox)
+    Q_DECLARE_PRIVATE_D(d_ptr, EditableComboBox)
     Q_PROPERTY_CREATE_Q_H(int, MaxVisibleItems)
 public:
     explicit EditableComboBox(QWidget *parent = nullptr);

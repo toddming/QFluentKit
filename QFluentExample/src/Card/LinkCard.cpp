@@ -1,7 +1,7 @@
 ﻿#include "LinkCard.h"
 #include "QFluent/IconWidget.h"
 #include "TextWrap.h"
-#include "Define.h"
+#include "FluentGlobal.h"
 #include <QApplication>
 #include <QLabel>
 

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "Define.h"
+#include "FluentGlobal.h"
 #include "FluentIcon.h"
 
 class NavigationPanel;
@@ -12,7 +12,7 @@ class NavigationAvatarWidget;
 class QFLUENT_EXPORT FluentWindow : public QMainWindow
 {
     Q_OBJECT
-    Q_Q_CREATE(FluentWindow)
+    Q_DECLARE_PRIVATE_D(d_ptr, FluentWindow)
 
 public:
     FluentWindow(QMainWindow *parent = nullptr);
@@ -37,6 +37,9 @@ public:
 
 protected:
     bool event(QEvent *event) override;
+
+private:
+    QScopedPointer<FluentWindowPrivate> d_ptr;
 
 };
 #endif // FLUENTWINDOW_H

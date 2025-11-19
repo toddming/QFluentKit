@@ -2,7 +2,7 @@
 #define PROFILECARD_H
 
 #include <QWidget>
-#include "Property.h"
+#include "FluentGlobal.h"
 
 class BodyLabel;
 class CaptionLabel;

@@ -17,7 +17,8 @@
 #include "MenuActionListWidget.h"
 
 RoundMenu::RoundMenu(const QString& title, QWidget* parent)
-    : QMenu(title, parent), d_ptr(new RoundMenuPrivate())
+    : QMenu(title, parent)
+    , d_ptr(new RoundMenuPrivate)
 {
     Q_D(RoundMenu);
     d->q_ptr = this;
@@ -27,7 +28,7 @@ RoundMenu::RoundMenu(const QString& title, QWidget* parent)
 
     setMouseTracking(true);
 
-    d->_pIsSubMenu = false;
+    d->_isSubMenu = false;
     d->_layout = new QHBoxLayout(this);
     d->_view = new MenuActionListWidget(this);
     d->_showTimer = new QTimer(this);
@@ -176,7 +177,7 @@ void RoundMenu::exec(const QPoint& pos, bool animate, MenuAnimationType::MenuAni
     adjustMenuSize();
 
     show();
-    if (d->_pIsSubMenu)
+    if (d->_isSubMenu)
         d->_menuItem->setSelected(true);
 }
 
@@ -194,7 +195,7 @@ void RoundMenu::adjustMenuSize() {
 
 int RoundMenu::itemHeight() const
 {
-    Q_D_CONST(RoundMenu);
+    Q_D(const RoundMenu);
 
     return d->_view->itemHeight();
 }
@@ -251,7 +252,7 @@ void RoundMenu::hideMenu(bool isHideBySystem)
     Q_D(RoundMenu);
     d->_isHideBySystem = isHideBySystem;
     d->_view->clearSelection();
-    if (d->_pIsSubMenu) {
+    if (d->_isSubMenu) {
         hide();
     } else {
         close();
@@ -261,7 +262,7 @@ void RoundMenu::hideMenu(bool isHideBySystem)
 // void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
 //     Q_D(RoundMenu);
 
-//     if (!d->_pIsSubMenu) {
+//     if (!d->_isSubMenu) {
 //         return;
 //     }
 
@@ -283,7 +284,7 @@ void RoundMenu::hideMenu(bool isHideBySystem)
 
 void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
     Q_D(RoundMenu);
-    if (!d->_pIsSubMenu) {
+    if (!d->_isSubMenu) {
         return;
     }
 
