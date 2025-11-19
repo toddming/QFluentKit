@@ -43,7 +43,7 @@ SettingInterface::SettingInterface(QWidget *parent)
     SettingCardGroup *aboutGroup = new SettingCardGroup("关于", m_scrollWidget);
 
 
-    SwitchSettingCard *updateOnStartUpCard = new SwitchSettingCard(FluentIcon(FluentIconType::UPDATE).qicon(),
+    SwitchSettingCard *updateOnStartUpCard = new SwitchSettingCard(FluentIcon(Fluent::IconType::UPDATE).qicon(),
                                                                    "Check for updates when the application starts",
                                                                    "The new version will be more stable and have more features",
                                                                    aboutGroup);
@@ -51,30 +51,30 @@ SettingInterface::SettingInterface(QWidget *parent)
 
 
     ComboBoxSettingCard *languageCard = new ComboBoxSettingCard({"简体中文", "繁體中文", "English", "系统设置"},
-                                                                FluentIcon(FluentIconType::LANGUAGE).qicon(),
+                                                                FluentIcon(Fluent::IconType::LANGUAGE).qicon(),
                                                                 "Language",
                                                                 "Set your preferred language for UI",
                                                                 aboutGroup);
 
-    OptionsSettingCard *effectCard = new OptionsSettingCard(FluentIcon(FluentIconType::ZOOM).qicon(),
+    OptionsSettingCard *effectCard = new OptionsSettingCard(FluentIcon(Fluent::IconType::ZOOM).qicon(),
                                                             "窗口效果",
                                                             "改变窗口的显示效果",
                                                             QVector<QString>() << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt",
                                                             aboutGroup);
 
-    OptionsSettingCard *themeCard = new OptionsSettingCard(FluentIcon(FluentIconType::BRUSH).qicon(),
+    OptionsSettingCard *themeCard = new OptionsSettingCard(FluentIcon(Fluent::IconType::BRUSH).qicon(),
                                                            "应用主题",
                                                            "调整你的应用的外观",
                                                            QVector<QString>() << "深色" << "浅色",
                                                            aboutGroup);
 
     PrimaryPushSettingCard *feedbackCard = new PrimaryPushSettingCard("联系作者",
-                                                                      FluentIcon(FluentIconType::FEEDBACK).qicon(),
+                                                                      FluentIcon(Fluent::IconType::FEEDBACK).qicon(),
                                                                       "联系作者",
                                                                       "QQ:1912229135",
                                                                       aboutGroup);
 
-    HyperlinkCard *helpCard = new HyperlinkCard("", "打开帮助页面", FluentIcon(FluentIconType::HELP).qicon(),
+    HyperlinkCard *helpCard = new HyperlinkCard("", "打开帮助页面", FluentIcon(Fluent::IconType::HELP).qicon(),
                                                 "帮助",
                                                 "https://github.com/toddming/QFluentExample");
 
@@ -93,14 +93,14 @@ SettingInterface::SettingInterface(QWidget *parent)
     connect(themeCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text) {
         Q_UNUSED(text);
-        Theme::instance()->setTheme(index == 0 ? ThemeType::DARK : ThemeType::LIGHT);
+        Theme::instance()->setTheme(index == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
         ConfigManager::instance().setValue("Window/theme", index);
     });
 
     connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text) {
         auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(index));
+        main->setWindowDisplayMode(static_cast<Fluent::WindowDisplayMode>(index));
         ConfigManager::instance().setValue("Window/effect", text);
     });
 
@@ -114,6 +114,6 @@ SettingInterface::SettingInterface(QWidget *parent)
     int var = modes.indexOf(effect);
     if (var >= 0) {
         auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowDisplayMode(static_cast<ApplicationType::WindowDisplayMode>(var));
+        main->setWindowDisplayMode(static_cast<Fluent::WindowDisplayMode>(var));
     }
 }

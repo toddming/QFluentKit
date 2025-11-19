@@ -15,7 +15,7 @@ LinkCard::LinkCard(const QIcon &icon, const QString &title, const QString &conte
     m_iconWidget = new IconWidget(icon, this);
     m_titleLabel = new QLabel(title, this);
     m_contentLabel = new QLabel(TextWrap::wrap(content, 28, false).first, this);
-    m_urlWidget = new IconWidget(FluentIcon(FluentIconType::LINK), this); // 需要链接图标
+    m_urlWidget = new IconWidget(FluentIcon(Fluent::IconType::LINK), this); // 需要链接图标
 
     initWidget();
 }

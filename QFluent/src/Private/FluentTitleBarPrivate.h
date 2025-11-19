@@ -23,5 +23,5 @@ private:
     QLabel *_iconLabel;
     QLabel *_titleLabel;
     QPointer<QWidget> _hostWidget;
-    AppBarType::ButtonFlags _buttonFlags;
+    Fluent::ButtonFlags _buttonFlags;
 };

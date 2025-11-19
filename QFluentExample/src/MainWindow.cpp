@@ -27,31 +27,31 @@ MainWindow::MainWindow()
     setWindowIcon(QPixmap(":/res/example.png"));
     resize(1024, 768);
 
-    setWindowButtonFlags(getWindowButtonFlags() | AppBarType::RouteBackButtonHint);
+    setWindowButtonFlags(getWindowButtonFlags() | Fluent::ButtonType::RouteBackButtonHint);
 
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
-    Theme::instance()->setTheme(theme == 0 ? ThemeType::DARK : ThemeType::LIGHT);
+    Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
 
     navigationInterface()->setExpandWidth(200);
 
     QString iconPath = QString(":/res/icons/%1_{color}.svg");
-    addSubInterface("1", FluentIcon(FluentIconType::HOME), "主页", new HomeInterface(this), true, NavigationType::TOP);
-    addSubInterface("2", FluentIcon(FluentIconType::EMOJI_TAB_SYMBOLS), "图标", new IconInterface(this), true, NavigationType::TOP);
+    addSubInterface("1", FluentIcon(Fluent::IconType::HOME), "主页", new HomeInterface(this), true, Fluent::NavigationItemPosition::TOP);
+    addSubInterface("2", FluentIcon(Fluent::IconType::EMOJI_TAB_SYMBOLS), "图标", new IconInterface(this), true, Fluent::NavigationItemPosition::TOP);
     navigationInterface()->addSeparator();
-    addSubInterface("3", FluentIcon(FluentIconType::CHECKBOX), "基本输入", new BasicInputInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("4", FluentIcon(FluentIconType::DATE_TIME), "日期和时间", new DateTimeInputInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("5", FluentIcon(FluentIconType::MESSAGE), "对话框", new DialogInputInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("6", FluentIcon(FluentIconType::LAYOUT), "布局", new LayoutInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("7", FluentIcon(iconPath.arg("Menu")), "菜单", new MenuInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("8", FluentIcon(FluentIconType::MENU), "导航", new NavigationViewInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("9", FluentIcon(FluentIconType::APPLICATION), "窗口", new WindowInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("10", FluentIcon(FluentIconType::SCROLL), "滚动", new ScrollInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("11", FluentIcon(FluentIconType::CHAT), "状态", new StatusInfoInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, NavigationType::SCROLL);
-    addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NavigationType::SCROLL);
+    addSubInterface("3", FluentIcon(Fluent::IconType::CHECKBOX), "基本输入", new BasicInputInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("4", FluentIcon(Fluent::IconType::DATE_TIME), "日期和时间", new DateTimeInputInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("5", FluentIcon(Fluent::IconType::MESSAGE), "对话框", new DialogInputInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("6", FluentIcon(Fluent::IconType::LAYOUT), "布局", new LayoutInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("7", FluentIcon(iconPath.arg("Menu")), "菜单", new MenuInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("8", FluentIcon(Fluent::IconType::MENU), "导航", new NavigationViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("9", FluentIcon(Fluent::IconType::APPLICATION), "窗口", new WindowInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("10", FluentIcon(Fluent::IconType::SCROLL), "滚动", new ScrollInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("11", FluentIcon(Fluent::IconType::CHAT), "状态", new StatusInfoInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
 
-    navigationInterface()->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
-    addSubInterface("14", FluentIcon(FluentIconType::SETTING), "设置", new SettingInterface(this), true, NavigationType::BOTTOM);
+    navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
+    addSubInterface("14", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
 
     navigationInterface()->setCurrentItem("1");
 

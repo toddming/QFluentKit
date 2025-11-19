@@ -55,17 +55,17 @@ void ScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleOpti
                     QRect leftIndicatorRect = subControlRect(control, sopt, QStyle::SC_ScrollBarSubLine, widget);
                     QRect rightIndicatorRect = subControlRect(control, sopt, QStyle::SC_ScrollBarAddLine, widget);
                     // 左三角
-                    FluentIcon(FluentIconType::CARE_LEFT_SOLID).render(painter, leftIndicatorRect, ThemeType::AUTO, QList<int>(), attrs);
+                    FluentIcon(Fluent::IconType::CARE_LEFT_SOLID).render(painter, leftIndicatorRect, Fluent::ThemeMode::AUTO, QList<int>(), attrs);
                     // 右三角
-                    FluentIcon(FluentIconType::CARE_RIGHT_SOLID).render(painter, rightIndicatorRect, ThemeType::AUTO, QList<int>(), attrs);
+                    FluentIcon(Fluent::IconType::CARE_RIGHT_SOLID).render(painter, rightIndicatorRect, Fluent::ThemeMode::AUTO, QList<int>(), attrs);
 
                 } else {
                     QRect upIndicatorRect = subControlRect(control, sopt, QStyle::SC_ScrollBarSubLine, widget);
                     QRect downIndicatorRect = subControlRect(control, sopt, QStyle::SC_ScrollBarAddLine, widget);
                     // 上三角
-                    FluentIcon(FluentIconType::CARE_UP_SOLID).render(painter, upIndicatorRect, ThemeType::AUTO, QList<int>(), attrs);
+                    FluentIcon(Fluent::IconType::CARE_UP_SOLID).render(painter, upIndicatorRect, Fluent::ThemeMode::AUTO, QList<int>(), attrs);
                     // 下三角
-                    FluentIcon(FluentIconType::CARE_DOWN_SOLID).render(painter, downIndicatorRect, ThemeType::AUTO, QList<int>(), attrs);
+                    FluentIcon(Fluent::IconType::CARE_DOWN_SOLID).render(painter, downIndicatorRect, Fluent::ThemeMode::AUTO, QList<int>(), attrs);
                 }
             }
             painter->setOpacity(1);

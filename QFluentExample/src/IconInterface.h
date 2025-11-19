@@ -72,17 +72,17 @@ class IconCard : public QFrame {
     Q_OBJECT
 
 public:
-    explicit IconCard(FluentIconType::IconType icon, const QString &name, QWidget* parent = nullptr);
+    explicit IconCard(Fluent::IconType icon, const QString &name, QWidget* parent = nullptr);
     void setSelected(bool isSelected, bool force = false);
 
 signals:
-    void clicked(FluentIconType::IconType icon);
+    void clicked(Fluent::IconType icon);
 
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
-    FluentIconType::IconType m_icon;
+    Fluent::IconType m_icon;
     bool m_isSelected;
     IconWidget* m_iconWidget;
     QLabel* m_nameLabel;
@@ -94,8 +94,8 @@ class IconInfoPanel : public QFrame {
     Q_OBJECT
 
 public:
-    explicit IconInfoPanel(FluentIconType::IconType icon, QWidget* parent = nullptr);
-    void setIcon(FluentIconType::IconType icon);
+    explicit IconInfoPanel(Fluent::IconType icon, QWidget* parent = nullptr);
+    void setIcon(Fluent::IconType icon);
 
 private:
     QLabel* m_nameLabel;
@@ -115,8 +115,8 @@ class IconCardView : public QWidget {
 
 public:
     explicit IconCardView(QWidget* parent = nullptr);
-    void addIcon(FluentIconType::IconType icon, const QString &name);
-    void setSelectedIcon(FluentIconType::IconType icon);
+    void addIcon(Fluent::IconType icon, const QString &name);
+    void setSelectedIcon(Fluent::IconType icon);
 
     void showAllIcons();
 
@@ -139,7 +139,7 @@ private:
     FlowLayout* m_flowLayout;
 
     QVector<IconCard*> m_cards;
-    QVector<FluentIconType::IconType> m_icons;
+    QVector<Fluent::IconType> m_icons;
     int m_currentIndex;
 };
 

@@ -39,7 +39,7 @@ void PushButton::init()
 {
     installEventFilter(this);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::BUTTON);
 
     setProperty("hasIcon", false);
 
@@ -138,7 +138,7 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
     if (isEnabled()) {
         QMap<QString, QString> attrs;
         attrs["fill"] = Theme::instance()->themeColor().name();
-        FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, ThemeType::AUTO, QIcon::Off, attrs);
+        FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
     } else {
         painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.3628 : 0.36);
     }
@@ -169,11 +169,11 @@ ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWid
 
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    ThemeType::ThemeMode _theme;
+    Fluent::ThemeMode _theme;
     if (Theme::instance()->isDarkTheme()) {
-        _theme = isChecked() ? ThemeType::DARK : ThemeType::LIGHT;
+        _theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
-        _theme = isChecked() ? ThemeType::LIGHT : ThemeType::DARK;
+        _theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
     }
     FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
 }
@@ -225,17 +225,17 @@ void DropDownButtonBase::showMenu()
     int x = - menu->view()->width() / 2 + menu->view()->contentsMargins().left() + width() / 2;
 
     QPoint pd = mapToGlobal(QPoint(x, height()));
-    int hd = menu->view()->heightForAnimation(pd, MenuAnimationType::DROP_DOWN);
+    int hd = menu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
 
     QPoint pu = mapToGlobal(QPoint(x, 0));
-    int hu = menu->view()->heightForAnimation(pu, MenuAnimationType::PULL_UP);
+    int hu = menu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
 
     if (hd >= hu) {
-        menu->view()->adjustSize(pd, MenuAnimationType::DROP_DOWN);
-        menu->exec(pd, true, MenuAnimationType::DROP_DOWN);
+        menu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
+        menu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
     } else {
-        menu->view()->adjustSize(pu, MenuAnimationType::PULL_UP);
-        menu->exec(pu, true, MenuAnimationType::PULL_UP);
+        menu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
+        menu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
     }
 }
 
@@ -249,11 +249,11 @@ void DropDownButtonBase::hideMenu()
 void DropDownButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
     if (Theme::instance()->isDarkTheme()) {
-        FluentIconUtils::drawIcon(FluentIcon(FluentIconType::ARROW_DOWN), painter, rect);
+        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
     } else {
         QMap<QString, QString> attrs;
         attrs["fill"] = "#646464";
-        FluentIconUtils::drawIcon(FluentIcon(FluentIconType::ARROW_DOWN), painter, rect, ThemeType::AUTO,  QIcon::Off, attrs);
+        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
     }
 }
 
@@ -333,9 +333,9 @@ void PillPushButton::paintEvent(QPaintEvent* event)
         if (!isEnabled()) {
             bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         } else if (isPressed()) {
-            bgColor =  Theme::instance()->themeColor(isDark ? ThemeType::DARK_2 : ThemeType::LIGHT_3);
+            bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
         } else if (isHovered()) {
-            bgColor =  Theme::instance()->themeColor(isDark ? ThemeType::DARK_1 : ThemeType::LIGHT_1);
+            bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
         } else {
             bgColor = Theme::instance()->themeColor();
         }
@@ -363,7 +363,7 @@ void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
 
 void PrimaryDropDownPushButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIcon(FluentIconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
+    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
 }
 
 void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
@@ -374,7 +374,7 @@ void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
 
 void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 {
-    ThemeType::ThemeMode _theme = Theme::instance()->isDarkTheme()? ThemeType::DARK : ThemeType::LIGHT;
+    Fluent::ThemeMode _theme = Theme::instance()->isDarkTheme()? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
 }
 

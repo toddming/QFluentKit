@@ -40,7 +40,7 @@ RoundMenu::RoundMenu(const QString& title, QWidget* parent)
 
     d->setShadowEffect();
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::MENU);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::MENU);
 
     connect(d->_view, &QListWidget::itemClicked, d, &RoundMenuPrivate::handleItemClicked);
     connect(d->_view, &QListWidget::itemEntered, d, &RoundMenuPrivate::handleItemEntered);
@@ -168,11 +168,11 @@ void RoundMenu::clear() {
 }
 
 
-void RoundMenu::exec(const QPoint& pos, bool animate, MenuAnimationType::MenuAnimation aniType) {
+void RoundMenu::exec(const QPoint& pos, bool animate, Fluent::MenuAnimation aniType) {
     Q_D(RoundMenu);
 
     d->_view->adjustSize(pos, aniType);
-    if (!animate) aniType = MenuAnimationType::MenuAnimation::NONE;
+    if (!animate) aniType = Fluent::MenuAnimation::NONE;
     MenuAnimationManager::make(this, aniType)->exec(pos);
     adjustMenuSize();
 

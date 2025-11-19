@@ -36,7 +36,7 @@ protected:
     void enterEvent(QEvent* event) override;
 #endif
     void leaveEvent(QEvent* event) override;
-    virtual void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
+    virtual void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
 
 private:
     void init();
@@ -54,7 +54,7 @@ public:
     using ToolButton::ToolButton;
 
 protected:
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 };
 
 // TransparentToolButton
@@ -75,7 +75,7 @@ public:
     explicit ToggleToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
 protected:
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 
 };
 
@@ -142,7 +142,7 @@ public:
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 };
 
 // PrimaryDropDownToolButton
@@ -152,7 +152,7 @@ class QFLUENT_EXPORT PrimaryDropDownToolButton : public DropDownToolButton
 public:
     using DropDownToolButton::DropDownToolButton;
 
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
     void drawDropDownIcon(QPainter* painter, const QRectF& rect) override;
 };
 

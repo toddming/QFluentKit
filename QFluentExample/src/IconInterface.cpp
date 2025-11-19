@@ -7,15 +7,15 @@
 #include "QFluent/scrollbar/ScrollBar.h"
 
 // 辅助函数（需要根据实际实现）
-FluentIconType::IconType getDefaultFluentIcon() {
+Fluent::IconType getDefaultFluentIcon() {
     // 返回一个默认的 FluentIcon，实际实现中需要具体定义
-    static FluentIconType::IconType defaultIcon;
+    static Fluent::IconType defaultIcon;
     return defaultIcon;
 }
 
-QVector<FluentIconType::IconType> getAllFluentIcons() {
+QVector<Fluent::IconType> getAllFluentIcons() {
     // 返回所有 FluentIcon，实际实现中需要具体定义
-    QVector<FluentIconType::IconType> icons;
+    QVector<Fluent::IconType> icons;
     // 填充 icons
     return icons;
 }
@@ -82,7 +82,7 @@ void Trie::collectWords(TrieNode* node, const QString& prefix, QVector<QPair<QSt
 }
 
 // IconCard 实现
-IconCard::IconCard(FluentIconType::IconType icon, const QString &name, QWidget* parent)
+IconCard::IconCard(Fluent::IconType icon, const QString &name, QWidget* parent)
     : QFrame(parent), m_icon(icon), m_isSelected(false) {
 
     m_iconWidget = new IconWidget(FluentIcon(icon), this);
@@ -103,7 +103,7 @@ IconCard::IconCard(FluentIconType::IconType icon, const QString &name, QWidget* 
     QString elidedText = metrics.elidedText(name, Qt::ElideRight, 90);
     m_nameLabel->setText(elidedText);
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](ThemeType::ThemeMode theme){
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode theme){
          if (m_isSelected) {
              m_iconWidget->setIconTheme(theme);
          }
@@ -126,9 +126,9 @@ void IconCard::setSelected(bool isSelected, bool force) {
     m_isSelected = isSelected;
 
     if (!isSelected) {
-        m_iconWidget->setIconTheme(ThemeType::AUTO);
+        m_iconWidget->setIconTheme(Fluent::ThemeMode::AUTO);
     } else {
-        m_iconWidget->setIconTheme(Theme::instance()->isDarkTheme() ? ThemeType::DARK : ThemeType::LIGHT);
+        m_iconWidget->setIconTheme(Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
     }
 
     setProperty("isSelected", isSelected);
@@ -141,7 +141,7 @@ void IconCard::setSelected(bool isSelected, bool force) {
 }
 
 // IconInfoPanel 实现
-IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
+IconInfoPanel::IconInfoPanel(Fluent::IconType icon, QWidget* parent)
     : QFrame(parent) {
 
     m_nameLabel = new QLabel("value", this);
@@ -176,20 +176,20 @@ IconInfoPanel::IconInfoPanel(FluentIconType::IconType icon, QWidget* parent)
     m_enumNameTitleLabel->setObjectName("subTitleLabel");
 }
 
-void IconInfoPanel::setIcon(FluentIconType::IconType icon) {
-    static QMap<FluentIconType::IconType, QString> icons = FluentIcon::fluentIcons();
+void IconInfoPanel::setIcon(Fluent::IconType icon) {
+    static QMap<Fluent::IconType, QString> icons = FluentIcon::fluentIcons();
 
     m_iconWidget->setFluentIcon(FluentIcon(icon));
     m_nameLabel->setText(icons.value(icon));
     m_iconNameLabel->setText(icons.value(icon));
-    QMetaEnum metaEnum = QMetaEnum::fromType<FluentIconType::IconType>();
+    QMetaEnum metaEnum = QMetaEnum::fromType<Fluent::IconType>();
     QString enumQString;
     if (metaEnum.isValid()) {
         const char* enumName = metaEnum.valueToKey(static_cast<int>(icon));
         enumQString = QString::fromUtf8(enumName);
     }
     enumQString = enumQString.isEmpty() ? "NONE" : enumQString;
-    m_enumNameLabel->setText(QString("FluentIconType::%1").arg(enumQString));
+    m_enumNameLabel->setText(QString("Fluent::IconType::%1").arg(enumQString));
 }
 
 // LineEdit 实现
@@ -264,8 +264,8 @@ void IconCardView::initWidget() {
     connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
     connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
-    const QMap<FluentIconType::IconType, QString> allIcons = FluentIcon::fluentIcons();
-    for (FluentIconType::IconType icon : allIcons.keys()) {
+    const QMap<Fluent::IconType, QString> allIcons = FluentIcon::fluentIcons();
+    for (Fluent::IconType icon : allIcons.keys()) {
         addIcon(icon, allIcons.value(icon));
     }
 
@@ -274,7 +274,7 @@ void IconCardView::initWidget() {
     }
 }
 
-void IconCardView::addIcon(FluentIconType::IconType icon, const QString &name) {
+void IconCardView::addIcon(Fluent::IconType icon, const QString &name) {
     IconCard* card = new IconCard(icon, name, m_scrollWidget);
     connect(card, &IconCard::clicked, this, &IconCardView::setSelectedIcon);
 
@@ -284,7 +284,7 @@ void IconCardView::addIcon(FluentIconType::IconType icon, const QString &name) {
     m_flowLayout->addWidget(card);
 }
 
-void IconCardView::setSelectedIcon(FluentIconType::IconType icon) {
+void IconCardView::setSelectedIcon(Fluent::IconType icon) {
     int index = m_icons.indexOf(icon);
     if (index == -1) {
         return;

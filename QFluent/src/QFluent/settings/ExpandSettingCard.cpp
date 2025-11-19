@@ -60,7 +60,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.translate(width() / 2, height() / 2);
     painter.rotate(m_angle);
 
-    FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
+    FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -256,8 +256,8 @@ void ExpandSettingCard::initWidget() {
     scrollWidget->setObjectName("scrollWidget");
     setProperty("isExpand", false);
 
-    StyleSheetManager::instance()->registerWidget(m_card, ThemeType::ThemeStyle::EXPAND_SETTING_CARD);
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::EXPAND_SETTING_CARD);
+    StyleSheetManager::instance()->registerWidget(m_card, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
 
     m_card->installEventFilter(this);
     connect(expandAni, &QPropertyAnimation::valueChanged, this, &ExpandSettingCard::onExpandValueChanged);

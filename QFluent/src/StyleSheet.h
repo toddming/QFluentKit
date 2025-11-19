@@ -23,25 +23,25 @@ public:
 
     // 样式表应用 - 返回const引用避免不必要的拷贝
     static QString getStyleSheet(const std::shared_ptr<StyleSheetBase>& source,
-                                ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
+                                Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
     static QString getStyleSheet(const QString& source,
-                                ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
+                                Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
 
     static void setStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
     static void setStyleSheet(QWidget* widget, const QString& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
 
     static void setCustomStyleSheet(QWidget* widget, const QString& lightQss,
                                    const QString& darkQss);
 
     static void addStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
     static void addStyleSheet(QWidget* widget, const QString& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
 
 private:
@@ -52,9 +52,9 @@ private:
 class QFLUENT_EXPORT StyleSheetBase {
 public:
     virtual ~StyleSheetBase() = default;
-    virtual QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
-    virtual QString content(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
-    virtual void apply(QWidget* widget, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO);
+    virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    virtual QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    virtual void apply(QWidget* widget, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
 };
 
 class QFLUENT_EXPORT StyleSheetFile : public StyleSheetBase {
@@ -68,7 +68,7 @@ public:
     explicit StyleSheetFile(const QString& path);
     StyleSheetFile(const QString& lightPath, const QString& darkPath);
 
-    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
     inline bool isMultiPath() const { return m_isMultiPath; }
 };
 
@@ -80,20 +80,20 @@ private:
 
 public:
     explicit TemplateStyleSheetFile(const QString& templatePath);
-    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 };
 
 class QFLUENT_EXPORT FluentStyleSheet : public StyleSheetBase {
 private:
-    ThemeType::ThemeStyle m_type;
+    Fluent::ThemeStyle m_type;
 
     // 静态缓存类型到字符串的映射
-    static const QHash<ThemeType::ThemeStyle, QString>& getTypeMap();
+    static const QHash<Fluent::ThemeStyle, QString>& getTypeMap();
 
 public:
-    explicit FluentStyleSheet(ThemeType::ThemeStyle type);
-    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
-    static QString typeToString(ThemeType::ThemeStyle type);
+    explicit FluentStyleSheet(Fluent::ThemeStyle type);
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    static QString typeToString(Fluent::ThemeStyle type);
 };
 
 class QFLUENT_EXPORT CustomStyleSheet : public StyleSheetBase {
@@ -102,8 +102,8 @@ private:
 
 public:
     explicit CustomStyleSheet(QWidget* widget);
-    QString path(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
-    QString content(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 
     CustomStyleSheet* setCustomStyleSheet(const QString& lightQss, const QString& darkQss);
     CustomStyleSheet* setLightStyleSheet(const QString& qss);
@@ -127,7 +127,7 @@ public:
     // 移动构造函数
     StyleSheetCompose(std::vector<std::shared_ptr<StyleSheetBase>>&& sources);
 
-    QString content(ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
     void add(const std::shared_ptr<StyleSheetBase>& source);
     void remove(const std::shared_ptr<StyleSheetBase>& source);
 
@@ -169,7 +169,7 @@ public:
     void deregisterWidget(QWidget* widget);
 
     // 使用预定义Fluent样式注册
-    void registerWidget(QWidget* widget, ThemeType::ThemeStyle type, bool reset = true);
+    void registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset = true);
 
     // 查询方法
     std::shared_ptr<StyleSheetCompose> source(QWidget* widget) const;
@@ -183,20 +183,20 @@ public:
 
     // 便捷方法
     static void setStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
     static void setStyleSheet(QWidget* widget, const QString& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
 
     static void setCustomStyleSheet(QWidget* widget, const QString& lightQss,
                                    const QString& darkQss);
 
     static void addStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
     static void addStyleSheet(QWidget* widget, const QString& source,
-                             ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO,
+                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
 };
 

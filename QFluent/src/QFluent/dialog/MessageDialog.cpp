@@ -60,7 +60,7 @@ MessageDialog::MessageDialog(const QString &title, const QString &content, QWidg
     d->buttonGroup->setObjectName("buttonGroup");
     d->cancelButton->setObjectName("cancelButton");
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::DIALOG);
 
     d->yesButton->adjustSize();
 

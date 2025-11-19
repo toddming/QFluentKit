@@ -18,13 +18,13 @@ public:
     ~Theme() override;
     static Theme *instance();
 
-    ThemeType::ThemeMode theme() const;
-    void setTheme(ThemeType::ThemeMode theme, bool save = false, bool lazy = false);
+    Fluent::ThemeMode theme() const;
+    void setTheme(Fluent::ThemeMode theme, bool save = false, bool lazy = false);
     void toggleTheme(bool save = false, bool lazy = false);
 
     // 颜色管理
     QColor themeColor() const;
-    QColor themeColor(ThemeType::ThemeColor type) const;
+    QColor themeColor(Fluent::ThemeColor type) const;
     void setThemeColor(const QColor& color, bool save = false, bool lazy = false);
 
     bool isDarkTheme() const;
@@ -34,7 +34,7 @@ public:
     QFont getFont(int fontSize = 14, QFont::Weight weight = QFont::Normal);
 
 Q_SIGNALS:
-    Q_SIGNAL void themeModeChanged(ThemeType::ThemeMode themeType);
+    Q_SIGNAL void themeModeChanged(Fluent::ThemeMode themeType);
 
 private:
     QScopedPointer<ThemePrivate> d_ptr;

@@ -9,7 +9,7 @@ class QFLUENT_EXPORT CheckableMenu : public RoundMenu {
 
 public:
     explicit CheckableMenu(const QString& title = "", QWidget* parent = nullptr,
-                           MenuIndicatorType::MenuIndicator indicatorType = MenuIndicatorType::MenuIndicator::CHECK);
+                           Fluent::MenuIndicator indicatorType = Fluent::MenuIndicator::CHECK);
 
 protected:
     int adjustItemText(QListWidgetItem *item, QAction *action) override;

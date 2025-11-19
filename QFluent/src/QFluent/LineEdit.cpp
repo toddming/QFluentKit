@@ -27,7 +27,7 @@ LineEditButton::LineEditButton(const QIcon& icon, QWidget* parent)
     setCursor(Qt::PointingHandCursor);
     setIconSize(QSize(10, 10));
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LINE_EDIT);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 }
 
 void LineEditButton::setAction(QAction* action) {
@@ -92,7 +92,7 @@ void LineEditButton::updateButtonState() {
 LineEdit::LineEdit(QWidget* parent) 
     : QLineEdit(parent),
       m_layout(new QHBoxLayout(this)),
-      m_clearButton(new LineEditButton(FluentIcon(FluentIconType::CLOSE).qicon(), this)),
+      m_clearButton(new LineEditButton(FluentIcon(Fluent::IconType::CLOSE).qicon(), this)),
       m_completerTimer(new QTimer(this)) {
     
     setFixedHeight(33);
@@ -100,7 +100,7 @@ LineEdit::LineEdit(QWidget* parent)
     setClearButtonEnabled(true);
     setProperty("transparent", true);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LINE_EDIT);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
     
     m_layout->setSpacing(3);
     m_layout->setContentsMargins(4, 4, 4, 4);
@@ -292,7 +292,7 @@ void SearchLineEdit::initWidgets()
     clearButton = getClearButton();
     hBoxLayout = qobject_cast<QHBoxLayout*>(layout());
 
-    searchButton = new LineEditButton(FluentIcon(FluentIconType::SEARCH).qicon(), this);
+    searchButton = new LineEditButton(FluentIcon(Fluent::IconType::SEARCH).qicon(), this);
     hBoxLayout->addWidget(searchButton);
 
     connect(searchButton, &LineEditButton::clicked, this, &SearchLineEdit::search);
@@ -446,25 +446,25 @@ void CompleterMenu::popup()
     //int x = -width() / 2 + layout()->contentsMargins().left() + p->width() / 2;
     int y_drop = p->height() - layout()->contentsMargins().top() + 2;
     QPoint pos_drop = p->mapToGlobal(QPoint(x, y_drop));
-    int height_drop = view()->heightForAnimation(pos_drop, MenuAnimationType::MenuAnimation::DROP_DOWN);
+    int height_drop = view()->heightForAnimation(pos_drop, Fluent::MenuAnimation::DROP_DOWN);
 
     QPoint pos_up(x, 7);
     pos_up = p->mapToGlobal(pos_up);
-    int height_up = view()->heightForAnimation(pos_up, MenuAnimationType::MenuAnimation::PULL_UP);
+    int height_up = view()->heightForAnimation(pos_up, Fluent::MenuAnimation::PULL_UP);
 
     QPoint finalPos;
-    MenuAnimationType::MenuAnimation aniType;
+    Fluent::MenuAnimation aniType;
 
     if (height_drop >= height_up) {
         finalPos = pos_drop;
-        aniType = MenuAnimationType::MenuAnimation::DROP_DOWN;
+        aniType = Fluent::MenuAnimation::DROP_DOWN;
     } else {
         finalPos = pos_up;
-        aniType = MenuAnimationType::MenuAnimation::PULL_UP;
+        aniType = Fluent::MenuAnimation::PULL_UP;
     }
 
     view()->adjustSize(finalPos, aniType);
-    view()->setProperty("dropDown", aniType == MenuAnimationType::MenuAnimation::DROP_DOWN);
+    view()->setProperty("dropDown", aniType == Fluent::MenuAnimation::DROP_DOWN);
     view()->setStyle(QApplication::style());
     view()->update();
     adjustSize();
@@ -483,7 +483,7 @@ void CompleterMenu::popup()
 PasswordLineEdit::PasswordLineEdit(QWidget *parent)
     : LineEdit(parent)
 {
-    viewButton = new LineEditButton(FluentIcon(FluentIconType::VIEW).qicon(), this);
+    viewButton = new LineEditButton(FluentIcon(Fluent::IconType::VIEW).qicon(), this);
 
     setEchoMode(QLineEdit::Password);
     setContextMenuPolicy(Qt::NoContextMenu);

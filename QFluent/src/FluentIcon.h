@@ -24,12 +24,12 @@ class Icon;
 
 class FluentIconUtils {
 public:
-    static QString getIconColor(ThemeType::ThemeMode theme = ThemeType::AUTO, bool reverse = false);
+    static QString getIconColor(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO, bool reverse = false);
     static void drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect);
     static void drawSvgIcon(const QString& iconPath, QPainter* painter, const QRectF& rect);
     static QString writeSvg(const QString& iconPath, const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {});
     static QIcon toQIcon(const QVariant& icon);
-    static void drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
+    static void drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                          QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = {});
 
 private:
@@ -39,7 +39,7 @@ private:
 
 class FluentIconEngine : public QIconEngine {
 public:
-    FluentIconEngine(FluentIconType::IconType iconType, bool reverse = false);
+    FluentIconEngine(Fluent::IconType iconType, bool reverse = false);
     FluentIconEngine(const QString& templatePath, bool reverse = false);
     ~FluentIconEngine() override = default;
 
@@ -48,7 +48,7 @@ public:
     QPixmap pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state) override;
 
 private:
-    FluentIconType::IconType m_iconType;
+    Fluent::IconType m_iconType;
     QString m_templatePath;
     bool m_isThemeReversed;
     std::unique_ptr<FluentIconBase> m_iconBase;
@@ -87,10 +87,10 @@ class QFLUENT_EXPORT FluentIconBase {
 public:
     virtual ~FluentIconBase() = default;
 
-    virtual QString path(ThemeType::ThemeMode theme = ThemeType::AUTO) const = 0;
-    virtual QIcon icon(ThemeType::ThemeMode theme = ThemeType::AUTO, const QColor& color = QColor()) const;
+    virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const = 0;
+    virtual QIcon icon(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO, const QColor& color = QColor()) const;
     virtual ColoredFluentIcon colored(const QColor& lightColor, const QColor& darkColor) const;
-    virtual void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
+    virtual void render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                                 const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {}) const;
     virtual FluentIconBase* clone() const = 0;
 
@@ -105,10 +105,10 @@ public:
     static FluentFontIconBase fromName(const QString& name);
     FluentFontIconBase& bold();
 
-    QString path(ThemeType::ThemeMode theme = ThemeType::AUTO) const override;
-    QIcon icon(ThemeType::ThemeMode theme = ThemeType::AUTO, const QColor& color = QColor()) const override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    QIcon icon(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO, const QColor& color = QColor()) const override;
     ColoredFluentIcon colored(const QColor& lightColor, const QColor& darkColor) const override;
-    void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
+    void render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                 const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {}) const override;
 
     virtual QString fontPath() const { return QString(); }
@@ -135,7 +135,7 @@ protected:
     static QString s_fontFamily;
     static QMap<QString, QChar> s_iconNames;
 
-    QColor getIconColor(ThemeType::ThemeMode theme) const;
+    QColor getIconColor(Fluent::ThemeMode theme) const;
 };
 
 class QFLUENT_EXPORT ColoredFluentIcon : public FluentIconBase {
@@ -143,8 +143,8 @@ public:
     ColoredFluentIcon(const FluentIconBase& icon, const QColor& lightColor, const QColor& darkColor);
     ~ColoredFluentIcon() override = default;
 
-    QString path(ThemeType::ThemeMode theme = ThemeType::AUTO) const override;
-    void render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::AUTO,
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    void render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                 const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {}) const override;
     FluentIconBase* clone() const override {
         return new ColoredFluentIcon(*m_fluentIcon, m_lightColor, m_darkColor);
@@ -158,28 +158,28 @@ private:
 
 class QFLUENT_EXPORT FluentIcon : public FluentIconBase {
 public:
-    explicit FluentIcon(FluentIconType::IconType iconEnum);
+    explicit FluentIcon(Fluent::IconType iconEnum);
     explicit FluentIcon(const QString& templatePath);
     ~FluentIcon() override = default;
 
-    QString path(ThemeType::ThemeMode theme = ThemeType::AUTO) const override;
-    FluentIconType::IconType value() const { return m_iconEnum; }
-    static const QMap<FluentIconType::IconType, QString>& fluentIcons();
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    Fluent::IconType value() const { return m_iconEnum; }
+    static const QMap<Fluent::IconType, QString>& fluentIcons();
     QIcon qicon(bool reverse = false) const;
 
     FluentIconBase* clone() const override {
-        return (m_iconEnum == FluentIconType::CUSTOM_PATH)
+        return (m_iconEnum == Fluent::IconType::CUSTOM_PATH)
             ? new FluentIcon(m_templatePath)
             : new FluentIcon(m_iconEnum);
     }
 
 private:
     QString m_templatePath;
-    FluentIconType::IconType m_iconEnum;
+    Fluent::IconType m_iconEnum;
     mutable QString m_cachedLightPath;
     mutable QString m_cachedDarkPath;
 
-    QString enumToString(FluentIconType::IconType e) const;
+    QString enumToString(Fluent::IconType e) const;
 };
 
 class QFLUENT_EXPORT Icon : public QIcon {

@@ -30,7 +30,7 @@ SpinButton::SpinButton(const FluentIconBase &icon, QWidget* parent)
 
     setFixedSize(31, 23);
     setIconSize(QSize(10, 10));
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::SPIN_BOX);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SPIN_BOX);
 }
 
 void SpinButton::mousePressEvent(QMouseEvent* e) {
@@ -73,7 +73,7 @@ void SpinBoxBase::setup() {
 
 void SpinBoxBase::setupStyle() {
     m_parentWidget->setProperty("transparent", true);
-    StyleSheetManager::instance()->registerWidget(m_parentWidget, ThemeType::ThemeStyle::SPIN_BOX);
+    StyleSheetManager::instance()->registerWidget(m_parentWidget, Fluent::ThemeStyle::SPIN_BOX);
 
     if (auto *spin = qobject_cast<QAbstractSpinBox*>(m_parentWidget)) {
         spin->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -94,8 +94,8 @@ void SpinBoxBase::addUpDownButtons() {
     m_layout->setContentsMargins(10, 4, 4, 4);
     m_layout->setSpacing(5);
 
-    m_upButton = new SpinButton(FluentIcon(FluentIconType::UP), m_parentWidget);
-    m_downButton = new SpinButton(FluentIcon(FluentIconType::DOWN), m_parentWidget);
+    m_upButton = new SpinButton(FluentIcon(Fluent::IconType::UP), m_parentWidget);
+    m_downButton = new SpinButton(FluentIcon(Fluent::IconType::DOWN), m_parentWidget);
 
     m_layout->addWidget(le);
     m_layout->addWidget(m_upButton);

@@ -125,10 +125,10 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     connect(d->_maxButton,   &QAbstractButton::clicked, this, &FluentTitleBar::maximizeRequested);
     connect(d->_closeButton, &QAbstractButton::clicked, this, &FluentTitleBar::closeRequested);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::TITLE_BAR);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TITLE_BAR);
 
     const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
-    d->_backButton->setIcon(FluentIcon(FluentIconType::LEFT_ARROW).qicon());
+    d->_backButton->setIcon(FluentIcon(Fluent::IconType::LEFT_ARROW).qicon());
     d->_themeButton->setIcon(FluentIcon(fillPath.arg("theme")).qicon());
     d->_minButton->setIcon(FluentIcon(fillPath.arg("minimize")).qicon());
     d->_maxButton->setIcon(FluentIcon(fillPath.arg("maximize")).qicon());
@@ -252,7 +252,7 @@ void FluentTitleBar::titleChanged(const QString &text) {
 
 void FluentTitleBar::iconChanged(const QIcon &icon){Q_UNUSED(icon)}
 
-void FluentTitleBar::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
+void FluentTitleBar::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
 {
     Q_D(FluentTitleBar);
     if (isEnable) {
@@ -262,11 +262,11 @@ void FluentTitleBar::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool
     }
 }
 
-void FluentTitleBar::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
+void FluentTitleBar::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
 {
     Q_D(FluentTitleBar);
     d->_buttonFlags = buttonFlags;
-    if (d->_buttonFlags.testFlag(AppBarType::NoneButtonHint)) {
+    if (d->_buttonFlags.testFlag(Fluent::ButtonType::NoneButtonHint)) {
         d->_backButton->setVisible(false);
         d->_iconButton->setVisible(false);
         d->_titleLabel->setVisible(false);
@@ -277,18 +277,18 @@ void FluentTitleBar::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
     }
     else
     {
-        d->_backButton->setVisible(d->_buttonFlags.testFlag(AppBarType::RouteBackButtonHint));
-        d->_iconButton->setVisible(d->_buttonFlags.testFlag(AppBarType::IconButtonHint));
-        d->_iconLabel->setVisible(d->_buttonFlags.testFlag(AppBarType::IconLabelHint));
-        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(AppBarType::WindowTitleHint));
-        d->_themeButton->setVisible(d->_buttonFlags.testFlag(AppBarType::ThemeChangeButtonHint));
-        d->_minButton->setVisible(d->_buttonFlags.testFlag(AppBarType::MinimizeButtonHint));
-        d->_maxButton->setVisible(d->_buttonFlags.testFlag(AppBarType::MaximizeButtonHint));
-        d->_closeButton->setVisible(d->_buttonFlags.testFlag(AppBarType::CloseButtonHint));
+        d->_backButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::RouteBackButtonHint));
+        d->_iconButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::IconButtonHint));
+        d->_iconLabel->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::IconLabelHint));
+        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::WindowTitleHint));
+        d->_themeButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::ThemeChangeButtonHint));
+        d->_minButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::MinimizeButtonHint));
+        d->_maxButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::MaximizeButtonHint));
+        d->_closeButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::CloseButtonHint));
     }
 }
 
-AppBarType::ButtonFlags FluentTitleBar::getWindowButtonFlags() const
+Fluent::ButtonFlags FluentTitleBar::getWindowButtonFlags() const
 {
     return d_ptr->_buttonFlags;
 }

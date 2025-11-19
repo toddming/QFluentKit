@@ -11,7 +11,7 @@
 #include "FluentGlobal.h"
 #include "QFluent/ToolButton.h"
 
-using FIF = FluentIconType::IconType;
+using FIF = Fluent::IconType;
 
 class QHBoxLayout;
 class QVBoxLayout;

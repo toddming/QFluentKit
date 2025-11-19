@@ -18,18 +18,18 @@ public:
     FluentWindow(QMainWindow *parent = nullptr);
     ~FluentWindow();
 
-    void setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable = true);
-    void setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags);
-    AppBarType::ButtonFlags getWindowButtonFlags() const;
+    void setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable = true);
+    void setWindowButtonFlags(Fluent::ButtonFlags buttonFlags);
+    Fluent::ButtonFlags getWindowButtonFlags() const;
 
-    void setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType);
-    ApplicationType::WindowDisplayMode windowDisplayMode() const;
+    void setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType);
+    Fluent::WindowDisplayMode windowDisplayMode() const;
 
     void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
 
     void addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                          QWidget* widget, bool selectable = true,
-                         NavigationType::NavigationItemPosition position = NavigationType::NavigationItemPosition::TOP,
+                         Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
                          const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     NavigationPanel *navigationInterface() const;

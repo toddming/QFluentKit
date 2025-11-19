@@ -187,5 +187,5 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
         painter->setOpacity(0.75);
     }
 
-    FluentIcon(FluentIconType::ACCEPT).render(painter, rect);
+    FluentIcon(Fluent::IconType::ACCEPT).render(painter, rect);
 }

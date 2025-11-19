@@ -4,10 +4,10 @@
 #include "MenuActionListWidget.h"
 
 CheckableMenu::CheckableMenu(const QString &title, QWidget *parent,
-                             MenuIndicatorType::MenuIndicator indicatorType)
+                             Fluent::MenuIndicator indicatorType)
     : RoundMenu(title, parent)
 {
-    if (indicatorType == MenuIndicatorType::MenuIndicator::CHECK) {
+    if (indicatorType == Fluent::MenuIndicator::CHECK) {
         this->view()->setItemDelegate(new CheckIndicatorMenuItemDelegate(this));
     } else {
         this->view()->setItemDelegate(new RadioIndicatorMenuItemDelegate(this));

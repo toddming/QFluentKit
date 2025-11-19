@@ -37,7 +37,7 @@ public:
     explicit TabToolButton(QWidget* parent = nullptr);
 
 protected:
-    void drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme = ThemeType::ThemeMode::AUTO) override;
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 };
 
 // Tab项

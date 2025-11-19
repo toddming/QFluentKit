@@ -18,8 +18,8 @@ public:
 
     void _updateMenuViewport();
 
-    static void registerManager(MenuAnimationType::MenuAnimation type, std::function<MenuAnimationManager*(RoundMenu*)> creator);
-    static MenuAnimationManager* make(RoundMenu* menu, MenuAnimationType::MenuAnimation aniType);
+    static void registerManager(Fluent::MenuAnimation type, std::function<MenuAnimationManager*(RoundMenu*)> creator);
+    static MenuAnimationManager* make(RoundMenu* menu, Fluent::MenuAnimation aniType);
 
 protected:
     virtual QPoint _endPosition(const QPoint& pos) const;
@@ -33,7 +33,7 @@ private:
     RoundMenu* m_menu;
     QPropertyAnimation* m_ani;
 
-    static QMap<MenuAnimationType::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> managers;
+    static QMap<Fluent::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> managers;
 };
 
 // Dummy Animation

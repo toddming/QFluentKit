@@ -24,7 +24,7 @@ CalendarPicker::CalendarPicker(QWidget* parent)
 {
     setText("选择日期");
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::CALENDAR_PICKER);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
     connect(this, &QPushButton::clicked, this, &CalendarPicker::_showCalendarView);
 }
 
@@ -109,5 +109,5 @@ void CalendarPicker::paintEvent(QPaintEvent* e)
 
     int w = 12;
     QRectF rect(this->width() - 23, this->height() / 2 - w / 2, w, w);
-    FluentIcon(FluentIconType::CALENDAR).render(&painter, rect);
+    FluentIcon(Fluent::IconType::CALENDAR).render(&painter, rect);
 }

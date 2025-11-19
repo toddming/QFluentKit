@@ -89,7 +89,7 @@ void ScrollButton::paintEvent(QPaintEvent* event)
 
     QMap<QString, QString> attrs;
     attrs["fill"] = Theme::instance()->isDarkTheme() ? "#5e5e5e" : "#9c9c9c";
-    FluentIconUtils::drawIcon(*fluentIcon(), &painter, QRectF(x, y, w, h), ThemeType::AUTO, QIcon::Off, attrs);
+    FluentIconUtils::drawIcon(*fluentIcon(), &painter, QRectF(x, y, w, h), Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
 }
 
 
@@ -130,9 +130,9 @@ void ScrollItemDelegate::_drawBackground(QPainter* painter, const QStyleOptionVi
 
     if (index == currentIndex) {
         if (index == pressedIndex) {
-            painter->setBrush(Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_2));
+            painter->setBrush(Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2));
         } else if (option.state & QStyle::State_MouseOver) {
-            painter->setBrush(Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_1));
+            painter->setBrush(Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1));
         } else {
             painter->setBrush(Theme::instance()->themeColor());
         }
@@ -305,7 +305,7 @@ void CalendarViewBase::initWidget() {
     vBoxLayout->setAlignment(Qt::AlignTop);
 
     titleButton->setObjectName("titleButton");
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::CALENDAR_PICKER);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
 
     connect(titleButton, &QPushButton::clicked, this, &CalendarViewBase::titleClicked);
     connect(resetButton, &QPushButton::clicked, this, &CalendarViewBase::resetted);

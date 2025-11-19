@@ -9,9 +9,9 @@
 
 NavbarWidget::NavbarWidget()
 {
-    setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
-                         AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
-                         AppBarType::CloseButtonHint);
+    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
+                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
+                         Fluent::ButtonType::CloseButtonHint);
 
     setContentsMargins(0, 0, 0, 0);
 
@@ -39,17 +39,17 @@ void NavbarWidget::initUI()
     stacked->addWidget(createWidget("信息框", stacked));
     stacked->addWidget(createWidget("设置", stacked));
 
-    StyleSheetManager::instance()->registerWidget(stacked, ThemeType::ThemeStyle::FLUENT_WINDOW);
+    StyleSheetManager::instance()->registerWidget(stacked, Fluent::ThemeStyle::FLUENT_WINDOW);
 
 
     auto *navigationBar = new NavigationBar(this);
-    navigationBar->addItem("1", FluentIcon(FluentIconType::HOME), "主页", [stacked](){stacked->setCurrentIndex(0, false);}, true, NavigationType::TOP);
+    navigationBar->addItem("1", FluentIcon(Fluent::IconType::HOME), "主页", [stacked](){stacked->setCurrentIndex(0, false);}, true, Fluent::NavigationItemPosition::TOP);
     navigationBar->addSeparator();
-    navigationBar->addItem("2", FluentIcon(FluentIconType::CHECKBOX), "输入", [stacked](){stacked->setCurrentIndex(1, false);}, true, NavigationType::SCROLL);
-    navigationBar->addItem("3", FluentIcon(FluentIconType::DATE_TIME), "日期", [stacked](){stacked->setCurrentIndex(2, false);}, true, NavigationType::SCROLL);
-    navigationBar->addItem("4", FluentIcon(FluentIconType::MESSAGE), "信息框", [stacked](){stacked->setCurrentIndex(3, false);}, true, NavigationType::SCROLL);
-    navigationBar->addSeparator(NavigationType::BOTTOM);
-    navigationBar->addItem("5", FluentIcon(FluentIconType::SETTING), "设置", [stacked](){stacked->setCurrentIndex(4, false);}, true, NavigationType::BOTTOM);
+    navigationBar->addItem("2", FluentIcon(Fluent::IconType::CHECKBOX), "输入", [stacked](){stacked->setCurrentIndex(1, false);}, true, Fluent::NavigationItemPosition::SCROLL);
+    navigationBar->addItem("3", FluentIcon(Fluent::IconType::DATE_TIME), "日期", [stacked](){stacked->setCurrentIndex(2, false);}, true, Fluent::NavigationItemPosition::SCROLL);
+    navigationBar->addItem("4", FluentIcon(Fluent::IconType::MESSAGE), "信息框", [stacked](){stacked->setCurrentIndex(3, false);}, true, Fluent::NavigationItemPosition::SCROLL);
+    navigationBar->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
+    navigationBar->addItem("5", FluentIcon(Fluent::IconType::SETTING), "设置", [stacked](){stacked->setCurrentIndex(4, false);}, true, Fluent::NavigationItemPosition::BOTTOM);
     navigationBar->setCurrentItem("1");
 
 

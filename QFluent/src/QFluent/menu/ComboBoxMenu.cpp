@@ -10,7 +10,7 @@ ComboBoxMenu::ComboBoxMenu(const QString& title, QWidget *parent) : RoundMenu(ti
     view()->setObjectName("comboListWidget");
 }
 
-void ComboBoxMenu::exec(const QPoint& pos, bool animate, MenuAnimationType::MenuAnimation aniType)
+void ComboBoxMenu::exec(const QPoint& pos, bool animate, Fluent::MenuAnimation aniType)
 {
     view()->adjustSize(pos, aniType);
     adjustMenuSize();

@@ -7,7 +7,7 @@ ThemePrivate::ThemePrivate()
 
 }
 
-QColor ThemePrivate::calculateThemeColor(ThemeType::ThemeColor type) const {
+QColor ThemePrivate::calculateThemeColor(Fluent::ThemeColor type) const {
     Q_Q(const Theme);
 
     QColor color = _themeColor;
@@ -20,26 +20,26 @@ QColor ThemePrivate::calculateThemeColor(ThemeType::ThemeColor type) const {
     color.getHsvF(&h, &s, &v, &a);
 #endif
 
-    if (_currentTheme == ThemeType::ThemeMode::DARK) {
+    if (_currentTheme == Fluent::ThemeMode::DARK) {
         s *= 0.84f;
         v = 1.0f;
         switch (type) {
-        case ThemeType::ThemeColor::DARK_1: v *= 0.9; break;
-        case ThemeType::ThemeColor::DARK_2: s *= 0.977; v *= 0.82; break;
-        case ThemeType::ThemeColor::DARK_3: s *= 0.95; v *= 0.7; break;
-        case ThemeType::ThemeColor::LIGHT_1: s *= 0.92; break;
-        case ThemeType::ThemeColor::LIGHT_2: s *= 0.78; break;
-        case ThemeType::ThemeColor::LIGHT_3: s *= 0.65; break;
+        case Fluent::ThemeColor::DARK_1: v *= 0.9; break;
+        case Fluent::ThemeColor::DARK_2: s *= 0.977; v *= 0.82; break;
+        case Fluent::ThemeColor::DARK_3: s *= 0.95; v *= 0.7; break;
+        case Fluent::ThemeColor::LIGHT_1: s *= 0.92; break;
+        case Fluent::ThemeColor::LIGHT_2: s *= 0.78; break;
+        case Fluent::ThemeColor::LIGHT_3: s *= 0.65; break;
         default: break;
         }
     } else {
         switch (type) {
-        case ThemeType::ThemeColor::DARK_1: v *= 0.75; break;
-        case ThemeType::ThemeColor::DARK_2: s *= 1.05; v *= 0.5; break;
-        case ThemeType::ThemeColor::DARK_3: s *= 1.1; v *= 0.4; break;
-        case ThemeType::ThemeColor::LIGHT_1: v *= 1.05; break;
-        case ThemeType::ThemeColor::LIGHT_2: s *= 0.75; v *= 1.05; break;
-        case ThemeType::ThemeColor::LIGHT_3: s *= 0.65; v *= 1.05; break;
+        case Fluent::ThemeColor::DARK_1: v *= 0.75; break;
+        case Fluent::ThemeColor::DARK_2: s *= 1.05; v *= 0.5; break;
+        case Fluent::ThemeColor::DARK_3: s *= 1.1; v *= 0.4; break;
+        case Fluent::ThemeColor::LIGHT_1: v *= 1.05; break;
+        case Fluent::ThemeColor::LIGHT_2: s *= 0.75; v *= 1.05; break;
+        case Fluent::ThemeColor::LIGHT_3: s *= 0.65; v *= 1.05; break;
         default: break;
         }
     }

@@ -4,7 +4,6 @@
 #include <QAbstractScrollArea>
 #include <QScrollBar>
 
-#include "FluentGlobal.h"
 #include "Property.h"
 
 class ScrollBarPrivate;

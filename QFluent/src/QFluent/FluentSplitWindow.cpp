@@ -31,9 +31,9 @@ FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
     d->_windowBar = new FluentTitleBar(this);
     d->_windowBar->setHostWidget(this);
 
-    setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
-                         AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
-                         AppBarType::CloseButtonHint | AppBarType::ThemeChangeButtonHint);
+    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
+                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
+                         Fluent::ButtonType::CloseButtonHint | Fluent::ButtonType::ThemeChangeButtonHint);
 
 
     agent->setTitleBar(d->_windowBar);
@@ -77,10 +77,10 @@ FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
     layout->addWidget(d->_stacked, 1);
 
     d->setDarkTheme(Theme::instance()->isDarkTheme());
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](ThemeType::ThemeMode theme) {
-        agent->setWindowAttribute("dark-mode", theme == ThemeType::DARK);
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
+        agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
 }
 
@@ -116,26 +116,26 @@ bool FluentSplitWindow::event(QEvent *event) {
 }
 
 
-void FluentSplitWindow::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
+void FluentSplitWindow::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
 {
     Q_D(FluentSplitWindow);
     d->_windowBar->setWindowButtonFlag(buttonFlag, isEnable);
 }
 
-void FluentSplitWindow::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
+void FluentSplitWindow::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
 {
     Q_D(FluentSplitWindow);
     d->_windowBar->setWindowButtonFlags(buttonFlags);
 }
 
-AppBarType::ButtonFlags FluentSplitWindow::getWindowButtonFlags() const
+Fluent::ButtonFlags FluentSplitWindow::getWindowButtonFlags() const
 {
     Q_D(const FluentSplitWindow);
     return d->_windowBar->getWindowButtonFlags();
 }
 
 
-void FluentSplitWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType)
+void FluentSplitWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType)
 {
     Q_D(FluentSplitWindow);
 
@@ -164,7 +164,7 @@ void FluentSplitWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode 
     style()->polish(this);
 }
 
-ApplicationType::WindowDisplayMode FluentSplitWindow::windowDisplayMode() const
+Fluent::WindowDisplayMode FluentSplitWindow::windowDisplayMode() const
 {
     Q_D(const FluentSplitWindow);
     return d->_windowDisplayMode;
@@ -186,7 +186,7 @@ NavigationPanel *FluentSplitWindow::navigationInterface() const
 
 void FluentSplitWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                                    QWidget* widget, bool selectable,
-                                   NavigationType::NavigationItemPosition position, const QString& tooltip,
+                                   Fluent::NavigationItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)
 {
     Q_D(FluentSplitWindow);

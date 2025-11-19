@@ -53,10 +53,10 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     d->_windowAgent = agent;
 
     d->setDarkTheme(Theme::instance()->isDarkTheme());
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](ThemeType::ThemeMode theme) {
-        agent->setWindowAttribute("dark-mode", theme == ThemeType::DARK);
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
+        agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
 }
 
@@ -91,26 +91,26 @@ bool FluentWidget::event(QEvent *event) {
 }
 
 
-void FluentWidget::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
+void FluentWidget::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
 {
     Q_D(FluentWidget);
     d->_windowBar->setWindowButtonFlag(buttonFlag, isEnable);
 }
 
-void FluentWidget::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
+void FluentWidget::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
 {
     Q_D(FluentWidget);
     d->_windowBar->setWindowButtonFlags(buttonFlags);
 }
 
-AppBarType::ButtonFlags FluentWidget::getWindowButtonFlags() const
+Fluent::ButtonFlags FluentWidget::getWindowButtonFlags() const
 {
     Q_D(const FluentWidget);
     return d->_windowBar->getWindowButtonFlags();
 }
 
 
-void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType)
+void FluentWidget::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType)
 {
     Q_D(FluentWidget);
 
@@ -137,7 +137,7 @@ void FluentWidget::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     style()->polish(this);
 }
 
-ApplicationType::WindowDisplayMode FluentWidget::windowDisplayMode() const
+Fluent::WindowDisplayMode FluentWidget::windowDisplayMode() const
 {
     Q_D(const FluentWidget);
     return d->_windowDisplayMode;

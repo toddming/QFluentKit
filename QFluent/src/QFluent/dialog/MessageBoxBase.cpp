@@ -27,7 +27,7 @@ MessageBoxBase::MessageBoxBase(QWidget *parent)
 
     d->_buttonGroup->setObjectName("buttonGroup");
     d->_cancelButton->setObjectName("cancelButton");
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::DIALOG);
 
     vBoxLayout->setSpacing(0);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);

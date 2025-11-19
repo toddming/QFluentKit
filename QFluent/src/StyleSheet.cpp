@@ -24,11 +24,11 @@
 
 // Qt5/Qt6兼容的qHash函数
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-inline uint qHash(ThemeType::ThemeStyle key, uint seed = 0) {
+inline uint qHash(Fluent::ThemeStyle key, uint seed = 0) {
     return ::qHash(static_cast<int>(key), seed);
 }
 #else
-inline size_t qHash(ThemeType::ThemeStyle key, size_t seed = 0) {
+inline size_t qHash(Fluent::ThemeStyle key, size_t seed = 0) {
     return ::qHash(static_cast<int>(key), seed);
 }
 #endif
@@ -42,19 +42,19 @@ QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
     colorMap.reserve(7);
 
     colorMap.insert("--ThemeColorPrimary",
-                    theme->themeColor(ThemeType::ThemeColor::PRIMARY).name());
+                    theme->themeColor(Fluent::ThemeColor::PRIMARY).name());
     colorMap.insert("--ThemeColorDark1",
-                    theme->themeColor(ThemeType::ThemeColor::DARK_1).name());
+                    theme->themeColor(Fluent::ThemeColor::DARK_1).name());
     colorMap.insert("--ThemeColorDark2",
-                    theme->themeColor(ThemeType::ThemeColor::DARK_2).name());
+                    theme->themeColor(Fluent::ThemeColor::DARK_2).name());
     colorMap.insert("--ThemeColorDark3",
-                    theme->themeColor(ThemeType::ThemeColor::DARK_3).name());
+                    theme->themeColor(Fluent::ThemeColor::DARK_3).name());
     colorMap.insert("--ThemeColorLight1",
-                    theme->themeColor(ThemeType::ThemeColor::LIGHT_1).name());
+                    theme->themeColor(Fluent::ThemeColor::LIGHT_1).name());
     colorMap.insert("--ThemeColorLight2",
-                    theme->themeColor(ThemeType::ThemeColor::LIGHT_2).name());
+                    theme->themeColor(Fluent::ThemeColor::LIGHT_2).name());
     colorMap.insert("--ThemeColorLight3",
-                    theme->themeColor(ThemeType::ThemeColor::LIGHT_3).name());
+                    theme->themeColor(Fluent::ThemeColor::LIGHT_3).name());
 
     return colorMap;
 }
@@ -99,20 +99,20 @@ QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
 }
 
 QString StyleSheetHelper::getStyleSheet(const std::shared_ptr<StyleSheetBase>& source,
-                                        ThemeType::ThemeMode theme) {
+                                        Fluent::ThemeMode theme) {
     if (!source) {
         return QString();
     }
     return applyThemeColor(source->content(theme));
 }
 
-QString StyleSheetHelper::getStyleSheet(const QString& source, ThemeType::ThemeMode theme) {
+QString StyleSheetHelper::getStyleSheet(const QString& source, Fluent::ThemeMode theme) {
     return getStyleSheet(std::make_shared<StyleSheetFile>(source), theme);
 }
 
 void StyleSheetHelper::setStyleSheet(QWidget* widget,
                                      const std::shared_ptr<StyleSheetBase>& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                     Fluent::ThemeMode theme, bool registerWidget) {
     if (!widget) {
         return;
     }
@@ -125,7 +125,7 @@ void StyleSheetHelper::setStyleSheet(QWidget* widget,
 }
 
 void StyleSheetHelper::setStyleSheet(QWidget* widget, const QString& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                     Fluent::ThemeMode theme, bool registerWidget) {
     setStyleSheet(widget, std::make_shared<StyleSheetFile>(source), theme, registerWidget);
 }
 
@@ -139,7 +139,7 @@ void StyleSheetHelper::setCustomStyleSheet(QWidget* widget, const QString& light
 
 void StyleSheetHelper::addStyleSheet(QWidget* widget,
                                      const std::shared_ptr<StyleSheetBase>& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                     Fluent::ThemeMode theme, bool registerWidget) {
     if (!widget) {
         return;
     }
@@ -158,22 +158,22 @@ void StyleSheetHelper::addStyleSheet(QWidget* widget,
 }
 
 void StyleSheetHelper::addStyleSheet(QWidget* widget, const QString& source,
-                                     ThemeType::ThemeMode theme, bool registerWidget) {
+                                     Fluent::ThemeMode theme, bool registerWidget) {
     addStyleSheet(widget, std::make_shared<StyleSheetFile>(source), theme, registerWidget);
 }
 
 // ==================== StyleSheetBase 实现 ====================
 
-QString StyleSheetBase::path(ThemeType::ThemeMode theme) {
+QString StyleSheetBase::path(Fluent::ThemeMode theme) {
     Q_UNUSED(theme);
     return QString();
 }
 
-QString StyleSheetBase::content(ThemeType::ThemeMode theme) {
+QString StyleSheetBase::content(Fluent::ThemeMode theme) {
     return StyleSheetHelper::getStyleSheetFromFile(path(theme));
 }
 
-void StyleSheetBase::apply(QWidget* widget, ThemeType::ThemeMode theme) {
+void StyleSheetBase::apply(QWidget* widget, Fluent::ThemeMode theme) {
     StyleSheetManager::setStyleSheet(widget, std::make_shared<StyleSheetBase>(*this), theme);
 }
 
@@ -185,12 +185,12 @@ StyleSheetFile::StyleSheetFile(const QString& path)
 StyleSheetFile::StyleSheetFile(const QString& lightPath, const QString& darkPath)
     : m_lightPath(lightPath), m_darkPath(darkPath), m_isMultiPath(lightPath != darkPath) {}
 
-QString StyleSheetFile::path(ThemeType::ThemeMode theme) {
-    ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
+QString StyleSheetFile::path(Fluent::ThemeMode theme) {
+    Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
     if (m_isMultiPath) {
-        return (actualTheme == ThemeType::ThemeMode::LIGHT) ? m_lightPath : m_darkPath;
+        return (actualTheme == Fluent::ThemeMode::LIGHT) ? m_lightPath : m_darkPath;
     }
 
     // 向后兼容：使用单一路径
@@ -202,12 +202,12 @@ QString StyleSheetFile::path(ThemeType::ThemeMode theme) {
 TemplateStyleSheetFile::TemplateStyleSheetFile(const QString& templatePath)
     : m_templatePath(templatePath) {}
 
-QString TemplateStyleSheetFile::path(ThemeType::ThemeMode theme) {
-    ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
+QString TemplateStyleSheetFile::path(Fluent::ThemeMode theme) {
+    Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
     // 使用缓存避免重复字符串操作
-    if (actualTheme == ThemeType::ThemeMode::LIGHT) {
+    if (actualTheme == Fluent::ThemeMode::LIGHT) {
         if (m_cachedLightPath.isEmpty()) {
             m_cachedLightPath = m_templatePath;
             m_cachedLightPath.replace("{theme}", "light");
@@ -224,50 +224,50 @@ QString TemplateStyleSheetFile::path(ThemeType::ThemeMode theme) {
 
 // ==================== FluentStyleSheet 实现 ====================
 
-FluentStyleSheet::FluentStyleSheet(ThemeType::ThemeStyle type) : m_type(type) {}
+FluentStyleSheet::FluentStyleSheet(Fluent::ThemeStyle type) : m_type(type) {}
 
-const QHash<ThemeType::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
-    static QHash<ThemeType::ThemeStyle, QString> typeMap;
+const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
+    static QHash<Fluent::ThemeStyle, QString> typeMap;
     static bool initialized = false;
 
     if (!initialized) {
         typeMap.reserve(35); // 预留足够空间
 
-        typeMap.insert(ThemeType::ThemeStyle::MENU, "menu");
-        typeMap.insert(ThemeType::ThemeStyle::LABEL, "label");
-        typeMap.insert(ThemeType::ThemeStyle::PIVOT, "pivot");
-        typeMap.insert(ThemeType::ThemeStyle::BUTTON, "button");
-        typeMap.insert(ThemeType::ThemeStyle::DIALOG, "dialog");
-        typeMap.insert(ThemeType::ThemeStyle::SLIDER, "slider");
-        typeMap.insert(ThemeType::ThemeStyle::INFO_BAR, "info_bar");
-        typeMap.insert(ThemeType::ThemeStyle::SPIN_BOX, "spin_box");
-        typeMap.insert(ThemeType::ThemeStyle::TAB_VIEW, "tab_view");
-        typeMap.insert(ThemeType::ThemeStyle::TOOL_TIP, "tool_tip");
-        typeMap.insert(ThemeType::ThemeStyle::CHECK_BOX, "check_box");
-        typeMap.insert(ThemeType::ThemeStyle::COMBO_BOX, "combo_box");
-        typeMap.insert(ThemeType::ThemeStyle::FLIP_VIEW, "flip_view");
-        typeMap.insert(ThemeType::ThemeStyle::LINE_EDIT, "line_edit");
-        typeMap.insert(ThemeType::ThemeStyle::LIST_VIEW, "list_view");
-        typeMap.insert(ThemeType::ThemeStyle::TREE_VIEW, "tree_view");
-        typeMap.insert(ThemeType::ThemeStyle::INFO_BADGE, "info_badge");
-        typeMap.insert(ThemeType::ThemeStyle::PIPS_PAGER, "pips_pager");
-        typeMap.insert(ThemeType::ThemeStyle::TABLE_VIEW, "table_view");
-        typeMap.insert(ThemeType::ThemeStyle::CARD_WIDGET, "card_widget");
-        typeMap.insert(ThemeType::ThemeStyle::TIME_PICKER, "time_picker");
-        typeMap.insert(ThemeType::ThemeStyle::COLOR_DIALOG, "color_dialog");
-        typeMap.insert(ThemeType::ThemeStyle::MEDIA_PLAYER, "media_player");
-        typeMap.insert(ThemeType::ThemeStyle::SETTING_CARD, "setting_card");
-        typeMap.insert(ThemeType::ThemeStyle::TEACHING_TIP, "teaching_tip");
-        typeMap.insert(ThemeType::ThemeStyle::FLUENT_WINDOW, "fluent_window");
-        typeMap.insert(ThemeType::ThemeStyle::SWITCH_BUTTON, "switch_button");
-        typeMap.insert(ThemeType::ThemeStyle::MESSAGE_DIALOG, "message_dialog");
-        typeMap.insert(ThemeType::ThemeStyle::STATE_TOOL_TIP, "state_tool_tip");
-        typeMap.insert(ThemeType::ThemeStyle::CALENDAR_PICKER, "calendar_picker");
-        typeMap.insert(ThemeType::ThemeStyle::FOLDER_LIST_DIALOG, "folder_list_dialog");
-        typeMap.insert(ThemeType::ThemeStyle::SETTING_CARD_GROUP, "setting_card_group");
-        typeMap.insert(ThemeType::ThemeStyle::EXPAND_SETTING_CARD, "expand_setting_card");
-        typeMap.insert(ThemeType::ThemeStyle::NAVIGATION_INTERFACE, "navigation_interface");
-        typeMap.insert(ThemeType::ThemeStyle::TITLE_BAR, "title_bar");
+        typeMap.insert(Fluent::ThemeStyle::MENU, "menu");
+        typeMap.insert(Fluent::ThemeStyle::LABEL, "label");
+        typeMap.insert(Fluent::ThemeStyle::PIVOT, "pivot");
+        typeMap.insert(Fluent::ThemeStyle::BUTTON, "button");
+        typeMap.insert(Fluent::ThemeStyle::DIALOG, "dialog");
+        typeMap.insert(Fluent::ThemeStyle::SLIDER, "slider");
+        typeMap.insert(Fluent::ThemeStyle::INFO_BAR, "info_bar");
+        typeMap.insert(Fluent::ThemeStyle::SPIN_BOX, "spin_box");
+        typeMap.insert(Fluent::ThemeStyle::TAB_VIEW, "tab_view");
+        typeMap.insert(Fluent::ThemeStyle::TOOL_TIP, "tool_tip");
+        typeMap.insert(Fluent::ThemeStyle::CHECK_BOX, "check_box");
+        typeMap.insert(Fluent::ThemeStyle::COMBO_BOX, "combo_box");
+        typeMap.insert(Fluent::ThemeStyle::FLIP_VIEW, "flip_view");
+        typeMap.insert(Fluent::ThemeStyle::LINE_EDIT, "line_edit");
+        typeMap.insert(Fluent::ThemeStyle::LIST_VIEW, "list_view");
+        typeMap.insert(Fluent::ThemeStyle::TREE_VIEW, "tree_view");
+        typeMap.insert(Fluent::ThemeStyle::INFO_BADGE, "info_badge");
+        typeMap.insert(Fluent::ThemeStyle::PIPS_PAGER, "pips_pager");
+        typeMap.insert(Fluent::ThemeStyle::TABLE_VIEW, "table_view");
+        typeMap.insert(Fluent::ThemeStyle::CARD_WIDGET, "card_widget");
+        typeMap.insert(Fluent::ThemeStyle::TIME_PICKER, "time_picker");
+        typeMap.insert(Fluent::ThemeStyle::COLOR_DIALOG, "color_dialog");
+        typeMap.insert(Fluent::ThemeStyle::MEDIA_PLAYER, "media_player");
+        typeMap.insert(Fluent::ThemeStyle::SETTING_CARD, "setting_card");
+        typeMap.insert(Fluent::ThemeStyle::TEACHING_TIP, "teaching_tip");
+        typeMap.insert(Fluent::ThemeStyle::FLUENT_WINDOW, "fluent_window");
+        typeMap.insert(Fluent::ThemeStyle::SWITCH_BUTTON, "switch_button");
+        typeMap.insert(Fluent::ThemeStyle::MESSAGE_DIALOG, "message_dialog");
+        typeMap.insert(Fluent::ThemeStyle::STATE_TOOL_TIP, "state_tool_tip");
+        typeMap.insert(Fluent::ThemeStyle::CALENDAR_PICKER, "calendar_picker");
+        typeMap.insert(Fluent::ThemeStyle::FOLDER_LIST_DIALOG, "folder_list_dialog");
+        typeMap.insert(Fluent::ThemeStyle::SETTING_CARD_GROUP, "setting_card_group");
+        typeMap.insert(Fluent::ThemeStyle::EXPAND_SETTING_CARD, "expand_setting_card");
+        typeMap.insert(Fluent::ThemeStyle::NAVIGATION_INTERFACE, "navigation_interface");
+        typeMap.insert(Fluent::ThemeStyle::TITLE_BAR, "title_bar");
 
         initialized = true;
     }
@@ -275,18 +275,18 @@ const QHash<ThemeType::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
     return typeMap;
 }
 
-QString FluentStyleSheet::path(ThemeType::ThemeMode theme) {
-    ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
+QString FluentStyleSheet::path(Fluent::ThemeMode theme) {
+    Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
-    const QString& themeStr = (actualTheme == ThemeType::ThemeMode::LIGHT) ?
+    const QString& themeStr = (actualTheme == Fluent::ThemeMode::LIGHT) ?
                 QStringLiteral("light") : QStringLiteral("dark");
     const QString& typeStr = typeToString(m_type);
 
     return QString(":/res/style/%1/%2.qss").arg(themeStr, typeStr);
 }
 
-QString FluentStyleSheet::typeToString(ThemeType::ThemeStyle type) {
+QString FluentStyleSheet::typeToString(Fluent::ThemeStyle type) {
     return getTypeMap().value(type, "unknown");
 }
 
@@ -297,16 +297,16 @@ const char* CustomStyleSheet::LIGHT_QSS_KEY = "lightCustomQss";
 
 CustomStyleSheet::CustomStyleSheet(QWidget* widget) : m_widget(widget) {}
 
-QString CustomStyleSheet::path(ThemeType::ThemeMode theme) {
+QString CustomStyleSheet::path(Fluent::ThemeMode theme) {
     Q_UNUSED(theme)
     return QString();
 }
 
-QString CustomStyleSheet::content(ThemeType::ThemeMode theme) {
-    ThemeType::ThemeMode actualTheme = (theme == ThemeType::ThemeMode::AUTO)
+QString CustomStyleSheet::content(Fluent::ThemeMode theme) {
+    Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
-    return (actualTheme == ThemeType::ThemeMode::LIGHT) ?
+    return (actualTheme == Fluent::ThemeMode::LIGHT) ?
                 lightStyleSheet() : darkStyleSheet();
 }
 
@@ -351,7 +351,7 @@ StyleSheetCompose::StyleSheetCompose(const std::vector<std::shared_ptr<StyleShee
 StyleSheetCompose::StyleSheetCompose(std::vector<std::shared_ptr<StyleSheetBase>>&& sources)
     : m_sources(std::move(sources)) {}
 
-QString StyleSheetCompose::content(ThemeType::ThemeMode theme) {
+QString StyleSheetCompose::content(Fluent::ThemeMode theme) {
     if (m_sources.empty()) {
         return QString();
     }
@@ -481,7 +481,7 @@ void StyleSheetManager::deregisterWidget(QWidget* widget) {
     m_widgets.remove(widget);
 }
 
-void StyleSheetManager::registerWidget(QWidget* widget, ThemeType::ThemeStyle type, bool reset) {
+void StyleSheetManager::registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset) {
     registerWidget(std::make_shared<FluentStyleSheet>(type), widget, reset);
 }
 
@@ -532,12 +532,12 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
 // StyleSheetManager 的静态便捷方法
 void StyleSheetManager::setStyleSheet(QWidget* widget,
                                       const std::shared_ptr<StyleSheetBase>& source,
-                                      ThemeType::ThemeMode theme, bool registerWidget) {
+                                      Fluent::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::setStyleSheet(widget, source, theme, registerWidget);
 }
 
 void StyleSheetManager::setStyleSheet(QWidget* widget, const QString& source,
-                                      ThemeType::ThemeMode theme, bool registerWidget) {
+                                      Fluent::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::setStyleSheet(widget, source, theme, registerWidget);
 }
 
@@ -548,11 +548,11 @@ void StyleSheetManager::setCustomStyleSheet(QWidget* widget, const QString& ligh
 
 void StyleSheetManager::addStyleSheet(QWidget* widget,
                                       const std::shared_ptr<StyleSheetBase>& source,
-                                      ThemeType::ThemeMode theme, bool registerWidget) {
+                                      Fluent::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::addStyleSheet(widget, source, theme, registerWidget);
 }
 
 void StyleSheetManager::addStyleSheet(QWidget* widget, const QString& source,
-                                      ThemeType::ThemeMode theme, bool registerWidget) {
+                                      Fluent::ThemeMode theme, bool registerWidget) {
     StyleSheetHelper::addStyleSheet(widget, source, theme, registerWidget);
 }

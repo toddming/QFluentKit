@@ -17,14 +17,14 @@
 // 初始化静态缓存
 QCache<QString, QByteArray> FluentIconUtils::s_svgCache(500); // 缓存 500 个着色 SVG
 
-QString FluentIconUtils::getIconColor(ThemeType::ThemeMode theme, bool reverse) {
+QString FluentIconUtils::getIconColor(Fluent::ThemeMode theme, bool reverse) {
     QString lc = reverse ? "white" : "black";
     QString dc = reverse ? "black" : "white";
 
-    if (theme == ThemeType::AUTO) {
+    if (theme == Fluent::ThemeMode::AUTO) {
         return Theme::instance()->isDarkTheme() ? dc : lc;
     }
-    return (theme == ThemeType::DARK) ? "black" : "white";
+    return (theme == Fluent::ThemeMode::DARK) ? "black" : "white";
 }
 
 void FluentIconUtils::drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect) {
@@ -95,7 +95,7 @@ QIcon FluentIconUtils::toQIcon(const QVariant& icon) {
     return QIcon();
 }
 
-void FluentIconUtils::drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
+void FluentIconUtils::drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme,
                                QIcon::State state, const QMap<QString, QString>& attributes) {
     Q_UNUSED(state)
     icon.render(painter, rect, theme, {}, attributes);
@@ -103,15 +103,15 @@ void FluentIconUtils::drawIcon(const FluentIconBase& icon, QPainter* painter, co
 
 // ====================== FluentIconEngine ======================
 
-FluentIconEngine::FluentIconEngine(FluentIconType::IconType iconType, bool reverse)
+FluentIconEngine::FluentIconEngine(Fluent::IconType iconType, bool reverse)
     : m_iconType(iconType), m_isThemeReversed(reverse) {
-    if (m_iconType != FluentIconType::CUSTOM_PATH) {
+    if (m_iconType != Fluent::IconType::CUSTOM_PATH) {
         m_iconBase = std::make_unique<FluentIcon>(m_iconType);
     }
 }
 
 FluentIconEngine::FluentIconEngine(const QString& templatePath, bool reverse)
-    : m_iconType(FluentIconType::CUSTOM_PATH), m_templatePath(templatePath), m_isThemeReversed(reverse) {
+    : m_iconType(Fluent::IconType::CUSTOM_PATH), m_templatePath(templatePath), m_isThemeReversed(reverse) {
     m_iconBase = std::make_unique<FluentIcon>(m_templatePath);
 }
 
@@ -122,9 +122,9 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect, QIcon::Mode m
     if (mode == QIcon::Disabled) painter->setOpacity(0.5);
     else if (mode == QIcon::Selected) painter->setOpacity(0.7);
 
-    ThemeType::ThemeMode theme = m_isThemeReversed
-        ? (Theme::instance()->isDarkTheme() ? ThemeType::LIGHT : ThemeType::DARK)
-        : ThemeType::AUTO;
+    Fluent::ThemeMode theme = m_isThemeReversed
+        ? (Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK)
+        : Fluent::ThemeMode::AUTO;
 
     if (m_iconBase) {
         m_iconBase->render(painter, rect, theme);
@@ -134,7 +134,7 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect, QIcon::Mode m
 }
 
 QIconEngine* FluentIconEngine::clone() const {
-    auto* engine = (m_iconType == FluentIconType::CUSTOM_PATH)
+    auto* engine = (m_iconType == Fluent::IconType::CUSTOM_PATH)
         ? new FluentIconEngine(m_templatePath, m_isThemeReversed)
         : new FluentIconEngine(m_iconType, m_isThemeReversed);
     if (m_iconBase) {
@@ -205,7 +205,7 @@ QPixmap FontIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State
 
 // ====================== FluentIconBase ======================
 
-QIcon FluentIconBase::icon(ThemeType::ThemeMode theme, const QColor& color) const {
+QIcon FluentIconBase::icon(Fluent::ThemeMode theme, const QColor& color) const {
     QString p = path(theme);
     if (!p.endsWith(".svg") || !color.isValid()) return QIcon(p);
 
@@ -218,7 +218,7 @@ ColoredFluentIcon FluentIconBase::colored(const QColor& lightColor, const QColor
     return ColoredFluentIcon(*this, lightColor, darkColor);
 }
 
-void FluentIconBase::render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
+void FluentIconBase::render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme,
                             const QList<int>& indexes, const QMap<QString, QString>& attributes) const {
     QString p = path(theme);
     if (p.endsWith(".svg")) {
@@ -247,7 +247,7 @@ FluentFontIconBase::FluentFontIconBase(const QChar& ch)
     loadFont();
 }
 
-QString FluentFontIconBase::path(ThemeType::ThemeMode theme) const { Q_UNUSED(theme); return fontPath(); }
+QString FluentFontIconBase::path(Fluent::ThemeMode theme) const { Q_UNUSED(theme); return fontPath(); }
 
 FluentFontIconBase FluentFontIconBase::fromName(const QString& name) {
     return FluentFontIconBase(s_iconNames.value(name, QChar()));
@@ -255,7 +255,7 @@ FluentFontIconBase FluentFontIconBase::fromName(const QString& name) {
 
 FluentFontIconBase& FluentFontIconBase::bold() { m_isBold = true; return *this; }
 
-QIcon FluentFontIconBase::icon(ThemeType::ThemeMode theme, const QColor& color) const {
+QIcon FluentFontIconBase::icon(Fluent::ThemeMode theme, const QColor& color) const {
     QColor c = color.isValid() ? color : getIconColor(theme);
     return QIcon(new FontIconEngine(s_fontFamily, m_char, c, m_isBold));
 }
@@ -267,7 +267,7 @@ ColoredFluentIcon FluentFontIconBase::colored(const QColor& lightColor, const QC
     return ColoredFluentIcon(*this, lightColor, darkColor);
 }
 
-void FluentFontIconBase::render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
+void FluentFontIconBase::render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme,
                                 const QList<int>& indexes, const QMap<QString, QString>& attributes) const {
     Q_UNUSED(indexes);
     QColor color = attributes.contains("fill") ? QColor(attributes["fill"]) : getIconColor(theme);
@@ -316,10 +316,10 @@ void FluentFontIconBase::loadIconNames() {
     }
 }
 
-QColor FluentFontIconBase::getIconColor(ThemeType::ThemeMode theme) const {
-    return (theme == ThemeType::AUTO)
+QColor FluentFontIconBase::getIconColor(Fluent::ThemeMode theme) const {
+    return (theme == Fluent::ThemeMode::AUTO)
         ? (Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor)
-        : (theme == ThemeType::DARK ? m_darkColor : m_lightColor);
+        : (theme == Fluent::ThemeMode::DARK ? m_darkColor : m_lightColor);
 }
 
 // ====================== ColoredFluentIcon ======================
@@ -327,19 +327,19 @@ QColor FluentFontIconBase::getIconColor(ThemeType::ThemeMode theme) const {
 ColoredFluentIcon::ColoredFluentIcon(const FluentIconBase& icon, const QColor& lightColor, const QColor& darkColor)
     : m_fluentIcon(icon.clone()), m_lightColor(lightColor), m_darkColor(darkColor) {}
 
-QString ColoredFluentIcon::path(ThemeType::ThemeMode theme) const {
+QString ColoredFluentIcon::path(Fluent::ThemeMode theme) const {
     return m_fluentIcon ? m_fluentIcon->path(theme) : QString();
 }
 
-void ColoredFluentIcon::render(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme,
+void ColoredFluentIcon::render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme,
                                const QList<int>& indexes, const QMap<QString, QString>& attributes) const {
     if (!m_fluentIcon) return;
     QString p = path(theme);
     if (!p.endsWith(".svg")) { m_fluentIcon->render(painter, rect, theme, indexes, attributes); return; }
 
-    QColor color = (theme == ThemeType::AUTO)
+    QColor color = (theme == Fluent::ThemeMode::AUTO)
         ? (Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor)
-        : (theme == ThemeType::DARK ? m_darkColor : m_lightColor);
+        : (theme == Fluent::ThemeMode::DARK ? m_darkColor : m_lightColor);
 
     QMap<QString, QString> attrs = attributes;
     attrs["fill"] = color.name();
@@ -349,19 +349,19 @@ void ColoredFluentIcon::render(QPainter* painter, const QRectF& rect, ThemeType:
 
 // ====================== FluentIcon ======================
 
-FluentIcon::FluentIcon(FluentIconType::IconType iconEnum)
+FluentIcon::FluentIcon(Fluent::IconType iconEnum)
     : m_iconEnum(iconEnum), m_cachedLightPath(), m_cachedDarkPath() {}
 
 FluentIcon::FluentIcon(const QString& templatePath)
-    : m_iconEnum(FluentIconType::CUSTOM_PATH), m_templatePath(templatePath) {}
+    : m_iconEnum(Fluent::IconType::CUSTOM_PATH), m_templatePath(templatePath) {}
 
-QString FluentIcon::path(ThemeType::ThemeMode theme) const {
+QString FluentIcon::path(Fluent::ThemeMode theme) const {
     QString color = FluentIconUtils::getIconColor(theme);
     QString cache = (color == "black") ? m_cachedLightPath : m_cachedDarkPath;
     if (!cache.isEmpty()) {
         return cache;
     }
-    if (m_iconEnum != FluentIconType::CUSTOM_PATH) {
+    if (m_iconEnum != Fluent::IconType::CUSTOM_PATH) {
         cache = QStringLiteral(":/res/images/icons/%1_%2.svg")
                     .arg(enumToString(m_iconEnum), color);
     } else {
@@ -373,192 +373,192 @@ QString FluentIcon::path(ThemeType::ThemeMode theme) const {
 }
 
 QIcon FluentIcon::qicon(bool reverse) const {
-    return (m_iconEnum == FluentIconType::CUSTOM_PATH)
+    return (m_iconEnum == Fluent::IconType::CUSTOM_PATH)
         ? QIcon(new FluentIconEngine(m_templatePath, reverse))
         : QIcon(new FluentIconEngine(m_iconEnum, reverse));
 }
 
-QString FluentIcon::enumToString(FluentIconType::IconType e) const {
+QString FluentIcon::enumToString(Fluent::IconType e) const {
     return fluentIcons().value(e, "");
 }
 
-const QMap<FluentIconType::IconType, QString>& FluentIcon::fluentIcons() {
-    static const QMap<FluentIconType::IconType, QString> map = {
-        {FluentIconType::UP, QStringLiteral("Up")},
-        {FluentIconType::ADD, QStringLiteral("Add")},
-        {FluentIconType::BUS, QStringLiteral("Bus")},
-        {FluentIconType::CAR, QStringLiteral("Car")},
-        {FluentIconType::CUT, QStringLiteral("Cut")},
-        {FluentIconType::IOT, QStringLiteral("IOT")},
-        {FluentIconType::PIN, QStringLiteral("Pin")},
-        {FluentIconType::TAG, QStringLiteral("Tag")},
-        {FluentIconType::VPN, QStringLiteral("VPN")},
-        {FluentIconType::CAFE, QStringLiteral("Cafe")},
-        {FluentIconType::CHAT, QStringLiteral("Chat")},
-        {FluentIconType::COPY, QStringLiteral("Copy")},
-        {FluentIconType::CODE, QStringLiteral("Code")},
-        {FluentIconType::DOWN, QStringLiteral("Down")},
-        {FluentIconType::EDIT, QStringLiteral("Edit")},
-        {FluentIconType::FLAG, QStringLiteral("Flag")},
-        {FluentIconType::FONT, QStringLiteral("Font")},
-        {FluentIconType::GAME, QStringLiteral("Game")},
-        {FluentIconType::HELP, QStringLiteral("Help")},
-        {FluentIconType::HIDE, QStringLiteral("Hide")},
-        {FluentIconType::HOME, QStringLiteral("Home")},
-        {FluentIconType::INFO, QStringLiteral("Info")},
-        {FluentIconType::LEAF, QStringLiteral("Leaf")},
-        {FluentIconType::LINK, QStringLiteral("Link")},
-        {FluentIconType::MAIL, QStringLiteral("Mail")},
-        {FluentIconType::MENU, QStringLiteral("Menu")},
-        {FluentIconType::MUTE, QStringLiteral("Mute")},
-        {FluentIconType::MORE, QStringLiteral("More")},
-        {FluentIconType::MOVE, QStringLiteral("Move")},
-        {FluentIconType::PLAY, QStringLiteral("Play")},
-        {FluentIconType::SAVE, QStringLiteral("Save")},
-        {FluentIconType::SEND, QStringLiteral("Send")},
-        {FluentIconType::SYNC, QStringLiteral("Sync")},
-        {FluentIconType::UNIT, QStringLiteral("Unit")},
-        {FluentIconType::VIEW, QStringLiteral("View")},
-        {FluentIconType::WIFI, QStringLiteral("Wifi")},
-        {FluentIconType::ZOOM, QStringLiteral("Zoom")},
-        {FluentIconType::ALBUM, QStringLiteral("Album")},
-        {FluentIconType::BRUSH, QStringLiteral("Brush")},
-        {FluentIconType::BROOM, QStringLiteral("Broom")},
-        {FluentIconType::CLOSE, QStringLiteral("Close")},
-        {FluentIconType::CLOUD, QStringLiteral("Cloud")},
-        {FluentIconType::EMBED, QStringLiteral("Embed")},
-        {FluentIconType::GLOBE, QStringLiteral("Globe")},
-        {FluentIconType::HEART, QStringLiteral("Heart")},
-        {FluentIconType::LABEL, QStringLiteral("Label")},
-        {FluentIconType::MEDIA, QStringLiteral("Media")},
-        {FluentIconType::MOVIE, QStringLiteral("Movie")},
-        {FluentIconType::MUSIC, QStringLiteral("Music")},
-        {FluentIconType::ROBOT, QStringLiteral("Robot")},
-        {FluentIconType::PAUSE, QStringLiteral("Pause")},
-        {FluentIconType::PASTE, QStringLiteral("Paste")},
-        {FluentIconType::PHOTO, QStringLiteral("Photo")},
-        {FluentIconType::PHONE, QStringLiteral("Phone")},
-        {FluentIconType::PRINT, QStringLiteral("Print")},
-        {FluentIconType::SHARE, QStringLiteral("Share")},
-        {FluentIconType::TILES, QStringLiteral("Tiles")},
-        {FluentIconType::UNPIN, QStringLiteral("Unpin")},
-        {FluentIconType::VIDEO, QStringLiteral("Video")},
-        {FluentIconType::TRAIN, QStringLiteral("Train")},
-        {FluentIconType::ADD_TO, QStringLiteral("AddTo")},
-        {FluentIconType::ACCEPT, QStringLiteral("Accept")},
-        {FluentIconType::CAMERA, QStringLiteral("Camera")},
-        {FluentIconType::CANCEL, QStringLiteral("Cancel")},
-        {FluentIconType::DELETE, QStringLiteral("Delete")},
-        {FluentIconType::FOLDER, QStringLiteral("Folder")},
-        {FluentIconType::FILTER, QStringLiteral("Filter")},
-        {FluentIconType::MARKET, QStringLiteral("Market")},
-        {FluentIconType::SCROLL, QStringLiteral("Scroll")},
-        {FluentIconType::LAYOUT, QStringLiteral("Layout")},
-        {FluentIconType::GITHUB, QStringLiteral("GitHub")},
-        {FluentIconType::UPDATE, QStringLiteral("Update")},
-        {FluentIconType::REMOVE, QStringLiteral("Remove")},
-        {FluentIconType::RETURN, QStringLiteral("Return")},
-        {FluentIconType::PEOPLE, QStringLiteral("People")},
-        {FluentIconType::QRCODE, QStringLiteral("QRCode")},
-        {FluentIconType::RINGER, QStringLiteral("Ringer")},
-        {FluentIconType::ROTATE, QStringLiteral("Rotate")},
-        {FluentIconType::SEARCH, QStringLiteral("Search")},
-        {FluentIconType::VOLUME, QStringLiteral("Volume")},
-        {FluentIconType::FRIGID, QStringLiteral("Frigid")},
-        {FluentIconType::SAVE_AS, QStringLiteral("SaveAs")},
-        {FluentIconType::ZOOM_IN, QStringLiteral("ZoomIn")},
-        {FluentIconType::CONNECT, QStringLiteral("Connect")},
-        {FluentIconType::HISTORY, QStringLiteral("History")},
-        {FluentIconType::SETTING, QStringLiteral("Setting")},
-        {FluentIconType::PALETTE, QStringLiteral("Palette")},
-        {FluentIconType::MESSAGE, QStringLiteral("Message")},
-        {FluentIconType::FIT_PAGE, QStringLiteral("FitPage")},
-        {FluentIconType::ZOOM_OUT, QStringLiteral("ZoomOut")},
-        {FluentIconType::AIRPLANE, QStringLiteral("Airplane")},
-        {FluentIconType::ASTERISK, QStringLiteral("Asterisk")},
-        {FluentIconType::CALORIES, QStringLiteral("Calories")},
-        {FluentIconType::CALENDAR, QStringLiteral("Calendar")},
-        {FluentIconType::FEEDBACK, QStringLiteral("Feedback")},
-        {FluentIconType::LIBRARY, QStringLiteral("BookShelf")},
-        {FluentIconType::MINIMIZE, QStringLiteral("Minimize")},
-        {FluentIconType::CHECKBOX, QStringLiteral("CheckBox")},
-        {FluentIconType::DOCUMENT, QStringLiteral("Document")},
-        {FluentIconType::LANGUAGE, QStringLiteral("Language")},
-        {FluentIconType::DOWNLOAD, QStringLiteral("Download")},
-        {FluentIconType::QUESTION, QStringLiteral("Question")},
-        {FluentIconType::SPEAKERS, QStringLiteral("Speakers")},
-        {FluentIconType::DATE_TIME, QStringLiteral("DateTime")},
-        {FluentIconType::FONT_SIZE, QStringLiteral("FontSize")},
-        {FluentIconType::HOME_FILL, QStringLiteral("HomeFill")},
-        {FluentIconType::PAGE_LEFT, QStringLiteral("PageLeft")},
-        {FluentIconType::SAVE_COPY, QStringLiteral("SaveCopy")},
-        {FluentIconType::SEND_FILL, QStringLiteral("SendFill")},
-        {FluentIconType::SKIP_BACK, QStringLiteral("SkipBack")},
-        {FluentIconType::SPEED_OFF, QStringLiteral("SpeedOff")},
-        {FluentIconType::ALIGNMENT, QStringLiteral("Alignment")},
-        {FluentIconType::BLUETOOTH, QStringLiteral("Bluetooth")},
-        {FluentIconType::COMPLETED, QStringLiteral("Completed")},
-        {FluentIconType::CONSTRACT, QStringLiteral("Constract")},
-        {FluentIconType::HEADPHONE, QStringLiteral("Headphone")},
-        {FluentIconType::MEGAPHONE, QStringLiteral("Megaphone")},
-        {FluentIconType::PROJECTOR, QStringLiteral("Projector")},
-        {FluentIconType::EDUCATION, QStringLiteral("Education")},
-        {FluentIconType::LEFT_ARROW, QStringLiteral("LeftArrow")},
-        {FluentIconType::ERASE_TOOL, QStringLiteral("EraseTool")},
-        {FluentIconType::PAGE_RIGHT, QStringLiteral("PageRight")},
-        {FluentIconType::PLAY_SOLID, QStringLiteral("PlaySolid")},
-        {FluentIconType::BOOK_SHELF, QStringLiteral("BookShelf")},
-        {FluentIconType::HIGHTLIGHT, QStringLiteral("Highlight")},
-        {FluentIconType::FOLDER_ADD, QStringLiteral("FolderAdd")},
-        {FluentIconType::PAUSE_BOLD, QStringLiteral("PauseBold")},
-        {FluentIconType::PENCIL_INK, QStringLiteral("PencilInk")},
-        {FluentIconType::PIE_SINGLE, QStringLiteral("PieSingle")},
-        {FluentIconType::QUICK_NOTE, QStringLiteral("QuickNote")},
-        {FluentIconType::SPEED_HIGH, QStringLiteral("SpeedHigh")},
-        {FluentIconType::STOP_WATCH, QStringLiteral("StopWatch")},
-        {FluentIconType::ZIP_FOLDER, QStringLiteral("ZipFolder")},
-        {FluentIconType::BASKETBALL, QStringLiteral("Basketball")},
-        {FluentIconType::BRIGHTNESS, QStringLiteral("Brightness")},
-        {FluentIconType::DICTIONARY, QStringLiteral("Dictionary")},
-        {FluentIconType::MICROPHONE, QStringLiteral("Microphone")},
-        {FluentIconType::ARROW_DOWN, QStringLiteral("ChevronDown")},
-        {FluentIconType::FULL_SCREEN, QStringLiteral("FullScreen")},
-        {FluentIconType::MIX_VOLUMES, QStringLiteral("MixVolumes")},
-        {FluentIconType::REMOVE_FROM, QStringLiteral("RemoveFrom")},
-        {FluentIconType::RIGHT_ARROW, QStringLiteral("RightArrow")},
-        {FluentIconType::QUIET_HOURS, QStringLiteral("QuietHours")},
-        {FluentIconType::FINGERPRINT, QStringLiteral("Fingerprint")},
-        {FluentIconType::APPLICATION, QStringLiteral("Application")},
-        {FluentIconType::CERTIFICATE, QStringLiteral("Certificate")},
-        {FluentIconType::TRANSPARENT, QStringLiteral("Transparent")},
-        {FluentIconType::IMAGE_EXPORT, QStringLiteral("ImageExport")},
-        {FluentIconType::SPEED_MEDIUM, QStringLiteral("SpeedMedium")},
-        {FluentIconType::LIBRARY_FILL, QStringLiteral("LibraryFill")},
-        {FluentIconType::MUSIC_FOLDER, QStringLiteral("MusicFolder")},
-        {FluentIconType::POWER_BUTTON, QStringLiteral("PowerButton")},
-        {FluentIconType::SKIP_FORWARD, QStringLiteral("SkipForward")},
-        {FluentIconType::CARE_UP_SOLID, QStringLiteral("CareUpSolid")},
-        {FluentIconType::ACCEPT_MEDIUM, QStringLiteral("AcceptMedium")},
-        {FluentIconType::CANCEL_MEDIUM, QStringLiteral("CancelMedium")},
-        {FluentIconType::CHEVRON_RIGHT, QStringLiteral("ChevronRight")},
-        {FluentIconType::CLIPPING_TOOL, QStringLiteral("ClippingTool")},
-        {FluentIconType::SEARCH_MIRROR, QStringLiteral("SearchMirror")},
-        {FluentIconType::SHOPPING_CART, QStringLiteral("ShoppingCart")},
-        {FluentIconType::FONT_INCREASE, QStringLiteral("FontIncrease")},
-        {FluentIconType::BACK_TO_WINDOW, QStringLiteral("BackToWindow")},
-        {FluentIconType::COMMAND_PROMPT, QStringLiteral("CommandPrompt")},
-        {FluentIconType::CLOUD_DOWNLOAD, QStringLiteral("CloudDownload")},
-        {FluentIconType::DICTIONARY_ADD, QStringLiteral("DictionaryAdd")},
-        {FluentIconType::CARE_DOWN_SOLID, QStringLiteral("CareDownSolid")},
-        {FluentIconType::CARE_LEFT_SOLID, QStringLiteral("CareLeftSolid")},
-        {FluentIconType::CLEAR_SELECTION, QStringLiteral("ClearSelection")},
-        {FluentIconType::DEVELOPER_TOOLS, QStringLiteral("DeveloperTools")},
-        {FluentIconType::BACKGROUND_FILL, QStringLiteral("BackgroundColor")},
-        {FluentIconType::CARE_RIGHT_SOLID, QStringLiteral("CareRightSolid")},
-        {FluentIconType::CHEVRON_DOWN_MED, QStringLiteral("ChevronDownMed")},
-        {FluentIconType::CHEVRON_RIGHT_MED, QStringLiteral("ChevronRightMed")},
-        {FluentIconType::EMOJI_TAB_SYMBOLS, QStringLiteral("EmojiTabSymbols")},
-        {FluentIconType::EXPRESSIVE_INPUT_ENTRY, QStringLiteral("ExpressiveInputEntry")}
+const QMap<Fluent::IconType, QString>& FluentIcon::fluentIcons() {
+    static const QMap<Fluent::IconType, QString> map = {
+        {Fluent::IconType::UP, QStringLiteral("Up")},
+        {Fluent::IconType::ADD, QStringLiteral("Add")},
+        {Fluent::IconType::BUS, QStringLiteral("Bus")},
+        {Fluent::IconType::CAR, QStringLiteral("Car")},
+        {Fluent::IconType::CUT, QStringLiteral("Cut")},
+        {Fluent::IconType::IOT, QStringLiteral("IOT")},
+        {Fluent::IconType::PIN, QStringLiteral("Pin")},
+        {Fluent::IconType::TAG, QStringLiteral("Tag")},
+        {Fluent::IconType::VPN, QStringLiteral("VPN")},
+        {Fluent::IconType::CAFE, QStringLiteral("Cafe")},
+        {Fluent::IconType::CHAT, QStringLiteral("Chat")},
+        {Fluent::IconType::COPY, QStringLiteral("Copy")},
+        {Fluent::IconType::CODE, QStringLiteral("Code")},
+        {Fluent::IconType::DOWN, QStringLiteral("Down")},
+        {Fluent::IconType::EDIT, QStringLiteral("Edit")},
+        {Fluent::IconType::FLAG, QStringLiteral("Flag")},
+        {Fluent::IconType::FONT, QStringLiteral("Font")},
+        {Fluent::IconType::GAME, QStringLiteral("Game")},
+        {Fluent::IconType::HELP, QStringLiteral("Help")},
+        {Fluent::IconType::HIDE, QStringLiteral("Hide")},
+        {Fluent::IconType::HOME, QStringLiteral("Home")},
+        {Fluent::IconType::INFO, QStringLiteral("Info")},
+        {Fluent::IconType::LEAF, QStringLiteral("Leaf")},
+        {Fluent::IconType::LINK, QStringLiteral("Link")},
+        {Fluent::IconType::MAIL, QStringLiteral("Mail")},
+        {Fluent::IconType::MENU, QStringLiteral("Menu")},
+        {Fluent::IconType::MUTE, QStringLiteral("Mute")},
+        {Fluent::IconType::MORE, QStringLiteral("More")},
+        {Fluent::IconType::MOVE, QStringLiteral("Move")},
+        {Fluent::IconType::PLAY, QStringLiteral("Play")},
+        {Fluent::IconType::SAVE, QStringLiteral("Save")},
+        {Fluent::IconType::SEND, QStringLiteral("Send")},
+        {Fluent::IconType::SYNC, QStringLiteral("Sync")},
+        {Fluent::IconType::UNIT, QStringLiteral("Unit")},
+        {Fluent::IconType::VIEW, QStringLiteral("View")},
+        {Fluent::IconType::WIFI, QStringLiteral("Wifi")},
+        {Fluent::IconType::ZOOM, QStringLiteral("Zoom")},
+        {Fluent::IconType::ALBUM, QStringLiteral("Album")},
+        {Fluent::IconType::BRUSH, QStringLiteral("Brush")},
+        {Fluent::IconType::BROOM, QStringLiteral("Broom")},
+        {Fluent::IconType::CLOSE, QStringLiteral("Close")},
+        {Fluent::IconType::CLOUD, QStringLiteral("Cloud")},
+        {Fluent::IconType::EMBED, QStringLiteral("Embed")},
+        {Fluent::IconType::GLOBE, QStringLiteral("Globe")},
+        {Fluent::IconType::HEART, QStringLiteral("Heart")},
+        {Fluent::IconType::LABEL, QStringLiteral("Label")},
+        {Fluent::IconType::MEDIA, QStringLiteral("Media")},
+        {Fluent::IconType::MOVIE, QStringLiteral("Movie")},
+        {Fluent::IconType::MUSIC, QStringLiteral("Music")},
+        {Fluent::IconType::ROBOT, QStringLiteral("Robot")},
+        {Fluent::IconType::PAUSE, QStringLiteral("Pause")},
+        {Fluent::IconType::PASTE, QStringLiteral("Paste")},
+        {Fluent::IconType::PHOTO, QStringLiteral("Photo")},
+        {Fluent::IconType::PHONE, QStringLiteral("Phone")},
+        {Fluent::IconType::PRINT, QStringLiteral("Print")},
+        {Fluent::IconType::SHARE, QStringLiteral("Share")},
+        {Fluent::IconType::TILES, QStringLiteral("Tiles")},
+        {Fluent::IconType::UNPIN, QStringLiteral("Unpin")},
+        {Fluent::IconType::VIDEO, QStringLiteral("Video")},
+        {Fluent::IconType::TRAIN, QStringLiteral("Train")},
+        {Fluent::IconType::ADD_TO, QStringLiteral("AddTo")},
+        {Fluent::IconType::ACCEPT, QStringLiteral("Accept")},
+        {Fluent::IconType::CAMERA, QStringLiteral("Camera")},
+        {Fluent::IconType::CANCEL, QStringLiteral("Cancel")},
+        {Fluent::IconType::DELETE, QStringLiteral("Delete")},
+        {Fluent::IconType::FOLDER, QStringLiteral("Folder")},
+        {Fluent::IconType::FILTER, QStringLiteral("Filter")},
+        {Fluent::IconType::MARKET, QStringLiteral("Market")},
+        {Fluent::IconType::SCROLL, QStringLiteral("Scroll")},
+        {Fluent::IconType::LAYOUT, QStringLiteral("Layout")},
+        {Fluent::IconType::GITHUB, QStringLiteral("GitHub")},
+        {Fluent::IconType::UPDATE, QStringLiteral("Update")},
+        {Fluent::IconType::REMOVE, QStringLiteral("Remove")},
+        {Fluent::IconType::RETURN, QStringLiteral("Return")},
+        {Fluent::IconType::PEOPLE, QStringLiteral("People")},
+        {Fluent::IconType::QRCODE, QStringLiteral("QRCode")},
+        {Fluent::IconType::RINGER, QStringLiteral("Ringer")},
+        {Fluent::IconType::ROTATE, QStringLiteral("Rotate")},
+        {Fluent::IconType::SEARCH, QStringLiteral("Search")},
+        {Fluent::IconType::VOLUME, QStringLiteral("Volume")},
+        {Fluent::IconType::FRIGID, QStringLiteral("Frigid")},
+        {Fluent::IconType::SAVE_AS, QStringLiteral("SaveAs")},
+        {Fluent::IconType::ZOOM_IN, QStringLiteral("ZoomIn")},
+        {Fluent::IconType::CONNECT, QStringLiteral("Connect")},
+        {Fluent::IconType::HISTORY, QStringLiteral("History")},
+        {Fluent::IconType::SETTING, QStringLiteral("Setting")},
+        {Fluent::IconType::PALETTE, QStringLiteral("Palette")},
+        {Fluent::IconType::MESSAGE, QStringLiteral("Message")},
+        {Fluent::IconType::FIT_PAGE, QStringLiteral("FitPage")},
+        {Fluent::IconType::ZOOM_OUT, QStringLiteral("ZoomOut")},
+        {Fluent::IconType::AIRPLANE, QStringLiteral("Airplane")},
+        {Fluent::IconType::ASTERISK, QStringLiteral("Asterisk")},
+        {Fluent::IconType::CALORIES, QStringLiteral("Calories")},
+        {Fluent::IconType::CALENDAR, QStringLiteral("Calendar")},
+        {Fluent::IconType::FEEDBACK, QStringLiteral("Feedback")},
+        {Fluent::IconType::LIBRARY, QStringLiteral("BookShelf")},
+        {Fluent::IconType::MINIMIZE, QStringLiteral("Minimize")},
+        {Fluent::IconType::CHECKBOX, QStringLiteral("CheckBox")},
+        {Fluent::IconType::DOCUMENT, QStringLiteral("Document")},
+        {Fluent::IconType::LANGUAGE, QStringLiteral("Language")},
+        {Fluent::IconType::DOWNLOAD, QStringLiteral("Download")},
+        {Fluent::IconType::QUESTION, QStringLiteral("Question")},
+        {Fluent::IconType::SPEAKERS, QStringLiteral("Speakers")},
+        {Fluent::IconType::DATE_TIME, QStringLiteral("DateTime")},
+        {Fluent::IconType::FONT_SIZE, QStringLiteral("FontSize")},
+        {Fluent::IconType::HOME_FILL, QStringLiteral("HomeFill")},
+        {Fluent::IconType::PAGE_LEFT, QStringLiteral("PageLeft")},
+        {Fluent::IconType::SAVE_COPY, QStringLiteral("SaveCopy")},
+        {Fluent::IconType::SEND_FILL, QStringLiteral("SendFill")},
+        {Fluent::IconType::SKIP_BACK, QStringLiteral("SkipBack")},
+        {Fluent::IconType::SPEED_OFF, QStringLiteral("SpeedOff")},
+        {Fluent::IconType::ALIGNMENT, QStringLiteral("Alignment")},
+        {Fluent::IconType::BLUETOOTH, QStringLiteral("Bluetooth")},
+        {Fluent::IconType::COMPLETED, QStringLiteral("Completed")},
+        {Fluent::IconType::CONSTRACT, QStringLiteral("Constract")},
+        {Fluent::IconType::HEADPHONE, QStringLiteral("Headphone")},
+        {Fluent::IconType::MEGAPHONE, QStringLiteral("Megaphone")},
+        {Fluent::IconType::PROJECTOR, QStringLiteral("Projector")},
+        {Fluent::IconType::EDUCATION, QStringLiteral("Education")},
+        {Fluent::IconType::LEFT_ARROW, QStringLiteral("LeftArrow")},
+        {Fluent::IconType::ERASE_TOOL, QStringLiteral("EraseTool")},
+        {Fluent::IconType::PAGE_RIGHT, QStringLiteral("PageRight")},
+        {Fluent::IconType::PLAY_SOLID, QStringLiteral("PlaySolid")},
+        {Fluent::IconType::BOOK_SHELF, QStringLiteral("BookShelf")},
+        {Fluent::IconType::HIGHTLIGHT, QStringLiteral("Highlight")},
+        {Fluent::IconType::FOLDER_ADD, QStringLiteral("FolderAdd")},
+        {Fluent::IconType::PAUSE_BOLD, QStringLiteral("PauseBold")},
+        {Fluent::IconType::PENCIL_INK, QStringLiteral("PencilInk")},
+        {Fluent::IconType::PIE_SINGLE, QStringLiteral("PieSingle")},
+        {Fluent::IconType::QUICK_NOTE, QStringLiteral("QuickNote")},
+        {Fluent::IconType::SPEED_HIGH, QStringLiteral("SpeedHigh")},
+        {Fluent::IconType::STOP_WATCH, QStringLiteral("StopWatch")},
+        {Fluent::IconType::ZIP_FOLDER, QStringLiteral("ZipFolder")},
+        {Fluent::IconType::BASKETBALL, QStringLiteral("Basketball")},
+        {Fluent::IconType::BRIGHTNESS, QStringLiteral("Brightness")},
+        {Fluent::IconType::DICTIONARY, QStringLiteral("Dictionary")},
+        {Fluent::IconType::MICROPHONE, QStringLiteral("Microphone")},
+        {Fluent::IconType::ARROW_DOWN, QStringLiteral("ChevronDown")},
+        {Fluent::IconType::FULL_SCREEN, QStringLiteral("FullScreen")},
+        {Fluent::IconType::MIX_VOLUMES, QStringLiteral("MixVolumes")},
+        {Fluent::IconType::REMOVE_FROM, QStringLiteral("RemoveFrom")},
+        {Fluent::IconType::RIGHT_ARROW, QStringLiteral("RightArrow")},
+        {Fluent::IconType::QUIET_HOURS, QStringLiteral("QuietHours")},
+        {Fluent::IconType::FINGERPRINT, QStringLiteral("Fingerprint")},
+        {Fluent::IconType::APPLICATION, QStringLiteral("Application")},
+        {Fluent::IconType::CERTIFICATE, QStringLiteral("Certificate")},
+        {Fluent::IconType::TRANSPARENT, QStringLiteral("Transparent")},
+        {Fluent::IconType::IMAGE_EXPORT, QStringLiteral("ImageExport")},
+        {Fluent::IconType::SPEED_MEDIUM, QStringLiteral("SpeedMedium")},
+        {Fluent::IconType::LIBRARY_FILL, QStringLiteral("LibraryFill")},
+        {Fluent::IconType::MUSIC_FOLDER, QStringLiteral("MusicFolder")},
+        {Fluent::IconType::POWER_BUTTON, QStringLiteral("PowerButton")},
+        {Fluent::IconType::SKIP_FORWARD, QStringLiteral("SkipForward")},
+        {Fluent::IconType::CARE_UP_SOLID, QStringLiteral("CareUpSolid")},
+        {Fluent::IconType::ACCEPT_MEDIUM, QStringLiteral("AcceptMedium")},
+        {Fluent::IconType::CANCEL_MEDIUM, QStringLiteral("CancelMedium")},
+        {Fluent::IconType::CHEVRON_RIGHT, QStringLiteral("ChevronRight")},
+        {Fluent::IconType::CLIPPING_TOOL, QStringLiteral("ClippingTool")},
+        {Fluent::IconType::SEARCH_MIRROR, QStringLiteral("SearchMirror")},
+        {Fluent::IconType::SHOPPING_CART, QStringLiteral("ShoppingCart")},
+        {Fluent::IconType::FONT_INCREASE, QStringLiteral("FontIncrease")},
+        {Fluent::IconType::BACK_TO_WINDOW, QStringLiteral("BackToWindow")},
+        {Fluent::IconType::COMMAND_PROMPT, QStringLiteral("CommandPrompt")},
+        {Fluent::IconType::CLOUD_DOWNLOAD, QStringLiteral("CloudDownload")},
+        {Fluent::IconType::DICTIONARY_ADD, QStringLiteral("DictionaryAdd")},
+        {Fluent::IconType::CARE_DOWN_SOLID, QStringLiteral("CareDownSolid")},
+        {Fluent::IconType::CARE_LEFT_SOLID, QStringLiteral("CareLeftSolid")},
+        {Fluent::IconType::CLEAR_SELECTION, QStringLiteral("ClearSelection")},
+        {Fluent::IconType::DEVELOPER_TOOLS, QStringLiteral("DeveloperTools")},
+        {Fluent::IconType::BACKGROUND_FILL, QStringLiteral("BackgroundColor")},
+        {Fluent::IconType::CARE_RIGHT_SOLID, QStringLiteral("CareRightSolid")},
+        {Fluent::IconType::CHEVRON_DOWN_MED, QStringLiteral("ChevronDownMed")},
+        {Fluent::IconType::CHEVRON_RIGHT_MED, QStringLiteral("ChevronRightMed")},
+        {Fluent::IconType::EMOJI_TAB_SYMBOLS, QStringLiteral("EmojiTabSymbols")},
+        {Fluent::IconType::EXPRESSIVE_INPUT_ENTRY, QStringLiteral("ExpressiveInputEntry")}
     };
     return map;
 }

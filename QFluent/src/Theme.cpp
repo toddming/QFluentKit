@@ -41,12 +41,12 @@ Theme *Theme::instance()
     return qtheme();
 }
 
-ThemeType::ThemeMode Theme::theme() const {
+Fluent::ThemeMode Theme::theme() const {
     Q_D(const Theme);
     return d->_currentTheme;
 }
 
-void Theme::setTheme(ThemeType::ThemeMode theme, bool save, bool lazy) {
+void Theme::setTheme(Fluent::ThemeMode theme, bool save, bool lazy) {
     Q_D(Theme);
     Q_UNUSED(save) // 在实际应用中，这里可以保存设置到配置文件
 
@@ -58,7 +58,7 @@ void Theme::setTheme(ThemeType::ThemeMode theme, bool save, bool lazy) {
 }
 
 void Theme::toggleTheme(bool save, bool lazy) {
-    ThemeType::ThemeMode newTheme = isDarkTheme() ? ThemeType::ThemeMode::LIGHT : ThemeType::ThemeMode::DARK;
+    Fluent::ThemeMode newTheme = isDarkTheme() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
     setTheme(newTheme, save, lazy);
 }
 
@@ -67,7 +67,7 @@ QColor Theme::themeColor() const {
     return d->_themeColor;
 }
 
-QColor Theme::themeColor(ThemeType::ThemeColor type) const {
+QColor Theme::themeColor(Fluent::ThemeColor type) const {
     Q_D(const Theme);
     return d->calculateThemeColor(type);
 }
@@ -86,7 +86,7 @@ void Theme::setThemeColor(const QColor& color, bool save, bool lazy) {
 
 bool Theme::isDarkTheme() const {
     Q_D(const Theme);
-    return d->_currentTheme == ThemeType::ThemeMode::DARK;
+    return d->_currentTheme == Fluent::ThemeMode::DARK;
 }
 
 

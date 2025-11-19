@@ -34,12 +34,12 @@ ToolBar::ToolBar(const QString &title, const QString &subtitle, QWidget *parent)
     subtitleLabel = new CaptionLabel(subtitle, this);
     subtitleLabel->setTextColor(QColor(96, 96, 96), QColor(216, 216, 216));
 
-    documentButton = new PushButton("在线文档", FluentIcon(FluentIconType::DOCUMENT), this);
-    sourceButton = new PushButton("源代码", FluentIcon(FluentIconType::GITHUB), this);
-    themeButton = new ToolButton(FluentIcon(FluentIconType::CONSTRACT), this);
+    documentButton = new PushButton("在线文档", FluentIcon(Fluent::IconType::DOCUMENT), this);
+    sourceButton = new PushButton("源代码", FluentIcon(Fluent::IconType::GITHUB), this);
+    themeButton = new ToolButton(FluentIcon(Fluent::IconType::CONSTRACT), this);
     separator = new SeparatorWidget(this);
-    supportButton = new ToolButton(FluentIcon(FluentIconType::HEART), this);
-    feedbackButton = new ToolButton(FluentIcon(FluentIconType::FEEDBACK), this);
+    supportButton = new ToolButton(FluentIcon(Fluent::IconType::HEART), this);
+    feedbackButton = new ToolButton(FluentIcon(Fluent::IconType::FEEDBACK), this);
 
     vBoxLayout = new QVBoxLayout(this);
     buttonLayout = new QHBoxLayout();
@@ -88,7 +88,7 @@ ExampleCard::ExampleCard(const QString &title, QWidget *widget, const QString &s
     card = new QFrame(this);
     sourceWidget = new QFrame(card);
     sourcePathLabel = new BodyLabel("源代码", sourceWidget);
-    linkIcon = new IconWidget(FluentIcon(FluentIconType::LINK), sourceWidget);
+    linkIcon = new IconWidget(FluentIcon(Fluent::IconType::LINK), sourceWidget);
 
     vBoxLayout = new QVBoxLayout(this);
     cardLayout = new QVBoxLayout(card);

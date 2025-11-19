@@ -11,7 +11,7 @@ IconWidget::IconWidget(QWidget *parent)
 {
     Q_D(IconWidget);
     d->q_ptr = this;
-    d->_IconTheme = ThemeType::ThemeMode::AUTO;
+    d->_IconTheme = Fluent::ThemeMode::AUTO;
 
     setIcon(QIcon());
 }
@@ -91,13 +91,13 @@ void IconWidget::paintEvent(QPaintEvent *event)
     }
 }
 
-void IconWidget::setIconTheme(ThemeType::ThemeMode theme)
+void IconWidget::setIconTheme(Fluent::ThemeMode theme)
 {
     Q_D(IconWidget);
     d->_IconTheme = theme;
 }
 
-ThemeType::ThemeMode IconWidget::getIconTheme()
+Fluent::ThemeMode IconWidget::getIconTheme()
 {
     Q_D(IconWidget);
     return d->_IconTheme;

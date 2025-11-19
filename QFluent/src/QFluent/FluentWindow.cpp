@@ -31,9 +31,9 @@ FluentWindow::FluentWindow(QMainWindow *parent)
     d->_windowBar = new FluentTitleBar(this);
     d->_windowBar->setHostWidget(this);
 
-    setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
-                         AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
-                         AppBarType::CloseButtonHint | AppBarType::ThemeChangeButtonHint);
+    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
+                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
+                         Fluent::ButtonType::CloseButtonHint | Fluent::ButtonType::ThemeChangeButtonHint);
 
 
     agent->setTitleBar(d->_windowBar);
@@ -71,10 +71,10 @@ FluentWindow::FluentWindow(QMainWindow *parent)
     setCentralWidget(w);
 
     d->setDarkTheme(Theme::instance()->isDarkTheme());
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::FLUENT_WINDOW);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](ThemeType::ThemeMode theme) {
-        agent->setWindowAttribute("dark-mode", theme == ThemeType::DARK);
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
+        agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
 }
 
@@ -110,26 +110,26 @@ bool FluentWindow::event(QEvent *event) {
 }
 
 
-void FluentWindow::setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable)
+void FluentWindow::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
 {
     Q_D(FluentWindow);
     d->_windowBar->setWindowButtonFlag(buttonFlag, isEnable);
 }
 
-void FluentWindow::setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags)
+void FluentWindow::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
 {
     Q_D(FluentWindow);
     d->_windowBar->setWindowButtonFlags(buttonFlags);
 }
 
-AppBarType::ButtonFlags FluentWindow::getWindowButtonFlags() const
+Fluent::ButtonFlags FluentWindow::getWindowButtonFlags() const
 {
     Q_D(const FluentWindow);
     return d->_windowBar->getWindowButtonFlags();
 }
 
 
-void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType)
+void FluentWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType)
 {
     Q_D(FluentWindow);
 
@@ -158,7 +158,7 @@ void FluentWindow::setWindowDisplayMode(ApplicationType::WindowDisplayMode windo
     style()->polish(this);
 }
 
-ApplicationType::WindowDisplayMode FluentWindow::windowDisplayMode() const
+Fluent::WindowDisplayMode FluentWindow::windowDisplayMode() const
 {
     Q_D(const FluentWindow);
     return d->_windowDisplayMode;
@@ -180,7 +180,7 @@ NavigationPanel *FluentWindow::navigationInterface() const
 
 void FluentWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                                    QWidget* widget, bool selectable,
-                                   NavigationType::NavigationItemPosition position, const QString& tooltip,
+                                   Fluent::NavigationItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)
 {
     Q_D(FluentWindow);

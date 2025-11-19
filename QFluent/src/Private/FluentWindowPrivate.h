@@ -24,5 +24,5 @@ public:
 
     NavigationPanel *_navPanel;
 
-    ApplicationType::WindowDisplayMode _windowDisplayMode;
+    Fluent::WindowDisplayMode _windowDisplayMode;
 };

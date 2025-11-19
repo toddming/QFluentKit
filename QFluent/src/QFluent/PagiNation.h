@@ -31,13 +31,13 @@ class TransparentToolButton;
 class QFLUENT_EXPORT PagiNation: public QFrame {
     Q_OBJECT
 public:
-    PagiNation (QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
-    PagiNation (QPoint point, QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
-    PagiNation (QSize size, QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
-    PagiNation (QRect rect, QWidget *parent, PagiNationType::Alignment align = PagiNationType::Alignment::Align_Right, int buttonCount = 7);
+    PagiNation (QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
+    PagiNation (QPoint point, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
+    PagiNation (QSize size, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
+    PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
 
 private:
-    PagiNationType::Alignment _align;
+    Fluent::Alignment _align;
     int _buttonCount;
     int _height;
     QHBoxLayout *BJ, *BJ_main;
@@ -60,11 +60,11 @@ public:
     /** 获取当前最大按钮数 pagesize */
     int buttonCount ();
     /** 获取当前对齐方式 pagesize */
-    PagiNationType::Alignment alignment ();
+    Fluent::Alignment alignment ();
     /** 设置最大按钮数量 */
     void setButtonCount (int buttonCount, bool needEmit = false);
     /** 设置左右对齐方式 */
-    void setAlign (PagiNationType::Alignment align, bool needEmit = false);
+    void setAlign (Fluent::Alignment align, bool needEmit = false);
     /** 设置每页条数 */
     void setPageSize (int pageSize, bool needEmit = false);
     /** 设置总条数(用于计算总页数) */

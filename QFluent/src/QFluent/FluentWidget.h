@@ -14,12 +14,12 @@ public:
     explicit FluentWidget(QMainWindow *parent = nullptr);
     ~FluentWidget();
 
-    void setWindowButtonFlag(AppBarType::ButtonType buttonFlag, bool isEnable = true);
-    void setWindowButtonFlags(AppBarType::ButtonFlags buttonFlags);
-    AppBarType::ButtonFlags getWindowButtonFlags() const;
+    void setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable = true);
+    void setWindowButtonFlags(Fluent::ButtonFlags buttonFlags);
+    Fluent::ButtonFlags getWindowButtonFlags() const;
 
-    void setWindowDisplayMode(ApplicationType::WindowDisplayMode windowDisplayType);
-    ApplicationType::WindowDisplayMode windowDisplayMode() const;
+    void setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType);
+    Fluent::WindowDisplayMode windowDisplayMode() const;
 
     void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
 

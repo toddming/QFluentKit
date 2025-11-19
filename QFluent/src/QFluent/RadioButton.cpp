@@ -27,7 +27,7 @@ void RadioButton::init()
 {
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::BUTTON);
 }
 
 void RadioButton::paintEvent(QPaintEvent *event)

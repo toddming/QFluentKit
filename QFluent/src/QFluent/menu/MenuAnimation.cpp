@@ -7,17 +7,17 @@
 #include "RoundMenu.h"
 #include "MenuActionListWidget.h"
 
-QMap<MenuAnimationType::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> MenuAnimationManager::managers;
+QMap<Fluent::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> MenuAnimationManager::managers;
 namespace {
     struct RegisterMenuAnimationManagers {
         RegisterMenuAnimationManagers() {
-            MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation::NONE,
+            MenuAnimationManager::registerManager(Fluent::MenuAnimation::NONE,
                 [](RoundMenu* menu) { return new DummyMenuAnimationManager(menu); });
 
-            MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation::DROP_DOWN,
+            MenuAnimationManager::registerManager(Fluent::MenuAnimation::DROP_DOWN,
                 [](RoundMenu* menu) { return new DropDownMenuAnimationManager(menu); });
 
-            MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation::PULL_UP,
+            MenuAnimationManager::registerManager(Fluent::MenuAnimation::PULL_UP,
                 [](RoundMenu* menu) { return new PullUpMenuAnimationManager(menu); });
         }
     };
@@ -37,13 +37,13 @@ MenuAnimationManager::MenuAnimationManager(RoundMenu* menu, QObject* parent)
     connect(m_ani, &QPropertyAnimation::valueChanged, this, &MenuAnimationManager::_updateMenuViewport);
 }
 
-void MenuAnimationManager::registerManager(MenuAnimationType::MenuAnimation type,
+void MenuAnimationManager::registerManager(Fluent::MenuAnimation type,
                                            std::function<MenuAnimationManager*(RoundMenu*)> creator)
 {
     managers[type] = creator;
 }
 
-MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, MenuAnimationType::MenuAnimation aniType)
+MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, Fluent::MenuAnimation aniType)
 {
     if (!managers.contains(aniType)) {
         // qWarning() << "Invalid animation type:" << static_cast<int>(aniType);

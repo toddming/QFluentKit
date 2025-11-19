@@ -62,10 +62,10 @@ QColor Indicator::backgroundColor() const {
             return isDark ? QColor(255, 255, 255, 41) : QColor(0, 0, 0, 56);
         }
         if (property("isPressed").toBool()) {
-            return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_2);
+            return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2);
         }
         if (property("isHover").toBool()) {
-            return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_1);
+            return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
         }
         return color;
     } else {
@@ -131,7 +131,7 @@ void SwitchButton::initWidget() {
     installEventFilter(this);
     setFixedHeight(22);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::SWITCH_BUTTON);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SWITCH_BUTTON);
 
     m_hBox = new QHBoxLayout(this);
     m_indicator = new Indicator(this);

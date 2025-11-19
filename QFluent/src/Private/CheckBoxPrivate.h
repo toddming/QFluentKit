@@ -12,7 +12,7 @@ public:
 
     QColor borderColor();
     QColor backgroundColor();
-    CheckBoxType::CheckBoxState state();
+    Fluent::CheckBoxState state();
 
     bool _isPressed = false;
     bool _isHover = false;

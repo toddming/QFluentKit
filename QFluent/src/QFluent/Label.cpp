@@ -9,14 +9,14 @@ FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* pa
     : QLabel(parent) {
     setFont(Theme::instance()->getFont(fontSize, weight));
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
 
 FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(text, parent) {
     setFont(Theme::instance()->getFont(fontSize, weight));
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::LABEL);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
 
 

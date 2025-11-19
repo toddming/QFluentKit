@@ -77,17 +77,17 @@ void ComboBoxPrivate::showComboMenu()
 
     int x = -_dropMenu->width() / 2 + _dropMenu->layout()->contentsMargins().left() + q->width() / 2;
     QPoint pd = q->mapToGlobal(QPoint(x, q->height()));
-    int hd = _dropMenu->view()->heightForAnimation(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
+    int hd = _dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
 
     QPoint pu = q->mapToGlobal(QPoint(x, 0));
-    int hu = _dropMenu->view()->heightForAnimation(pu, MenuAnimationType::MenuAnimation::PULL_UP);
+    int hu = _dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
 
     if (hd >= hu) {
-        _dropMenu->view()->adjustSize(pd, MenuAnimationType::MenuAnimation::DROP_DOWN);
-        _dropMenu->exec(pd, true, MenuAnimationType::MenuAnimation::DROP_DOWN);
+        _dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
+        _dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
     } else {
-        _dropMenu->view()->adjustSize(pu, MenuAnimationType::MenuAnimation::PULL_UP);
-        _dropMenu->exec(pu, true, MenuAnimationType::MenuAnimation::PULL_UP);
+        _dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
+        _dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
     }
 }
 

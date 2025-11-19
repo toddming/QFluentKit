@@ -39,7 +39,7 @@ public:
     void hideMenu(bool isHideBySystem = false);
 
     void exec(const QPoint& pos, bool animate = true,
-              MenuAnimationType::MenuAnimation aniType = MenuAnimationType::MenuAnimation::DROP_DOWN);
+              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN);
 
     void addWidget(QWidget *widget, bool selectable = false);
 

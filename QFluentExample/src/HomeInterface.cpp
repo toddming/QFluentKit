@@ -41,21 +41,21 @@ void BannerWidget::setupLinks()
                 );
 
     m_linkCardView->addCard(
-                FluentIcon(FluentIconType::GITHUB).qicon(),
+                FluentIcon(Fluent::IconType::GITHUB).qicon(),
                 tr("QFluent on GitHub"),
                 tr("Explore the QFluent source code zand repository."),
                 ""
                 );
 
     m_linkCardView->addCard(
-                FluentIcon(FluentIconType::CODE).qicon(),
+                FluentIcon(Fluent::IconType::CODE).qicon(),
                 tr("Code samples"),
                 tr("Find samples that demonstrate specific tasks, features and APIs."),
                 ""
                 );
 
     m_linkCardView->addCard(
-                FluentIcon(FluentIconType::UPDATE).qicon(),
+                FluentIcon(Fluent::IconType::UPDATE).qicon(),
                 tr("Partner Center"),
                 tr("Upload your app to the Store."),
                 ""

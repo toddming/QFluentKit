@@ -24,7 +24,7 @@ ComboBox::ComboBox(QWidget *parent)
 
     installEventFilter(this);
 
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::COMBO_BOX);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
 
     d->_arrowAni = new TranslateYAnimation(this);
 }
@@ -254,7 +254,7 @@ void ComboBox::paintEvent(QPaintEvent *event)
     }
 
     QRectF rect = QRectF(width()-22, height()/2-5+d->_arrowAni->y(), 10, 10);
-    FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, rect);
+    FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, rect);
 }
 
 void ComboBox::mouseReleaseEvent(QMouseEvent *event)

@@ -9,5 +9,5 @@ void FluentWidgetPrivate::setDarkTheme(bool dark) {
         return;
     }
     agent->setWindowAttribute("dark-mode", dark);
-    Theme::instance()->setTheme(dark ? ThemeType::ThemeMode::DARK : ThemeType::ThemeMode::LIGHT);
+    Theme::instance()->setTheme(dark ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
 }

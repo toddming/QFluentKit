@@ -50,7 +50,7 @@ int MenuActionListWidget::maxVisibleItems() const {
     return this->property("_maxVisibleItems").toInt();
 }
 
-void MenuActionListWidget::adjustSize(const QPoint& pos, MenuAnimationType::MenuAnimation aniType) {
+void MenuActionListWidget::adjustSize(const QPoint& pos, Fluent::MenuAnimation aniType) {
     QSize size(0, 0);
 
     // 计算内容大小
@@ -92,23 +92,23 @@ void MenuActionListWidget::wheelEvent(QWheelEvent* e) {
     e->accept();
 }
 
-int MenuActionListWidget::heightForAnimation(const QPoint &pos, MenuAnimationType::MenuAnimation aniType)
+int MenuActionListWidget::heightForAnimation(const QPoint &pos, Fluent::MenuAnimation aniType)
 {
     int ih = itemsHeight();
     int sh = 0;
     QRect rect = Screen::getCurrentScreenGeometry();
 
     switch (aniType) {
-    case MenuAnimationType::MenuAnimation::DROP_DOWN:
+    case Fluent::MenuAnimation::DROP_DOWN:
         sh = qMax(rect.bottom() - pos.y() - 10, 1);
         break;
-    case MenuAnimationType::MenuAnimation::PULL_UP:
+    case Fluent::MenuAnimation::PULL_UP:
         sh = qMax(pos.y() - rect.top() - 28, 1);
         break;
-    case MenuAnimationType::MenuAnimation::FADE_IN_DROP_DOWN:
+    case Fluent::MenuAnimation::FADE_IN_DROP_DOWN:
         sh = qMax(rect.bottom() - pos.y() - 10, 1);
         break;
-    case MenuAnimationType::MenuAnimation::FADE_IN_PULL_UP:
+    case Fluent::MenuAnimation::FADE_IN_PULL_UP:
         sh = qMax(pos.y() - rect.top() - 28, 1);
         break;
     default:
@@ -138,25 +138,25 @@ int MenuActionListWidget::itemsHeight() const
     return h + m.top() + m.bottom();
 }
 
-QPoint MenuActionListWidget::availableViewSize(const QPoint &pos, MenuAnimationType::MenuAnimation aniType)
+QPoint MenuActionListWidget::availableViewSize(const QPoint &pos, Fluent::MenuAnimation aniType)
 {
     QRect rect = Screen::getCurrentScreenGeometry();
     QPoint point;
 
     switch (aniType) {
-    case MenuAnimationType::MenuAnimation::DROP_DOWN:
+    case Fluent::MenuAnimation::DROP_DOWN:
         point.setX(rect.width() - 100);
         point.setY(qMax(rect.bottom() - pos.y() - 10, 1));
         break;
-    case MenuAnimationType::MenuAnimation::PULL_UP:
+    case Fluent::MenuAnimation::PULL_UP:
         point.setX(rect.width() - 100);
         point.setY(qMax(pos.y() - rect.top() - 28, 1));
         break;
-    case MenuAnimationType::MenuAnimation::FADE_IN_DROP_DOWN:
+    case Fluent::MenuAnimation::FADE_IN_DROP_DOWN:
         point.setX(rect.width() - 100);
         point.setY(qMax(rect.bottom() - pos.y() - 10, 1));
         break;
-    case MenuAnimationType::MenuAnimation::FADE_IN_PULL_UP:
+    case Fluent::MenuAnimation::FADE_IN_PULL_UP:
         point.setX(rect.width() - 100);
         point.setY(qMax(pos.y() - rect.top() - 28, 1));
         break;

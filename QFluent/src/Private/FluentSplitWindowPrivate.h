@@ -28,5 +28,5 @@ private:
 
     QWidget *_userWidget;
 
-    ApplicationType::WindowDisplayMode _windowDisplayMode;
+    Fluent::WindowDisplayMode _windowDisplayMode;
 };

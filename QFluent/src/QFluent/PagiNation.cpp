@@ -25,14 +25,14 @@ void Button::handleClick()
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PagiNation::PagiNation (QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = 30;
     setFixedHeight(_height + 4);
     init();
 }
 
-PagiNation::PagiNation (QPoint point, QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QPoint point, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = 30;
     setFixedHeight(_height + 4);
@@ -40,7 +40,7 @@ PagiNation::PagiNation (QPoint point, QWidget *parent, PagiNationType::Alignment
     init();
 }
 
-PagiNation::PagiNation (QSize size, QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QSize size, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = size.height();
     resize(size);
@@ -49,7 +49,7 @@ PagiNation::PagiNation (QSize size, QWidget *parent, PagiNationType::Alignment a
     init();
 }
 
-PagiNation::PagiNation (QRect rect, QWidget *parent, PagiNationType::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
 {
     _height = rect.height();
     move(rect.x(), rect.y());
@@ -284,9 +284,9 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list) {
 void PagiNation::setWidgetAlign () {
     BJ->removeItem(TH_left);
     BJ->removeItem(TH_right);
-    if (_align == PagiNationType::Alignment::Align_Left) {
+    if (_align == Fluent::Alignment::Align_Left) {
         BJ->addItem(TH_right);
-    } else if (_align == PagiNationType::Alignment::Align_Right) {
+    } else if (_align == Fluent::Alignment::Align_Right) {
         BJ->insertItem(0, TH_left);
     } else {
         BJ->insertItem(0, TH_left);
@@ -355,7 +355,7 @@ int PagiNation::buttonCount () {
 }
 
 /** 获取当前对齐方式 pagesize */
-PagiNationType::Alignment PagiNation::alignment () {
+Fluent::Alignment PagiNation::alignment () {
     return _align;
 }
 
@@ -368,7 +368,7 @@ void PagiNation::setButtonCount (int buttonCount, bool needEmit) {
 }
 
 /** 设置左右对齐方式 */
-void PagiNation::setAlign (PagiNationType::Alignment align, bool needEmit) {
+void PagiNation::setAlign (Fluent::Alignment align, bool needEmit) {
     if (align == _align) return;
     _align = align;
     setWidgetAlign();

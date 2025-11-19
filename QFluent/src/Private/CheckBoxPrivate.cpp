@@ -8,25 +8,25 @@
 QColor CheckBoxPrivate::borderColor()  {
     if (Theme::instance()->isDarkTheme()) {
         switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(255, 255, 255, 141);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(255, 255, 255, 141);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(255, 255, 255, 40);
-        case CheckBoxType::CheckBoxState::CHECKED: return Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(255, 255, 255, 41);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 0);
+        case Fluent::CheckBoxState::NORMAL: return QColor(255, 255, 255, 141);
+        case Fluent::CheckBoxState::HOVER: return QColor(255, 255, 255, 141);
+        case Fluent::CheckBoxState::PRESSED: return QColor(255, 255, 255, 40);
+        case Fluent::CheckBoxState::CHECKED: return Theme::instance()->themeColor();
+        case Fluent::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_1);
+        case Fluent::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_2);
+        case Fluent::CheckBoxState::DISABLED: return QColor(255, 255, 255, 41);
+        case Fluent::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 0);
         }
     } else {
         switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 122);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(0, 0, 0, 143);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(0, 0, 0, 69);
-        case CheckBoxType::CheckBoxState::CHECKED: Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(0, 0, 0, 56);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 0);
+        case Fluent::CheckBoxState::NORMAL: return QColor(0, 0, 0, 122);
+        case Fluent::CheckBoxState::HOVER: return QColor(0, 0, 0, 143);
+        case Fluent::CheckBoxState::PRESSED: return QColor(0, 0, 0, 69);
+        case Fluent::CheckBoxState::CHECKED: Theme::instance()->themeColor();
+        case Fluent::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
+        case Fluent::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2);
+        case Fluent::CheckBoxState::DISABLED: return QColor(0, 0, 0, 56);
+        case Fluent::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 0);
         }
     }
     return QColor();
@@ -35,43 +35,43 @@ QColor CheckBoxPrivate::borderColor()  {
 QColor CheckBoxPrivate::backgroundColor() {
     if (Theme::instance()->isDarkTheme()) {
         switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 26);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(255, 255, 255, 11);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(255, 255, 255, 18);
-        case CheckBoxType::CheckBoxState::CHECKED: Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::DARK_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(0, 0, 0, 0);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(255, 255, 255, 41);
+        case Fluent::CheckBoxState::NORMAL: return QColor(0, 0, 0, 26);
+        case Fluent::CheckBoxState::HOVER: return QColor(255, 255, 255, 11);
+        case Fluent::CheckBoxState::PRESSED: return QColor(255, 255, 255, 18);
+        case Fluent::CheckBoxState::CHECKED: Theme::instance()->themeColor();
+        case Fluent::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_1);
+        case Fluent::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_2);
+        case Fluent::CheckBoxState::DISABLED: return QColor(0, 0, 0, 0);
+        case Fluent::CheckBoxState::CHECKED_DISABLED: return QColor(255, 255, 255, 41);
         }
     } else {
         switch (state()) {
-        case CheckBoxType::CheckBoxState::NORMAL: return QColor(0, 0, 0, 6);
-        case CheckBoxType::CheckBoxState::HOVER: return QColor(0, 0, 0, 13);
-        case CheckBoxType::CheckBoxState::PRESSED: return QColor(0, 0, 0, 31);
-        case CheckBoxType::CheckBoxState::CHECKED: Theme::instance()->themeColor();
-        case CheckBoxType::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_1);
-        case CheckBoxType::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(ThemeType::ThemeColor::LIGHT_2);
-        case CheckBoxType::CheckBoxState::DISABLED: return QColor(0, 0, 0, 0);
-        case CheckBoxType::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 56);
+        case Fluent::CheckBoxState::NORMAL: return QColor(0, 0, 0, 6);
+        case Fluent::CheckBoxState::HOVER: return QColor(0, 0, 0, 13);
+        case Fluent::CheckBoxState::PRESSED: return QColor(0, 0, 0, 31);
+        case Fluent::CheckBoxState::CHECKED: Theme::instance()->themeColor();
+        case Fluent::CheckBoxState::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
+        case Fluent::CheckBoxState::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2);
+        case Fluent::CheckBoxState::DISABLED: return QColor(0, 0, 0, 0);
+        case Fluent::CheckBoxState::CHECKED_DISABLED: return QColor(0, 0, 0, 56);
         }
     }
     return QColor();
 }
 
-CheckBoxType::CheckBoxState CheckBoxPrivate::state() {
+Fluent::CheckBoxState CheckBoxPrivate::state() {
     Q_Q(CheckBox);
     if (!q->isEnabled()) {
-        return q->isChecked() ? CheckBoxType::CheckBoxState::CHECKED_DISABLED : CheckBoxType::CheckBoxState::DISABLED;
+        return q->isChecked() ? Fluent::CheckBoxState::CHECKED_DISABLED : Fluent::CheckBoxState::DISABLED;
     }
 
     if (q->isChecked()) {
-        if (_isPressed) return CheckBoxType::CheckBoxState::CHECKED_PRESSED;
-        if (_isHover) return CheckBoxType::CheckBoxState::CHECKED_HOVER;
-        return CheckBoxType::CheckBoxState::CHECKED;
+        if (_isPressed) return Fluent::CheckBoxState::CHECKED_PRESSED;
+        if (_isHover) return Fluent::CheckBoxState::CHECKED_HOVER;
+        return Fluent::CheckBoxState::CHECKED;
     } else {
-        if (_isPressed) return CheckBoxType::CheckBoxState::PRESSED;
-        if (_isHover) return CheckBoxType::CheckBoxState::HOVER;
-        return CheckBoxType::CheckBoxState::NORMAL;
+        if (_isPressed) return Fluent::CheckBoxState::PRESSED;
+        if (_isHover) return Fluent::CheckBoxState::HOVER;
+        return Fluent::CheckBoxState::NORMAL;
     }
 }

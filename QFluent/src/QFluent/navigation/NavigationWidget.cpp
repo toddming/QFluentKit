@@ -327,7 +327,7 @@ void NavigationTreeItem::paintEvent(QPaintEvent* e) {
     painter.translate(width() - 20, 18);
     painter.rotate(_arrowAngle);
 
-    FluentIcon(FluentIconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
+    FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
 

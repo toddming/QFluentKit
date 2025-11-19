@@ -14,5 +14,5 @@ public:
 private:
     std::unique_ptr<FluentIconBase> _fluentIcon;
     QIcon _Icon;
-    ThemeType::ThemeMode _IconTheme;
+    Fluent::ThemeMode _IconTheme;
 };

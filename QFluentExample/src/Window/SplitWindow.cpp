@@ -9,11 +9,11 @@
 
 SplitWidget::SplitWidget()
 {
-    setWindowButtonFlags(AppBarType::IconButtonHint | AppBarType::WindowTitleHint |
-                         AppBarType::MinimizeButtonHint | AppBarType::MaximizeButtonHint |
-                         AppBarType::CloseButtonHint | AppBarType::RouteBackButtonHint);
+    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
+                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
+                         Fluent::ButtonType::CloseButtonHint | Fluent::ButtonType::RouteBackButtonHint);
 
-    setWindowDisplayMode(ApplicationType::Normal);
+    setWindowDisplayMode(Fluent::WindowDisplayMode::Normal);
 
     setContentsMargins(0, 0, 0, 0);
 
@@ -30,12 +30,12 @@ void SplitWidget::initUI()
     navigationInterface()->avatarWidget()->hide();
     navigationInterface()->setExpandWidth(200);
 
-    addSubInterface("1", FluentIcon(FluentIconType::HOME), "主页", createWidget("主页", this), true, NavigationType::TOP);
+    addSubInterface("1", FluentIcon(Fluent::IconType::HOME), "主页", createWidget("主页", this), true, Fluent::NavigationItemPosition::TOP);
     navigationInterface()->addSeparator();
-    addSubInterface("3", FluentIcon(FluentIconType::CHECKBOX), "输入", createWidget("输入", this), true, NavigationType::SCROLL);
-    addSubInterface("4", FluentIcon(FluentIconType::DATE_TIME), "日期", createWidget("日期", this), true, NavigationType::SCROLL);
-    navigationInterface()->addSeparator(NavigationType::NavigationItemPosition::BOTTOM);
-    addSubInterface("5", FluentIcon(FluentIconType::SETTING), "设置", createWidget("设置", this), true, NavigationType::BOTTOM);
+    addSubInterface("3", FluentIcon(Fluent::IconType::CHECKBOX), "输入", createWidget("输入", this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("4", FluentIcon(Fluent::IconType::DATE_TIME), "日期", createWidget("日期", this), true, Fluent::NavigationItemPosition::SCROLL);
+    navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
+    addSubInterface("5", FluentIcon(Fluent::IconType::SETTING), "设置", createWidget("设置", this), true, Fluent::NavigationItemPosition::BOTTOM);
 
     navigationInterface()->setCurrentItem("1");
 

@@ -21,11 +21,11 @@ TabToolButton::TabToolButton(QWidget* parent)
 }
 
 
-void TabToolButton::drawIcon(QPainter* painter, const QRectF& rect, ThemeType::ThemeMode theme) {
+void TabToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme) {
     QString color = Theme::instance()->isDarkTheme() ? "#eaeaea" : "#484848";
     QMap<QString, QString> attrs;
     attrs["fill"] = color;
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, ThemeType::AUTO,  QIcon::Off, attrs);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
 }
 
 // ==================== TabItem ====================
@@ -40,7 +40,7 @@ TabItem::TabItem(const QString& text, QWidget* parent, const QIcon& icon)
       darkSelectedBackgroundColor(40, 40, 40),
       m_icon(icon) {
 
-    closeButton = new TabToolButton(FluentIcon(FluentIconType::CLOSE), this);
+    closeButton = new TabToolButton(FluentIcon(Fluent::IconType::CLOSE), this);
     shadowEffect = new QGraphicsDropShadowEffect(this);
     slideAni = new QPropertyAnimation(this, "pos", this);
 
@@ -329,7 +329,7 @@ TabBar::TabBar(QWidget* parent)
     hBoxLayout = new QHBoxLayout(view);
     itemLayout = new QHBoxLayout();
     widgetLayout = new QHBoxLayout();
-    addButton = new TabToolButton(FluentIcon(FluentIconType::ADD), this);
+    addButton = new TabToolButton(FluentIcon(Fluent::IconType::ADD), this);
 
     initWidget();
 }
@@ -347,8 +347,8 @@ void TabBar::initWidget() {
     connect(addButton, &TabToolButton::clicked, this, &TabBar::tabAddRequested);
 
     view->setObjectName("view");
-    StyleSheetManager::instance()->registerWidget(this, ThemeType::ThemeStyle::TAB_VIEW);
-    StyleSheetManager::instance()->registerWidget(view, ThemeType::ThemeStyle::TAB_VIEW);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TAB_VIEW);
+    StyleSheetManager::instance()->registerWidget(view, Fluent::ThemeStyle::TAB_VIEW);
 
     initLayout();
 }
