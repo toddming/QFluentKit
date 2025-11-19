@@ -73,7 +73,7 @@ void BannerWidget::paintEvent(QPaintEvent *event)
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
     int w = width();
-    int h = height();
+    int h = height() + 2;
     path.addRoundedRect(QRectF(0, 0, w, h), 10, 10);
     path.addRect(QRectF(0, h-50, 50, 50));
     path.addRect(QRectF(w-50, 0, 50, 50));
@@ -81,14 +81,14 @@ void BannerWidget::paintEvent(QPaintEvent *event)
     path = path.simplified();
 
     // 初始化线性渐变效果
-    QLinearGradient gradient(0, 0, 0, h);
+    QLinearGradient gradient(0, h/2, 0, h);
 
     // 绘制背景颜色
     if (!Theme::instance()->isDarkTheme()) {
-        gradient.setColorAt(0.5, QColor(243, 243, 243, 0));
+        gradient.setColorAt(0, QColor(243, 243, 243, 0));
         gradient.setColorAt(1, QColor(247, 249, 252, 255));
     } else {
-        gradient.setColorAt(0.5, QColor(0, 0, 0, 0));
+        gradient.setColorAt(0, QColor(0, 0, 0, 0));
         gradient.setColorAt(1, QColor(39, 39, 39, 255));
     }
 
