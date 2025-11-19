@@ -4,7 +4,6 @@
 #include <QIcon>
 #include <QVariant>
 
-#include "FluentGlobal.h"
 #include "QFluent/ComboBox.h"
 
 namespace ComboBoxDetail {
@@ -24,12 +23,11 @@ class QAction;
 class ComboBoxMenu;
 class TranslateYAnimation;
 class ComboBoxPrivate : public QObject {
-public:
     Q_DECLARE_PUBLIC(ComboBox)
 
+public:
+    explicit ComboBoxPrivate(ComboBox *parent);
     void handleMenuAction(QAction *action);
-
-private:
 
     bool _isPressed;
     bool _isHover;
@@ -46,5 +44,8 @@ private:
     void showComboMenu();
     void closeComboMenu();
     void toggleComboMenu();
+
+private:
+    ComboBox * const q_ptr;
 
 };

@@ -21,7 +21,4 @@ signals:
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
-private:
-    QScopedPointer<MessageDialogPrivate> d_ptr;
-
 };

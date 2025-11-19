@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "MaskDialogBasePrivate.h"
 #include "QFluent/dialog/MaskDialogBase.h"
+#include "QFluent/dialog/MessageBoxBase.h"
 #include <QString>
 
 class QFrame;
@@ -10,10 +11,9 @@ class QHBoxLayout;
 class PrimaryPushButton;
 class MessageBoxBasePrivate : public MaskDialogBasePrivate
 {
-    Q_DECLARE_PUBLIC(MaskDialogBase)
-public:
-    MaskDialogBase *q_ptr{nullptr};
+    Q_DECLARE_PUBLIC(MessageBoxBase)
 
+public:
     QFrame *_buttonGroup;
 
     QVBoxLayout *_viewLayout;

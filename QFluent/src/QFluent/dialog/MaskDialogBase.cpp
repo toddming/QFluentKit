@@ -206,3 +206,16 @@ bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
 
     return QDialog::eventFilter(obj, event);
 }
+
+
+void MaskDialogBase::setIsClosableOnMaskClicked(bool enable)
+{
+    Q_D(MaskDialogBase);
+    d->_isClosableOnMaskClicked = enable;
+}
+
+bool MaskDialogBase::getIsClosableOnMaskClicked()
+{
+    Q_D(MaskDialogBase);
+    return d->_isClosableOnMaskClicked;
+}

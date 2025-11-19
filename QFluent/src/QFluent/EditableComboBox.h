@@ -1,5 +1,4 @@
-﻿#ifndef EDITABLECOMBOBOX_H
-#define EDITABLECOMBOBOX_H
+﻿#pragma once
 
 #include <QVector>
 #include <QIcon>
@@ -13,7 +12,7 @@ class QFLUENT_EXPORT EditableComboBox : public LineEdit
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE_D(d_ptr, EditableComboBox)
-    Q_PROPERTY_CREATE_Q_H(int, MaxVisibleItems)
+
 public:
     explicit EditableComboBox(QWidget *parent = nullptr);
     ~EditableComboBox();
@@ -61,6 +60,11 @@ public:
 
     void setCompleterMenu(CompleterMenu *menu);
 
+    void setMaxVisibleItems(int count);
+
+    int getMaxVisibleItems();
+
+
 signals:
     void currentIndexChanged(int index);
     void currentTextChanged(const QString &text);
@@ -70,7 +74,9 @@ signals:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    bool eventFilter(QObject *watched, QEvent *event) override;    
-};
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
-#endif // EDITABLECOMBOBOX_H
+private:
+    QScopedPointer<EditableComboBoxPrivate> d_ptr;
+
+};

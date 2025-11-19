@@ -1,13 +1,13 @@
-﻿#include "ComboBox.h"
+﻿#include "Private/ComboBoxPrivate.h"
+
+#include "ComboBox.h"
 #include <QApplication>
 #include <QScreen>
 #include <QActionGroup>
 #include <QDebug>
 #include <QPainter>
 
-#include "Private/ComboBoxPrivate.h"
 #include "Animation.h"
-#include "Theme.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 
@@ -16,8 +16,7 @@ ComboBox::ComboBox(QWidget *parent)
     : QPushButton(parent)
     , d_ptr(new ComboBoxPrivate(this))
 {
-    // Q_D(ComboBox);
-    // d->q_ptr = this;
+    Q_D(ComboBox);
 
     setCurrentIndex(-1);
 

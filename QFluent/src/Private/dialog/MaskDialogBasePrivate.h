@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "FluentGlobal.h"
 #include "QFluent/dialog/MaskDialogBase.h"
 
 class QFrame;

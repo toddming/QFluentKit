@@ -24,7 +24,4 @@ public:
     QPushButton* yesButton();
     QPushButton* cancelbutton();
 
-private:
-    QScopedPointer<MessageBoxBase> d_ptr;
-
 };

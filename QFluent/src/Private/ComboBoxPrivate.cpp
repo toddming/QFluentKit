@@ -2,10 +2,18 @@
 #include "QFluent/ComboBox.h"
 #include "QFluent/menu/ComboBoxMenu.h"
 #include "QFluent/menu/MenuActionListWidget.h"
+#include "FluentGlobal.h"
 
 #include <QStyle>
 #include <QCursor>
 #include <QAction>
+
+ComboBoxPrivate::ComboBoxPrivate(ComboBox *parent)
+    : QObject(parent)
+    , q_ptr(parent)
+{
+}
+
 
 ComboBoxMenu* ComboBoxPrivate::createComboMenu()
 {
@@ -85,8 +93,6 @@ void ComboBoxPrivate::showComboMenu()
 
 void ComboBoxPrivate::closeComboMenu()
 {
-    Q_Q(ComboBox);
-
     if (!_dropMenu) return;
     _dropMenu = nullptr;
 }
@@ -94,8 +100,6 @@ void ComboBoxPrivate::closeComboMenu()
 
 void ComboBoxPrivate::toggleComboMenu()
 {
-    Q_Q(ComboBox);
-
     if (_dropMenu != nullptr) {
         closeComboMenu();
     } else {
@@ -110,7 +114,7 @@ void ComboBoxPrivate::handleMenuAction(QAction *action)
     int index = action->data().toInt();
     if (index < 0 || index >= q->count()) return;
 
-    if (index != _pCurrentIndex) {
+    if (index != _currentIndex) {
         q->setCurrentIndex(index);
     }
 

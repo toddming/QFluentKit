@@ -11,10 +11,9 @@
 #include "Private/dialog/MessageBoxBasePrivate.h"
 
 MessageBoxBase::MessageBoxBase(QWidget *parent)
-    : MaskDialogBase(*new MessageBoxBasePrivate(), parent)
+    : MaskDialogBase(*new MessageBoxBasePrivate, parent)
 {
     Q_D(MessageBoxBase);
-    d->q_ptr = this;
 
     d->_buttonGroup = new QFrame(centerWidget());
     d->_yesButton = new PrimaryPushButton(QObject::tr("OK"), d->_buttonGroup);

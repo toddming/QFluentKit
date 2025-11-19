@@ -48,8 +48,6 @@ protected:
     // 事件过滤器：处理父窗口 resize 和遮罩点击
     bool eventFilter(QObject* obj, QEvent* event) override;
 
-
-private:
     QScopedPointer<MaskDialogBasePrivate> d_ptr;
 
 };

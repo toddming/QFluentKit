@@ -4,8 +4,8 @@
 #include <QIcon>
 #include <QVariant>
 
-#include "FluentGlobal.h"
 #include "QFluent/LineEdit.h"
+#include "QFluent/EditableComboBox.h"
 
 
 namespace EditableComboBoxDetail {
@@ -23,21 +23,21 @@ struct ComboItem {
 
 class QAction;
 class ComboBoxMenu;
-class EditableComboBox;
 class TranslateYAnimation;
 class EditableComboBoxPrivate : public QObject {
-public:
     Q_DECLARE_PUBLIC(EditableComboBox)
-    Q_PROPERTY_CREATE_D(bool, IsPressed)
-    Q_PROPERTY_CREATE_D(bool, IsHover)
-    Q_PROPERTY_CREATE_D(QString, PlaceholderText)
-    Q_PROPERTY_CREATE_D(int, CurrentIndex)
-    Q_PROPERTY_CREATE_D(int, MaxVisibleItems)
 
-    explicit EditableComboBoxPrivate(QObject* parent = nullptr);
+public:
+    explicit EditableComboBoxPrivate(EditableComboBox* parent);
 
     void handleMenuAction(QAction *action);
     void toggleComboMenu();
+
+    bool _isPressed;
+    bool _isHover;
+    QString _placeholderText;
+    int _currentIndex;
+    int _maxVisibleItems;
 
     void onClearButtonClicked();
     void onDropMenuClosed();
@@ -45,7 +45,6 @@ public:
     void onActivated(const QString &text);
     void onReturnPressed();
 
-private:
     LineEditButton *_dropButton = nullptr;
     ComboBoxMenu *_dropMenu = nullptr;
     TranslateYAnimation *_arrowAni = nullptr;
@@ -56,4 +55,6 @@ private:
     void showComboMenu();
     void closeComboMenu();
 
+private:
+    EditableComboBox * const q_ptr;
 };

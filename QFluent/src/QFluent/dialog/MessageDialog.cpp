@@ -15,7 +15,6 @@ MessageDialog::MessageDialog(const QString &title, const QString &content, QWidg
     : MaskDialogBase(*new MessageDialogPrivate(), parent)
 {
     Q_D(MessageDialog);
-    d->q_ptr = this;
 
     setAttribute(Qt::WA_DeleteOnClose);
 

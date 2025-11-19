@@ -1,13 +1,15 @@
 ﻿#include "EditableComboBoxPrivate.h"
-#include "QFluent/EditableComboBox.h"
 #include "QFluent/menu/ComboBoxMenu.h"
 #include "QFluent/menu/MenuActionListWidget.h"
+#include "FluentGlobal.h"
 
 #include <QStyle>
 #include <QCursor>
 #include <QAction>
 
-EditableComboBoxPrivate::EditableComboBoxPrivate(QObject* parent) : QObject{parent}
+EditableComboBoxPrivate::EditableComboBoxPrivate(EditableComboBox* parent)
+    : QObject(parent)
+    , q_ptr(parent)
 {
 
 }
@@ -22,13 +24,13 @@ ComboBoxMenu* EditableComboBoxPrivate::createComboMenu()
         QAction *action = new QAction(_items[i].icon, _items[i].text, menu);
         action->setData(i);
         action->setCheckable(true);
-        if (i == _pCurrentIndex) {
+        if (i == _currentIndex) {
             action->setChecked(true);
         }
         menu->addAction(action);
         connect(action, &QAction::triggered, q, [=](){
             int index = action->property("index").toInt();
-            if (index != _pCurrentIndex) {
+            if (index != _currentIndex) {
                 q->setCurrentIndex(index);
                 emit q->activated(index);
                 emit q->textActivated(action->text());
@@ -90,8 +92,6 @@ void EditableComboBoxPrivate::showComboMenu()
 
 void EditableComboBoxPrivate::closeComboMenu()
 {
-    Q_Q(EditableComboBox);
-
     if (!_dropMenu) return;
     _dropMenu = nullptr;
 }
@@ -99,8 +99,6 @@ void EditableComboBoxPrivate::closeComboMenu()
 
 void EditableComboBoxPrivate::toggleComboMenu()
 {
-    Q_Q(EditableComboBox);
-
     if (_dropMenu != nullptr) {
         closeComboMenu();
     } else {
@@ -115,7 +113,7 @@ void EditableComboBoxPrivate::handleMenuAction(QAction *action)
     int index = action->data().toInt();
     if (index < 0 || index >= q->count()) return;
 
-    if (index != _pCurrentIndex) {
+    if (index != _currentIndex) {
         q->setCurrentIndex(index);
     }
 
@@ -127,7 +125,7 @@ void EditableComboBoxPrivate::onClearButtonClicked()
 {
     Q_Q(EditableComboBox);
 
-    _pCurrentIndex = -1;
+    _currentIndex = -1;
     q->clear();
 }
 
@@ -141,12 +139,12 @@ void EditableComboBoxPrivate::onComboTextChanged(const QString &text)
 {
     Q_Q(EditableComboBox);
 
-    _pCurrentIndex = -1;
+    _currentIndex = -1;
     emit q->currentTextChanged(text);
 
     for (int i = 0; i < _items.size(); ++i) {
         if (_items[i].text == text) {
-            _pCurrentIndex = i;
+            _currentIndex = i;
             emit q->currentIndexChanged(i);
             return;
         }
@@ -171,8 +169,8 @@ void EditableComboBoxPrivate::onReturnPressed()
         return;
     }
     int index = q->findText(q->text());
-    if (index > 0 && index != _pCurrentIndex) {
-        _pCurrentIndex = index;
+    if (index > 0 && index != _currentIndex) {
+        _currentIndex = index;
         emit q->currentIndexChanged(index);
     } else if (index == -1) {
         q->addItem(q->text());

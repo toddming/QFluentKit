@@ -1,5 +1,4 @@
-﻿#ifndef COMBOBOX_H
-#define COMBOBOX_H
+﻿#pragma once
 
 #include <QPushButton>
 #include <QVariant>
@@ -74,6 +73,8 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
-};
 
-#endif // COMBOBOX_H
+private:
+    QScopedPointer<ComboBoxPrivate> d_ptr;
+
+};

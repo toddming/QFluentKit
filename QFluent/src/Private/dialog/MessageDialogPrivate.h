@@ -11,9 +11,8 @@ class PrimaryPushButton;
 class MessageDialogPrivate : public MaskDialogBasePrivate
 {
     Q_DECLARE_PUBLIC(MessageDialog)
-public:
-    MessageDialog *q_ptr{nullptr};
 
+public:
     QLabel *titleLabel;
     BodyLabel *contentLabel;
     QFrame *buttonGroup;

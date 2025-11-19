@@ -3,23 +3,21 @@
 #include <QScreen>
 #include <QActionGroup>
 
-#include "Theme.h"
 #include "FluentIcon.h"
 #include "Animation.h"
 #include "Private/EditableComboBoxPrivate.h"
 
 
-Q_PROPERTY_CREATE_Q_CPP(EditableComboBox, int, MaxVisibleItems)
 EditableComboBox::EditableComboBox(QWidget *parent)
-    : LineEdit(parent), d_ptr(new EditableComboBoxPrivate())
+    : LineEdit(parent)
+    , d_ptr(new EditableComboBoxPrivate(this))
 {
     Q_D(EditableComboBox);;
-    d->q_ptr = this;
 
     installEventFilter(this);
 
-    d->_pCurrentIndex = -1;
-    d->_pMaxVisibleItems = -1;
+    d->_currentIndex = -1;
+    d->_maxVisibleItems = -1;
     d->_arrowAni = new TranslateYAnimation(this);
 
     d->_dropButton = new LineEditButton(FluentIcon(FluentIconType::ARROW_DOWN).qicon(), this);
@@ -59,8 +57,8 @@ void EditableComboBox::insertItem(int index, const QString &text, const QIcon &i
 
     d->_items.insert(index, EditableComboBoxDetail::ComboItem(text, icon, userData));
 
-    if (index <= d->_pCurrentIndex) {
-        setCurrentIndex(d->_pCurrentIndex + 1);
+    if (index <= d->_currentIndex) {
+        setCurrentIndex(d->_currentIndex + 1);
     }
 }
 
@@ -79,11 +77,11 @@ void EditableComboBox::removeItem(int index)
 
     d->_items.removeAt(index);
 
-    if (index < d->_pCurrentIndex) {
-        setCurrentIndex(d->_pCurrentIndex - 1);
-    } else if (index == d->_pCurrentIndex) {
+    if (index < d->_currentIndex) {
+        setCurrentIndex(d->_currentIndex - 1);
+    } else if (index == d->_currentIndex) {
         if (index > 0) {
-            setCurrentIndex(d->_pCurrentIndex - 1);
+            setCurrentIndex(d->_currentIndex - 1);
         } else if (count() > 0) {
             setCurrentIndex(0);
         } else {
@@ -96,9 +94,9 @@ void EditableComboBox::clear()
 {
     Q_D(EditableComboBox);
 
-    if (d->_pCurrentIndex >= 0) {
+    if (d->_currentIndex >= 0) {
         setText("");
-        d->_pCurrentIndex = -1;
+        d->_currentIndex = -1;
     }
     d->_items.clear();
 }
@@ -107,7 +105,7 @@ int EditableComboBox::currentIndex() const
 {
     Q_D(const EditableComboBox);
 
-    return d->_pCurrentIndex;
+    return d->_currentIndex;
 }
 
 QString EditableComboBox::currentText() const
@@ -119,8 +117,8 @@ QVariant EditableComboBox::currentData() const
 {
     Q_D(const EditableComboBox);
 
-    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < count()) {
-        return d->_items[d->_pCurrentIndex].userData;
+    if (d->_currentIndex >= 0 && d->_currentIndex < count()) {
+        return d->_items[d->_currentIndex].userData;
     }
     return {};
 }
@@ -129,15 +127,15 @@ void EditableComboBox::setCurrentIndex(int index)
 {
     Q_D(EditableComboBox);
 
-    if (index >= count() || index == d->_pCurrentIndex)
+    if (index >= count() || index == d->_currentIndex)
         return;
 
     if (index < 0) {
-        d->_pCurrentIndex = -1;
+        d->_currentIndex = -1;
         setText("");
-        setPlaceholderText(d->_pPlaceholderText);
+        setPlaceholderText(d->_placeholderText);
     } else {
-        d->_pCurrentIndex = index;
+        d->_currentIndex = index;
         setText(d->_items.at(index).text);
         d->updateTextState(false);
     }
@@ -217,8 +215,8 @@ int EditableComboBox::findData(const QVariant &data) const
 void EditableComboBox::setPlaceholderText(const QString &text)
 {
     Q_D(EditableComboBox);
-    d->_pPlaceholderText = text;
-    if (d->_pCurrentIndex == -1) {
+    d->_placeholderText = text;
+    if (d->_currentIndex == -1) {
         setText(text);
         d->updateTextState(true);
     }
@@ -228,7 +226,7 @@ QString EditableComboBox::placeholderText() const
 {
     Q_D(const EditableComboBox);
 
-    return d->_pPlaceholderText;
+    return d->_placeholderText;
 }
 
 void EditableComboBox::setText(const QString &text)
@@ -263,19 +261,19 @@ bool EditableComboBox::eventFilter(QObject *watched, QEvent *event)
     if (watched == this) {
         switch (event->type()) {
         case QEvent::MouseButtonPress:
-            d->_pIsPressed = true;
+            d->_isPressed = true;
             update();
             break;
         case QEvent::MouseButtonRelease:
-            d->_pIsPressed = false;
+            d->_isPressed = false;
             update();
             break;
         case QEvent::Enter:
-            d->_pIsHover = true;
+            d->_isHover = true;
             update();
             break;
         case QEvent::Leave:
-            d->_pIsHover = false;
+            d->_isHover = false;
             update();
             break;
         default:
@@ -286,4 +284,14 @@ bool EditableComboBox::eventFilter(QObject *watched, QEvent *event)
 }
 
 
+void EditableComboBox::setMaxVisibleItems(int count)
+{
+    Q_D(EditableComboBox);
+    d->_maxVisibleItems = count;
+}
 
+int EditableComboBox::getMaxVisibleItems()
+{
+    Q_D(EditableComboBox);
+    return d->_maxVisibleItems;
+}
