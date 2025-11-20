@@ -18,10 +18,10 @@
 #include <QApplication>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QScrollBar>
 
 #include "Theme.h"
 #include "FluentIcon.h"
-#include "../scrollbar/ScrollBar.h"
 #include "StyleSheet.h"
 
 
@@ -229,7 +229,7 @@ ExpandSettingCard::ExpandSettingCard(const QIcon &icon, const QString &title, co
     m_viewLayout = new QVBoxLayout(m_view);
     m_spaceWidget = new SpaceWidget(scrollWidget);
     borderWidget = new ExpandBorderWidget(this);
-    setVerticalScrollBar(new ScrollBar(this));
+    // setVerticalScrollBar(new ScrollBar(this));
 
     expandAni = new QPropertyAnimation(this->verticalScrollBar(), "value", this);
 

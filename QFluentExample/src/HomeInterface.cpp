@@ -1,7 +1,6 @@
 ﻿#include "HomeInterface.h"
 #include "Card/LinkCard.h"
 #include "Card/SampleCard.h"
-#include "QFluent/scrollbar/ScrollBar.h"
 #include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
@@ -119,10 +118,6 @@ void HomeInterface::initWidget()
 
     auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/home_interface.qss");
     StyleSheetManager::instance()->registerWidget(styleSource, this);
-
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
-    floatVScrollBar->setIsAnimation(true);
 
     setWidget(m_view);
     setWidgetResizable(true);

@@ -20,10 +20,10 @@ class QStackedWidget;
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 class QGraphicsDropShadowEffect;
-class SmoothScrollBar : public QScrollBar {
+class ViewScrollBar : public QScrollBar {
     Q_OBJECT
 public:
-    SmoothScrollBar(Qt::Orientation orientation, QWidget* parent = nullptr);
+    ViewScrollBar(Qt::Orientation orientation, QWidget* parent = nullptr);
     void setScrollAnimation(int duration, QEasingCurve curve = QEasingCurve());
     void scrollTo(int value);
     void setForceHidden(bool hidden);
@@ -114,7 +114,7 @@ protected:
     virtual int pageRows() const { return 3; }
 
     int currentPage = 0;
-    SmoothScrollBar* vScrollBar;
+    ViewScrollBar* vScrollBar;
     ScrollItemDelegate* delegate;
     QDate currentDate;
     QDate date;

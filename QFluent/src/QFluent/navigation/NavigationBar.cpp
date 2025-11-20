@@ -16,9 +16,6 @@
 #include "Theme.h"
 #include "StyleSheet.h"
 
-#include "QFluent/scrollbar/ScrollBar.h"
-
-
 IconSlideAnimation::IconSlideAnimation(QWidget* parent)
     : QPropertyAnimation(parent), _offset(0), maxOffset(6) {
     setTargetObject(this);
@@ -196,8 +193,8 @@ void NavigationBar::__initWidget() {
     this->window()->installEventFilter(this);
 
     m_scrollWidget->setObjectName("scrollWidget");
-    m_scrollArea->setVerticalScrollBar(new ScrollBar(this));
-    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    // m_scrollArea->setVerticalScrollBar(new ScrollBar(this));
+    // m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setWidget(m_scrollWidget);
     m_scrollArea->setWidgetResizable(true);
 

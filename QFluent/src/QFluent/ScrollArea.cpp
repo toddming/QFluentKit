@@ -6,20 +6,21 @@
 ScrollArea::ScrollArea(QWidget *parent)
     : QScrollArea(parent)
 {
+    m_scrollDelegate = new SmoothScrollDelegate(this);
+
     setWidgetResizable(true);
 
     setViewportMargins(0, 0, 0, 20);
 }
 
 
-ScrollArea::ScrollArea(Qt::Orientation orientation, QWidget *parent)
-    : ScrollArea(parent)
+void ScrollArea::setSmoothMode(Fluent::SmoothMode smoothMode, Qt::Orientation orientation)
 {
     if (orientation & Qt::Horizontal) {
-        setHorizontalScrollBar(new ScrollBar(this));
+        m_scrollDelegate->getVScrollBar()->setSmoothMode(smoothMode);
     }
     if (orientation & Qt::Vertical) {
-        setVerticalScrollBar(new ScrollBar(this));
+        m_scrollDelegate->getHScrollBar()->setSmoothMode(smoothMode);
     }
 }
 

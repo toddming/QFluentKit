@@ -31,9 +31,9 @@ FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
     d->_windowBar = new FluentTitleBar(this);
     d->_windowBar->setHostWidget(this);
 
-    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
-                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
-                         Fluent::ButtonType::CloseButtonHint | Fluent::ButtonType::ThemeChangeButtonHint);
+    setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
+                         Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
+                         Fluent::WindowButtonHint::Close | Fluent::WindowButtonHint::ThemeToggle);
 
 
     agent->setTitleBar(d->_windowBar);
@@ -116,26 +116,26 @@ bool FluentSplitWindow::event(QEvent *event) {
 }
 
 
-void FluentSplitWindow::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
+void FluentSplitWindow::setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable)
 {
     Q_D(FluentSplitWindow);
-    d->_windowBar->setWindowButtonFlag(buttonFlag, isEnable);
+    d->_windowBar->setWindowButtonHint(hint, isEnable);
 }
 
-void FluentSplitWindow::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
+void FluentSplitWindow::setWindowButtonHints(Fluent::WindowButtonHints hints)
 {
     Q_D(FluentSplitWindow);
-    d->_windowBar->setWindowButtonFlags(buttonFlags);
+    d->_windowBar->setWindowButtonHints(hints);
 }
 
-Fluent::ButtonFlags FluentSplitWindow::getWindowButtonFlags() const
+Fluent::WindowButtonHints FluentSplitWindow::windowButtonHints() const
 {
     Q_D(const FluentSplitWindow);
-    return d->_windowBar->getWindowButtonFlags();
+    return d->_windowBar->windowButtonHints();
 }
 
 
-void FluentSplitWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType)
+void FluentSplitWindow::setWindowEffect(Fluent::WindowEffect effect)
 {
     Q_D(FluentSplitWindow);
 
@@ -143,7 +143,7 @@ void FluentSplitWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDis
     if (agent == nullptr) {
         return;
     }
-    d->_windowDisplayMode = windowDisplayType;
+    d->_windowDisplayMode = effect;
 
     bool dark = Theme::instance()->isDarkTheme();
     d->_windowBar->themeButton()->setChecked(!dark);
@@ -152,7 +152,7 @@ void FluentSplitWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDis
     foreach (QString name, names) {
         agent->setWindowAttribute(name, false);
     }
-    const QString data = names.at(static_cast<int>(windowDisplayType) % names.size());
+    const QString data = names.at(static_cast<int>(effect) % names.size());
 
     agent->setWindowAttribute("dark-mode", dark);
     if (data == QStringLiteral("none")) {
@@ -164,7 +164,7 @@ void FluentSplitWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDis
     style()->polish(this);
 }
 
-Fluent::WindowDisplayMode FluentSplitWindow::windowDisplayMode() const
+Fluent::WindowEffect FluentSplitWindow::windowEffect() const
 {
     Q_D(const FluentSplitWindow);
     return d->_windowDisplayMode;

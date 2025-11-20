@@ -2,9 +2,6 @@
 #include <QApplication>
 #include <QFontMetrics>
 #include <QMetaEnum>
-#include <QScrollBar>
-
-#include "QFluent/scrollbar/ScrollBar.h"
 
 // 辅助函数（需要根据实际实现）
 Fluent::IconType getDefaultFluentIcon() {
@@ -219,12 +216,7 @@ IconCardView::IconCardView(QWidget* parent)
     m_searchLineEdit = new CustomLineEdit(this);
 
     m_view = new QFrame(this);
-    m_scrollArea = new ScrollArea(Qt::Vertical, m_view);
-
-
-    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ScrollBar* floatVScrollBar = new ScrollBar(m_scrollArea->verticalScrollBar(), m_scrollArea);
-    floatVScrollBar->setIsAnimation(true);
+    m_scrollArea = new ScrollArea(m_view);
 
 
     m_scrollWidget = new QWidget(m_scrollArea);
@@ -242,7 +234,6 @@ void IconCardView::initWidget() {
     m_scrollArea->setWidget(m_scrollWidget);
     m_scrollArea->setViewportMargins(0, 5, 0, 5);
     m_scrollArea->setWidgetResizable(true);
-    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     m_vBoxLayout->setContentsMargins(0, 0, 0, 0);
     m_vBoxLayout->setSpacing(12);

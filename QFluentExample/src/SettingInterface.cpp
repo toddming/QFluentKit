@@ -4,7 +4,6 @@
 #include "Theme.h"
 #include "StyleSheet.h"
 #include "FluentIcon.h"
-#include "QFluent/scrollbar/ScrollBar.h"
 #include "QFluent/settings/SettingCard.h"
 #include "QFluent/settings/SettingCardGroup.h"
 #include "QFluent/settings/OptionsSettingCard.h"
@@ -19,11 +18,6 @@ SettingInterface::SettingInterface(QWidget *parent)
     m_expandLayout = new ExpandLayout(m_scrollWidget);
     setObjectName("settingInterface");
     m_scrollWidget->setObjectName("scrollWidget");
-
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
-    floatVScrollBar->setIsAnimation(true);
-
 
     setViewportMargins(0, 80, 0, 0);
     setWidget(m_scrollWidget);
@@ -100,7 +94,7 @@ SettingInterface::SettingInterface(QWidget *parent)
     connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text) {
         auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowDisplayMode(static_cast<Fluent::WindowDisplayMode>(index));
+        main->setWindowEffect(static_cast<Fluent::WindowEffect>(index));
         ConfigManager::instance().setValue("Window/effect", text);
     });
 
@@ -114,6 +108,6 @@ SettingInterface::SettingInterface(QWidget *parent)
     int var = modes.indexOf(effect);
     if (var >= 0) {
         auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowDisplayMode(static_cast<Fluent::WindowDisplayMode>(var));
+        main->setWindowEffect(static_cast<Fluent::WindowEffect>(var));
     }
 }

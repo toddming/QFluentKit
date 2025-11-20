@@ -282,41 +282,41 @@ enum class MenuIndicator {
 Q_ENUM_NS(MenuIndicator)
 
 // ========== 窗口相关 ==========
-enum class WindowDisplayMode {
+enum class WindowEffect {
     Normal = 0x0000,
     DWMBlur = 0x0001,
     Acrylic,
     Mica,
     MicaAlt
 };
-Q_ENUM_NS(WindowDisplayMode)
+Q_ENUM_NS(WindowEffect)
 
 // ========== AppBar 按钮类型 ==========
-enum ButtonType {
-    NoneButtonHint = 0x0000,
-    RouteBackButtonHint = 0x0001,
-    IconButtonHint = 0x0002,
-    IconLabelHint = 0x0004,
-    StayTopButtonHint = 0x0008,
-    ThemeChangeButtonHint = 0x0010,
-    MinimizeButtonHint = 0x0020,
-    MaximizeButtonHint = 0x0040,
-    CloseButtonHint = 0x0080,
-    WindowTitleHint = 0x0100
+enum WindowButtonHint {
+    None               = 0x0000,
+    RouteBack          = 0x0001,
+    Icon               = 0x0002,
+    IconLabel          = 0x0004,
+    StayOnTop          = 0x0008,
+    ThemeToggle        = 0x0010,
+    Minimize           = 0x0020,
+    Maximize           = 0x0040,
+    Close              = 0x0080,
+    Title              = 0x0100
 };
-Q_ENUM_NS(ButtonType)
-Q_DECLARE_FLAGS(ButtonFlags, ButtonType)
+Q_ENUM_NS(WindowButtonHint)
+Q_DECLARE_FLAGS(WindowButtonHints, WindowButtonHint)
 
 // ========== 信息栏相关 ==========
-enum class BarType {
+enum class MessageType {
     INFORMATION,
     SUCCESS,
     WARNING,
     ERROR
 };
-Q_ENUM_NS(BarType)
+Q_ENUM_NS(MessageType)
 
-enum class BarPosition {
+enum class MessagePosition {
     TOP = 0,
     BOTTOM = 1,
     TOP_LEFT = 2,
@@ -325,7 +325,7 @@ enum class BarPosition {
     BOTTOM_RIGHT = 5,
     NONE = 6
 };
-Q_ENUM_NS(BarPosition)
+Q_ENUM_NS(MessagePosition)
 
 // ========== 分页相关 ==========
 enum class Alignment {
@@ -351,6 +351,21 @@ enum class NavigationItemPosition {
 };
 Q_ENUM_NS(NavigationItemPosition)
 
+enum class SmoothMode {
+    NO_SMOOTH = 0,
+    CONSTANT = 1,
+    LINEAR = 2,
+    QUADRATI = 3,
+    COSINE = 4
+};
+Q_ENUM_NS(SmoothMode)
+
+enum class ScrollBarHandleDisplayMode {
+    ALWAYS = 0,
+    ON_HOVER = 1
+};
+Q_ENUM_NS(ScrollBarHandleDisplayMode)
+
 } // namespace Fluent
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Fluent::ButtonFlags)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Fluent::WindowButtonHints)

@@ -12,10 +12,10 @@
 
 LoginWidget::LoginWidget(bool autoLogin)
 {
-    Fluent::ButtonFlags buttonFlags = Fluent::ButtonType::MinimizeButtonHint |
-            Fluent::ButtonType::CloseButtonHint;
-    setWindowButtonFlags(buttonFlags);
-    // setWindowDisplayMode(ApplicationType::Mica);
+    Fluent::WindowButtonHints hints = Fluent::WindowButtonHint::Minimize |
+            Fluent::WindowButtonHint::Close;
+    setWindowButtonHints(hints);
+    // setWindowEffect(ApplicationType::Mica);
 
     setContentsMargins(0, 0, 0, 0);
     setFixedSize(380, 300);
@@ -96,11 +96,11 @@ void LoginWidget::userLogin()
     QString pass = m_editPass->text().remove(s_whitespaceRegex);
 
     if (user.isEmpty()) {
-        InfoBar::warning("警告", "用户名不能为空", Qt::Horizontal, false, 2000, Fluent::BarPosition::TOP, this);
+        InfoBar::warning("警告", "用户名不能为空", Qt::Horizontal, false, 2000, Fluent::MessagePosition::TOP, this);
         return;
     }
     if (pass.isEmpty()) {
-        InfoBar::warning("警告", "密码不能为空", Qt::Horizontal, false, 2000, Fluent::BarPosition::TOP, this);
+        InfoBar::warning("警告", "密码不能为空", Qt::Horizontal, false, 2000, Fluent::MessagePosition::TOP, this);
         return;
     }
 
@@ -108,7 +108,7 @@ void LoginWidget::userLogin()
 
     QTimer::singleShot(3000, this, [=](){
         loading(false);
-        InfoBar::success("提示", "登录成功", Qt::Horizontal, false, 2000, Fluent::BarPosition::TOP, this);
+        InfoBar::success("提示", "登录成功", Qt::Horizontal, false, 2000, Fluent::MessagePosition::TOP, this);
     });
 }
 

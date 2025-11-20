@@ -1,10 +1,10 @@
 ﻿#include "MenuActionListWidget.h"
 
 #include <QWheelEvent>
+#include <QScrollBar>
 
 #include "Screen.h"
 #include "MenuItemDelegate.h"
-#include "QFluent/scrollbar/ScrollBar.h"
 
 MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     : QListWidget(parent) {
@@ -15,8 +15,6 @@ MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    setVerticalScrollBar(scrollBar);
 
     setItemDelegate(new ShortcutMenuItemDelegate(this));
 

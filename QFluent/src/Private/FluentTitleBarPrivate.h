@@ -23,5 +23,5 @@ private:
     QLabel *_iconLabel;
     QLabel *_titleLabel;
     QPointer<QWidget> _hostWidget;
-    Fluent::ButtonFlags _buttonFlags;
+    Fluent::WindowButtonHints _buttonFlags;
 };

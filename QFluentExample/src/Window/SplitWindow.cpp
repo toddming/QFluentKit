@@ -9,11 +9,12 @@
 
 SplitWidget::SplitWidget()
 {
-    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
-                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
-                         Fluent::ButtonType::CloseButtonHint | Fluent::ButtonType::RouteBackButtonHint);
 
-    setWindowDisplayMode(Fluent::WindowDisplayMode::Normal);
+    setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
+                         Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
+                         Fluent::WindowButtonHint::Close | Fluent::WindowButtonHint::RouteBack);
+
+    setWindowEffect(Fluent::WindowEffect::Normal);
 
     setContentsMargins(0, 0, 0, 0);
 

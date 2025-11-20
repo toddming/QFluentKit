@@ -18,12 +18,12 @@ public:
     FluentWindow(QMainWindow *parent = nullptr);
     ~FluentWindow();
 
-    void setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable = true);
-    void setWindowButtonFlags(Fluent::ButtonFlags buttonFlags);
-    Fluent::ButtonFlags getWindowButtonFlags() const;
+    void setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable = true);
+    void setWindowButtonHints(Fluent::WindowButtonHints hints);
+    Fluent::WindowButtonHints windowButtonHints() const;
 
-    void setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType);
-    Fluent::WindowDisplayMode windowDisplayMode() const;
+    void setWindowEffect(Fluent::WindowEffect effect);
+    Fluent::WindowEffect windowEffect() const;
 
     void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
 

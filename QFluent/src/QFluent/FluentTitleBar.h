@@ -29,9 +29,9 @@ public:
 
     QWidget *hostWidget() const;
     void setHostWidget(QWidget *w);
-    void setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable = true);
-    void setWindowButtonFlags(Fluent::ButtonFlags buttonFlags);
-    Fluent::ButtonFlags getWindowButtonFlags() const;
+    void setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable = true);
+    void setWindowButtonHints(Fluent::WindowButtonHints hints);
+    Fluent::WindowButtonHints windowButtonHints() const;
 
 Q_SIGNALS:
     void backRequested();

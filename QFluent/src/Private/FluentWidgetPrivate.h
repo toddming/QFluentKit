@@ -18,5 +18,5 @@ public:
 
     FluentTitleBar *_windowBar;
 
-    Fluent::WindowDisplayMode _windowDisplayMode;
+    Fluent::WindowEffect _windowDisplayMode;
 };

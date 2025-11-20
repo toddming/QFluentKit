@@ -1,4 +1,4 @@
-#include "TextEdit.h"
+﻿#include "TextEdit.h"
 #include <QApplication>
 #include <QContextMenuEvent>
 #include <QStyle>
@@ -59,8 +59,8 @@ TextEdit::TextEdit(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    setVerticalScrollBar(scrollBar);
+    // ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
+    // setVerticalScrollBar(scrollBar);
 }
 
 void TextEdit::contextMenuEvent(QContextMenuEvent *e)
@@ -80,8 +80,8 @@ PlainTextEdit::PlainTextEdit(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    setVerticalScrollBar(scrollBar);
+    // ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
+    // setVerticalScrollBar(scrollBar);
 }
 
 void PlainTextEdit::contextMenuEvent(QContextMenuEvent *e)
@@ -100,8 +100,8 @@ TextBrowser::TextBrowser(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    setVerticalScrollBar(scrollBar);
+    // ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
+    // setVerticalScrollBar(scrollBar);
 }
 
 void TextBrowser::contextMenuEvent(QContextMenuEvent *e)

@@ -9,9 +9,9 @@
 
 NavbarWidget::NavbarWidget()
 {
-    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
-                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
-                         Fluent::ButtonType::CloseButtonHint);
+    setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
+                         Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
+                         Fluent::WindowButtonHint::Close);
 
     setContentsMargins(0, 0, 0, 0);
 

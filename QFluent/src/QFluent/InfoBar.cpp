@@ -30,26 +30,26 @@
 #include "StyleSheet.h"
 
 
-QMap<Fluent::BarPosition, std::function<InfoBarManager*()>> InfoBarManager::m_managers;
+QMap<Fluent::MessagePosition, std::function<InfoBarManager*()>> InfoBarManager::m_managers;
 namespace {
 struct RegisterInfoBarManagers {
     RegisterInfoBarManagers() {
-        InfoBarManager::registerManager(Fluent::BarPosition::TOP,
+        InfoBarManager::registerManager(Fluent::MessagePosition::TOP,
                                         []() { return TopInfoBarManager::getInstance(); });
 
-        InfoBarManager::registerManager(Fluent::BarPosition::TOP_RIGHT,
+        InfoBarManager::registerManager(Fluent::MessagePosition::TOP_RIGHT,
                                         []() { return TopRightInfoBarManager::getInstance(); });
 
-        InfoBarManager::registerManager(Fluent::BarPosition::BOTTOM_RIGHT,
+        InfoBarManager::registerManager(Fluent::MessagePosition::BOTTOM_RIGHT,
                                         []() { return BottomRightInfoBarManager::getInstance(); });
 
-        InfoBarManager::registerManager(Fluent::BarPosition::TOP_LEFT,
+        InfoBarManager::registerManager(Fluent::MessagePosition::TOP_LEFT,
                                         []() { return TopLeftInfoBarManager::getInstance(); });
 
-        InfoBarManager::registerManager(Fluent::BarPosition::BOTTOM_LEFT,
+        InfoBarManager::registerManager(Fluent::MessagePosition::BOTTOM_LEFT,
                                         []() { return BottomLeftInfoBarManager::getInstance(); });
 
-        InfoBarManager::registerManager(Fluent::BarPosition::BOTTOM,
+        InfoBarManager::registerManager(Fluent::MessagePosition::BOTTOM,
                                         []() { return BottomInfoBarManager::getInstance(); });
     }
 };
@@ -58,7 +58,7 @@ static RegisterInfoBarManagers registerInfoBarManagersInstance;
 }
 
 
-InfoIconWidget::InfoIconWidget(Fluent::BarType type, QWidget* parent) : QWidget(parent) {
+InfoIconWidget::InfoIconWidget(Fluent::MessageType type, QWidget* parent) : QWidget(parent) {
     setFixedSize(36, 36);
     m_type = type;
 }
@@ -73,9 +73,9 @@ void InfoIconWidget::paintEvent(QPaintEvent* event) {
 }
 
 // InfoBar 实现
-InfoBar::InfoBar(Fluent::BarType type, const QString& title, const QString& content,
+InfoBar::InfoBar(Fluent::MessageType type, const QString& title, const QString& content,
                  Qt::Orientation orient, bool isClosable, int duration,
-                 Fluent::BarPosition position, QWidget* parent)
+                 Fluent::MessagePosition position, QWidget* parent)
     : QFrame(parent), m_title(title), m_content(content), m_orient(orient), m_type(type),
       m_duration(duration), m_isClosable(isClosable), m_position(position) {
 
@@ -226,7 +226,7 @@ void InfoBar::showEvent(QShowEvent* event) {
         QTimer::singleShot(m_duration, this, &InfoBar::__fadeOut);
     }
 
-    if (m_position != Fluent::BarPosition::NONE) {
+    if (m_position != Fluent::MessagePosition::NONE) {
         InfoBarManager* manager = InfoBarManager::make(m_position);
         manager->add(this);
     }
@@ -259,32 +259,32 @@ void InfoBar::paintEvent(QPaintEvent* event) {
     painter.drawRoundedRect(rect, 6, 6);
 }
 
-InfoBar* InfoBar::newInfoBar(Fluent::BarType type, const QString& title, const QString& content,
+InfoBar* InfoBar::newInfoBar(Fluent::MessageType type, const QString& title, const QString& content,
                              Qt::Orientation orient, bool isClosable, int duration,
-                             Fluent::BarPosition position, QWidget* parent) {
+                             Fluent::MessagePosition position, QWidget* parent) {
     InfoBar* w = new InfoBar(type, title, content, orient, isClosable, duration, position, parent);
     w->show();
     return w;
 }
 
 InfoBar* InfoBar::info(const QString& title, const QString& content, Qt::Orientation orient,
-                       bool isClosable, int duration, Fluent::BarPosition position, QWidget* parent) {
-    return newInfoBar(Fluent::BarType::INFORMATION, title, content, orient, isClosable, duration, position, parent);
+                       bool isClosable, int duration, Fluent::MessagePosition position, QWidget* parent) {
+    return newInfoBar(Fluent::MessageType::INFORMATION, title, content, orient, isClosable, duration, position, parent);
 }
 
 InfoBar* InfoBar::success(const QString& title, const QString& content, Qt::Orientation orient,
-                          bool isClosable, int duration, Fluent::BarPosition position, QWidget* parent) {
-    return newInfoBar(Fluent::BarType::SUCCESS, title, content, orient, isClosable, duration, position, parent);
+                          bool isClosable, int duration, Fluent::MessagePosition position, QWidget* parent) {
+    return newInfoBar(Fluent::MessageType::SUCCESS, title, content, orient, isClosable, duration, position, parent);
 }
 
 InfoBar* InfoBar::warning(const QString& title, const QString& content, Qt::Orientation orient,
-                          bool isClosable, int duration, Fluent::BarPosition position, QWidget* parent) {
-    return newInfoBar(Fluent::BarType::WARNING, title, content, orient, isClosable, duration, position, parent);
+                          bool isClosable, int duration, Fluent::MessagePosition position, QWidget* parent) {
+    return newInfoBar(Fluent::MessageType::WARNING, title, content, orient, isClosable, duration, position, parent);
 }
 
 InfoBar* InfoBar::error(const QString& title, const QString& content, Qt::Orientation orient,
-                        bool isClosable, int duration, Fluent::BarPosition position, QWidget* parent) {
-    return newInfoBar(Fluent::BarType::ERROR, title, content, orient, isClosable, duration, position, parent);
+                        bool isClosable, int duration, Fluent::MessagePosition position, QWidget* parent) {
+    return newInfoBar(Fluent::MessageType::ERROR, title, content, orient, isClosable, duration, position, parent);
 }
 
 
@@ -398,13 +398,13 @@ bool InfoBarManager::eventFilter(QObject* obj, QEvent* event) {
     return QObject::eventFilter(obj, event);
 }
 
-void InfoBarManager::registerManager(Fluent::BarPosition position, std::function<InfoBarManager*()> creator) {
+void InfoBarManager::registerManager(Fluent::MessagePosition position, std::function<InfoBarManager*()> creator) {
     if (!m_managers.contains(position)) {
         m_managers[position] = creator;
     }
 }
 
-InfoBarManager* InfoBarManager::make(Fluent::BarPosition position) {
+InfoBarManager* InfoBarManager::make(Fluent::MessagePosition position) {
     if (!m_managers.contains(position)) {
         qWarning() << "Invalid position:" << static_cast<int>(position);
         return nullptr;
@@ -412,13 +412,13 @@ InfoBarManager* InfoBarManager::make(Fluent::BarPosition position) {
     return m_managers[position]();
 }
 
-QString InfoBarManager::toString(Fluent::BarType type)
+QString InfoBarManager::toString(Fluent::MessageType type)
 {
-    static const QMap<Fluent::BarType, QString> map = {
-        {Fluent::BarType::INFORMATION, "Info"},
-        {Fluent::BarType::SUCCESS, "Success"},
-        {Fluent::BarType::WARNING, "Warning"},
-        {Fluent::BarType::ERROR, "Error"}
+    static const QMap<Fluent::MessageType, QString> map = {
+        {Fluent::MessageType::INFORMATION, "Info"},
+        {Fluent::MessageType::SUCCESS, "Success"},
+        {Fluent::MessageType::WARNING, "Warning"},
+        {Fluent::MessageType::ERROR, "Error"}
     };
     return map.value(type, "Info");
 }

@@ -5,6 +5,7 @@
 
 #include "FluentGlobal.h"
 
+class SmoothScrollDelegate;
 class QFLUENT_EXPORT ScrollArea : public QScrollArea
 {
     Q_OBJECT
@@ -12,12 +13,14 @@ class QFLUENT_EXPORT ScrollArea : public QScrollArea
 public:
     explicit ScrollArea(QWidget *parent = nullptr);
 
-    explicit ScrollArea(Qt::Orientation orientation, QWidget *parent = nullptr);
+    void setSmoothMode(Fluent::SmoothMode smoothMode, Qt::Orientation orientation);
 
     void enableTransparentBackground();
 
     void setViewportMargins(int left, int top, int right, int bottom);
 
+private:
+    SmoothScrollDelegate *m_scrollDelegate;
 };
 
 #endif // SCROLLAREA_H

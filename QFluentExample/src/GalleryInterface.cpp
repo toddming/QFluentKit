@@ -3,8 +3,6 @@
 #include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
-#include "QFluent/scrollbar/ScrollBar.h"
-
 
 SeparatorWidget::SeparatorWidget(QWidget *parent)
     : QWidget(parent)
@@ -159,10 +157,6 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
     view = new QWidget(this);
     toolBar = new ToolBar(title, subtitle.isEmpty() ? "https://github.com/toddming/QFluentExample" : subtitle, this);
     vBoxLayout = new QVBoxLayout(view);
-
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
-    floatVScrollBar->setIsAnimation(true);
 
     setViewportMargins(0, toolBar->height(), 0, 0);
     setWidget(view);

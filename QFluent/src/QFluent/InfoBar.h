@@ -17,19 +17,19 @@ class QParallelAnimationGroup;
 class QFLUENT_EXPORT InfoIconWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit InfoIconWidget(Fluent::BarType type, QWidget* parent = nullptr);
+    explicit InfoIconWidget(Fluent::MessageType type, QWidget* parent = nullptr);
     void paintEvent(QPaintEvent* event) override;
 
 private:
-    Fluent::BarType m_type;
+    Fluent::MessageType m_type;
 };
 
 class QFLUENT_EXPORT InfoBar : public QFrame {
     Q_OBJECT
 public:
-    explicit InfoBar(Fluent::BarType type, const QString& title, const QString& content,
+    explicit InfoBar(Fluent::MessageType type, const QString& title, const QString& content,
                      Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                     int duration = 1000, Fluent::BarPosition position = Fluent::BarPosition::TOP_RIGHT,
+                     int duration = 1000, Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
                      QWidget* parent = nullptr);
 
     void addWidget(QWidget* widget, int stretch = 0);
@@ -40,25 +40,25 @@ public:
     void paintEvent(QPaintEvent* event) override;
     void hideEvent(QHideEvent* event) override;
 
-    static InfoBar* newInfoBar(Fluent::BarType type, const QString& title, const QString& content,
+    static InfoBar* newInfoBar(Fluent::MessageType type, const QString& title, const QString& content,
                                Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                               int duration = 1000, Fluent::BarPosition position = Fluent::BarPosition::TOP_RIGHT,
+                               int duration = 1000, Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
                                QWidget* parent = nullptr);
     static InfoBar* info(const QString& title, const QString& content,
                          Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                         int duration = 1000, Fluent::BarPosition position = Fluent::BarPosition::TOP_RIGHT,
+                         int duration = 1000, Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
                          QWidget* parent = nullptr);
     static InfoBar* success(const QString& title, const QString& content,
                             Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                            int duration = 1000, Fluent::BarPosition position = Fluent::BarPosition::TOP_RIGHT,
+                            int duration = 1000, Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
                             QWidget* parent = nullptr);
     static InfoBar* warning(const QString& title, const QString& content,
                             Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                            int duration = 1000, Fluent::BarPosition position = Fluent::BarPosition::TOP_RIGHT,
+                            int duration = 1000, Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
                             QWidget* parent = nullptr);
     static InfoBar* error(const QString& title, const QString& content,
                           Qt::Orientation orient = Qt::Horizontal, bool isClosable = true,
-                          int duration = 1000, Fluent::BarPosition position = Fluent::BarPosition::TOP_RIGHT,
+                          int duration = 1000, Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
                           QWidget* parent = nullptr);
 
 signals:
@@ -74,10 +74,10 @@ private:
     QString m_title;
     QString m_content;
     Qt::Orientation m_orient;
-    Fluent::BarType m_type;
+    Fluent::MessageType m_type;
     int m_duration;
     bool m_isClosable;
-    Fluent::BarPosition m_position;
+    Fluent::MessagePosition m_position;
 
     QLabel* m_titleLabel;
     QLabel* m_contentLabel;
@@ -102,9 +102,9 @@ public:
     void add(InfoBar* infoBar);
     void remove(InfoBar* infoBar);
 
-    static void registerManager(Fluent::BarPosition position, std::function<InfoBarManager*()> creator);
-    static InfoBarManager* make(Fluent::BarPosition position);
-    static QString toString(Fluent::BarType type);
+    static void registerManager(Fluent::MessagePosition position, std::function<InfoBarManager*()> creator);
+    static InfoBarManager* make(Fluent::MessagePosition position);
+    static QString toString(Fluent::MessageType type);
 
 protected:
     explicit InfoBarManager(QObject* parent = nullptr);
@@ -122,7 +122,7 @@ protected:
     QList<QPropertyAnimation*> m_slideAnis;
     QList<QPropertyAnimation*> m_dropAnis;
 
-    static QMap<Fluent::BarPosition, std::function<InfoBarManager*()>> m_managers;
+    static QMap<Fluent::MessagePosition, std::function<InfoBarManager*()>> m_managers;
 };
 
 class QFLUENT_EXPORT TopInfoBarManager : public InfoBarManager {

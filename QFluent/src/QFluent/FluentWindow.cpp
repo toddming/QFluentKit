@@ -31,9 +31,9 @@ FluentWindow::FluentWindow(QMainWindow *parent)
     d->_windowBar = new FluentTitleBar(this);
     d->_windowBar->setHostWidget(this);
 
-    setWindowButtonFlags(Fluent::ButtonType::IconButtonHint | Fluent::ButtonType::WindowTitleHint |
-                         Fluent::ButtonType::MinimizeButtonHint | Fluent::ButtonType::MaximizeButtonHint |
-                         Fluent::ButtonType::CloseButtonHint | Fluent::ButtonType::ThemeChangeButtonHint);
+    setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
+                         Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
+                         Fluent::WindowButtonHint::Close | Fluent::WindowButtonHint::ThemeToggle);
 
 
     agent->setTitleBar(d->_windowBar);
@@ -110,26 +110,26 @@ bool FluentWindow::event(QEvent *event) {
 }
 
 
-void FluentWindow::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
+void FluentWindow::setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable)
 {
     Q_D(FluentWindow);
-    d->_windowBar->setWindowButtonFlag(buttonFlag, isEnable);
+    d->_windowBar->setWindowButtonHint(hint, isEnable);
 }
 
-void FluentWindow::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
+void FluentWindow::setWindowButtonHints(Fluent::WindowButtonHints hints)
 {
     Q_D(FluentWindow);
-    d->_windowBar->setWindowButtonFlags(buttonFlags);
+    d->_windowBar->setWindowButtonHints(hints);
 }
 
-Fluent::ButtonFlags FluentWindow::getWindowButtonFlags() const
+Fluent::WindowButtonHints FluentWindow::windowButtonHints() const
 {
     Q_D(const FluentWindow);
-    return d->_windowBar->getWindowButtonFlags();
+    return d->_windowBar->windowButtonHints();
 }
 
 
-void FluentWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayType)
+void FluentWindow::setWindowEffect(Fluent::WindowEffect effect)
 {
     Q_D(FluentWindow);
 
@@ -137,7 +137,7 @@ void FluentWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayT
     if (agent == nullptr) {
         return;
     }
-    d->_windowDisplayMode = windowDisplayType;
+    d->_windowDisplayMode = effect;
 
     bool dark = Theme::instance()->isDarkTheme();
     d->_windowBar->themeButton()->setChecked(!dark);
@@ -146,7 +146,7 @@ void FluentWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayT
     foreach (QString name, names) {
         agent->setWindowAttribute(name, false);
     }
-    const QString data = names.at(static_cast<int>(windowDisplayType) % names.size());
+    const QString data = names.at(static_cast<int>(effect) % names.size());
 
     agent->setWindowAttribute("dark-mode", dark);
     if (data == QStringLiteral("none")) {
@@ -158,7 +158,7 @@ void FluentWindow::setWindowDisplayMode(Fluent::WindowDisplayMode windowDisplayT
     style()->polish(this);
 }
 
-Fluent::WindowDisplayMode FluentWindow::windowDisplayMode() const
+Fluent::WindowEffect FluentWindow::windowEffect() const
 {
     Q_D(const FluentWindow);
     return d->_windowDisplayMode;

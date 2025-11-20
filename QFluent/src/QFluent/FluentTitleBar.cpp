@@ -252,21 +252,21 @@ void FluentTitleBar::titleChanged(const QString &text) {
 
 void FluentTitleBar::iconChanged(const QIcon &icon){Q_UNUSED(icon)}
 
-void FluentTitleBar::setWindowButtonFlag(Fluent::ButtonType buttonFlag, bool isEnable)
+void FluentTitleBar::setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable)
 {
     Q_D(FluentTitleBar);
     if (isEnable) {
-        setWindowButtonFlags(d->_buttonFlags | buttonFlag);
+        setWindowButtonHints(d->_buttonFlags | hint);
     } else {
-        setWindowButtonFlags(d->_buttonFlags & ~buttonFlag);
+        setWindowButtonHints(d->_buttonFlags & ~hint);
     }
 }
 
-void FluentTitleBar::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
+void FluentTitleBar::setWindowButtonHints(Fluent::WindowButtonHints hints)
 {
     Q_D(FluentTitleBar);
-    d->_buttonFlags = buttonFlags;
-    if (d->_buttonFlags.testFlag(Fluent::ButtonType::NoneButtonHint)) {
+    d->_buttonFlags = hints;
+    if (d->_buttonFlags.testFlag(Fluent::WindowButtonHint::None)) {
         d->_backButton->setVisible(false);
         d->_iconButton->setVisible(false);
         d->_titleLabel->setVisible(false);
@@ -277,18 +277,18 @@ void FluentTitleBar::setWindowButtonFlags(Fluent::ButtonFlags buttonFlags)
     }
     else
     {
-        d->_backButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::RouteBackButtonHint));
-        d->_iconButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::IconButtonHint));
-        d->_iconLabel->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::IconLabelHint));
-        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::WindowTitleHint));
-        d->_themeButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::ThemeChangeButtonHint));
-        d->_minButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::MinimizeButtonHint));
-        d->_maxButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::MaximizeButtonHint));
-        d->_closeButton->setVisible(d->_buttonFlags.testFlag(Fluent::ButtonType::CloseButtonHint));
+        d->_backButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::RouteBack));
+        d->_iconButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Icon));
+        d->_iconLabel->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::IconLabel));
+        d->_titleLabel->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Title));
+        d->_themeButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::ThemeToggle));
+        d->_minButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Minimize));
+        d->_maxButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Maximize));
+        d->_closeButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Close));
     }
 }
 
-Fluent::ButtonFlags FluentTitleBar::getWindowButtonFlags() const
+Fluent::WindowButtonHints FluentTitleBar::windowButtonHints() const
 {
     return d_ptr->_buttonFlags;
 }

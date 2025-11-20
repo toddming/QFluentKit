@@ -19,7 +19,7 @@ WindowInterface::WindowInterface(QWidget *parent)
     connect(button1, &PushButton::clicked, this, [=](){
         auto loginWindow = new LoginWidget(false);
         loginWindow->setWindowModality(Qt::ApplicationModal);
-        loginWindow->setWindowDisplayMode(mainWindow->windowDisplayMode());
+        loginWindow->setWindowEffect(mainWindow->windowEffect());
         loginWindow->show();
     });
     addExampleCard("登录窗口", button1);
@@ -27,7 +27,7 @@ WindowInterface::WindowInterface(QWidget *parent)
     auto button2 = new PushButton("弹出窗口", this);
     connect(button2, &PushButton::clicked, this, [=](){
         auto navWidget = new NavbarWidget();
-        navWidget->setWindowDisplayMode(mainWindow->windowDisplayMode());
+        navWidget->setWindowEffect(mainWindow->windowEffect());
         navWidget->show();
     });
     addExampleCard("带导航栏的窗口", button2);
@@ -35,7 +35,7 @@ WindowInterface::WindowInterface(QWidget *parent)
     auto button3 = new PushButton("弹出窗口", this);
     connect(button3, &PushButton::clicked, this, [=](){
         auto splitWindow = new SplitWidget();
-        splitWindow->setWindowDisplayMode(mainWindow->windowDisplayMode());
+        splitWindow->setWindowEffect(mainWindow->windowEffect());
         splitWindow->show();
     });
     addExampleCard("分割风格的窗口", button3);

@@ -27,7 +27,7 @@ MainWindow::MainWindow()
     setWindowIcon(QPixmap(":/res/example.png"));
     resize(1024, 768);
 
-    setWindowButtonFlags(getWindowButtonFlags() | Fluent::ButtonType::RouteBackButtonHint);
+    setWindowButtonHints(windowButtonHints() | Fluent::WindowButtonHint::RouteBack);
 
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
     Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);

@@ -36,30 +36,30 @@
 #include "StyleSheet.h"
 
 
-SmoothScrollBar::SmoothScrollBar(Qt::Orientation orientation, QWidget* parent)
+ViewScrollBar::ViewScrollBar(Qt::Orientation orientation, QWidget* parent)
     : QScrollBar(orientation, parent) {
     m_ani = new QPropertyAnimation(this, "value", this);
     m_ani->setDuration(300);
     m_ani->setEasingCurve(QEasingCurve::OutCubic);
 }
 
-void SmoothScrollBar::setScrollAnimation(int duration, QEasingCurve curve) {
+void ViewScrollBar::setScrollAnimation(int duration, QEasingCurve curve) {
     m_ani->setDuration(duration);
     m_ani->setEasingCurve(curve);
 }
 
-void SmoothScrollBar::scrollTo(int value) {
+void ViewScrollBar::scrollTo(int value) {
     m_ani->stop();
     m_ani->setStartValue(this->value());
     m_ani->setEndValue(value);
     m_ani->start();
 }
 
-void SmoothScrollBar::setForceHidden(bool hidden) {
+void ViewScrollBar::setForceHidden(bool hidden) {
     this->setVisible(!hidden);
 }
 
-QPropertyAnimation* SmoothScrollBar::ani() const
+QPropertyAnimation* ViewScrollBar::ani() const
 {
     return m_ani;
 }
@@ -176,7 +176,7 @@ ScrollViewBase::ScrollViewBase(ScrollItemDelegate* delegateType, QWidget* parent
       minYear(currentDate.year() - 10), maxYear(currentDate.year() + 10) {
 
     setMouseTracking(true);
-    vScrollBar = new SmoothScrollBar(Qt::Vertical, this);
+    vScrollBar = new ViewScrollBar(Qt::Vertical, this);
     setVerticalScrollBar(vScrollBar);
 }
 
