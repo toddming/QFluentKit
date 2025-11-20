@@ -598,14 +598,24 @@ bool SmoothScrollDelegate::eventFilter(QObject* obj, QEvent* e) {
     return QObject::eventFilter(obj, e);
 }
 
-SmoothScroll* SmoothScrollDelegate::getVScrollBar()
+SmoothScroll* SmoothScrollDelegate::getVScroll()
 {
     return verticalSmoothScroll;
 }
 
-SmoothScroll* SmoothScrollDelegate::getHScrollBar()
+SmoothScroll* SmoothScrollDelegate::getHScroll()
 {
     return horizonSmoothScroll;
+}
+
+SmoothScrollBar* SmoothScrollDelegate::getVScrollBar()
+{
+    return vScrollBar;
+}
+
+SmoothScrollBar* SmoothScrollDelegate::getHScrollBar()
+{
+    return hScrollBar;
 }
 
 void SmoothScrollDelegate::setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy) {

@@ -59,8 +59,9 @@ void NavigationPanel::initWidget() {
     this->setAttribute(Qt::WA_StyledBackground);
     this->window()->installEventFilter(this);
 
-    // m_scrollArea->setVerticalScrollBar(new ScrollBar(this));
-    // m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     m_scrollArea->setWidget(m_scrollWidget);
     m_scrollArea->setWidgetResizable(true);
 

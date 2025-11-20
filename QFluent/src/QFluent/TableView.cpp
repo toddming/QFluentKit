@@ -1,6 +1,7 @@
 ﻿#include "TableView.h"
 #include <QPainter>
-#include "QScrollBar"
+#include <QScrollBar>
+#include "QFluent/scrollbar/ScrollBar.h"
 
 TableItemDelegate::TableItemDelegate(QTableView* parent) : QStyledItemDelegate(parent) {}
 
@@ -183,8 +184,9 @@ void TableItemDelegate::_drawCheckBox(QPainter* painter, const QStyleOptionViewI
 // TableWidget 实现
 TableWidget::TableWidget(QWidget* parent) : TableBase<QTableWidget>(parent)
 {
-    // setVerticalScrollBar(new ScrollBar(Qt::Vertical, this));
-    // setHorizontalScrollBar(new ScrollBar(Qt::Horizontal, this));
+    auto scrollDelegate = new SmoothScrollDelegate(this);
+    Q_UNUSED(scrollDelegate);
+
 }
 
 void TableWidget::setCurrentCell(int row, int column, QItemSelectionModel::SelectionFlags command) {
@@ -208,6 +210,6 @@ void TableWidget::setCurrentItem(QTableWidgetItem* item, QItemSelectionModel::Se
 // TableView 实现
 TableView::TableView(QWidget* parent) : TableBase<QTableView>(parent)
 {
-    // setVerticalScrollBar(new ScrollBar(Qt::Vertical, this));
-    // setHorizontalScrollBar(new ScrollBar(Qt::Horizontal, this));
+    auto scrollDelegate = new SmoothScrollDelegate(this);
+    Q_UNUSED(scrollDelegate);
 }

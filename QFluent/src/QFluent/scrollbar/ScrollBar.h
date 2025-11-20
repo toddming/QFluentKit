@@ -203,8 +203,11 @@ public:
     SmoothScrollDelegate(QAbstractScrollArea* parent, bool useAni = false);
     bool eventFilter(QObject* obj, QEvent* e) override;
 
-    SmoothScroll* getVScrollBar();
-    SmoothScroll* getHScrollBar();
+    SmoothScroll* getVScroll();
+    SmoothScroll* getHScroll();
+    SmoothScrollBar* getVScrollBar();
+    SmoothScrollBar* getHScrollBar();
+
 
     void setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy);
     void setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy);

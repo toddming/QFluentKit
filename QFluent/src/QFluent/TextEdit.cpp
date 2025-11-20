@@ -59,8 +59,8 @@ TextEdit::TextEdit(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    // ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    // setVerticalScrollBar(scrollBar);
+    auto scrollDelegate = new SmoothScrollDelegate(this);
+    Q_UNUSED(scrollDelegate);
 }
 
 void TextEdit::contextMenuEvent(QContextMenuEvent *e)
@@ -80,8 +80,8 @@ PlainTextEdit::PlainTextEdit(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    // ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    // setVerticalScrollBar(scrollBar);
+    auto scrollDelegate = new SmoothScrollDelegate(this);
+    Q_UNUSED(scrollDelegate);
 }
 
 void PlainTextEdit::contextMenuEvent(QContextMenuEvent *e)

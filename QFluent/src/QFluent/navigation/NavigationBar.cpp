@@ -193,8 +193,8 @@ void NavigationBar::__initWidget() {
     this->window()->installEventFilter(this);
 
     m_scrollWidget->setObjectName("scrollWidget");
-    // m_scrollArea->setVerticalScrollBar(new ScrollBar(this));
-    // m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setWidget(m_scrollWidget);
     m_scrollArea->setWidgetResizable(true);
 

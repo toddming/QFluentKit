@@ -229,7 +229,8 @@ ExpandSettingCard::ExpandSettingCard(const QIcon &icon, const QString &title, co
     m_viewLayout = new QVBoxLayout(m_view);
     m_spaceWidget = new SpaceWidget(scrollWidget);
     borderWidget = new ExpandBorderWidget(this);
-    // setVerticalScrollBar(new ScrollBar(this));
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     expandAni = new QPropertyAnimation(this->verticalScrollBar(), "value", this);
 
@@ -377,12 +378,16 @@ void ExpandGroupSettingCard::removeGroupWidget(QWidget *widget) {
 
     if (layoutIndex >= 1) {
         QWidget *separator = viewLayout()->itemAt(layoutIndex - 1)->widget();
-        delete separator;
-        viewLayout()->removeWidget(separator);
+        if (separator) {
+            viewLayout()->removeWidget(separator);
+            delete separator;
+        }
     } else if (index == 0) {
         QWidget *separator = viewLayout()->itemAt(0)->widget();
-        delete separator;
-        viewLayout()->removeWidget(separator);
+        if (separator) {
+            viewLayout()->removeWidget(separator);
+            delete separator;
+        }
     }
 
     adjustViewSize();
@@ -390,7 +395,8 @@ void ExpandGroupSettingCard::removeGroupWidget(QWidget *widget) {
 
 void ExpandGroupSettingCard::adjustViewSize() {
     int h = 0;
-    for (QWidget *w : widgets) {
+    const auto &constWidgets = widgets;
+    for (QWidget *w : constWidgets) {
         h += w->sizeHint().height() + 3;
     }
     spaceWidget()->setFixedHeight(h);
