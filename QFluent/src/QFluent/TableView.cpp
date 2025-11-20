@@ -186,7 +186,6 @@ TableWidget::TableWidget(QWidget* parent) : TableBase<QTableWidget>(parent)
 {
     auto scrollDelegate = new SmoothScrollDelegate(this);
     Q_UNUSED(scrollDelegate);
-
 }
 
 void TableWidget::setCurrentCell(int row, int column, QItemSelectionModel::SelectionFlags command) {
