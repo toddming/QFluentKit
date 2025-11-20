@@ -138,6 +138,11 @@ void TabItem::setSelectedBackgroundColor(const QColor& light, const QColor& dark
     update();
 }
 
+QPropertyAnimation* TabItem::getSlideAni()
+{
+    return slideAni;
+}
+
 void TabItem::resizeEvent(QResizeEvent* event) {
     QPushButton::resizeEvent(event);
     closeButton->move(width() - 6 - closeButton->width(),
@@ -313,10 +318,10 @@ void TabItem::drawText(QPainter* painter) {
 // ==================== TabBar ====================
 
 TabBar::TabBar(QWidget* parent)
-    : ScrollArea(parent),
+    : SingleDirectionScrollArea(parent, Qt::Horizontal),
       m_currentIndex(-1),
-      m_isMovable(false),
-      m_isScrollable(false),
+      m_isMovable(true),
+      m_isScrollable(true),
       m_isTabShadowEnabled(true),
       m_tabMaxWidth(240),
       m_tabMinWidth(64),
@@ -631,7 +636,7 @@ bool TabBar::isTabShadowEnabled() const {
 }
 
 void TabBar::paintEvent(QPaintEvent* event) {
-    ScrollArea::paintEvent(event);
+    SingleDirectionScrollArea::paintEvent(event);
 
     QPainter painter(viewport());
     painter.setRenderHint(QPainter::Antialiasing);
@@ -711,7 +716,7 @@ int TabBar::count() const {
 }
 
 void TabBar::mousePressEvent(QMouseEvent* event) {
-    ScrollArea::mousePressEvent(event);
+    SingleDirectionScrollArea::mousePressEvent(event);
 
     if (!isMovable() || event->button() != Qt::LeftButton ||
         !itemLayout->geometry().contains(event->pos()))
@@ -721,7 +726,7 @@ void TabBar::mousePressEvent(QMouseEvent* event) {
 }
 
 void TabBar::mouseMoveEvent(QMouseEvent* event) {
-    ScrollArea::mouseMoveEvent(event);
+    SingleDirectionScrollArea::mouseMoveEvent(event);
 
     if (!isMovable() || count() <= 1 || !itemLayout->geometry().contains(event->pos()))
         return;
@@ -757,7 +762,7 @@ void TabBar::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void TabBar::mouseReleaseEvent(QMouseEvent* event) {
-    ScrollArea::mouseReleaseEvent(event);
+    SingleDirectionScrollArea::mouseReleaseEvent(event);
 
     if (!isMovable() || !isDraging)
         return;
@@ -768,7 +773,7 @@ void TabBar::mouseReleaseEvent(QMouseEvent* event) {
     int x = tabRect(currentIndex()).x();
     int duration = qAbs(item->x() - x) * 250 / item->width();
     item->slideTo(x, duration);
-    // connect(item->slideAni, &QPropertyAnimation::finished, this, &TabBar::adjustLayout);
+    connect(item->getSlideAni(), &QPropertyAnimation::finished, this, &TabBar::adjustLayout);
 }
 
 void TabBar::adjustLayout() {

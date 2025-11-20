@@ -57,6 +57,7 @@ public:
     void setCloseButtonDisplayMode(TabCloseButtonDisplayMode mode);
     void setTextColor(const QColor& color);
     void setSelectedBackgroundColor(const QColor& light, const QColor& dark);
+    QPropertyAnimation* getSlideAni();
 
     bool isHover = false;
     bool isPressed = false;
@@ -98,7 +99,7 @@ private:
 };
 
 // Tab栏
-class QFLUENT_EXPORT TabBar : public ScrollArea {
+class QFLUENT_EXPORT TabBar : public SingleDirectionScrollArea {
     Q_OBJECT
     Q_PROPERTY(bool movable READ isMovable WRITE setMovable)
     Q_PROPERTY(bool scrollable READ isScrollable WRITE setScrollable)
