@@ -1,25 +1,13 @@
 ﻿#ifndef TAB_VIEW_H
 #define TAB_VIEW_H
 
-#include <QWidget>
 #include <QPushButton>
-#include <QScrollArea>
-#include <QPropertyAnimation>
-#include <QGraphicsDropShadowEffect>
-#include <QHBoxLayout>
-#include <QList>
-#include <QMap>
-#include <QColor>
-#include <QIcon>
-#include <QPoint>
 
 #include "Theme.h"
 #include "FluentGlobal.h"
 #include "ScrollArea.h"
 #include "FluentIcon.h"
-#include "StyleSheet.h"
 #include "ToolButton.h"
-#include "PushButton.h"
 
 // Tab关闭按钮显示模式
 enum class TabCloseButtonDisplayMode {
@@ -40,7 +28,8 @@ protected:
     void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 };
 
-// Tab项
+class QPropertyAnimation;
+class QGraphicsDropShadowEffect;
 class QFLUENT_EXPORT TabItem : public QPushButton {
     Q_OBJECT
     Q_PROPERTY(QPoint pos READ pos WRITE move)
@@ -98,7 +87,7 @@ private:
     QIcon m_icon;
 };
 
-// Tab栏
+class QHBoxLayout;
 class QFLUENT_EXPORT TabBar : public SingleDirectionScrollArea {
     Q_OBJECT
     Q_PROPERTY(bool movable READ isMovable WRITE setMovable)

@@ -3,26 +3,13 @@
 
 #include <QWidget>
 #include <QToolButton>
-#include <QAbstractScrollArea>
-#include <QPropertyAnimation>
-#include <QTimer>
-#include <QEvent>
 #include <QEasingCurve>
-#include <QPainter>
-#include <QColor>
-#include <QMouseEvent>
-#include <QRectF>
-#include <QPoint>
-#include <QObject>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QApplication>
-#include <QAbstractItemView>
-#include <QListView>
 
 #include "FluentIcon.h"
 #include "SmoothScroll.h"
 
+class QScrollBar;
+class QPaintEvent;
 class ArrowButton : public QToolButton {
     Q_OBJECT
 public:
@@ -41,6 +28,7 @@ private:
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
+class QPropertyAnimation;
 class ScrollBarGroove : public QWidget {
     Q_OBJECT
     Q_PROPERTY(qreal opacity READ getOpacity WRITE setOpacity)
@@ -194,7 +182,7 @@ protected:
 private:
     int duration = 500;
     QPropertyAnimation* ani;
-    int m_valueInternal = 0;  // 对应Python的__value
+    int m_valueInternal = 0;
 };
 
 class QFLUENT_EXPORT SmoothScrollDelegate : public QObject {

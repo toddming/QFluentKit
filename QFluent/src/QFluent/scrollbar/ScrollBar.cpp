@@ -1,5 +1,20 @@
 ﻿#include "scrollbar.h"
 #include <QScrollBar>
+#include <QAbstractScrollArea>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QEvent>
+#include <QPainter>
+#include <QColor>
+#include <QMouseEvent>
+#include <QRectF>
+#include <QPoint>
+#include <QObject>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QApplication>
+#include <QAbstractItemView>
+#include <QListView>
 
 #include "Theme.h"
 

@@ -80,7 +80,7 @@ void BannerWidget::paintEvent(QPaintEvent *event)
     path = path.simplified();
 
     // 初始化线性渐变效果
-    QLinearGradient gradient(0, h/2, 0, h);
+    QLinearGradient gradient(0, 0, 0, h);
 
     // 绘制背景颜色
     if (!Theme::instance()->isDarkTheme()) {

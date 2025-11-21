@@ -5,6 +5,17 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QFontMetrics>
+#include <QWidget>
+#include <QPropertyAnimation>
+#include <QGraphicsDropShadowEffect>
+#include <QHBoxLayout>
+#include <QList>
+#include <QMap>
+#include <QColor>
+#include <QIcon>
+#include <QPoint>
+
+#include "StyleSheet.h"
 
 // ==================== TabToolButton ====================
 
@@ -54,8 +65,8 @@ void TabItem::postInit() {
 void TabItem::initWidget() {
     // setFont(this, 12);
     setFixedHeight(36);
-    setMaximumWidth(240);
-    setMinimumWidth(64);
+    // setMaximumWidth(240);
+    // setMinimumWidth(64);
     setAttribute(Qt::WA_LayoutUsesWidgetRect);
 
     closeButton->setIconSize(QSize(10, 10));
@@ -321,7 +332,7 @@ TabBar::TabBar(QWidget* parent)
     : SingleDirectionScrollArea(parent, Qt::Horizontal),
       m_currentIndex(-1),
       m_isMovable(true),
-      m_isScrollable(true),
+      m_isScrollable(false),
       m_isTabShadowEnabled(true),
       m_tabMaxWidth(240),
       m_tabMinWidth(64),

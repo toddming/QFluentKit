@@ -2,15 +2,13 @@
 #define SMOOTH_SCROLL_H
 
 #include <QObject>
-#include <QScrollArea>
-#include <QWheelEvent>
-#include <QTimer>
-#include <QDateTime>
 #include <deque>
-#include <cmath>
 
 #include "FluentGlobal.h"
 
+class QTimer;
+class QWheelEvent;
+class QAbstractScrollArea;
 class QFLUENT_EXPORT SmoothScroll : public QObject {
     Q_OBJECT
 public:

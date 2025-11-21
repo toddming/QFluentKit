@@ -6,7 +6,7 @@
 #include "FluentGlobal.h"
 
 class SmoothScrollDelegate;
-class SmoothScroll;      // 新增：对应 Python 的 SmoothScroll
+class SmoothScroll;
 class SmoothScrollBar;
 
 class QFLUENT_EXPORT ScrollArea : public QScrollArea
@@ -25,7 +25,6 @@ private:
 };
 
 // ===================== SingleDirectionScrollArea =====================
-// 严格对应 Python 中的 SingleDirectionScrollArea
 class QFLUENT_EXPORT SingleDirectionScrollArea : public QScrollArea
 {
     Q_OBJECT
@@ -46,13 +45,12 @@ protected:
 
 private:
     Qt::Orientation m_orient;
-    SmoothScroll *m_smoothScroll;                  // 对应 Python 的 SmoothScroll(self, orient)
+    SmoothScroll *m_smoothScroll;
     SmoothScrollBar *m_vScrollBar;                 // 自定义垂直滚动条
     SmoothScrollBar *m_hScrollBar;                 // 自定义水平滚动条
 };
 
 // ===================== SmoothScrollArea =====================
-// 严格对应 Python 中的 SmoothScrollArea（使用带动画控制的 Delegate）
 class QFLUENT_EXPORT SmoothScrollArea : public QScrollArea
 {
     Q_OBJECT

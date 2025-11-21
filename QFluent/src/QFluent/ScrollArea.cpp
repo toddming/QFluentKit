@@ -1,11 +1,11 @@
 ﻿#include "ScrollArea.h"
-#include "scrollbar/ScrollBar.h"    // 包含 SmoothScrollBar、SmoothScrollDelegate
-#include "scrollbar/SmoothScroll.h" // 新增：你需要有 SmoothScroll 的实现（对应 Python 单个方向的平滑滚动器）
+#include "scrollbar/ScrollBar.h"
+#include "scrollbar/SmoothScroll.h"
 
 #include <QWheelEvent>
 #include <QKeyEvent>
 
-// ===================== ScrollArea（保持不变）=====================
+// ===================== ScrollArea =====================
 ScrollArea::ScrollArea(QWidget *parent)
     : QScrollArea(parent)
 {
@@ -88,7 +88,7 @@ void SingleDirectionScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy
 
 void SingleDirectionScrollArea::wheelEvent(QWheelEvent *e)
 {
-    // Python 版逻辑：水平滚动时忽略垂直滚轮，垂直滚动时忽略水平滚轮
+    // 水平滚动时忽略垂直滚轮，垂直滚动时忽略水平滚轮
     if ((m_orient == Qt::Vertical && e->angleDelta().x() != 0) ||
         (m_orient == Qt::Horizontal && e->angleDelta().y() == 0)) {
         return;
@@ -100,7 +100,7 @@ void SingleDirectionScrollArea::wheelEvent(QWheelEvent *e)
 
 void SingleDirectionScrollArea::keyPressEvent(QKeyEvent *e)
 {
-    // Python 版：水平方向时屏蔽左右箭头键
+    // 水平方向时屏蔽左右箭头键
     if (m_orient == Qt::Horizontal &&
         (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)) {
         return;
@@ -112,7 +112,6 @@ void SingleDirectionScrollArea::keyPressEvent(QKeyEvent *e)
 SmoothScrollArea::SmoothScrollArea(QWidget *parent)
     : QScrollArea(parent)
 {
-    // 对应 Python: SmoothScrollDelegate(self, True)
     m_delegate = new SmoothScrollDelegate(this, true);
     setWidgetResizable(true);
 }

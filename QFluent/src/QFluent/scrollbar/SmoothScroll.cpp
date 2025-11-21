@@ -1,6 +1,12 @@
 ﻿#include "smoothscroll.h"
 #include <QCoreApplication>
 #include <QScrollBar>
+#include <QScrollArea>
+#include <QWheelEvent>
+#include <QTimer>
+#include <QDateTime>
+#include <cmath>
+
 
 SmoothScroll::SmoothScroll(QAbstractScrollArea* widget, Qt::Orientation orient) : QObject(widget), widget(widget), orient(orient) {
     smoothMoveTimer = new QTimer(widget);
