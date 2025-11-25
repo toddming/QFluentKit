@@ -160,12 +160,22 @@ void TabItem::resizeEvent(QResizeEvent* event) {
                       height() / 2 - closeButton->height() / 2);
 }
 
-void TabItem::enterEvent(QEnterEvent* event) {
-    QPushButton::enterEvent(event);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void TabItem::enterEvent(QEnterEvent *e) {
+    QPushButton::enterEvent(e);
     isHover = true;
     if (closeButtonDisplayMode == TabCloseButtonDisplayMode::ON_HOVER)
         closeButton->show();
 }
+#else
+void TabItem::enterEvent(QEvent *e) {
+    QPushButton::enterEvent(e);
+    isHover = true;
+    if (closeButtonDisplayMode == TabCloseButtonDisplayMode::ON_HOVER)
+        closeButton->show();
+}
+#endif
 
 void TabItem::leaveEvent(QEvent* event) {
     QPushButton::leaveEvent(event);

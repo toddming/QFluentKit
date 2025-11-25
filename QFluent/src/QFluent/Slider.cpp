@@ -40,11 +40,17 @@ void SliderHandle::setHandleColor(const QColor& light, const QColor& dark)
     update();
 }
 
-void SliderHandle::enterEvent(QEnterEvent* e)
-{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void SliderHandle::enterEvent(QEnterEvent *e) {
     QWidget::enterEvent(e);
     startAni(6.5);
 }
+#else
+void SliderHandle::enterEvent(QEvent *e) {
+    QWidget::enterEvent(e);
+    startAni(6.5);
+}
+#endif
 
 void SliderHandle::leaveEvent(QEvent* e)
 {

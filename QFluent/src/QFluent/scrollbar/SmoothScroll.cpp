@@ -32,20 +32,36 @@ void SmoothScroll::wheelEvent(QWheelEvent* e) {
     }
 
     qreal accerationRatio = qMin(static_cast<qreal>(scrollStamps.size()) / 15.0, 1.0);
-    if (lastWheelEvent) delete lastWheelEvent;
-    // Reconstruct instead of copying (*e)
+    if (lastWheelEvent) {
+        delete lastWheelEvent;
+        lastWheelEvent = nullptr;
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     lastWheelEvent = new QWheelEvent(
-        e->position(),
-        e->globalPosition(),
-        e->pixelDelta(),
-        e->angleDelta(),
-        e->buttons(),
-        e->modifiers(),
-        e->phase(),
-        e->inverted(),
-        e->source(),
-        e->pointingDevice()
-    );
+                e->position(),
+                e->globalPosition(),
+                e->pixelDelta(),
+                e->angleDelta(),
+                e->buttons(),
+                e->modifiers(),
+                e->phase(),
+                e->inverted(),
+                e->source(),
+                e->pointingDevice()
+                );
+#else
+    lastWheelEvent = new QWheelEvent(
+                e->pos(), e->globalPos(),
+                e->pixelDelta(),
+                e->angleDelta(),
+                e->buttons(),
+                e->modifiers(),
+                e->phase(),
+                e->inverted(),
+                e->source()
+                );
+#endif
 
     stepsTotal = fps * duration / 1000;
 
@@ -75,18 +91,32 @@ void SmoothScroll::smoothMove() {
     QPoint angleDelta = (orient == Qt::Vertical) ? QPoint(0, static_cast<int>(std::round(totalDelta))) : QPoint(static_cast<int>(std::round(totalDelta)), 0);
     QScrollBar* bar = (orient == Qt::Vertical) ? widget->verticalScrollBar() : widget->horizontalScrollBar();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QWheelEvent we(
-        lastWheelEvent->position(),
-        lastWheelEvent->globalPosition(),
-        pixelDelta,  // Often QPoint() for angle-based wheels
-        angleDelta,
-        lastWheelEvent->buttons(),
-        Qt::NoModifier,  // Or use lastWheelEvent->modifiers()
-        Qt::NoScrollPhase,  // Adjust based on context; e.g., Qt::ScrollUpdate
-        false,  // inverted
-        lastWheelEvent->source(),
-        lastWheelEvent->pointingDevice()
-    );
+                lastWheelEvent->position(),
+                lastWheelEvent->globalPosition(),
+                pixelDelta,  // Often QPoint() for angle-based wheels
+                angleDelta,
+                lastWheelEvent->buttons(),
+                Qt::NoModifier,  // Or use lastWheelEvent->modifiers()
+                Qt::NoScrollPhase,  // Adjust based on context; e.g., Qt::ScrollUpdate
+                false,  // inverted
+                lastWheelEvent->source(),
+                lastWheelEvent->pointingDevice()
+                );
+#else
+    QWheelEvent we(
+                lastWheelEvent->pos(),
+                lastWheelEvent->globalPos(),
+                pixelDelta,
+                angleDelta,
+                lastWheelEvent->buttons(),
+                Qt::NoModifier,
+                Qt::ScrollUpdate,
+                false,
+                lastWheelEvent->source()
+                );
+#endif
 
     QCoreApplication::sendEvent(static_cast<QObject*>(bar), &we);
 
@@ -99,7 +129,7 @@ qreal SmoothScroll::subDelta(qreal delta, int stepsLeft) {
     qreal m = stepsTotal / 2.0;
     qreal x = std::abs(stepsTotal - stepsLeft - m);
     qreal res = 0.0;
-
+    const qreal PI = acos(-1.0);
     switch (smoothMode) {
     case Fluent::SmoothMode::NO_SMOOTH:
         res = 0.0;
@@ -114,7 +144,7 @@ qreal SmoothScroll::subDelta(qreal delta, int stepsLeft) {
         res = 3.0 / 4.0 / m * (1 - x * x / m / m) * delta;
         break;
     case Fluent::SmoothMode::COSINE:
-        res = (std::cos(x * M_PI / m) + 1) / (2 * m) * delta;
+        res = (std::cos(x * PI / m) + 1) / (2 * m) * delta;
         break;
     }
 

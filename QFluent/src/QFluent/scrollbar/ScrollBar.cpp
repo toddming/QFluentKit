@@ -368,10 +368,17 @@ void ScrollBar::collapse() {
     }
 }
 
-void ScrollBar::enterEvent(QEnterEvent* e) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void ScrollBar::enterEvent(QEnterEvent *e) {
     m_isEnter = true;
     QTimer::singleShot(200, this, &ScrollBar::expand);
 }
+#else
+void ScrollBar::enterEvent(QEvent *e) {
+    m_isEnter = true;
+    QTimer::singleShot(200, this, &ScrollBar::expand);
+}
+#endif
 
 void ScrollBar::leaveEvent(QEvent* e) {
     m_isEnter = false;
