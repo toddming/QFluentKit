@@ -29,7 +29,9 @@ MainWindow::MainWindow()
 
     setWindowButtonHints(windowButtonHints() | Fluent::WindowButtonHint::RouteBack);
 
+
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
+    Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()));
     Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
 
     navigationInterface()->setExpandWidth(200);

@@ -70,6 +70,11 @@ void SingleDirectionScrollArea::enableTransparentBackground()
     }
 }
 
+void SingleDirectionScrollArea::setViewportMargins(int left, int top, int right, int bottom)
+{
+    QScrollArea::setViewportMargins(left, top, right, bottom);
+}
+
 void SingleDirectionScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy)
 {
     QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

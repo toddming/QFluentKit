@@ -1,9 +1,11 @@
 ﻿#include "DialogInputInterface.h"
 
+#include "Theme.h"
 #include "QFluent/Label.h"
 #include "QFluent/Loading.h"
 #include "QFluent/LineEdit.h"
 #include "QFluent/PushButton.h"
+#include "QFluent/dialog/ColorDialog.h"
 #include "QFluent/dialog/MessageDialog.h"
 #include "QFluent/dialog/MessageBoxBase.h"
 
@@ -42,4 +44,11 @@ DialogInputInterface::DialogInputInterface(QWidget *parent)
     });
     addExampleCard("自定义对话框", customDialogBtn);
 
+    auto colorDialogBtn = new PushButton("显示对话框", this);
+    connect(colorDialogBtn, &PushButton::clicked, this, [=](){
+        static auto colorDialog = new ColorDialog(Theme::instance()->themeColor(), "选择颜色", this->window());
+        colorDialog->exec();
+    });
+
+    addExampleCard("颜色对话框", colorDialogBtn);
 }

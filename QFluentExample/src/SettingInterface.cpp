@@ -36,7 +36,6 @@ SettingInterface::SettingInterface(QWidget *parent)
     SettingCardGroup *personalGroup = new SettingCardGroup("个性化", m_scrollWidget);
     SettingCardGroup *aboutGroup = new SettingCardGroup("关于", m_scrollWidget);
 
-
     SwitchSettingCard *updateOnStartUpCard = new SwitchSettingCard(FluentIcon(Fluent::IconType::UPDATE).qicon(),
                                                                    "Check for updates when the application starts",
                                                                    "The new version will be more stable and have more features",
@@ -49,6 +48,11 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                                 "Language",
                                                                 "Set your preferred language for UI",
                                                                 aboutGroup);
+    PrimaryPushSettingCard *colorCard = new PrimaryPushSettingCard("选择颜色",
+                                                                   FluentIcon(Fluent::IconType::PALETTE).qicon(),
+                                                                   "主题色",
+                                                                   "调整你的应用的主题色",
+                                                                   aboutGroup);
 
     OptionsSettingCard *effectCard = new OptionsSettingCard(FluentIcon(Fluent::IconType::ZOOM).qicon(),
                                                             "窗口效果",
@@ -62,11 +66,11 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                            QVector<QString>() << "深色" << "浅色",
                                                            aboutGroup);
 
-    PrimaryPushSettingCard *feedbackCard = new PrimaryPushSettingCard("联系作者",
-                                                                      FluentIcon(Fluent::IconType::FEEDBACK).qicon(),
-                                                                      "联系作者",
-                                                                      "QQ:1912229135",
-                                                                      aboutGroup);
+    PushSettingCard *feedbackCard = new PushSettingCard("联系作者",
+                                                        FluentIcon(Fluent::IconType::FEEDBACK).qicon(),
+                                                        "联系作者",
+                                                        "QQ:1912229135",
+                                                        aboutGroup);
 
     HyperlinkCard *helpCard = new HyperlinkCard("", "打开帮助页面", FluentIcon(Fluent::IconType::HELP).qicon(),
                                                 "帮助",
@@ -74,15 +78,29 @@ SettingInterface::SettingInterface(QWidget *parent)
 
     personalGroup->addSettingCard(updateOnStartUpCard);
     personalGroup->addSettingCard(languageCard);
+    personalGroup->addSettingCard(colorCard);
     personalGroup->addSettingCard(themeCard);
     personalGroup->addSettingCard(effectCard);
 
     aboutGroup->addSettingCard(feedbackCard);
     aboutGroup->addSettingCard(helpCard);
 
-
     m_expandLayout->addWidget(personalGroup);
     m_expandLayout->addWidget(aboutGroup);
+
+
+
+
+    connect(colorCard, &PrimaryPushSettingCard::clicked, this, [this](){
+        if (m_colorDialog == nullptr) {
+            m_colorDialog = new ColorDialog(Theme::instance()->themeColor(), "选择颜色", this->window());
+            connect(m_colorDialog, &ColorDialog::colorChanged, this, [=](const QColor &color) {
+                Theme::instance()->setThemeColor(color);
+                ConfigManager::instance().setValue("Window/color", color.name());
+            });
+        }
+        m_colorDialog->exec();
+    });
 
     connect(themeCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text) {

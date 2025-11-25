@@ -34,6 +34,7 @@ public:
 
     void setSmoothMode(Fluent::SmoothMode mode);
     void enableTransparentBackground();
+    void setViewportMargins(int left, int top, int right, int bottom);
 
     // 重写策略，强制另一方向永远不显示滚动条
     void setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy);
