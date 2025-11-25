@@ -1,12 +1,10 @@
-﻿#include "smoothscroll.h"
+﻿#include "SmoothScroll.h"
 #include <QCoreApplication>
 #include <QScrollBar>
 #include <QScrollArea>
 #include <QWheelEvent>
 #include <QTimer>
 #include <QDateTime>
-#include <cmath>
-
 
 SmoothScroll::SmoothScroll(QAbstractScrollArea* widget, Qt::Orientation orient) : QObject(widget), widget(widget), orient(orient) {
     smoothMoveTimer = new QTimer(widget);
@@ -20,7 +18,6 @@ void SmoothScroll::setSmoothMode(Fluent::SmoothMode smoothMode) {
 void SmoothScroll::wheelEvent(QWheelEvent* e) {
     qreal delta = e->angleDelta().y() != 0 ? e->angleDelta().y() : e->angleDelta().x();
     if (smoothMode == Fluent::SmoothMode::NO_SMOOTH || std::fmod(std::abs(delta), 120.0) != 0) {
-        // Do not call widget->wheelEvent(e); instead, send the event to the viewport
         QCoreApplication::sendEvent(widget->viewport(), e);
         return;
     }
@@ -87,7 +84,7 @@ void SmoothScroll::smoothMove() {
         stepsLeftQueue.pop_front();
     }
 
-    QPoint pixelDelta;  // Use zero or compute if needed
+    QPoint pixelDelta;
     QPoint angleDelta = (orient == Qt::Vertical) ? QPoint(0, static_cast<int>(std::round(totalDelta))) : QPoint(static_cast<int>(std::round(totalDelta)), 0);
     QScrollBar* bar = (orient == Qt::Vertical) ? widget->verticalScrollBar() : widget->horizontalScrollBar();
 
@@ -95,12 +92,12 @@ void SmoothScroll::smoothMove() {
     QWheelEvent we(
                 lastWheelEvent->position(),
                 lastWheelEvent->globalPosition(),
-                pixelDelta,  // Often QPoint() for angle-based wheels
+                pixelDelta,
                 angleDelta,
                 lastWheelEvent->buttons(),
-                Qt::NoModifier,  // Or use lastWheelEvent->modifiers()
-                Qt::NoScrollPhase,  // Adjust based on context; e.g., Qt::ScrollUpdate
-                false,  // inverted
+                Qt::NoModifier,
+                Qt::NoScrollPhase,
+                false,
                 lastWheelEvent->source(),
                 lastWheelEvent->pointingDevice()
                 );
@@ -129,7 +126,7 @@ qreal SmoothScroll::subDelta(qreal delta, int stepsLeft) {
     qreal m = stepsTotal / 2.0;
     qreal x = std::abs(stepsTotal - stepsLeft - m);
     qreal res = 0.0;
-    const qreal PI = acos(-1.0);
+    static const qreal PI = acos(-1.0);
     switch (smoothMode) {
     case Fluent::SmoothMode::NO_SMOOTH:
         res = 0.0;

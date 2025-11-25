@@ -80,7 +80,6 @@ ScrollBarGroove::ScrollBarGroove(Qt::Orientation orient, QWidget* parent) : QWid
     }
 
     setOpacity(0.0);
-    // 如果需要连接opacityAni->valueChanged到onOpacityAniValueChanged
 }
 
 void ScrollBarGroove::setLightBackgroundColor(const QColor& color) {
@@ -147,7 +146,7 @@ qreal ScrollBarGroove::getOpacity() const {
 }
 
 void ScrollBarGroove::onOpacityAniValueChanged(const QVariant& value) {
-    // 如果需要外部处理，这里实现
+
 }
 
 ScrollBarHandle::ScrollBarHandle(Qt::Orientation orient, QWidget* parent) : QWidget(parent), m_orient(orient) {
@@ -584,9 +583,6 @@ SmoothScrollDelegate::SmoothScrollDelegate(QAbstractScrollArea* parent, bool use
     }
 
     parent->viewport()->installEventFilter(this);
-
-    // 代理政策设置
-    // 注意：在C++中，无法直接重载parent的方法，所以用户需手动调用这些代理方法
 }
 
 bool SmoothScrollDelegate::eventFilter(QObject* obj, QEvent* e) {

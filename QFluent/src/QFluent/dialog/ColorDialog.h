@@ -1,25 +1,17 @@
 ﻿#ifndef COLOR_DIALOG_H
 #define COLOR_DIALOG_H
 
-#include <QWidget>
-#include <QColor>
-#include <QPixmap>
-#include <QLabel>
-#include <QFrame>
-
 #include "FluentGlobal.h"
 #include "MaskDialogBase.h"
 #include "QFluent/Slider.h"
 #include "QFluent/LineEdit.h"
 
-class SingleDirectionScrollArea;
+class QLabel;
 class PushButton;
-class PrimaryPushButton;
-class LineEdit;
-class MaskDialogBase;
-
 class QVBoxLayout;
 class QPushButton;
+class PrimaryPushButton;
+class SingleDirectionScrollArea;
 
 /**
  * @brief 色调面板

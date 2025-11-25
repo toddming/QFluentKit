@@ -16,6 +16,11 @@
 #include <QApplication>
 #include <QScrollBar>
 #include <QtMath>
+#include <QWidget>
+#include <QColor>
+#include <QPixmap>
+#include <QLabel>
+#include <QFrame>
 
 #include "QFluent/ScrollArea.h"
 #include "QFluent/PushButton.h"

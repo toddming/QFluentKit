@@ -65,9 +65,6 @@ TextEdit::TextEdit(QWidget *parent)
 
 void TextEdit::contextMenuEvent(QContextMenuEvent *e)
 {
-    // 假设 TextEditMenu 在 C++ 中已有对应实现
-    // TextEditMenu menu(this);
-    // menu.exec(e->globalPos());
     QTextEdit::contextMenuEvent(e);
 }
 
@@ -100,8 +97,8 @@ TextBrowser::TextBrowser(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    // ScrollBar* scrollBar = new ScrollBar(Qt::Vertical, this);
-    // setVerticalScrollBar(scrollBar);
+    auto scrollDelegate = new SmoothScrollDelegate(this);
+    Q_UNUSED(scrollDelegate);
 }
 
 void TextBrowser::contextMenuEvent(QContextMenuEvent *e)
