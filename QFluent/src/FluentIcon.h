@@ -93,8 +93,6 @@ public:
     virtual void render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                                 const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {}) const;
     virtual FluentIconBase* clone() const = 0;
-
-    // 移除无效的 qicon(bool)
 };
 
 class QFLUENT_EXPORT FluentFontIconBase : public FluentIconBase {

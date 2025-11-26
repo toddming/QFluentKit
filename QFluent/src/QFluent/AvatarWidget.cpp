@@ -66,7 +66,7 @@ void ImageLabel::setImage(const QVariant &image)
 {
     if (image.isNull()) {
         m_image = QImage();
-    } else if (image.userType() == QMetaType::QString) {  // 修改这里
+    } else if (image.userType() == QMetaType::QString) {
         QString filePath = image.toString();
         QImageReader reader(filePath);
         if (reader.supportsAnimation()) {
@@ -75,9 +75,9 @@ void ImageLabel::setImage(const QVariant &image)
         } else {
             m_image = reader.read();
         }
-    } else if (image.userType() == QMetaType::QPixmap) {  // 修改这里
+    } else if (image.userType() == QMetaType::QPixmap) {
         m_image = image.value<QPixmap>().toImage();
-    } else if (image.userType() == QMetaType::QImage) {  // 修改这里
+    } else if (image.userType() == QMetaType::QImage) {
         m_image = image.value<QImage>();
     } else {
         m_image = QImage();
