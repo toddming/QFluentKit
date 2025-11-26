@@ -28,7 +28,6 @@
 #include <QtMath>
 #include <QWheelEvent>
 #include <QMouseEvent>
-#include <memory>
 
 #include "Screen.h"
 #include "Theme.h"
@@ -597,6 +596,7 @@ void DayScrollView::scrollToPage(int page) {
 
     auto range = currentPageRange();
     delegate->setRange(range.first, range.second);
+    emit pageChanged(page);
 }
 
 std::pair<QDate, QDate> DayScrollView::currentPageRange() {
