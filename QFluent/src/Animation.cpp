@@ -1,42 +1,31 @@
 ﻿#include "Animation.h"
+#include "Private/AnimationPrivate.h"
 
 #include <QEvent>
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QGraphicsDropShadowEffect>
 
-QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>> FluentAnimationProperObject::objects;
-QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> FluentAnimation::animations;
-
-namespace {
-struct RegisterProperObjects {
-    RegisterProperObjects() {
-        FluentAnimationProperObject::registerObject(FluentAnimationProperty::POSITION, [](QObject* parent) { return new PositionObject(parent); });
-        FluentAnimationProperObject::registerObject(FluentAnimationProperty::SCALE, [](QObject* parent) { return new ScaleObject(parent); });
-        FluentAnimationProperObject::registerObject(FluentAnimationProperty::ANGLE, [](QObject* parent) { return new AngleObject(parent); });
-        FluentAnimationProperObject::registerObject(FluentAnimationProperty::OPACITY, [](QObject* parent) { return new OpacityObject(parent); });
-    }
-};
-static RegisterProperObjects registerProperObjects;
-
-struct RegisterAnimations {
-    RegisterAnimations() {
-        FluentAnimation::registerAnimation(FluentAnimationType::FAST_INVOKE, [](QObject* parent) { return new FastInvokeAnimation(parent); });
-        FluentAnimation::registerAnimation(FluentAnimationType::STRONG_INVOKE, [](QObject* parent) { return new StrongInvokeAnimation(parent); });
-        FluentAnimation::registerAnimation(FluentAnimationType::FAST_DISMISS, [](QObject* parent) { return new FastDismissAnimation(parent); });
-        FluentAnimation::registerAnimation(FluentAnimationType::SOFT_DISMISS, [](QObject* parent) { return new SoftDismissAnimation(parent); });
-        FluentAnimation::registerAnimation(FluentAnimationType::POINT_TO_POINT, [](QObject* parent) { return new PointToPointAnimation(parent); });
-        FluentAnimation::registerAnimation(FluentAnimationType::FADE_IN_OUT, [](QObject* parent) { return new FadeInOutAnimation(parent); });
-    }
-};
-static RegisterAnimations registerAnimations;
-}
-
-AnimationBase::AnimationBase(QWidget *parent) : QObject(parent) {
+// ==================== AnimationBase ====================
+AnimationBase::AnimationBase(QWidget *parent)
+    : QObject(parent)
+    , d_ptr(new AnimationBasePrivate())
+{
     if (parent) {
         parent->installEventFilter(this);
     }
 }
+
+AnimationBase::AnimationBase(AnimationBasePrivate &dd, QWidget *parent)
+    : QObject(parent)
+    , d_ptr(&dd)
+{
+    if (parent) {
+        parent->installEventFilter(this);
+    }
+}
+
+AnimationBase::~AnimationBase() {}
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void AnimationBase::_onHover(QEnterEvent *e) {
@@ -79,44 +68,97 @@ bool AnimationBase::eventFilter(QObject *obj, QEvent *e) {
     return QObject::eventFilter(obj, e);
 }
 
-TranslateYAnimation::TranslateYAnimation(QWidget *parent, int offset) : AnimationBase(parent), maxOffset(offset) {
-    ani = new QPropertyAnimation(this, "y", this);
+// ==================== TranslateYAnimation ====================
+TranslateYAnimation::TranslateYAnimation(QWidget *parent, int offset)
+    : AnimationBase(*new TranslateYAnimationPrivate(), parent)
+{
+    Q_D(TranslateYAnimation);
+    d->maxOffset = offset;
+    d->ani = new QPropertyAnimation(this, "y", this);
 }
 
+TranslateYAnimation::~TranslateYAnimation() {}
+
 float TranslateYAnimation::y() const {
-    return _y;
+    Q_D(const TranslateYAnimation);
+    return d->_y;
 }
 
 void TranslateYAnimation::setY(float y) {
-    _y = y;
+    Q_D(TranslateYAnimation);
+    d->_y = y;
     static_cast<QWidget*>(parent())->update();
     emit valueChanged(y);
 }
 
 void TranslateYAnimation::_onPress(QMouseEvent *e) {
     Q_UNUSED(e);
-    ani->setEndValue(maxOffset);
-    ani->setEasingCurve(QEasingCurve::OutQuad);
-    ani->setDuration(150);
-    ani->start();
+    Q_D(TranslateYAnimation);
+    d->ani->setEndValue(d->maxOffset);
+    d->ani->setEasingCurve(QEasingCurve::OutQuad);
+    d->ani->setDuration(150);
+    d->ani->start();
 }
 
 void TranslateYAnimation::_onRelease(QMouseEvent *e) {
     Q_UNUSED(e);
-    ani->setEndValue(0);
-    ani->setDuration(500);
-    ani->setEasingCurve(QEasingCurve::OutElastic);
-    ani->start();
+    Q_D(TranslateYAnimation);
+    d->ani->setEndValue(0);
+    d->ani->setDuration(500);
+    d->ani->setEasingCurve(QEasingCurve::OutElastic);
+    d->ani->start();
 }
 
-BackgroundAnimationWidget::BackgroundAnimationWidget(QWidget *parent) : QWidget(parent) {
-    bgColorObject = new BackgroundColorObject(this);
-    backgroundColorAni = new QPropertyAnimation(bgColorObject, "backgroundColor", this);
-    backgroundColorAni->setDuration(120);
+// ==================== BackgroundColorObject ====================
+BackgroundColorObject::BackgroundColorObject(QWidget *parent)
+    : QObject(parent)
+    , d_ptr(new BackgroundColorObjectPrivate())
+{
+    Q_D(BackgroundColorObject);
+    if (auto widget = qobject_cast<BackgroundAnimationWidget*>(parent)) {
+        d->_backgroundColor = widget->_normalBackgroundColor();
+    }
+}
+
+BackgroundColorObject::~BackgroundColorObject() {}
+
+QColor BackgroundColorObject::backgroundColor() const {
+    Q_D(const BackgroundColorObject);
+    return d->_backgroundColor;
+}
+
+void BackgroundColorObject::setBackgroundColor(const QColor &color) {
+    Q_D(BackgroundColorObject);
+    d->_backgroundColor = color;
+    if (auto widget = qobject_cast<QWidget*>(parent())) {
+        widget->update();
+    }
+}
+
+// ==================== BackgroundAnimationWidget ====================
+BackgroundAnimationWidget::BackgroundAnimationWidget(QWidget *parent)
+    : QWidget(parent)
+    , d_ptr(new BackgroundAnimationWidgetPrivate())
+{
+    Q_D(BackgroundAnimationWidget);
+    d->bgColorObject = new BackgroundColorObject(this);
+    d->backgroundColorAni = new QPropertyAnimation(d->bgColorObject, "backgroundColor", this);
+    d->backgroundColorAni->setDuration(120);
     installEventFilter(this);
-
-    // QObject::connect(&qconfig, &QConfig::themeChanged, this, &BackgroundAnimationWidget::_updateBackgroundColor);
 }
+
+BackgroundAnimationWidget::BackgroundAnimationWidget(BackgroundAnimationWidgetPrivate &dd, QWidget *parent)
+    : QWidget(parent)
+    , d_ptr(&dd)
+{
+    Q_D(BackgroundAnimationWidget);
+    d->bgColorObject = new BackgroundColorObject(this);
+    d->backgroundColorAni = new QPropertyAnimation(d->bgColorObject, "backgroundColor", this);
+    d->backgroundColorAni->setDuration(120);
+    installEventFilter(this);
+}
+
+BackgroundAnimationWidget::~BackgroundAnimationWidget() {}
 
 QColor BackgroundAnimationWidget::_normalBackgroundColor() const {
     return QColor(0, 0, 0, 0);
@@ -139,22 +181,23 @@ QColor BackgroundAnimationWidget::_disabledBackgroundColor() const {
 }
 
 void BackgroundAnimationWidget::_updateBackgroundColor() {
+    Q_D(BackgroundAnimationWidget);
     QColor color;
     if (!isEnabled()) {
         color = _disabledBackgroundColor();
     } else if (qobject_cast<QLineEdit*>(this) && hasFocus()) {
         color = _focusInBackgroundColor();
-    } else if (m_isPressed) {
+    } else if (d->m_isPressed) {
         color = _pressedBackgroundColor();
-    } else if (m_isHover) {
+    } else if (d->m_isHover) {
         color = _hoverBackgroundColor();
     } else {
         color = _normalBackgroundColor();
     }
 
-    backgroundColorAni->stop();
-    backgroundColorAni->setEndValue(color);
-    backgroundColorAni->start();
+    d->backgroundColorAni->stop();
+    d->backgroundColorAni->setEndValue(color);
+    d->backgroundColorAni->start();
 }
 
 bool BackgroundAnimationWidget::eventFilter(QObject *obj, QEvent *e) {
@@ -171,33 +214,38 @@ bool BackgroundAnimationWidget::eventFilter(QObject *obj, QEvent *e) {
 }
 
 void BackgroundAnimationWidget::mousePressEvent(QMouseEvent *e) {
-    m_isPressed = true;
+    Q_D(BackgroundAnimationWidget);
+    d->m_isPressed = true;
     _updateBackgroundColor();
     QWidget::mousePressEvent(e);
 }
 
 void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
-    m_isPressed = false;
+    Q_D(BackgroundAnimationWidget);
+    d->m_isPressed = false;
     _updateBackgroundColor();
     QWidget::mouseReleaseEvent(e);
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void BackgroundAnimationWidget::enterEvent(QEnterEvent *e) {
-    m_isHover = true;
+    Q_D(BackgroundAnimationWidget);
+    d->m_isHover = true;
     _updateBackgroundColor();
     QWidget::enterEvent(e);
 }
 #else
 void BackgroundAnimationWidget::enterEvent(QEvent *e) {
-    m_isHover = true;
+    Q_D(BackgroundAnimationWidget);
+    d->m_isHover = true;
     _updateBackgroundColor();
     QWidget::enterEvent(e);
 }
 #endif
 
 void BackgroundAnimationWidget::leaveEvent(QEvent *e) {
-    m_isHover = false;
+    Q_D(BackgroundAnimationWidget);
+    d->m_isHover = false;
     _updateBackgroundColor();
     QWidget::leaveEvent(e);
 }
@@ -207,69 +255,69 @@ void BackgroundAnimationWidget::focusInEvent(QFocusEvent *e) {
     _updateBackgroundColor();
 }
 
-bool BackgroundAnimationWidget::isHover() const
-{
-    return m_isHover;
+bool BackgroundAnimationWidget::isHover() const {
+    Q_D(const BackgroundAnimationWidget);
+    return d->m_isHover;
 }
 
-bool BackgroundAnimationWidget::isPressed() const
-{
-    return m_isPressed;
+bool BackgroundAnimationWidget::isPressed() const {
+    Q_D(const BackgroundAnimationWidget);
+    return d->m_isPressed;
 }
 
-void BackgroundAnimationWidget::setHover(bool hover)
-{
-    m_isHover = hover;
+void BackgroundAnimationWidget::setHover(bool hover) {
+    Q_D(BackgroundAnimationWidget);
+    d->m_isHover = hover;
 }
 
-void BackgroundAnimationWidget::setPressed(bool pressed)
-{
-    m_isPressed = pressed;
+void BackgroundAnimationWidget::setPressed(bool pressed) {
+    Q_D(BackgroundAnimationWidget);
+    d->m_isPressed = pressed;
 }
 
 QColor BackgroundAnimationWidget::getBackgroundColor() const {
-    return bgColorObject->backgroundColor();
+    Q_D(const BackgroundAnimationWidget);
+    return d->bgColorObject->backgroundColor();
 }
 
 void BackgroundAnimationWidget::setBackgroundColor(const QColor &color) {
-    bgColorObject->setBackgroundColor(color);
+    Q_D(BackgroundAnimationWidget);
+    d->bgColorObject->setBackgroundColor(color);
 }
 
-BackgroundColorObject::BackgroundColorObject(BackgroundAnimationWidget *parent) : QObject(parent) {
-    _backgroundColor = parent->_normalBackgroundColor();
-}
-
-QColor BackgroundColorObject::backgroundColor() const {
-    return _backgroundColor;
-}
-
-void BackgroundColorObject::setBackgroundColor(const QColor &color) {
-    _backgroundColor = color;
-    static_cast<BackgroundAnimationWidget*>(parent())->update();
-}
-
+// ==================== DropShadowAnimation ====================
 DropShadowAnimation::DropShadowAnimation(QWidget *parent, const QColor &normalColor, const QColor &hoverColor)
-    : QPropertyAnimation(parent), normalColor(normalColor), hoverColor(hoverColor) {
-    offset = QPoint(0, 0);
-    shadowEffect = new QGraphicsDropShadowEffect(this);
-    shadowEffect->setColor(this->normalColor);
+    : QPropertyAnimation(parent)
+    , d_ptr(new DropShadowAnimationPrivate())
+{
+    Q_D(DropShadowAnimation);
+    d->normalColor = normalColor;
+    d->hoverColor = hoverColor;
+    d->shadowEffect = new QGraphicsDropShadowEffect(this);
+    d->shadowEffect->setColor(normalColor);
     parent->installEventFilter(this);
 }
 
+DropShadowAnimation::~DropShadowAnimation() {}
+
 void DropShadowAnimation::setBlurRadius(int radius) {
-    blurRadius = radius;
+    Q_D(DropShadowAnimation);
+    d->blurRadius = radius;
 }
 
 void DropShadowAnimation::setOffset(int dx, int dy) {
-    offset = QPoint(dx, dy);
+    Q_D(DropShadowAnimation);
+    d->offset = QPoint(dx, dy);
 }
 
 void DropShadowAnimation::setNormalColor(const QColor &color) {
-    normalColor = color;
+    Q_D(DropShadowAnimation);
+    d->normalColor = color;
 }
 
 void DropShadowAnimation::setHoverColor(const QColor &color) {
-    hoverColor = color;
+    Q_D(DropShadowAnimation);
+    d->hoverColor = color;
 }
 
 void DropShadowAnimation::setColor(const QColor &color) {
@@ -277,34 +325,36 @@ void DropShadowAnimation::setColor(const QColor &color) {
 }
 
 QGraphicsDropShadowEffect *DropShadowAnimation::_createShadowEffect() {
-    shadowEffect = new QGraphicsDropShadowEffect(this);
-    shadowEffect->setOffset(offset);
-    shadowEffect->setBlurRadius(blurRadius);
-    shadowEffect->setColor(normalColor);
+    Q_D(DropShadowAnimation);
+    d->shadowEffect = new QGraphicsDropShadowEffect(this);
+    d->shadowEffect->setOffset(d->offset);
+    d->shadowEffect->setBlurRadius(d->blurRadius);
+    d->shadowEffect->setColor(d->normalColor);
 
-    setTargetObject(shadowEffect);
-    setStartValue(shadowEffect->color());
+    setTargetObject(d->shadowEffect);
+    setStartValue(d->shadowEffect->color());
     setPropertyName("color");
     setDuration(150);
 
-    return shadowEffect;
+    return d->shadowEffect;
 }
 
 bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
+    Q_D(DropShadowAnimation);
     QWidget *p = static_cast<QWidget*>(parent());
     if (obj == p && p->isEnabled()) {
         if (e->type() == QEvent::Enter) {
-            isHover = true;
+            d->isHover = true;
             if (state() != QPropertyAnimation::Running) {
                 p->setGraphicsEffect(_createShadowEffect());
             }
-            setEndValue(hoverColor);
+            setEndValue(d->hoverColor);
             start();
         } else if (e->type() == QEvent::Leave || e->type() == QEvent::MouseButtonPress) {
-            isHover = false;
+            d->isHover = false;
             if (p->graphicsEffect()) {
                 connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::_onAniFinished);
-                setEndValue(normalColor);
+                setEndValue(d->normalColor);
                 start();
             }
         }
@@ -313,28 +363,38 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
 }
 
 void DropShadowAnimation::_onAniFinished() {
+    Q_D(DropShadowAnimation);
     disconnect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::_onAniFinished);
-    shadowEffect = nullptr;
+    d->shadowEffect = nullptr;
     static_cast<QWidget*>(parent())->setGraphicsEffect(nullptr);
 }
 
+// ==================== FluentAnimationProperObject ====================
+QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>>
+    FluentAnimationProperObjectObjects;
+
 FluentAnimationProperObject::FluentAnimationProperObject(QObject *parent) : QObject(parent) {}
 
-void FluentAnimationProperObject::registerObject(FluentAnimationProperty name, std::function<FluentAnimationProperObject*(QObject*)> creator) {
-    if (!objects.contains(name)) {
-        objects[name] = creator;
+FluentAnimationProperObject::~FluentAnimationProperObject() {}
+
+void FluentAnimationProperObject::registerObject(FluentAnimationProperty name,
+                                                 std::function<FluentAnimationProperObject*(QObject*)> creator) {
+    if (!FluentAnimationProperObjectObjects.contains(name)) {
+        FluentAnimationProperObjectObjects[name] = creator;
     }
 }
 
-FluentAnimationProperObject *FluentAnimationProperObject::create(FluentAnimationProperty propertyType, QObject *parent) {
-    if (!objects.contains(propertyType)) {
-        // qWarning() << "FluentAnimationProperObject: " << static_cast<int>(propertyType) << " has not been registered";
+FluentAnimationProperObject *FluentAnimationProperObject::create(FluentAnimationProperty propertyType,
+                                                                 QObject *parent) {
+    if (!FluentAnimationProperObjectObjects.contains(propertyType)) {
         return nullptr;
     }
-    return objects[propertyType](parent);
+    return FluentAnimationProperObjectObjects[propertyType](parent);
 }
 
-PositionObject::PositionObject(QObject *parent) : FluentAnimationProperObject(parent), _position(QPoint()) {}
+// ==================== Property Objects ====================
+PositionObject::PositionObject(QObject *parent)
+    : FluentAnimationProperObject(parent), _position(QPoint()) {}
 
 QVariant PositionObject::getValue() const {
     return _position;
@@ -386,10 +446,26 @@ void OpacityObject::setValue(const QVariant &opacity) {
     }
 }
 
-FluentAnimation::FluentAnimation(QObject *parent) : QPropertyAnimation(parent) {
+// ==================== FluentAnimation ====================
+QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> FluentAnimationAnimations;
+
+FluentAnimation::FluentAnimation(QObject *parent)
+    : QPropertyAnimation(parent)
+    , d_ptr(new FluentAnimationPrivate())
+{
     setSpeed(FluentAnimationSpeed::FAST);
     setEasingCurve(curve());
 }
+
+FluentAnimation::FluentAnimation(FluentAnimationPrivate &dd, QObject *parent)
+    : QPropertyAnimation(parent)
+    , d_ptr(&dd)
+{
+    setSpeed(FluentAnimationSpeed::FAST);
+    setEasingCurve(curve());
+}
+
+FluentAnimation::~FluentAnimation() {}
 
 QEasingCurve FluentAnimation::createBezierCurve(float x1, float y1, float x2, float y2) {
     QEasingCurve curve(QEasingCurve::BezierSpline);
@@ -406,6 +482,7 @@ void FluentAnimation::setSpeed(FluentAnimationSpeed speed) {
 }
 
 int FluentAnimation::speedToDuration(FluentAnimationSpeed speed) {
+    Q_UNUSED(speed);
     return 100;
 }
 
@@ -428,34 +505,38 @@ void FluentAnimation::setValue(const QVariant &value) {
     static_cast<FluentAnimationProperObject*>(targetObject())->setValue(value);
 }
 
-void FluentAnimation::registerAnimation(FluentAnimationType name, std::function<FluentAnimation*(QObject*)> creator) {
-    if (!animations.contains(name)) {
-        animations[name] = creator;
+void FluentAnimation::registerAnimation(FluentAnimationType name,
+                                       std::function<FluentAnimation*(QObject*)> creator) {
+    if (!FluentAnimationAnimations.contains(name)) {
+        FluentAnimationAnimations[name] = creator;
     }
 }
 
-FluentAnimation *FluentAnimation::create(FluentAnimationType aniType, FluentAnimationProperty propertyType,
-                                         FluentAnimationSpeed speed, const QVariant &value, QObject *parent) {
-    if (!animations.contains(aniType)) {
-        // qWarning() << "FluentAnimation: " << static_cast<int>(aniType) << " has not been registered.";
+FluentAnimation *FluentAnimation::create(FluentAnimationType aniType,
+                                        FluentAnimationProperty propertyType,
+                                        FluentAnimationSpeed speed,
+                                        const QVariant &value,
+                                        QObject *parent) {
+    if (!FluentAnimationAnimations.contains(aniType)) {
         return nullptr;
     }
     FluentAnimationProperObject *obj = FluentAnimationProperObject::create(propertyType, parent);
     if (!obj) {
         return nullptr;
     }
-    FluentAnimation *ani = animations[aniType](parent);
+    FluentAnimation *ani = FluentAnimationAnimations[aniType](parent);
     ani->setSpeed(speed);
     ani->setTargetObject(obj);
     ani->setPropertyName(QByteArray(propertyType == FluentAnimationProperty::POSITION ? "position" :
-                                                                                        propertyType == FluentAnimationProperty::SCALE ? "scale" :
-                                                                                                                                         propertyType == FluentAnimationProperty::ANGLE ? "angle" : "opacity"));
+                                    propertyType == FluentAnimationProperty::SCALE ? "scale" :
+                                    propertyType == FluentAnimationProperty::ANGLE ? "angle" : "opacity"));
     if (value.isValid()) {
         ani->setValue(value);
     }
     return ani;
 }
 
+// ==================== Specific Animations ====================
 FastInvokeAnimation::FastInvokeAnimation(QObject *parent) : FluentAnimation(parent) {}
 
 QEasingCurve FastInvokeAnimation::curve() {
@@ -475,6 +556,7 @@ QEasingCurve StrongInvokeAnimation::curve() {
 }
 
 int StrongInvokeAnimation::speedToDuration(FluentAnimationSpeed speed) {
+    Q_UNUSED(speed);
     return 667;
 }
 
@@ -487,6 +569,7 @@ QEasingCurve SoftDismissAnimation::curve() {
 }
 
 int SoftDismissAnimation::speedToDuration(FluentAnimationSpeed speed) {
+    Q_UNUSED(speed);
     return 167;
 }
 
@@ -499,5 +582,6 @@ QEasingCurve PointToPointAnimation::curve() {
 FadeInOutAnimation::FadeInOutAnimation(QObject *parent) : FluentAnimation(parent) {}
 
 int FadeInOutAnimation::speedToDuration(FluentAnimationSpeed speed) {
+    Q_UNUSED(speed);
     return 83;
 }

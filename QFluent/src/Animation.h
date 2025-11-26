@@ -5,136 +5,19 @@
 #include <QWidget>
 #include <QPropertyAnimation>
 #include <QEasingCurve>
+#include <QVariant>
 
 #include "FluentGlobal.h"
 
-class QGraphicsDropShadowEffect;
-class AnimationBase : public QObject {
-    Q_OBJECT
-public:
-    explicit AnimationBase(QWidget *parent = nullptr);
+class AnimationBasePrivate;
+class TranslateYAnimationPrivate;
+class BackgroundAnimationWidgetPrivate;
+class BackgroundColorObjectPrivate;
+class DropShadowAnimationPrivate;
+class FluentAnimationProperObjectPrivate;
+class FluentAnimationPrivate;
 
-protected:
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual void _onHover(QEnterEvent *e);
-#else
-    virtual void _onHover(QEvent *e);
-#endif
-    virtual void _onLeave(QEvent *e);
-    virtual void _onPress(QMouseEvent *e);
-    virtual void _onRelease(QMouseEvent *e);
-
-    bool eventFilter(QObject *obj, QEvent *e) override;
-};
-
-class QFLUENT_EXPORT TranslateYAnimation : public AnimationBase {
-    Q_OBJECT
-    Q_PROPERTY(float y READ y WRITE setY NOTIFY valueChanged)
-public:
-    explicit TranslateYAnimation(QWidget *parent, int offset = 2);
-
-    float y() const;
-    void setY(float y);
-
-signals:
-    void valueChanged(float);
-
-protected:
-    void _onPress(QMouseEvent *e) override;
-    void _onRelease(QMouseEvent *e) override;
-
-private:
-    float _y = 0.0f;
-    int maxOffset;
-    QPropertyAnimation *ani;
-};
-
-class BackgroundColorObject;
-
-class QFLUENT_EXPORT BackgroundAnimationWidget : public QWidget {
-    Q_OBJECT
-public:
-    explicit BackgroundAnimationWidget(QWidget *parent = nullptr);
-
-    QColor getBackgroundColor() const;
-    void setBackgroundColor(const QColor &color);
-    QColor backgroundColor() const { return getBackgroundColor(); }
-
-public:
-    virtual QColor _normalBackgroundColor() const;
-    virtual QColor _hoverBackgroundColor() const;
-    virtual QColor _pressedBackgroundColor() const;
-    virtual QColor _focusInBackgroundColor() const;
-    virtual QColor _disabledBackgroundColor() const;
-
-protected:
-    void _updateBackgroundColor();
-
-    bool eventFilter(QObject *obj, QEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
-    void mouseReleaseEvent(QMouseEvent *e) override;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    void enterEvent(QEnterEvent *e) override;
-#else
-    void enterEvent(QEvent *e) override;
-#endif
-    void leaveEvent(QEvent *e) override;
-    void focusInEvent(QFocusEvent *e) override;
-
-    bool isHover() const;
-    bool isPressed() const;
-    void setHover(bool hover);
-    void setPressed(bool pressed);
-
-    BackgroundColorObject *bgColorObject;
-    QPropertyAnimation *backgroundColorAni;
-
-private:
-    bool m_isHover = false;
-    bool m_isPressed = false;
-
-};
-
-class BackgroundColorObject : public QObject {
-    Q_OBJECT
-    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
-public:
-    explicit BackgroundColorObject(BackgroundAnimationWidget *parent);
-
-    QColor backgroundColor() const;
-    void setBackgroundColor(const QColor &color);
-
-private:
-    QColor _backgroundColor;
-};
-
-class DropShadowAnimation : public QPropertyAnimation {
-    Q_OBJECT
-public:
-    explicit DropShadowAnimation(QWidget *parent, const QColor &normalColor = QColor(0, 0, 0, 0), const QColor &hoverColor = QColor(0, 0, 0, 75));
-
-    void setBlurRadius(int radius);
-    void setOffset(int dx, int dy);
-    void setNormalColor(const QColor &color);
-    void setHoverColor(const QColor &color);
-    void setColor(const QColor &color);
-
-protected:
-    QGraphicsDropShadowEffect *_createShadowEffect();
-    bool eventFilter(QObject *obj, QEvent *e) override;
-
-private slots:
-    void _onAniFinished();
-
-private:
-    QColor normalColor;
-    QColor hoverColor;
-    QPoint offset;
-    int blurRadius = 38;
-    bool isHover = false;
-    QGraphicsDropShadowEffect *shadowEffect = nullptr;
-};
-
+// 枚举定义
 enum class FluentAnimationSpeed {
     FAST = 0,
     MEDIUM = 1,
@@ -157,24 +40,156 @@ enum class FluentAnimationProperty {
     OPACITY
 };
 
-class FluentAnimationProperObject : public QObject {
+// AnimationBase
+class QFLUENT_EXPORT AnimationBase : public QObject {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(AnimationBase)
+public:
+    explicit AnimationBase(QWidget *parent = nullptr);
+    virtual ~AnimationBase();
+
+protected:
+    AnimationBase(AnimationBasePrivate &dd, QWidget *parent);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual void _onHover(QEnterEvent *e);
+#else
+    virtual void _onHover(QEvent *e);
+#endif
+    virtual void _onLeave(QEvent *e);
+    virtual void _onPress(QMouseEvent *e);
+    virtual void _onRelease(QMouseEvent *e);
+
+    bool eventFilter(QObject *obj, QEvent *e) override;
+
+    QScopedPointer<AnimationBasePrivate> d_ptr;
+};
+
+// TranslateYAnimation
+class QFLUENT_EXPORT TranslateYAnimation : public AnimationBase {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(TranslateYAnimation)
+    Q_PROPERTY(float y READ y WRITE setY NOTIFY valueChanged)
+public:
+    explicit TranslateYAnimation(QWidget *parent, int offset = 2);
+    ~TranslateYAnimation() override;
+
+    float y() const;
+    void setY(float y);
+
+signals:
+    void valueChanged(float);
+
+protected:
+    void _onPress(QMouseEvent *e) override;
+    void _onRelease(QMouseEvent *e) override;
+};
+
+// BackgroundColorObject
+class QFLUENT_EXPORT BackgroundColorObject : public QObject {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(BackgroundColorObject)
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+public:
+    explicit BackgroundColorObject(QWidget *parent);
+    ~BackgroundColorObject();
+
+    QColor backgroundColor() const;
+    void setBackgroundColor(const QColor &color);
+
+private:
+    QScopedPointer<BackgroundColorObjectPrivate> d_ptr;
+};
+
+// BackgroundAnimationWidget
+class QFLUENT_EXPORT BackgroundAnimationWidget : public QWidget {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(BackgroundAnimationWidget)
+public:
+    explicit BackgroundAnimationWidget(QWidget *parent = nullptr);
+    ~BackgroundAnimationWidget() override;
+
+    QColor getBackgroundColor() const;
+    void setBackgroundColor(const QColor &color);
+    QColor backgroundColor() const { return getBackgroundColor(); }
+
+    virtual QColor _normalBackgroundColor() const;
+    virtual QColor _hoverBackgroundColor() const;
+    virtual QColor _pressedBackgroundColor() const;
+    virtual QColor _focusInBackgroundColor() const;
+    virtual QColor _disabledBackgroundColor() const;
+
+protected:
+    BackgroundAnimationWidget(BackgroundAnimationWidgetPrivate &dd, QWidget *parent);
+
+    void _updateBackgroundColor();
+
+    bool eventFilter(QObject *obj, QEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void enterEvent(QEnterEvent *e) override;
+#else
+    void enterEvent(QEvent *e) override;
+#endif
+    void leaveEvent(QEvent *e) override;
+    void focusInEvent(QFocusEvent *e) override;
+
+    bool isHover() const;
+    bool isPressed() const;
+    void setHover(bool hover);
+    void setPressed(bool pressed);
+
+    QScopedPointer<BackgroundAnimationWidgetPrivate> d_ptr;
+};
+
+// DropShadowAnimation
+class QFLUENT_EXPORT DropShadowAnimation : public QPropertyAnimation {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(DropShadowAnimation)
+public:
+    explicit DropShadowAnimation(QWidget *parent,
+                                const QColor &normalColor = QColor(0, 0, 0, 0),
+                                const QColor &hoverColor = QColor(0, 0, 0, 75));
+    ~DropShadowAnimation();
+
+    void setBlurRadius(int radius);
+    void setOffset(int dx, int dy);
+    void setNormalColor(const QColor &color);
+    void setHoverColor(const QColor &color);
+    void setColor(const QColor &color);
+
+protected:
+    class QGraphicsDropShadowEffect *_createShadowEffect();
+    bool eventFilter(QObject *obj, QEvent *e) override;
+
+private slots:
+    void _onAniFinished();
+
+private:
+    QScopedPointer<DropShadowAnimationPrivate> d_ptr;
+};
+
+// FluentAnimationProperObject
+class QFLUENT_EXPORT FluentAnimationProperObject : public QObject {
     Q_OBJECT
 public:
     explicit FluentAnimationProperObject(QObject *parent = nullptr);
+    virtual ~FluentAnimationProperObject();
 
     virtual QVariant getValue() const = 0;
     virtual void setValue(const QVariant &value) = 0;
 
-    static void registerObject(FluentAnimationProperty name, std::function<FluentAnimationProperObject*(QObject*)> creator);
-    static FluentAnimationProperObject *create(FluentAnimationProperty propertyType, QObject *parent = nullptr);
-
-private:
-    static QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>> objects;
+    static void registerObject(FluentAnimationProperty name,
+                              std::function<FluentAnimationProperObject*(QObject*)> creator);
+    static FluentAnimationProperObject *create(FluentAnimationProperty propertyType,
+                                              QObject *parent = nullptr);
 };
 
+// PositionObject
 class PositionObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant position READ getValue WRITE setValue)  // 改为 QVariant 以匹配函数签名
+    Q_PROPERTY(QVariant position READ getValue WRITE setValue)
 public:
     explicit PositionObject(QObject *parent = nullptr);
 
@@ -185,9 +200,10 @@ private:
     QPoint _position;
 };
 
+// ScaleObject
 class ScaleObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant scale READ getValue WRITE setValue)  // 改为 QVariant
+    Q_PROPERTY(QVariant scale READ getValue WRITE setValue)
 public:
     explicit ScaleObject(QObject *parent = nullptr);
 
@@ -198,9 +214,10 @@ private:
     float _scale = 1.0f;
 };
 
+// AngleObject
 class AngleObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant angle READ getValue WRITE setValue)  // 改为 QVariant
+    Q_PROPERTY(QVariant angle READ getValue WRITE setValue)
 public:
     explicit AngleObject(QObject *parent = nullptr);
 
@@ -211,9 +228,10 @@ private:
     float _angle = 0.0f;
 };
 
+// OpacityObject
 class OpacityObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant opacity READ getValue WRITE setValue)  // 改为 QVariant
+    Q_PROPERTY(QVariant opacity READ getValue WRITE setValue)
 public:
     explicit OpacityObject(QObject *parent = nullptr);
 
@@ -224,13 +242,16 @@ private:
     float _opacity = 0.0f;
 };
 
+// FluentAnimation
 class QFLUENT_EXPORT FluentAnimation : public QPropertyAnimation {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(FluentAnimation)
 public:
     explicit FluentAnimation(QObject *parent = nullptr);
+    ~FluentAnimation() override;
 
     static QEasingCurve createBezierCurve(float x1, float y1, float x2, float y2);
-    static QEasingCurve curve();
+    virtual QEasingCurve curve();
 
     void setSpeed(FluentAnimationSpeed speed);
     virtual int speedToDuration(FluentAnimationSpeed speed);
@@ -239,55 +260,66 @@ public:
     QVariant value() const;
     void setValue(const QVariant &value);
 
-    static void registerAnimation(FluentAnimationType name, std::function<FluentAnimation*(QObject*)> creator);
-    static FluentAnimation *create(FluentAnimationType aniType, FluentAnimationProperty propertyType,
-                                   FluentAnimationSpeed speed = FluentAnimationSpeed::FAST, const QVariant &value = QVariant(), QObject *parent = nullptr);
+    static void registerAnimation(FluentAnimationType name,
+                                 std::function<FluentAnimation*(QObject*)> creator);
+    static FluentAnimation *create(FluentAnimationType aniType,
+                                  FluentAnimationProperty propertyType,
+                                  FluentAnimationSpeed speed = FluentAnimationSpeed::FAST,
+                                  const QVariant &value = QVariant(),
+                                  QObject *parent = nullptr);
 
-private:
-    static QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> animations;
+protected:
+    FluentAnimation(FluentAnimationPrivate &dd, QObject *parent);
+    QScopedPointer<FluentAnimationPrivate> d_ptr;
 };
 
+// FastInvokeAnimation
 class QFLUENT_EXPORT FastInvokeAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit FastInvokeAnimation(QObject *parent = nullptr);
 
-    static QEasingCurve curve();
+    QEasingCurve curve() override;
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
+// StrongInvokeAnimation
 class QFLUENT_EXPORT StrongInvokeAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit StrongInvokeAnimation(QObject *parent = nullptr);
 
-    static QEasingCurve curve();
+    QEasingCurve curve() override;
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
+// FastDismissAnimation
 class QFLUENT_EXPORT FastDismissAnimation : public FastInvokeAnimation {
     Q_OBJECT
 public:
     explicit FastDismissAnimation(QObject *parent = nullptr);
 };
 
+// SoftDismissAnimation
 class QFLUENT_EXPORT SoftDismissAnimation : public FluentAnimation {
     Q_OBJECT
 public:
     explicit SoftDismissAnimation(QObject *parent = nullptr);
 
-    static QEasingCurve curve();
+    QEasingCurve curve() override;
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
+// PointToPointAnimation
 class QFLUENT_EXPORT PointToPointAnimation : public FastDismissAnimation {
     Q_OBJECT
 public:
     explicit PointToPointAnimation(QObject *parent = nullptr);
 
-    static QEasingCurve curve();
+    QEasingCurve curve() override;
 };
 
+// FadeInOutAnimation
 class QFLUENT_EXPORT FadeInOutAnimation : public FluentAnimation {
     Q_OBJECT
 public:
