@@ -38,7 +38,7 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     addExampleCard("三态复选框", checkBox);
 
     auto comboBox = new ComboBox(this);
-    comboBox->addItems({"请选择你的项目😍", "请选择你的项目😘", "请选择你的项目😜"});
+    comboBox->addItems({"请选择你的项目_1", "请选择你的项目_2", "请选择你的项目_3"});
     comboBox->setCurrentIndex(0);
     comboBox->setMinimumWidth(210);
     addExampleCard("下拉框", comboBox);

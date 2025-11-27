@@ -1,74 +1,78 @@
-﻿#ifndef ROUTER_H
-#define ROUTER_H
+﻿#pragma once
 
 #include <QObject>
-#include <QStackedWidget>
-#include <QHash>
 #include <QList>
-#include <QSet>
-#include <QDebug>
+#include <QMap>
 
-#define sRouter Router::instance()
+#include "FluentGlobal.h"
 
+class StackedWidget;
 class RouteItem
 {
 public:
-    RouteItem(QStackedWidget* stacked, const QString& routeKey);
+    RouteItem() = default;
+    RouteItem(StackedWidget* stacked, const QString& routeKey)
+        : stacked(stacked), routeKey(routeKey) {}
 
-    QStackedWidget* stacked;
+    bool operator==(const RouteItem& other) const
+    {
+        return stacked == other.stacked && routeKey == other.routeKey;
+    }
+
+    StackedWidget* stacked{nullptr};   // 改回原始指针
     QString routeKey;
-
-    bool operator==(const RouteItem& other) const;
 };
 
 class StackedHistory : public QObject
 {
     Q_OBJECT
 public:
-    explicit StackedHistory(QStackedWidget* stacked, QObject* parent = nullptr);
+    explicit StackedHistory(StackedWidget* stacked, QObject* parent = nullptr);
 
-    int length() const;
-    bool isEmpty() const;
-
+    void setDefaultRouteKey(const QString& routeKey);
     bool push(const QString& routeKey);
     void pop();
     void remove(const QString& routeKey);
     QString top() const;
-
-    void setDefaultRouteKey(const QString& routeKey);
+    bool isEmpty() const;
     void goToTop();
 
-    QStackedWidget* stackedWidget() const { return m_stacked; }
-
 private:
-    QStackedWidget* m_stacked;
+    StackedWidget* m_stacked{nullptr};
     QString m_defaultRouteKey;
     QStringList m_history;
 };
 
-class Router : public QObject
+class QFLUENT_EXPORT Router : public QObject
 {
     Q_OBJECT
-public:
-    explicit Router(QObject* parent = nullptr);
 
-    static Router *instance();
-    void setDefaultRouteKey(QStackedWidget* stacked, const QString& routeKey);
-    void push(QStackedWidget* stacked, const QString& routeKey);
+public:
+    static Router* instance();
+    static void destroyInstance();
+
+    Router(const Router&) = delete;
+    Router& operator=(const Router&) = delete;
+
+    void setDefaultRouteKey(StackedWidget* stacked, const QString& routeKey);
+    void push(StackedWidget* stacked, const QString& routeKey);
     void pop();
     void remove(const QString& routeKey);
 
-    bool isEmpty() const;
-
 signals:
-    void emptyChanged(bool isEmpty);
+    void emptyChanged(bool empty);
 
 private:
-    Q_DISABLE_COPY_MOVE(Router)
+    explicit Router(QObject* parent = nullptr);
+    ~Router() override = default;
 
-    QList<RouteItem> m_history;
-    QHash<QStackedWidget*, StackedHistory*> m_stackHistories;
+    void cleanupStackedHistory(StackedWidget* stacked);
+
+private:
+    static Router* s_instance;
+
+    QList<RouteItem> m_globalHistory;
+    QMap<StackedWidget*, StackedHistory*> m_stackHistories;
 };
 
-
-#endif // ROUTER_H
+#define qrouter Router::instance()
