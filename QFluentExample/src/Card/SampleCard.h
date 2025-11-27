@@ -51,6 +51,9 @@ public:
     void addSampleCard(const QString &iconPath, const QString &title, const QString &content, 
                        const QString &routeKey, int index);
 
+signals:
+    void clicked(const QString &routeKey, int index);
+
 private:
     QLabel *m_titleLabel;
     QVBoxLayout *m_vBoxLayout;

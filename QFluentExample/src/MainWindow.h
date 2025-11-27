@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "QFluent/FluentWindow.h"
 
@@ -8,4 +8,5 @@ class MainWindow : public FluentWindow {
 public:
     explicit MainWindow();
 
+    void setCurrentInterface(const QString &routeKey, int index);
 };

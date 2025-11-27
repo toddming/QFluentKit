@@ -90,6 +90,8 @@ void SampleCardView::addSampleCard(const QIcon &icon, const QString &title,
 {
     SampleCard *card = new SampleCard(icon, title, content, routeKey, index, this);
     m_flowLayout->addWidget(card);
+
+    connect(card, &SampleCard::clicked, this, &SampleCardView::clicked);
 }
 
 void SampleCardView::addSampleCard(const QString &iconPath, const QString &title, 

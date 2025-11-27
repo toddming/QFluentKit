@@ -6,6 +6,7 @@
 #include "FluentGlobal.h"
 #include "FluentIcon.h"
 
+class StackedWidget;
 class NavigationPanel;
 class FluentWindowPrivate;
 class NavigationAvatarWidget;
@@ -33,7 +34,10 @@ public:
                          const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     NavigationPanel *navigationInterface() const;
+    StackedWidget *stackedWidget() const;
 
+Q_SIGNALS:
+    void backRequested();
 
 protected:
     bool event(QEvent *event) override;

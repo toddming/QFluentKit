@@ -6,6 +6,7 @@
 #include <QFile>
 
 #include "Theme.h"
+#include "Router.h"
 #include "StyleSheet.h"
 #include "StackedWidget.h"
 #include "FluentTitleBar.h"
@@ -76,6 +77,12 @@ FluentWindow::FluentWindow(QMainWindow *parent)
     connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
         agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
+
+    connect(d->_windowBar, &FluentTitleBar::backRequested, this, &FluentWindow::backRequested);
+    connect(qrouter, &Router::emptyChanged, this, [d](bool empty){
+        d->_windowBar->backButton()->setEnabled(!empty);
+    });
+    d->_windowBar->backButton()->setEnabled(false);
 }
 
 FluentWindow::~FluentWindow()
@@ -184,7 +191,12 @@ void FluentWindow::addSubInterface(const QString& routeKey, const FluentIconBase
                                    const QString& parentRouteKey)
 {
     Q_D(FluentWindow);
-    d->_navPanel->addItem(routeKey, icon, text, [d, widget](){d->_stacked->setCurrentWidget(widget, false);}, selectable, position, tooltip, parentRouteKey);
+    d->_navPanel->addItem(routeKey, icon, text, [d, widget](){qrouter->push(d->_stacked, widget->objectName());}, selectable, position, tooltip, parentRouteKey);
     d->_stacked->addWidget(widget);
 }
 
+StackedWidget *FluentWindow::stackedWidget() const
+{
+    Q_D(const FluentWindow);
+    return d->_stacked;
+}

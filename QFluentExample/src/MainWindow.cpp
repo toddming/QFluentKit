@@ -1,5 +1,6 @@
 ﻿#include "MainWindow.h"
 
+#include "Router.h"
 #include "QFluent/navigation/NavigationPanel.h"
 #include "QFluent/navigation/NavigationWidget.h"
 
@@ -29,7 +30,6 @@ MainWindow::MainWindow()
 
     setWindowButtonHints(windowButtonHints() | Fluent::WindowButtonHint::RouteBack);
 
-
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
     Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()));
     Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
@@ -55,9 +55,20 @@ MainWindow::MainWindow()
     navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
     addSubInterface("14", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
 
+    qrouter->setDefaultRouteKey(stackedWidget(), "homeInterface");
     navigationInterface()->setCurrentItem("1");
 
     NavigationAvatarWidget* avatar = navigationInterface()->avatarWidget();
     avatar->setName("Administrator");
     avatar->setAvatar(QImage(":/res/avatar.png"));
+
+    connect(this, &MainWindow::backRequested, this, [=](){
+        qrouter->pop();
+    });
+}
+
+void MainWindow::setCurrentInterface(const QString &routeKey, int index)
+{
+    qrouter->push(stackedWidget(), routeKey);
+    navigationInterface()->setCurrentItem(QString::number(index));
 }
