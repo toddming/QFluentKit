@@ -19,7 +19,7 @@ namespace SysCmdLine {
         Value defaultValue;
         std::vector<Value> expectedValues;
         std::string displayName;
-        bool multiple;
+        Argument::Number number;
         Argument::Validator validator;
     };
 

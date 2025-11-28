@@ -17,7 +17,7 @@ namespace SysCmdLine {
     ArgumentPrivate::ArgumentPrivate(std::string name, const std::string &desc, bool required,
                                      Value defaultValue)
         : SymbolPrivate(Symbol::ST_Argument, desc), name(std::move(name)), required(required),
-          defaultValue(std::move(defaultValue)), multiple(false) {
+          defaultValue(std::move(defaultValue)), number(Argument::Single) {
     }
 
     SymbolPrivate *ArgumentPrivate::clone() const {
@@ -47,7 +47,7 @@ namespace SysCmdLine {
 
         switch (pos) {
             case Symbol::HP_Usage: {
-                return displayedText() + (d->multiple ? "..." : "");
+                return displayedText() + ((d->number != Single) ? "..." : "");
             }
             case Symbol::HP_SecondColumn: {
                 auto textProvider = reinterpret_cast<Parser::TextProvider>(extra);
@@ -148,12 +148,22 @@ namespace SysCmdLine {
 
     bool Argument::multiValueEnabled() const {
         Q_D2(Argument);
-        return d->multiple;
+        return d->number != Single;
     }
 
     void Argument::setMultiValueEnabled(bool on) {
         Q_D(Argument);
-        d->multiple = on;
+        d->number = on ? MultiValue : Single;
+    }
+
+    Argument::Number Argument::number() const {
+        Q_D2(Argument);
+        return d->number;
+    }
+
+    void Argument::setNumber(Number number) {
+        Q_D(Argument);
+        d->number = number;
     }
 
     Argument::Validator Argument::validator() const {

@@ -40,6 +40,11 @@ namespace SysCmdLine {
     class SYSCMDLINE_EXPORT Argument : public Symbol {
         SYSCMDLINE_DECL_PRIVATE(Argument)
     public:
+        enum Number {
+            Single,
+            MultiValue,
+            Remainder,
+        };
         using Validator = std::function<bool /* result */ (
             const std::string & /* token */, Value * /* out */, std::string * /* errorMessage */)>;
 
@@ -72,7 +77,10 @@ namespace SysCmdLine {
         void setExpectedValues(const std::vector<Value> &expectedValues);
 
         bool multiValueEnabled() const;
-        void setMultiValueEnabled(bool on);
+        SYSCMDLINE_DECL_DEPRECATED void setMultiValueEnabled(bool on);
+
+        Number number() const;
+        void setNumber(Number valuePolicy);
 
         Validator validator() const;
         void setValidator(const Validator &validator);
@@ -82,8 +90,9 @@ namespace SysCmdLine {
         inline Argument &required(bool required = true);
         inline Argument &default_value(const Value &value);
         inline Argument &expect(const std::vector<Value> &expectedValues);
-        inline Argument &multi(bool multiValueEnabled = true);
+        SYSCMDLINE_DECL_DEPRECATED inline Argument &multi(bool multiValueEnabled = true);
         inline Argument &validate(const Validator &validator);
+        inline Argument &nargs(Number valuePolicy);
     };
 
     inline bool Argument::isOptional() const {
@@ -121,6 +130,11 @@ namespace SysCmdLine {
 
     inline Argument &Argument::validate(const Argument::Validator &validator) {
         setValidator(validator);
+        return *this;
+    }
+
+    inline Argument &Argument::nargs(const Argument::Number valuePolicy) {
+        setNumber(valuePolicy);
         return *this;
     }
 
