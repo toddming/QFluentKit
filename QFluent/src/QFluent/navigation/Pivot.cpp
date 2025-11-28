@@ -14,11 +14,11 @@
 #include "StyleSheet.h"
 
 PivotItem::PivotItem(const QString &text, QWidget *parent)
-    : QPushButton(text, parent), _isSelected(false)
+    : PushButton(text, parent), _isSelected(false)
 {
     setAttribute(Qt::WA_LayoutUsesWidgetRect);
-    setCheckable(true);
-    setChecked(false);
+    setProperty("isSelected", false);
+    Theme::instance()->setFont(this, 18);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::PIVOT);
     connect(this, &PivotItem::clicked, [this]() {
         emit itemClicked(true);
@@ -33,14 +33,13 @@ void PivotItem::setSelected(bool isSelected) {
     if (_isSelected == isSelected)
         return;
     _isSelected = isSelected;
-    setChecked(isSelected);
+    setProperty("isSelected", isSelected);
     emit isSelectedChanged(isSelected);
     update();
 }
 
 void PivotItem::paintEvent(QPaintEvent *event) {
-    QPushButton::paintEvent(event);
-    // 可以在这里添加自定义绘制逻辑
+    PushButton::paintEvent(event);
 }
 
 Pivot::Pivot(QWidget *parent)
@@ -52,7 +51,6 @@ Pivot::Pivot(QWidget *parent)
     hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSizeConstraint(QLayout::SetMinimumSize);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    setIndicatorColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
 
     slideAni = FluentAnimation::create(
         FluentAnimationType::POINT_TO_POINT,
@@ -69,7 +67,7 @@ Pivot::~Pivot() {
     clear();
 }
 
-void Pivot::addItem(const QString &routeKey, const QString &text, const QIcon &icon) {
+void Pivot::addItem(const QString &routeKey, const QString &text, const FluentIconBase &icon) {
     insertItem(-1, routeKey, text, icon);
 }
 
@@ -77,13 +75,13 @@ void Pivot::addWidget(const QString &routeKey, PivotItem *widget) {
     insertWidget(-1, routeKey, widget);
 }
 
-void Pivot::insertItem(int index, const QString &routeKey, const QString &text, const QIcon &icon) {
+void Pivot::insertItem(int index, const QString &routeKey, const QString &text, const FluentIconBase &icon) {
     if (items.contains(routeKey)) {
         return;
     }
 
     PivotItem *item = new PivotItem(text, this);
-    item->setIcon(icon);
+    item->setFluentIcon(icon);
     insertWidget(index, routeKey, item);
 }
 
@@ -195,7 +193,10 @@ void Pivot::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(lightIndicatorColor.isValid() ? lightIndicatorColor : QColor(0, 0, 0, 0)));
+
+    QColor color = Theme::instance()->isDarkTheme() ? darkIndicatorColor : lightIndicatorColor;
+    color = color.isValid() ? color : Theme::instance()->themeColor();
+    painter.setBrush(color);
     int x = currentItem()->width() / 2 - 8 + slideAni->value().toFloat();
     painter.drawRoundedRect(x, height() - 3, 16, 3, 1.5, 1.5);
 }

@@ -18,9 +18,6 @@ SliderHandle::SliderHandle(QSlider* parent)
 {
     setFixedSize(22, 22);
 
-    m_darkHandleColor = Theme::instance()->themeColor();
-    m_lightHandleColor = Theme::instance()->themeColor();
-
     m_radiusAni = new QPropertyAnimation(this, "radius", this);
     m_radiusAni->setDuration(100);
 }
@@ -96,8 +93,10 @@ void SliderHandle::paintEvent(QPaintEvent* e)
     painter.drawEllipse(rect().adjusted(1, 1, -1, -1));
 
     // 绘制内圈
+    QColor color = isDark ? m_darkHandleColor : m_lightHandleColor;
+    color = color.isValid() ? color : Theme::instance()->themeColor();
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(isDark ? m_darkHandleColor : m_lightHandleColor));
+    painter.setBrush(color);
     painter.drawEllipse(QPointF(11, 11), m_radius, m_radius);
 
 }
@@ -121,9 +120,6 @@ Slider::Slider(Qt::Orientation orientation, QWidget* parent)
 
 void Slider::postInit()
 {
-    m_darkGrooveColor = Theme::instance()->themeColor();
-    m_lightGrooveColor = Theme::instance()->themeColor();
-
     m_handle = new SliderHandle(this);
     setOrientation(orientation());
 
@@ -230,7 +226,11 @@ void Slider::drawHorizonGroove(QPainter* painter)
         return;
     }
 
-    painter->setBrush(QColor(Theme::instance()->isDarkTheme() ? m_darkGrooveColor : m_lightGrooveColor));
+    bool isDark = Theme::instance()->isDarkTheme();
+    QColor color = isDark ? m_darkGrooveColor : m_lightGrooveColor;
+    color = color.isValid() ? color : Theme::instance()->themeColor();
+
+    painter->setBrush(color);
     qreal aw = (value() - minimum()) / static_cast<qreal>(maximum() - minimum()) * (w - r * 2);
     painter->drawRoundedRect(QRectF(r, r - 2, aw, 4), 2, 2);
 }
@@ -245,7 +245,11 @@ void Slider::drawVerticalGroove(QPainter* painter)
         return;
     }
 
-    painter->setBrush(QColor(Theme::instance()->isDarkTheme() ? m_darkGrooveColor : m_lightGrooveColor));
+    bool isDark = Theme::instance()->isDarkTheme();
+    QColor color = isDark ? m_darkGrooveColor : m_lightGrooveColor;
+    color = color.isValid() ? color : Theme::instance()->themeColor();
+
+    painter->setBrush(color);
     qreal ah = (value() - minimum()) / static_cast<qreal>(maximum() - minimum()) * (h - r * 2);
     painter->drawRoundedRect(QRectF(r - 2, r, 4, ah), 2, 2);
 }

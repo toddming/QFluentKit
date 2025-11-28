@@ -3,13 +3,14 @@
 
 #include <QMap>
 #include <QWidget>
-#include <QPushButton>
 
+#include "FluentIcon.h"
 #include "FluentGlobal.h"
+#include "QFluent/PushButton.h"
 
 class QHBoxLayout;
 class FluentAnimation;
-class PivotItem : public QPushButton {
+class PivotItem : public PushButton {
     Q_OBJECT
     Q_PROPERTY(bool isSelected READ isSelected WRITE setSelected NOTIFY isSelectedChanged)
 
@@ -37,9 +38,9 @@ public:
     explicit Pivot(QWidget *parent = nullptr);
     ~Pivot() override;
 
-    void addItem(const QString &routeKey, const QString &text, const QIcon &icon = QIcon());
+    void addItem(const QString &routeKey, const QString &text, const FluentIconBase &icon);
     void addWidget(const QString &routeKey, PivotItem *widget);
-    void insertItem(int index, const QString &routeKey, const QString &text, const QIcon &icon = QIcon());
+    void insertItem(int index, const QString &routeKey, const QString &text, const FluentIconBase &icon);
     void insertWidget(int index, const QString &routeKey, PivotItem *widget);
     void removeWidget(const QString &routeKey);
     void clear();

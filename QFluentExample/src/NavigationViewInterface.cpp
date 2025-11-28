@@ -13,10 +13,10 @@ NavigationViewInterface::NavigationViewInterface(QWidget *parent)
     setObjectName("NavigationViewInterface");
 
     auto pivot = new Pivot(this);
-    pivot->addItem("1", "主页", FluentIcon(Fluent::IconType::HOME).qicon());
-    pivot->addItem("2", "订阅", FluentIcon(Fluent::IconType::BOOK_SHELF).qicon());
-    pivot->addItem("3", "历史", FluentIcon(Fluent::IconType::HISTORY).qicon());
-    pivot->addItem("4", "设置", FluentIcon(Fluent::IconType::SETTING).qicon());
+    pivot->addItem("1", "主页", FluentIcon(Fluent::IconType::HOME));
+    pivot->addItem("2", "订阅", FluentIcon(Fluent::IconType::BOOK_SHELF));
+    pivot->addItem("3", "历史", FluentIcon(Fluent::IconType::HISTORY));
+    pivot->addItem("4", "设置", FluentIcon(Fluent::IconType::SETTING));
 
     addExampleCard("顶部导航栏", pivot);
 

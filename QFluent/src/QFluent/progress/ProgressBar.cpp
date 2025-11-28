@@ -137,7 +137,9 @@ QColor ProgressBar::barColor() const
     if (isError()) {
         return Theme::instance()->isDarkTheme() ? QColor(255, 153, 164) : QColor(196, 43, 28);
     }
-    return Theme::instance()->isDarkTheme() ? _darkBarColor : _lightBarColor;
+    QColor color = Theme::instance()->isDarkTheme() ? _darkBarColor : _lightBarColor;
+    color = color.isValid() ? color : Theme::instance()->themeColor();
+    return color;
 }
 
 void ProgressBar::paintEvent(QPaintEvent *event)

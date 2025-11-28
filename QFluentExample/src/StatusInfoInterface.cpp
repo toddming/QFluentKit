@@ -57,24 +57,20 @@ StatusInfoInterface::StatusInfoInterface(QWidget *parent)
     QColor color = Theme::instance()->themeColor();
     auto indeterminateProgressBar = new IndeterminateProgressBar(this);
     indeterminateProgressBar->setFixedWidth(200);
-    indeterminateProgressBar->setCustomBarColor(color, color);
     addExampleCard("不确定进度条", indeterminateProgressBar);
 
     auto progressBar = new ProgressBar(this);
     progressBar->setFixedWidth(200);
     progressBar->setValue(50);
-    progressBar->setCustomBarColor(color, color);
     addExampleCard("确定的进度条", createProgressWidget(progressBar));
 
     auto indeterminateProgressRing = new IndeterminateProgressRing(this);
     indeterminateProgressRing->setFixedSize(70, 70);
-    indeterminateProgressRing->setCustomBarColor(color, color);
     addExampleCard("不确定进度环", indeterminateProgressRing);
 
     auto progressRing = new ProgressRing(this);
     progressRing->setValue(50);
     progressRing->setFixedSize(70, 70);
-    progressRing->setCustomBarColor(color, color);
     addExampleCard("确定的进度环", createProgressWidget(progressRing));
 }
 
