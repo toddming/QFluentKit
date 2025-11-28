@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QPushButton>
+#include <QDesktopServices>
 
 #include "Theme.h"
 #include "../PushButton.h"
@@ -151,6 +152,10 @@ HyperlinkCard::HyperlinkCard(const QString &url,
     HyperlinkButton *linkButton = new HyperlinkButton(text, this);
     hBoxLayout()->addWidget(linkButton, 0, Qt::AlignRight);
     hBoxLayout()->addSpacing(16);
+
+    connect(linkButton, &HyperlinkButton::clicked, this, [url](){
+        QDesktopServices::openUrl(QUrl(url));
+    });
 }
 
 
@@ -205,11 +210,13 @@ ComboBoxSettingCard::ComboBoxSettingCard(const QStringList &items,
 
     hBoxLayout()->addWidget(m_comboBox, 0, Qt::AlignRight);
     hBoxLayout()->addSpacing(16);
+
+    connect(m_comboBox, &ComboBox::currentIndexChanged, this, &ComboBoxSettingCard::onCurrentIndexChanged);
 }
 
 void ComboBoxSettingCard::onCurrentIndexChanged(int value)
 {
-
+    emit currentIndexChanged(value);
 }
 
 void ComboBoxSettingCard::setValue(int value)

@@ -150,6 +150,9 @@ public:
 
     void setValue(int value);
 
+signals:
+    void currentIndexChanged(int);
+
 private slots:
     void onCurrentIndexChanged(int);
 
