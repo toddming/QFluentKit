@@ -31,7 +31,7 @@ ToolBar::ToolBar(const QString &title, const QString &subtitle, QWidget *parent)
     Theme::instance()->setFont(titleLabel, 28, QFont::Normal);
     subtitleLabel = new CaptionLabel(subtitle, this);
     subtitleLabel->setTextColor(QColor(96, 96, 96), QColor(216, 216, 216));
-
+    subtitleLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     documentButton = new PushButton("在线文档", FluentIcon(Fluent::IconType::DOCUMENT), this);
     sourceButton = new PushButton("源代码", FluentIcon(Fluent::IconType::GITHUB), this);
     themeButton = new ToolButton(FluentIcon(Fluent::IconType::CONSTRACT), this);
