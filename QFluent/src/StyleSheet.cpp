@@ -81,20 +81,22 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
 }
 
 QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
-    if (filePath.isEmpty()) {
-        return QString();
+    static QHash<QString, QString> s_cache;
+
+    if (s_cache.contains(filePath)) {
+        return s_cache[filePath];
     }
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        // qWarning() << "Cannot open QSS file:" << filePath;
+        qWarning() << "QSS文件打开失败:" << filePath;
         return QString();
     }
 
-    QTextStream in(&file);
-    QString content = in.readAll();
+    QString content = file.readAll();
     file.close();
 
+    s_cache[filePath] = content;
     return content;
 }
 
