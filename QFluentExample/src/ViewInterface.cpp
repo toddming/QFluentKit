@@ -27,7 +27,7 @@ ViewInterface::ViewInterface(QWidget *parent)
         {"自动回消息贴纸", "数码周边", "0", "——", "已售罄"}
     };
 
-    auto originalSize = demoData.size();
+    auto originalSize = demoData.size() * 5;
     for (int i = 0; i < originalSize; ++i) {
         demoData.append(demoData[i]);
     }

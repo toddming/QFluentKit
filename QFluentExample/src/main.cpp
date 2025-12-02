@@ -20,8 +20,6 @@ int main(int argc, char *argv[])
     QFont font;
     font.setFamilies({"Microsoft YaHei", "PingFang SC", "Segoe UI"});
     font.setPixelSize(14);
-    font.setHintingPreference(QFont::PreferDefaultHinting);
-    font.setStyleStrategy(QFont::PreferAntialias);
     app.setFont(font);
 
     MainWindow w;
