@@ -1,6 +1,5 @@
 ﻿#include "DatePicker.h"
 #include "CycleListWidget.h"
-#include <QCalendar>
 
 // MonthFormatter 实现
 MonthFormatter::MonthFormatter(QObject* parent)

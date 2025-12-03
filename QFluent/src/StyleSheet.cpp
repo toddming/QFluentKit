@@ -89,7 +89,7 @@ QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "QSS文件打开失败:" << filePath;
+        // qWarning() << "QSS文件打开失败:" << filePath;
         return QString();
     }
 

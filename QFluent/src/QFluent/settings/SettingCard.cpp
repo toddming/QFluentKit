@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QPushButton>
 #include <QDesktopServices>
+#include <QUrl>
 
 #include "Theme.h"
 #include "../PushButton.h"

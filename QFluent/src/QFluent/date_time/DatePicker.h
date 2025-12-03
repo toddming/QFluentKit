@@ -3,6 +3,7 @@
 
 #include "PickerBase.h"
 #include <QDate>
+#include <QCalendar>
 
 #include "FluentGlobal.h"
 
