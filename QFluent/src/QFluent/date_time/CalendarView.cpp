@@ -64,11 +64,11 @@ QPropertyAnimation* ViewScrollBar::ani() const
 }
 
 
-ScrollButton::ScrollButton(const FluentIconBase &icon, QWidget* parent)
+CalendarButton::CalendarButton(const FluentIconBase &icon, QWidget* parent)
     : TransparentToolButton(icon, parent) {
 }
 
-void ScrollButton::paintEvent(QPaintEvent* event)
+void CalendarButton::paintEvent(QPaintEvent* event)
 {
     QToolButton::paintEvent(event);
 
@@ -276,8 +276,8 @@ void ScrollViewBase::mouseReleaseEvent(QMouseEvent* e) {
 
 // CalendarViewBase
 CalendarViewBase::CalendarViewBase(QWidget* parent)
-    : QFrame(parent), titleButton(new QPushButton(this)), resetButton(new ScrollButton(FluentIcon(FIF::CANCEL), this)),
-    upButton(new ScrollButton(FluentIcon(FIF::CARE_UP_SOLID), this)), downButton(new ScrollButton(FluentIcon(FIF::CARE_DOWN_SOLID), this)),
+    : QFrame(parent), titleButton(new QPushButton(this)), resetButton(new CalendarButton(FluentIcon(FIF::CANCEL), this)),
+    upButton(new CalendarButton(FluentIcon(FIF::CARE_UP_SOLID), this)), downButton(new CalendarButton(FluentIcon(FIF::CARE_DOWN_SOLID), this)),
       hBoxLayout(new QHBoxLayout()), vBoxLayout(new QVBoxLayout(this)) {
 
     initWidget();

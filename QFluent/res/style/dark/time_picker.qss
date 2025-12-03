@@ -1,4 +1,4 @@
-ScrollButton {
+﻿ScrollButton {
     background-color: rgb(44, 44, 44);
     border: none;
     border-radius: 7px;
@@ -41,7 +41,7 @@ PickerPanel > #view {
     border-radius: 7px;
 }
 
-SeparatorWidget {
+DateSeparatorWidget {
     background-color: rgb(61, 61, 61);
 }
 

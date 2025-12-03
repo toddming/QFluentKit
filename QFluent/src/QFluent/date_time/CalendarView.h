@@ -35,10 +35,10 @@ private:
 
 
 
-class ScrollButton : public TransparentToolButton {
+class CalendarButton : public TransparentToolButton {
     Q_OBJECT
 public:
-    ScrollButton(const FluentIconBase &icon, QWidget* parent = nullptr);
+    CalendarButton(const FluentIconBase &icon, QWidget* parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -142,9 +142,9 @@ protected:
     void _onScrollDown();
     virtual void _updateTitle();
     QPushButton* titleButton;
-    ScrollButton* resetButton;
-    ScrollButton* upButton;
-    ScrollButton* downButton;
+    CalendarButton* resetButton;
+    CalendarButton* upButton;
+    CalendarButton* downButton;
     ScrollViewBase* scrollView = nullptr;
     QHBoxLayout* hBoxLayout;
     QVBoxLayout* vBoxLayout;
