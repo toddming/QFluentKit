@@ -1,9 +1,11 @@
 ﻿#include "CycleListWidget.h"
+#include <QTimer>
 #include <QPainter>
 #include <QWheelEvent>
 #include <QPropertyAnimation>
-#include "QFluent/scrollbar/ScrollBar.h"
+
 #include "Theme.h"
+#include "QFluent/scrollbar/ScrollBar.h"
 
 // ScrollButton 实现
 ScrollButton::ScrollButton(const FluentIconBase &icon, QWidget* parent)
@@ -147,7 +149,9 @@ void CycleListWidget::setSelectedItem(const QString& text)
         setCurrentIndex(row(items[0]));
     }
     
-    QListWidget::scrollToItem(currentItem(), QAbstractItemView::PositionAtCenter);
+    QTimer::singleShot(0, this, [this](){
+        QListWidget::scrollToItem(currentItem(), QAbstractItemView::PositionAtCenter);
+    });
 }
 
 void CycleListWidget::scrollToItem(QListWidgetItem* item, QAbstractItemView::ScrollHint hint)

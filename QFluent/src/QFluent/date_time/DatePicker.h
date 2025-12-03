@@ -3,10 +3,10 @@
 
 #include "PickerBase.h"
 #include <QDate>
-#include <QCalendar>
 
 #include "FluentGlobal.h"
 
+class QCalendar;
 class MonthFormatter : public PickerColumnFormatter
 {
     Q_OBJECT
