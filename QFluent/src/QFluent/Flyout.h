@@ -81,18 +81,24 @@ public:
 
     QVBoxLayout* widgetLayout() const {return m_widgetLayout;}
 
+    QVBoxLayout* vBoxLayout() const {return m_vBoxLayout;}
+
+    QHBoxLayout* viewLayout() const {return m_viewLayout;}
+
+    ImageLabel* imageLabel() const {return m_imageLabel;}
+
 signals:
     void closed();
 
 protected:
     void showEvent(QShowEvent* event) override;
+    virtual void adjustImage();
+    virtual void addImageToLayout();
 
 private:
     void initWidgets();
     void initLayout();
     void adjustText();
-    void adjustImage();
-    void addImageToLayout();
 
 private:
     QString m_title;

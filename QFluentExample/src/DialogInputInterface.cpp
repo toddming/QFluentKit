@@ -6,6 +6,7 @@
 #include "QFluent/Loading.h"
 #include "QFluent/LineEdit.h"
 #include "QFluent/PushButton.h"
+#include "QFluent/TeachingTip.h"
 #include "QFluent/dialog/ColorDialog.h"
 #include "QFluent/dialog/MessageDialog.h"
 #include "QFluent/dialog/MessageBoxBase.h"
@@ -93,12 +94,21 @@ void DialogInputInterface::showComplexFlyout(QWidget* target)
 
 void DialogInputInterface::showBottomTeachingTip(QWidget* target)
 {
-
+    TeachingTip::create(target, "Lesson 4", "01233333333333333352666666666666",
+                        FluentIcon(Fluent::IconType::LEAF).qicon(), QPixmap(), true, -1, TeachingTipTailPosition::BOTTOM, this);
 }
 
 void DialogInputInterface::showLeftBottomTeachingTip(QWidget* target)
 {
+    auto view = new TeachingTipView("Lesson 5", "17635417371373617616763315315",
+                                    QIcon(), QPixmap(":/res/SBR.jpg"), true, TeachingTipTailPosition::LEFT_BOTTOM);
 
+    auto button = new PushButton("Action");
+    button->setFixedWidth(120);
+    view->addWidget(button, Qt::AlignCenter);
+
+    auto t = TeachingTip::make(view, target, 3000, TeachingTipTailPosition::LEFT_BOTTOM, this);
+    connect(view, &TeachingTipView::closed, this, [t](){ t->close(); });
 }
 
 
