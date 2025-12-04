@@ -2,6 +2,7 @@
 
 #include "Theme.h"
 #include "QFluent/Label.h"
+#include "QFluent/Flyout.h"
 #include "QFluent/Loading.h"
 #include "QFluent/LineEdit.h"
 #include "QFluent/PushButton.h"
@@ -49,6 +50,56 @@ DialogInputInterface::DialogInputInterface(QWidget *parent)
         static auto colorDialog = new ColorDialog(Theme::instance()->themeColor(), "选择颜色", this->window());
         colorDialog->exec();
     });
-
     addExampleCard("颜色对话框", colorDialogBtn);
+
+    auto simpleFlyoutButton = new PushButton("显示浮出控件", this);
+    connect(simpleFlyoutButton, &PushButton::clicked, this, [=](){ showSimpleFlyout(simpleFlyoutButton); });
+    addExampleCard("简单浮出控件", simpleFlyoutButton);
+
+    auto complexFlyoutButton = new PushButton("显示浮出控件", this);
+    connect(complexFlyoutButton, &PushButton::clicked, this, [=](){ showComplexFlyout(complexFlyoutButton); });
+    addExampleCard("带图片和按钮的浮出控件", complexFlyoutButton);
+
+    auto teachingButton = new PushButton("显示气泡弹窗", this);
+    connect(teachingButton, &PushButton::clicked, this, [=](){ showBottomTeachingTip(teachingButton); });
+    addExampleCard("气泡弹窗", teachingButton);
+
+    auto teachingRightButton = new PushButton("显示气泡弹窗", this);
+    connect(teachingRightButton, &PushButton::clicked, this, [=](){ showLeftBottomTeachingTip(teachingRightButton); });
+    addExampleCard("带图片和按钮的气泡弹窗", teachingRightButton);
+
 }
+
+void DialogInputInterface::showSimpleFlyout(QWidget* target)
+{
+    Flyout::create("你看", "我有几分有几分有几分像从前?", FluentIcon(Fluent::IconType::LEAF).qicon(), QPixmap(), false, target, this);
+}
+
+void DialogInputInterface::showComplexFlyout(QWidget* target)
+{
+    auto view = new FlyoutView("杰洛·齐贝林", "触网而起的网球会落到哪一侧，谁也无法知晓。\n如果那种时刻到来，我希望「女神」是存在的。\n这样的话，不管网球落到哪一边，我都会坦然接受的吧。",
+                               QIcon(), QPixmap(":/res/SBR.jpg"));
+
+    auto button = new PushButton("Action");
+    button->setFixedWidth(120);
+    view->addWidget(button, Qt::AlignCenter);
+
+    view->widgetLayout()->insertSpacing(1, 5);
+    view->widgetLayout()->insertSpacing(0, 5);
+    view->widgetLayout()->addSpacing(5);
+
+    Flyout::make(view, target, this->window(), FlyoutAnimationType::SLIDE_RIGHT);
+}
+
+void DialogInputInterface::showBottomTeachingTip(QWidget* target)
+{
+
+}
+
+void DialogInputInterface::showLeftBottomTeachingTip(QWidget* target)
+{
+
+}
+
+
+
