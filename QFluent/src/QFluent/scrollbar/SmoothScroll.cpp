@@ -6,7 +6,11 @@
 #include <QTimer>
 #include <QDateTime>
 
-SmoothScroll::SmoothScroll(QAbstractScrollArea* widget, Qt::Orientation orient) : QObject(widget), widget(widget), orient(orient) {
+SmoothScroll::SmoothScroll(QAbstractScrollArea* widget, Qt::Orientation orient)
+    : QObject(widget)
+    , widget(widget)
+    , orient(orient)
+{
     smoothMoveTimer = new QTimer(widget);
     connect(smoothMoveTimer, &QTimer::timeout, this, &SmoothScroll::smoothMove);
 }
@@ -18,7 +22,11 @@ void SmoothScroll::setSmoothMode(Fluent::SmoothMode smoothMode) {
 void SmoothScroll::wheelEvent(QWheelEvent* e) {
     qreal delta = e->angleDelta().y() != 0 ? e->angleDelta().y() : e->angleDelta().x();
     if (smoothMode == Fluent::SmoothMode::NO_SMOOTH || std::fmod(std::abs(delta), 120.0) != 0) {
-        QCoreApplication::sendEvent(widget->viewport(), e);
+        QScrollBar* bar = (orient == Qt::Vertical) ?
+                              widget->verticalScrollBar() : widget->horizontalScrollBar();
+        if (bar) {
+            QCoreApplication::sendEvent(bar, e);
+        }
         return;
     }
 
