@@ -4,8 +4,8 @@
 #include <QPointer>
 #include <QToolButton>
 
-#include "FluentGlobal.h"
 #include "FluentIcon.h"
+#include "FluentGlobal.h"
 
 // ToolButton
 class RoundMenu;
@@ -163,5 +163,20 @@ class QFLUENT_EXPORT TransparentDropDownToolButton : public DropDownToolButton
     Q_OBJECT
 public:
     using DropDownToolButton::DropDownToolButton;
+
+};
+
+// SplitDropButton
+class QFLUENT_EXPORT SplitDropButton : public ToolButton
+{
+    Q_OBJECT
+public:
+    explicit SplitDropButton(QWidget* parent = nullptr);
+
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+
+private:
+    TranslateYAnimation* m_arrowAni;
 
 };
