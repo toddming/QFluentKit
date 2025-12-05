@@ -9,7 +9,6 @@
 #include <QApplication>
 #include <QPoint>
 #include <QVariant>
-#include <QDebug>
 
 #include "Theme.h"
 #include "FluentIcon.h"

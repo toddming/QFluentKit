@@ -407,7 +407,7 @@ NavigationTreeWidget* NavigationTreeWidget::clone() {
     root->setFixedSize(size());
     root->setProperty("nodeDepth", property("nodeDepth").toInt());
 
-    connect(this, &NavigationTreeWidget::clicked, root, &NavigationTreeWidget::clicked);
+    connect(root, &NavigationTreeWidget::clicked, this, &NavigationTreeWidget::clicked);
     connect(this, &NavigationTreeWidget::selectedChanged, root, &NavigationTreeWidget::setSelected);
 
     for (auto child : m_treeChildren) {
@@ -574,7 +574,10 @@ void NavigationTreeWidget::setExpandWidth(int width) {
 // NavigationFlyoutMenu 实现
 NavigationFlyoutMenu::NavigationFlyoutMenu(NavigationTreeWidget* tree, QWidget* parent)
     : ScrollArea(parent)
-    , treeWidget(tree) {
+    , treeWidget(tree)
+{
+    setViewportMargins(0, 0, 0, 0);
+
     view = new QWidget(this);
     vBoxLayout = new QVBoxLayout(view);
 
@@ -596,20 +599,12 @@ NavigationFlyoutMenu::NavigationFlyoutMenu(NavigationTreeWidget* tree, QWidget* 
         vBoxLayout->addWidget(node);
     }
 
-    // 修正逻辑：直接遍历并初始化克隆出来的节点
     for (auto node : treeChildren) {
-        // 对应 Python: c.nodeDepth -= 1
         node->setProperty("nodeDepth", node->property("nodeDepth").toInt() - 1);
-
-        // 对应 Python: c.setCompacted(False) -> 这就是文字不显示的原因
         node->setCompacted(false);
-
-        // 对应 Python: if c.isLeaf(): ...
         if (node->isLeaf()) {
             connect(node, &NavigationTreeWidget::clicked, window(), &QWidget::close);
         }
-
-        // 递归初始化该节点的子节点
         _initNode(node);
     }
 

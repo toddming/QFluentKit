@@ -21,8 +21,6 @@
 #include <functional>
 #include <QCloseEvent>
 
-#include <QDebug>
-
 #include "ToolButton.h"
 #include "TextWrap.h"
 #include "Theme.h"
@@ -406,7 +404,7 @@ void InfoBarManager::registerManager(Fluent::MessagePosition position, std::func
 
 InfoBarManager* InfoBarManager::make(Fluent::MessagePosition position) {
     if (!m_managers.contains(position)) {
-        qWarning() << "Invalid position:" << static_cast<int>(position);
+        // qWarning() << "Invalid position:" << static_cast<int>(position);
         return nullptr;
     }
     return m_managers[position]();

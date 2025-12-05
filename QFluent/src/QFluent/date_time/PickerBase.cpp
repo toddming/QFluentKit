@@ -8,7 +8,6 @@
 #include <QGuiApplication>
 #include <QRegion>
 #include <QScrollBar>
-#include <QDebug>
 
 #include "Theme.h"
 #include "Screen.h"

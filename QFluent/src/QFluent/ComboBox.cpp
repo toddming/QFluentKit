@@ -4,7 +4,6 @@
 #include <QApplication>
 #include <QScreen>
 #include <QActionGroup>
-#include <QDebug>
 #include <QPainter>
 
 #include "Animation.h"
