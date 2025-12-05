@@ -52,6 +52,46 @@ MainWindow::MainWindow()
     addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
     addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
 
+    auto sub1 = new QWidget(this);
+    sub1->setObjectName("sub1");
+
+    auto sub11 = new QWidget(this);
+    sub11->setObjectName("sub11");
+    auto sub12 = new QWidget(this);
+    sub12->setObjectName("sub12");
+
+    auto sub2 = new QWidget(this);
+    sub2->setObjectName("sub2");
+    auto sub21 = new QWidget(this);
+    sub21->setObjectName("sub21");
+    auto sub22 = new QWidget(this);
+    sub22->setObjectName("sub22");
+    auto sub221 = new QWidget(this);
+    sub221->setObjectName("sub221");
+    auto sub222 = new QWidget(this);
+    sub222->setObjectName("sub222");
+
+    auto sub3 = new QWidget(this);
+    sub3->setObjectName("sub3");
+    auto sub31 = new QWidget(this);
+    sub31->setObjectName("sub31");
+    auto sub32 = new QWidget(this);
+    sub32->setObjectName("sub32");
+
+    addSubInterface("15", FluentIcon(iconPath.arg("Grid")), "SUB1", sub1, true, Fluent::NavigationItemPosition::SCROLL, "", "13");
+    addSubInterface("18", FluentIcon(iconPath.arg("Grid")), "SUB11", sub11, true, Fluent::NavigationItemPosition::SCROLL, "", "15");
+    addSubInterface("19", FluentIcon(iconPath.arg("Grid")), "SUB12", sub12, true, Fluent::NavigationItemPosition::SCROLL, "", "15");
+
+    addSubInterface("16", FluentIcon(iconPath.arg("Grid")), "SUB2", sub2, true, Fluent::NavigationItemPosition::SCROLL, "", "13");
+    addSubInterface("20", FluentIcon(iconPath.arg("Grid")), "SUB21", sub21, true, Fluent::NavigationItemPosition::SCROLL, "", "16");
+    addSubInterface("21", FluentIcon(iconPath.arg("Grid")), "SUB22", sub22, true, Fluent::NavigationItemPosition::SCROLL, "", "16");
+    addSubInterface("24", FluentIcon(iconPath.arg("Grid")), "SUB221", sub221, true, Fluent::NavigationItemPosition::SCROLL, "", "21");
+    addSubInterface("25", FluentIcon(iconPath.arg("Grid")), "SUB222", sub222, true, Fluent::NavigationItemPosition::SCROLL, "", "21");
+
+    addSubInterface("17", FluentIcon(iconPath.arg("Grid")), "SUB3", sub3, true, Fluent::NavigationItemPosition::SCROLL, "", "13");
+    addSubInterface("22", FluentIcon(iconPath.arg("Grid")), "SUB31", sub31, true, Fluent::NavigationItemPosition::SCROLL, "", "17");
+    addSubInterface("23", FluentIcon(iconPath.arg("Grid")), "SUB32", sub32, true, Fluent::NavigationItemPosition::SCROLL, "", "17");
+
     navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
     addSubInterface("14", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
 

@@ -118,8 +118,6 @@ void HomeInterface::initWidget()
     m_view->setObjectName("view");
     setObjectName("homeInterface");
 
-    setSmoothMode(Fluent::SmoothMode::NO_SMOOTH);
-
     auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/home_interface.qss");
     StyleSheetManager::instance()->registerWidget(styleSource, this);
 

@@ -78,7 +78,7 @@ void DialogInputInterface::showSimpleFlyout(QWidget* target)
 
 void DialogInputInterface::showComplexFlyout(QWidget* target)
 {
-    auto view = new FlyoutView("杰洛·齐贝林", "触网而起的网球会落到哪一侧，谁也无法知晓。\n如果那种时刻到来，我希望「女神」是存在的。\n这样的话，不管网球落到哪一边，我都会坦然接受的吧。",
+    auto view = new FlyoutView("iPhone", "iPhone 17 Pro 及 iPhone 17 Pro Max 新登場，由內而外\n精心設計，創出空前最強 iPhone 型號。熱鍛鋁金屬一體式\n機身為嶄新設計核心，將效能表現、電池容量以及耐用度極級提升。",
                                QIcon(), QPixmap(":/res/SBR.jpg"));
 
     auto button = new PushButton("Action");
@@ -94,13 +94,13 @@ void DialogInputInterface::showComplexFlyout(QWidget* target)
 
 void DialogInputInterface::showBottomTeachingTip(QWidget* target)
 {
-    TeachingTip::create(target, "Lesson 4", "01233333333333333352666666666666",
+    TeachingTip::create(target, "iPhone", "iPhone 17 Pro 及 iPhone 17 Pro Max 新登場，由內而外精心設計，創出空前最強 iPhone 型號。熱鍛鋁金屬一體式機身為嶄新設計核心，將效能表現、電池容量以及耐用度極級提升。",
                         FluentIcon(Fluent::IconType::LEAF).qicon(), QPixmap(), true, -1, TeachingTipTailPosition::BOTTOM, this);
 }
 
 void DialogInputInterface::showLeftBottomTeachingTip(QWidget* target)
 {
-    auto view = new TeachingTipView("Lesson 5", "17635417371373617616763315315",
+    auto view = new TeachingTipView("iPhone", "iPhone 17 Pro 及 iPhone 17 Pro Max 新登場，由內而外精心設計，創出空前最強 iPhone 型號。熱鍛鋁金屬一體式機身為嶄新設計核心，將效能表現、電池容量以及耐用度極級提升。",
                                     QIcon(), QPixmap(":/res/SBR.jpg"), true, TeachingTipTailPosition::LEFT_BOTTOM);
 
     auto button = new PushButton("Action");

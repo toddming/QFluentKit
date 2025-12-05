@@ -157,7 +157,6 @@ void NavigationPanel::insertItem(int index, const QString& routeKey, const Fluen
 
     NavigationTreeWidget* w = new NavigationTreeWidget(text, icon, selectable, this);
     w->setExpandWidth(m_expandWidth);
-    // qDebug() << text << m_expandWidth;
     insertWidget(index, routeKey, w, onClick, position, tooltip, parentRouteKey);
 }
 
@@ -373,12 +372,12 @@ bool NavigationPanel::isCollapsed() const {
 
 void NavigationPanel::onWidgetClicked() {
     NavigationWidget* widget = qobject_cast<NavigationWidget*>(sender());
-    // if (!widget->isSelectable()) {
-    //     if (NavigationTreeWidget* treeWidget = dynamic_cast<NavigationTreeWidget*>(widget)) {
-    //         showFlyoutNavigationMenu(treeWidget);
-    //     }
-    //     return;
-    // }
+    if (!widget->isSelectable()) {
+        if (NavigationTreeWidget* treeWidget = dynamic_cast<NavigationTreeWidget*>(widget)) {
+            showFlyoutNavigationMenu(treeWidget);
+        }
+        return;
+    }
 
     setCurrentItem(widget->property("routeKey").toString());
 
