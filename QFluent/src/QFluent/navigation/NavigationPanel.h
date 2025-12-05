@@ -7,11 +7,13 @@
 #include "FluentGlobal.h"
 #include "FluentIcon.h"
 
+class Flyout;
 class QScrollArea;
 class NavigationWidget;
 class QPropertyAnimation;
 class NavigationToolButton;
 class NavigationTreeWidget;
+class NavigationFlyoutMenu;
 class NavigationAvatarWidget;
 class RouteKeyError : public std::exception {
 public:
@@ -98,7 +100,7 @@ private:
     int layoutMinHeight();
     bool canDrawAcrylic();
     void showFlyoutNavigationMenu(NavigationTreeWidget* widget);
-    // void adjustFlyoutMenuSize(Flyout* flyout, NavigationTreeWidget* widget, NavigationFlyoutMenu* menu);
+    void adjustFlyoutMenuSize(Flyout* flyout, NavigationTreeWidget* widget, NavigationFlyoutMenu* menu);
 
 private:
     QWidget* m_parent;
@@ -106,6 +108,7 @@ private:
     bool m_isReturnButtonVisible;
     bool m_isCollapsible;
     bool m_isAcrylicEnabled;
+    int m_minimumExpandWidth;
 
     // AcrylicBrush* m_acrylicBrush;
     QScrollArea* m_scrollArea;

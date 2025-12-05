@@ -20,13 +20,16 @@
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "NavigationWidget.h"
+#include "QFluent/Flyout.h"
 #include "QFluent/menu/MenuActionListWidget.h"
 
 
 NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     : QFrame(parent), m_parent(parent), m_isMenuButtonVisible(true),
       m_isReturnButtonVisible(false), m_isCollapsible(true), m_isAcrylicEnabled(false),
-      m_isMinimalEnabled(isMinimalEnabled) {
+      m_isMinimalEnabled(isMinimalEnabled)
+    , m_minimumExpandWidth(1008)
+{
 
     // 初始化成员
     m_scrollArea = new QScrollArea(this);
@@ -372,7 +375,7 @@ bool NavigationPanel::isCollapsed() const {
 
 void NavigationPanel::onWidgetClicked() {
     NavigationWidget* widget = qobject_cast<NavigationWidget*>(sender());
-    if (!widget->isSelectable()) {
+    if (!widget->property("isSelectable").toBool()) {
         if (NavigationTreeWidget* treeWidget = dynamic_cast<NavigationTreeWidget*>(widget)) {
             showFlyoutNavigationMenu(treeWidget);
         }
@@ -396,78 +399,76 @@ void NavigationPanel::onWidgetClicked() {
 }
 
 void NavigationPanel::showFlyoutNavigationMenu(NavigationTreeWidget* widget) {
-    // if (!(isCollapsed() && widget)) {
-    //     return;
-    // }
+    if (!(isCollapsed() && widget)) {
+        return;
+    }
 
-    // if (!widget->isRoot() || widget->isLeaf()) {
-    //     return;
-    // }
+    if (!widget->isRoot() || widget->isLeaf()) {
+        return;
+    }
 
-    // QHBoxLayout* layout = new QHBoxLayout();
+    QHBoxLayout* layout = new QHBoxLayout();
 
-    // FlyoutViewBase* view;
-    // Flyout* flyout;
+    FlyoutViewBase* view;
+    Flyout* flyout;
 
-    // if (canDrawAcrylic()) {
-    //     view = new AcrylicFlyoutViewBase();
-    //     view->setLayout(layout);
-    //     flyout = new AcrylicFlyout(view, this->window());
-    // } else {
-    //     view = new FlyoutViewBase();
-    //     view->setLayout(layout);
-    //     flyout = new Flyout(view, this->window());
-    // }
+    if (canDrawAcrylic()) {
 
-    // // 添加导航菜单到弹出窗口
-    // NavigationFlyoutMenu* menu = new NavigationFlyoutMenu(widget, view);
-    // layout->setContentsMargins(0, 0, 0, 0);
-    // layout->addWidget(menu);
+    } else {
+        view = new FlyoutViewBase();
+        view->setLayout(layout);
+        flyout = new Flyout(view, this->window());
+    }
 
-    // // 执行弹出动画
-    // flyout->resize(flyout->sizeHint());
-    // QPoint pos = SlideRightFlyoutAnimationManager(flyout).position(widget);
-    // flyout->exec(pos, FlyoutAnimationType::SLIDE_RIGHT);
+    // 添加导航菜单到弹出窗口
+    NavigationFlyoutMenu* menu = new NavigationFlyoutMenu(widget, view);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(menu);
 
-    // connect(menu, &NavigationFlyoutMenu::expanded, [this, flyout, widget, menu]() {
-    //     adjustFlyoutMenuSize(flyout, widget, menu);
-    // });
+    // 执行弹出动画
+    flyout->resize(flyout->sizeHint());
+    QPoint pos = SlideRightFlyoutAnimationManager(flyout).position(widget);
+    flyout->exec(pos, FlyoutAnimationType::SLIDE_RIGHT);
+
+    connect(menu, &NavigationFlyoutMenu::expanded, [this, flyout, widget, menu]() {
+        adjustFlyoutMenuSize(flyout, widget, menu);
+    });
 }
 
-// void NavigationPanel::adjustFlyoutMenuSize(Flyout* flyout, NavigationTreeWidget* widget, NavigationFlyoutMenu* menu) {
-//     flyout->view()->setFixedSize(menu->size());
-//     flyout->setFixedSize(flyout->layout()->sizeHint());
+void NavigationPanel::adjustFlyoutMenuSize(Flyout* flyout, NavigationTreeWidget* widget, NavigationFlyoutMenu* menu) {
+    flyout->view()->setFixedSize(menu->size());
+    flyout->setFixedSize(flyout->layout()->sizeHint());
 
-//     SlideRightFlyoutAnimationManager manager(flyout);
-//     QPoint pos = manager.position(widget);
+    SlideRightFlyoutAnimationManager manager(flyout);
+    QPoint pos = manager.position(widget);
 
-//     QRect rect = this->window()->geometry();
-//     int w = flyout->sizeHint().width() + 5;
-//     int h = flyout->sizeHint().height();
-//     int x = qMax(rect.left(), qMin(pos.x(), rect.right() - w));
-//     int y = qMax(rect.top() + 42, qMin(pos.y() - 4, rect.bottom() - h + 5));
-//     flyout->move(x, y);
-// }
+    QRect rect = this->window()->geometry();
+    int w = flyout->sizeHint().width() + 5;
+    int h = flyout->sizeHint().height();
+    int x = qMax(rect.left(), qMin(pos.x(), rect.right() - w));
+    int y = qMax(rect.top() + 42, qMin(pos.y() - 4, rect.bottom() - h + 5));
+    flyout->move(x, y);
+}
 
 bool NavigationPanel::eventFilter(QObject* obj, QEvent* e) {
-    // if (obj != this->window() || !m_isCollapsible) {
-    //     return QFrame::eventFilter(obj, e);
-    // }
+    if (obj != this->window() || !m_isCollapsible) {
+        return QFrame::eventFilter(obj, e);
+    }
 
-    // if (e->type() == QEvent::MouseButtonRelease) {
-    //     QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(e);
-    //     if (!this->geometry().contains(mouseEvent->pos()) && m_displayMode == Fluent::NavigationDisplayMode::MENU) {
-    //         collapse();
-    //     }
-    // } else if (e->type() == QEvent::Resize) {
-    //     QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(e);
-    //     int w = resizeEvent->size().width();
-    //     if (w < m_minimumExpandWidth && m_displayMode == Fluent::NavigationDisplayMode::EXPAND) {
-    //         collapse();
-    //     } else if (w >= m_minimumExpandWidth && m_displayMode == Fluent::NavigationDisplayMode::COMPACT && !m_isMenuButtonVisible) {
-    //         expand();
-    //     }
-    // }
+    if (e->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(e);
+        if (!this->geometry().contains(mouseEvent->pos()) && m_displayMode == Fluent::NavigationDisplayMode::MENU) {
+            collapse();
+        }
+    } else if (e->type() == QEvent::Resize) {
+        QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(e);
+        int w = resizeEvent->size().width();
+        if (w < m_minimumExpandWidth && m_displayMode == Fluent::NavigationDisplayMode::EXPAND) {
+            collapse();
+        } else if (w >= m_minimumExpandWidth && m_displayMode == Fluent::NavigationDisplayMode::COMPACT && !m_isMenuButtonVisible) {
+            expand();
+        }
+    }
 
     return QFrame::eventFilter(obj, e);
 }

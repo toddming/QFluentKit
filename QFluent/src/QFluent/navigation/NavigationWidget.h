@@ -2,12 +2,12 @@
 #define NAVIGATION_WIDGET_H
 
 #include <QWidget>
-#include <QScrollArea>
 
-#include "FluentGlobal.h"
 #include "FluentIcon.h"
+#include "FluentGlobal.h"
+#include "QFluent/ScrollArea.h"
 
-// NavigationWidget
+class Flyout;
 class AvatarWidget;
 class QVBoxLayout;
 class QPropertyAnimation;
@@ -52,7 +52,6 @@ private:
     QColor lightTextColor;
     QColor darkTextColor;
     int m_expandWidth;
-
 };
 
 
@@ -200,7 +199,7 @@ private:
 
 
 // NavigationFlyoutMenu
-class NavigationFlyoutMenu : public QScrollArea {
+class NavigationFlyoutMenu : public ScrollArea {
     Q_OBJECT
 public:
     NavigationFlyoutMenu(NavigationTreeWidget* tree, QWidget* parent = nullptr);

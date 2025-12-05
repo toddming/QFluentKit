@@ -144,7 +144,7 @@ void NavigationWidget::setExpandWidth(int width) {
 
 // NavigationPushButton 实现
 NavigationPushButton::NavigationPushButton(const QString &text, const FluentIconBase &icon,
-                                         bool isSelectable, QWidget* parent)
+                                           bool isSelectable, QWidget* parent)
     : NavigationWidget(isSelectable, parent), m_fluentIcon(icon.clone()), m_text(text) {
 
 }
@@ -262,7 +262,7 @@ void NavigationSeparator::paintEvent(QPaintEvent* e) {
 
 // NavigationTreeItem 实现
 NavigationTreeItem::NavigationTreeItem(const QString &text, const FluentIconBase &icon,
-                                     bool isSelectable, NavigationTreeWidget* parent)
+                                       bool isSelectable, NavigationTreeWidget* parent)
     : NavigationPushButton(text, icon, isSelectable, parent), _arrowAngle(0) {
     rotateAni = new QPropertyAnimation(this, "arrowAngle", this);
 }
@@ -342,7 +342,7 @@ void NavigationTreeItem::setArrowAngle(float angle) {
 
 // NavigationTreeWidget 实现
 NavigationTreeWidget::NavigationTreeWidget(const QString &text, const FluentIconBase &icon,
-                                         bool isSelectable, QWidget* parent)
+                                           bool isSelectable, QWidget* parent)
     : NavigationTreeWidgetBase(isSelectable, parent), isExpanded(false), m_fluentIcon(icon.clone()) {
     m_itemWidget = new NavigationTreeItem(text, icon, isSelectable, this);
     vBoxLayout = new QVBoxLayout(this);
@@ -573,71 +573,88 @@ void NavigationTreeWidget::setExpandWidth(int width) {
 
 // NavigationFlyoutMenu 实现
 NavigationFlyoutMenu::NavigationFlyoutMenu(NavigationTreeWidget* tree, QWidget* parent)
-    : QScrollArea(parent), treeWidget(tree) {
-    // view = new QWidget(this);
-    // vBoxLayout = new QVBoxLayout(view);
+    : ScrollArea(parent)
+    , treeWidget(tree) {
+    view = new QWidget(this);
+    vBoxLayout = new QVBoxLayout(view);
 
-    // setWidget(view);
-    // setWidgetResizable(true);
-    // setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    // setStyleSheet("QScrollArea { border: none; background: transparent; }");
-    // view->setStyleSheet("QWidget { border: none; background: transparent; }");
+    setWidget(view);
+    setWidgetResizable(true);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setStyleSheet("ScrollArea { border: none; background: transparent; }");
+    view->setStyleSheet("QWidget { border: none; background: transparent; }");
 
-    // vBoxLayout->setSpacing(5);
-    // vBoxLayout->setContentsMargins(5, 8, 5, 8);
+    vBoxLayout->setSpacing(5);
+    vBoxLayout->setContentsMargins(5, 8, 5, 8);
 
-    // // 添加节点到菜单
-    // for (auto child : treeWidget->treeChildren()) {
-    //     NavigationTreeWidget* node = child->clone();
-    //     connect(node, &NavigationTreeWidget::expanded, this, [this]() { _adjustViewSize(); });
+    // 添加节点到菜单
+    for (auto child : treeWidget->treeChildren()) {
+        NavigationTreeWidget* node = child->clone();
+        connect(node, &NavigationTreeWidget::expanded, this, [this]() { _adjustViewSize(); });
 
-    //     treeChildren.push_back(node);
-    //     vBoxLayout->addWidget(node);
-    // }
+        treeChildren.push_back(node);
+        vBoxLayout->addWidget(node);
+    }
 
-    // _initNode(this->treeWidget);
-    // _adjustViewSize(false);
+    // 修正逻辑：直接遍历并初始化克隆出来的节点
+    for (auto node : treeChildren) {
+        // 对应 Python: c.nodeDepth -= 1
+        node->setProperty("nodeDepth", node->property("nodeDepth").toInt() - 1);
+
+        // 对应 Python: c.setCompacted(False) -> 这就是文字不显示的原因
+        node->setCompacted(false);
+
+        // 对应 Python: if c.isLeaf(): ...
+        if (node->isLeaf()) {
+            connect(node, &NavigationTreeWidget::clicked, window(), &QWidget::close);
+        }
+
+        // 递归初始化该节点的子节点
+        _initNode(node);
+    }
+
+    _adjustViewSize(false);
 }
 
 void NavigationFlyoutMenu::_initNode(NavigationTreeWidget* root) {
-    // for (auto c : root->treeChildren()) {
-    //     c->setProperty("nodeDepth", c->property("nodeDepth").toInt() - 1);
-    //     c->setCompacted(false);
+    for (auto c : root->treeChildren()) {
+        c->setProperty("nodeDepth", c->property("nodeDepth").toInt() - 1);
+        c->setCompacted(false);
 
-    //     if (c->isLeaf()) {
-    //         connect(c, &NavigationTreeWidget::clicked, window(), &QWidget::close);
-    //     }
+        if (c->isLeaf()) {
+            connect(c, &NavigationTreeWidget::clicked, window(), &QWidget::close);
+        }
 
-    //     _initNode(c);
-    // }
+        _initNode(c);
+    }
 }
 
 void NavigationFlyoutMenu::_adjustViewSize(bool emitSignal) {
-    // int w = _suitableWidth();
+    int w = _suitableWidth();
 
-    // // 调整节点宽度
-    // for (auto node : visibleTreeNodes()) {
-    //     node->setFixedWidth(w - 10);
-    //     node->itemWidget()->setFixedWidth(w - 10);
-    // }
+    // 调整节点宽度
+    for (auto node : visibleTreeNodes()) {
+        node->setFixedWidth(w - 10);
+        node->itemWidget()->setFixedWidth(w - 10);
+    }
 
-    // view->setFixedSize(w, view->sizeHint().height());
+    view->setFixedSize(w, view->sizeHint().height());
 
-    // int h = qMin(window()->parentWidget()->height() - 48, view->height());
-    // setFixedSize(w, h);
+    int h = qMin(window()->parentWidget()->height() - 48, view->height());
+    setFixedSize(w, h);
 
-    // if (emitSignal)
-    //     emit expanded();
+    if (emitSignal)
+        emit expanded();
 }
 
 int NavigationFlyoutMenu::_suitableWidth() {
     int w = 0;
 
-    // for (auto node : visibleTreeNodes()) {
-    //     if (!node->isHidden()) {
-    //         w = qMax(w, node->suitableWidth() + 10);
-    //     }
-    // }
+    for (auto node : visibleTreeNodes()) {
+        if (!node->isHidden()) {
+            w = qMax(w, node->suitableWidth() + 10);
+        }
+    }
 
     QWidget* window = this->window()->parentWidget();
     return qMin(window->width() / 2 - 25, w) + 10;
@@ -645,28 +662,22 @@ int NavigationFlyoutMenu::_suitableWidth() {
 
 std::vector<NavigationTreeWidget*> NavigationFlyoutMenu::visibleTreeNodes() {
     std::vector<NavigationTreeWidget*> nodes;
-    // std::deque<NavigationTreeWidget*> queue(treeChildren.begin(), treeChildren.end());
+    std::deque<NavigationTreeWidget*> queue(treeChildren.begin(), treeChildren.end());
 
-    // while (!queue.empty()) {
-    //     NavigationTreeWidget* node = queue.front();
-    //     queue.pop_front();
-    //     nodes.push_back(node);
+    while (!queue.empty()) {
+        NavigationTreeWidget* node = queue.front();
+        queue.pop_front();
+        nodes.push_back(node);
 
-    //     for (auto child : node->treeChildren()) {
-    //         if (!child->isHidden()) {
-    //             queue.push_back(child);
-    //         }
-    //     }
-    // }
+        for (auto child : node->treeChildren()) {
+            if (!child->isHidden()) {
+                queue.push_back(child);
+            }
+        }
+    }
 
     return nodes;
 }
-
-
-
-
-
-
 
 
 
