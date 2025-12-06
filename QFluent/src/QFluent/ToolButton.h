@@ -180,3 +180,22 @@ private:
     TranslateYAnimation* m_arrowAni;
 
 };
+
+
+// PrimarySplitDropButton
+class QFLUENT_EXPORT PrimarySplitDropButton : public PrimaryToolButton
+{
+    Q_OBJECT
+public:
+    explicit PrimarySplitDropButton(QWidget* parent = nullptr);
+
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+
+private:
+    TranslateYAnimation* m_arrowAni;
+
+};
+
+
+

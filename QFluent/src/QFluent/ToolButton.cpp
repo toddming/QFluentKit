@@ -376,3 +376,29 @@ void SplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Fluent::Th
     }
     ToolButton::drawIcon(painter, rect, theme);
 }
+
+
+// PrimarySplitDropButton
+PrimarySplitDropButton::PrimarySplitDropButton(QWidget *parent)
+    : PrimaryToolButton(parent)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+    setFluentIcon(FluentIcon(Fluent::IconType::ARROW_DOWN));
+    setIconSize(QSize(10, 10));
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+}
+
+void PrimarySplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme)
+{
+    QRectF r = rect;
+    r.translate(0, m_arrowAni->y());
+
+    if (isPressed()) {
+        painter->setOpacity(0.5);
+    } else if (isHovered()) {
+        painter->setOpacity(1);
+    } else {
+        painter->setOpacity(0.63);
+    }
+    PrimaryToolButton::drawIcon(painter, rect, theme);
+}
