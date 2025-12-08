@@ -106,4 +106,13 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     slider->setValue(30);
     slider->setMinimumWidth(200);
     addExampleCard("水平滑动条", slider);
+
+    auto splitToolButton = new SplitToolButton(QIcon(":/res/Slices.png"), this);
+    splitToolButton->setIconSize(QSize(30, 30));
+    splitToolButton->setFlyout(dropDownPushButtonMenu);
+    addExampleCard("带下拉菜单的工具按钮", splitToolButton);
+
+    auto primarySplitToolButton = new PrimarySplitToolButton(FluentIcon(Fluent::IconType::BASKETBALL), this);
+    primarySplitToolButton->setFlyout(dropDownPushButtonMenu);
+    addExampleCard("带下拉菜单的主题色拆分工具按钮", primarySplitToolButton);
 }

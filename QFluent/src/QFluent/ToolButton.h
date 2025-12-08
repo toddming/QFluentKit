@@ -9,6 +9,7 @@
 
 // ToolButton
 class RoundMenu;
+class QHBoxLayout;
 class TranslateYAnimation;
 class QFLUENT_EXPORT ToolButton : public QToolButton
 {
@@ -198,4 +199,73 @@ private:
 };
 
 
+// SplitWidgetBase
+class QFLUENT_EXPORT SplitWidgetBase : public QWidget {
+    Q_OBJECT
+public:
+    explicit SplitWidgetBase(QWidget* parent = nullptr);
+    virtual ~SplitWidgetBase();
 
+    // 设置左侧的主控件
+    void setWidget(QWidget* widget);
+
+    // 替换下拉按钮
+    void setDropButton(ToolButton* button);
+
+    void setDropIconSize(const QSize& size);
+
+    // 设置弹出菜单/窗口
+    void setFlyout(QWidget* flyout);
+
+signals:
+    void dropDownClicked();
+
+public slots:
+    void showFlyout();
+
+protected:
+    QHBoxLayout* m_hBoxLayout;
+    ToolButton* m_dropButton;
+    QPointer<QWidget> m_flyout;
+};
+
+
+// SplitToolButton
+class QFLUENT_EXPORT SplitToolButton : public SplitWidgetBase {
+    Q_OBJECT
+
+public:
+    explicit SplitToolButton(QWidget* parent = nullptr);
+    explicit SplitToolButton(const QIcon& icon, QWidget* parent = nullptr);
+    explicit SplitToolButton(const FluentIconBase& icon, QWidget* parent = nullptr);
+
+    void setIconSize(const QSize& size);
+
+signals:
+    void clicked();
+
+private:
+    ToolButton* m_button;
+
+    void init();
+};
+
+// PrimarySplitToolButton
+class QFLUENT_EXPORT PrimarySplitToolButton : public SplitWidgetBase {
+    Q_OBJECT
+
+public:
+    explicit PrimarySplitToolButton(QWidget* parent = nullptr);
+    explicit PrimarySplitToolButton(const QIcon& icon, QWidget* parent = nullptr);
+    explicit PrimarySplitToolButton(const FluentIconBase& icon, QWidget* parent = nullptr);
+
+    void setIconSize(const QSize& size);
+
+signals:
+    void clicked();
+
+private:
+    PrimaryToolButton* m_button;
+
+    void init();
+};
