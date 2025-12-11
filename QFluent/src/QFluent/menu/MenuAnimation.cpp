@@ -3,152 +3,242 @@
 #include <QHoverEvent>
 #include <QPropertyAnimation>
 #include <QApplication>
+#include <QDebug>
+#include <QLayout>
+#include <QWidget>
+#include <QMap>
+#include <QPoint>
+
 #include "Screen.h"
 #include "RoundMenu.h"
 #include "MenuActionListWidget.h"
 
-QMap<Fluent::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> MenuAnimationManager::managers;
+// 使用局部静态变量解决初始化顺序问题
+static QMap<Fluent::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>>& getManagers() {
+    static QMap<Fluent::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> managers;
+    return managers;
+}
+
 namespace {
     struct RegisterMenuAnimationManagers {
         RegisterMenuAnimationManagers() {
             MenuAnimationManager::registerManager(Fluent::MenuAnimation::NONE,
-                [](RoundMenu* menu) { return new DummyMenuAnimationManager(menu); });
+                [](RoundMenu* menu) { return new DummyMenuAnimationManager(menu, menu); });
 
             MenuAnimationManager::registerManager(Fluent::MenuAnimation::DROP_DOWN,
-                [](RoundMenu* menu) { return new DropDownMenuAnimationManager(menu); });
+                [](RoundMenu* menu) { return new DropDownMenuAnimationManager(menu, menu); });
 
             MenuAnimationManager::registerManager(Fluent::MenuAnimation::PULL_UP,
-                [](RoundMenu* menu) { return new PullUpMenuAnimationManager(menu); });
+                [](RoundMenu* menu) { return new PullUpMenuAnimationManager(menu, menu); });
         }
     };
 
     static RegisterMenuAnimationManagers registerMenuAnimationManagersInstance;
 }
 
+// ================================================================================
+// MenuAnimationManager 实现
+// ================================================================================
 
 MenuAnimationManager::MenuAnimationManager(RoundMenu* menu, QObject* parent)
     : QObject(parent), m_menu(menu)
 {
+    if (!menu) {
+        qWarning() << "MenuAnimationManager created with null menu!";
+    }
+
     m_ani = new QPropertyAnimation(menu, "pos", this);
     m_ani->setDuration(250);
     m_ani->setEasingCurve(QEasingCurve::OutQuad);
 
-    connect(m_ani, &QPropertyAnimation::valueChanged, this, &MenuAnimationManager::_onValueChanged);
-    connect(m_ani, &QPropertyAnimation::valueChanged, this, &MenuAnimationManager::_updateMenuViewport);
+    connect(m_ani, &QPropertyAnimation::valueChanged, this, &MenuAnimationManager::onValueChanged);
+    connect(m_ani, &QPropertyAnimation::valueChanged, this, &MenuAnimationManager::updateMenuViewport);
 }
 
 void MenuAnimationManager::registerManager(Fluent::MenuAnimation type,
                                            std::function<MenuAnimationManager*(RoundMenu*)> creator)
 {
-    managers[type] = creator;
+    getManagers()[type] = creator;
 }
 
 MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, Fluent::MenuAnimation aniType)
 {
-    if (!managers.contains(aniType)) {
-        // qWarning() << "Invalid animation type:" << static_cast<int>(aniType);
+    auto& map = getManagers();
+    if (!map.contains(aniType)) {
         return nullptr;
     }
-    return managers[aniType](menu);
+    return map[aniType](menu);
 }
 
-void MenuAnimationManager::_updateMenuViewport()
+void MenuAnimationManager::updateMenuViewport()
 {
-    if (menu()->view()) {
+    if (isMenuValid() && menu()->view() && menu()->view()->viewport()) {
         menu()->view()->viewport()->update();
         menu()->view()->setAttribute(Qt::WA_UnderMouse, true);
-
-        // QHoverEvent hoverEnter(QEvent::HoverEnter, QPointF(), QPointF(1.0f, 1.0f), QPointF());
-        // QApplication::sendEvent(menu()->view(), &hoverEnter);
 
         QHoverEvent hoverEnter(QEvent::HoverEnter, QPointF(), QPointF(1.0f, 1.0f));
         QApplication::sendEvent(menu()->view(), &hoverEnter);
     }
 }
 
-QPoint MenuAnimationManager::_endPosition(const QPoint& pos) const
+QPoint MenuAnimationManager::endPosition(const QPoint& pos) const
 {
+    if (!isMenuValid()) {
+        return pos;
+    }
+
     RoundMenu *m = menu();
+
+    QMargins margins;
+    if (m->layout()) {
+        margins = m->layout()->contentsMargins();
+    }
+
     QRect rect = Screen::getCurrentScreenGeometry();
     int w = m->width() + 5;
     int h = m->height();
-    int x= qMin(pos.x() - m->layout()->contentsMargins().left(), rect.right() - w);
+
+    int x = qMin(pos.x() - margins.left(), rect.right() - w);
     int y = qMin(pos.y() - 4, rect.bottom() - h + 10);
     return QPoint(x, y);
 }
 
-std::pair<int, int> MenuAnimationManager::_menuSize() const
+std::pair<int, int> MenuAnimationManager::menuSize() const
 {
-    auto margins = menu()->layout()->contentsMargins();
-    int w = menu()->view()->width() + margins.left() + margins.right() + 120;
-    int h = menu()->view()->height() + margins.top() + margins.bottom() + 20;
+    if (!isMenuValid()) {
+        return {0, 0};
+    }
+
+    RoundMenu* m = menu();
+
+    if (!m->view() || !m->layout()) {
+        return {0, 0};
+    }
+
+    auto margins = m->layout()->contentsMargins();
+    int w = m->view()->width() + margins.left() + margins.right() + 120;
+    int h = m->view()->height() + margins.top() + margins.bottom() + 20;
     return {w, h};
 }
 
-void MenuAnimationManager::_onValueChanged()
+void MenuAnimationManager::onValueChanged()
 {
-    // Default: do nothing
+    // 默认实现:不做任何操作
 }
 
-// ————————————————————————————————————————
-// DummyMenuAnimationManager
-// ————————————————————————————————————————
+RoundMenu* MenuAnimationManager::menu() const
+{
+    return m_menu.data();
+}
+
+QPropertyAnimation* MenuAnimationManager::animation() const
+{
+    return m_ani;
+}
+
+bool MenuAnimationManager::isMenuValid() const
+{
+    return !m_menu.isNull();
+}
+
+// ================================================================================
+// DummyMenuAnimationManager 实现
+// ================================================================================
 
 DummyMenuAnimationManager::DummyMenuAnimationManager(RoundMenu* menu, QObject* parent)
-    : MenuAnimationManager(menu, parent) {}
+    : MenuAnimationManager(menu, parent)
+{
+}
 
 void DummyMenuAnimationManager::exec(const QPoint& pos)
 {
-    menu()->move(_endPosition(pos));
+    if (isMenuValid()) {
+        menu()->move(endPosition(pos));
+    }
 }
 
-// ————————————————————————————————————————
-// DropDownMenuAnimationManager
-// ————————————————————————————————————————
+// ================================================================================
+// DropDownMenuAnimationManager 实现
+// ================================================================================
 
 DropDownMenuAnimationManager::DropDownMenuAnimationManager(RoundMenu* menu, QObject* parent)
-    : MenuAnimationManager(menu, parent) {}
+    : MenuAnimationManager(menu, parent)
+{
+}
 
 void DropDownMenuAnimationManager::exec(const QPoint& pos)
 {
-    QPoint endPos = _endPosition(pos);
+    if (!isMenuValid()) {
+        return;
+    }
+
+    QPoint endPos = endPosition(pos);
     int h = menu()->height() + 5;
     animation()->setStartValue(endPos - QPoint(0, h / 2));
     animation()->setEndValue(endPos);
     animation()->start();
 }
 
-void DropDownMenuAnimationManager::_onValueChanged()
+void DropDownMenuAnimationManager::onValueChanged()
 {
-    auto [w, h] = _menuSize();
-    int y = animation()->endValue().toPoint().y() - animation()->currentValue().toPoint().y();
-    menu()->setMask(QRegion(0, y, w, h));
+    if (!isMenuValid()) {
+        return;
+    }
+
+    auto [w, h] = menuSize();
+
+    if (w == 0 && h == 0) {
+        return;
+    }
+
+    QVariant endVal = animation()->endValue();
+    QVariant curVal = animation()->currentValue();
+
+    if (endVal.isValid() && curVal.isValid()) {
+        int y = endVal.toPoint().y() - curVal.toPoint().y();
+        menu()->setMask(QRegion(0, y, w, h));
+    }
 }
 
-// ————————————————————————————————————————
-// PullUpMenuAnimationManager
-// ————————————————————————————————————————
+// ================================================================================
+// PullUpMenuAnimationManager 实现
+// ================================================================================
 
 PullUpMenuAnimationManager::PullUpMenuAnimationManager(RoundMenu* menu, QObject* parent)
-    : MenuAnimationManager(menu, parent) {}
+    : MenuAnimationManager(menu, parent)
+{
+}
 
 void PullUpMenuAnimationManager::exec(const QPoint& pos)
 {
-    QPoint endPos = _endPosition(pos);
+    if (!isMenuValid()) {
+        return;
+    }
+
+    QPoint endPos = endPosition(pos);
     int h = menu()->height() + 5;
     animation()->setStartValue(endPos + QPoint(0, h / 2));
     animation()->setEndValue(endPos);
     animation()->start();
 }
 
-QPoint PullUpMenuAnimationManager::_endPosition(const QPoint& pos) const
+QPoint PullUpMenuAnimationManager::endPosition(const QPoint& pos) const
 {
+    if (!isMenuValid()) {
+        return pos;
+    }
+
     RoundMenu *m = menu();
+
+    QMargins margins;
+    if (m->layout()) {
+        margins = m->layout()->contentsMargins();
+    }
+
     QRect rect = Screen::getCurrentScreenGeometry();
     int w = m->width() + 5;
     int h = m->height();
-    int x= qMin(pos.x() - m->layout()->contentsMargins().left(), rect.right() - w);
+    int x = qMin(pos.x() - margins.left(), rect.right() - w);
     int y = qMax(pos.y() - h + 13, rect.top() + 4);
     return QPoint(x, y);
 }
-

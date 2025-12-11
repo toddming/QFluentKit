@@ -1,11 +1,16 @@
 ﻿#pragma once
 
 #include <QObject>
+#include <QPointer>
+#include <functional>
 
 #include "FluentGlobal.h"
 
 class RoundMenu;
 class QPropertyAnimation;
+class QPoint;
+template<class Key, class T> class QMap;
+
 class MenuAnimationManager : public QObject
 {
     Q_OBJECT
@@ -16,27 +21,26 @@ public:
 
     virtual void exec(const QPoint& pos) = 0;
 
-    void _updateMenuViewport();
+    void updateMenuViewport();
 
-    static void registerManager(Fluent::MenuAnimation type, std::function<MenuAnimationManager*(RoundMenu*)> creator);
+    static void registerManager(Fluent::MenuAnimation type,
+                                std::function<MenuAnimationManager*(RoundMenu*)> creator);
     static MenuAnimationManager* make(RoundMenu* menu, Fluent::MenuAnimation aniType);
 
 protected:
-    virtual QPoint _endPosition(const QPoint& pos) const;
-    virtual std::pair<int, int> _menuSize() const;
-    virtual void _onValueChanged();
+    virtual QPoint endPosition(const QPoint& pos) const;
+    virtual std::pair<int, int> menuSize() const;
+    virtual void onValueChanged();
 
-    RoundMenu* menu() const { return m_menu; }
-    QPropertyAnimation* animation() const { return m_ani; }
+    RoundMenu* menu() const;
+    QPropertyAnimation* animation() const;
+    bool isMenuValid() const;
 
 private:
-    RoundMenu* m_menu;
+    QPointer<RoundMenu> m_menu;
     QPropertyAnimation* m_ani;
-
-    static QMap<Fluent::MenuAnimation, std::function<MenuAnimationManager*(RoundMenu*)>> managers;
 };
 
-// Dummy Animation
 class DummyMenuAnimationManager : public MenuAnimationManager
 {
     Q_OBJECT
@@ -45,7 +49,6 @@ public:
     void exec(const QPoint& pos) override;
 };
 
-// Drop Down Animation
 class DropDownMenuAnimationManager : public MenuAnimationManager
 {
     Q_OBJECT
@@ -54,10 +57,9 @@ public:
     void exec(const QPoint& pos) override;
 
 protected:
-    void _onValueChanged() override;
+    void onValueChanged() override;
 };
 
-// Pull Up Animation
 class PullUpMenuAnimationManager : public MenuAnimationManager
 {
     Q_OBJECT
@@ -66,6 +68,5 @@ public:
     void exec(const QPoint& pos) override;
 
 protected:
-    QPoint _endPosition(const QPoint& pos) const override;
+    QPoint endPosition(const QPoint& pos) const override;
 };
-
