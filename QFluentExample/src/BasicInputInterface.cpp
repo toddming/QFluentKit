@@ -18,7 +18,14 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
 {
     setObjectName("basicInputInterface");
 
-    addExampleCard("带有文本的简单按钮", new PushButton("标准按钮", this));
+    auto pushButton = new PushButton("标准按钮", this);
+    auto testMenu = new RoundMenu("menu", this);
+    testMenu->addWidget(new CheckBox("项目1", testMenu));
+    testMenu->addWidget(new CheckBox("项目2", testMenu));
+    connect(pushButton, &PushButton::clicked, this, [=](){
+        testMenu->exec(QCursor::pos());
+    });
+    addExampleCard("带有文本的简单按钮", pushButton);
 
     auto button = new ToolButton(QIcon(":/res/Slices.png"), this);
     button->setIconSize(QSize(40, 40));

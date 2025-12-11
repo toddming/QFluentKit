@@ -26,11 +26,12 @@ AMPMFormatter::AMPMFormatter(QObject* parent)
 
 QString AMPMFormatter::encode(const QVariant& value)
 {
-    if (!value.toString().isEmpty() && !value.canConvert<int>()) {
+    bool ok = false;
+    int hour = value.toInt(&ok);
+
+    if (!ok) {
         return value.toString();
     }
-    
-    int hour = value.toInt();
     return hour < 12 ? m_AM : m_PM;
 }
 
@@ -86,7 +87,7 @@ void TimePicker::setSecondVisible(bool isVisible)
     setColumnVisible(2, isVisible);
     
     int w = isVisible ? 80 : 120;
-    for (PickerColumnButton* button : m_columns) {
+    for (PickerColumnButton* button : std::as_const(m_columns)) {
         button->setFixedWidth(w);
     }
 }
@@ -112,7 +113,7 @@ QStringList TimePicker::panelInitialValue()
 {
     QStringList val = value();
     bool hasValue = false;
-    for (const QString& v : val) {
+    for (const QString& v : std::as_const(val)) {
         if (!v.isEmpty()) {
             hasValue = true;
             break;
@@ -213,7 +214,7 @@ QStringList AMTimePicker::panelInitialValue()
 {
     QStringList val = value();
     bool hasValue = false;
-    for (const QString& v : val) {
+    for (const QString& v : std::as_const(val)) {
         if (!v.isEmpty()) {
             hasValue = true;
             break;
