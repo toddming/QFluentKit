@@ -11,7 +11,7 @@ class EditableComboBoxPrivate;
 class QFLUENT_EXPORT EditableComboBox : public LineEdit
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE_D(d_ptr, EditableComboBox)
+    Q_DECLARE_PRIVATE(EditableComboBox)
 
 public:
     explicit EditableComboBox(QWidget *parent = nullptr);
@@ -19,14 +19,14 @@ public:
 
     // 添加项目
     void addItem(const QString &text,
-                const QIcon &icon = QIcon(),
-                const QVariant &userData = {});
+                 const QIcon &icon = QIcon(),
+                 const QVariant &userData = {});
     void addItems(const QStringList &texts);
 
     // 插入项目
     void insertItem(int index, const QString &text,
-                   const QIcon &icon = QIcon(),
-                   const QVariant &userData = {});
+                    const QIcon &icon = QIcon(),
+                    const QVariant &userData = {});
     void insertItems(int index, const QStringList &texts);
 
     // 移除项目
@@ -62,8 +62,7 @@ public:
 
     void setMaxVisibleItems(int count);
 
-    int getMaxVisibleItems();
-
+    int maxVisibleItems() const;
 
 signals:
     void currentIndexChanged(int index);
@@ -78,5 +77,4 @@ protected:
 
 private:
     QScopedPointer<EditableComboBoxPrivate> d_ptr;
-
 };

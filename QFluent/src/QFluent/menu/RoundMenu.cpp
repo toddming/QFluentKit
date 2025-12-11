@@ -11,82 +11,96 @@
 
 #include "Theme.h"
 #include "StyleSheet.h"
-
 #include "MenuAnimation.h"
 #include "Private/menu/RoundMenuPrivate.h"
 #include "MenuActionListWidget.h"
 
-RoundMenu::RoundMenu(const QString& title, QWidget* parent)
+RoundMenu::RoundMenu(const QString &title, QWidget *parent)
     : QMenu(title, parent)
-    , d_ptr(new RoundMenuPrivate)
+    , dPtr(new RoundMenuPrivate(this))
 {
     Q_D(RoundMenu);
-    d->q_ptr = this;
 
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-
     setMouseTracking(true);
 
-    d->_isSubMenu = false;
-    d->_layout = new QHBoxLayout(this);
-    d->_view = new MenuActionListWidget(this);
-    d->_showTimer = new QTimer(this);
-    d->_shadowEffect = new QGraphicsDropShadowEffect(d->_view);
+    d->isSubMenu = false;
+    d->layout = new QHBoxLayout(this);
+    d->view = new MenuActionListWidget(this);
+    d->showTimer = new QTimer(this);
+    d->shadowEffect = new QGraphicsDropShadowEffect(d->view);
 
-    d->_layout->addWidget(d->_view);
-    d->_layout->setContentsMargins(12, 8, 12, 20);
-    setLayout(d->_layout);
+    d->layout->addWidget(d->view);
+    d->layout->setContentsMargins(12, 8, 12, 20);
+    setLayout(d->layout);
 
     d->setShadowEffect();
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::MENU);
 
-    connect(d->_view, &QListWidget::itemClicked, d, &RoundMenuPrivate::handleItemClicked);
-    connect(d->_view, &QListWidget::itemEntered, d, &RoundMenuPrivate::handleItemEntered);
+    connect(d->view, &QListWidget::itemClicked, d, &RoundMenuPrivate::onItemClicked);
+    connect(d->view, &QListWidget::itemEntered, d, &RoundMenuPrivate::onItemEntered);
 
-    d->_showTimer->setSingleShot(true);
-    d->_showTimer->setInterval(400);
-    connect(d->_showTimer, &QTimer::timeout, d, &RoundMenuPrivate::onShowMenuTimeout);
+    d->showTimer->setSingleShot(true);
+    d->showTimer->setInterval(400);
+    connect(d->showTimer, &QTimer::timeout, d, &RoundMenuPrivate::onShowMenuTimeout);
 }
 
-RoundMenu::~RoundMenu() {
+RoundMenu::~RoundMenu()
+{
     Q_D(RoundMenu);
-    const auto items = d->_view->findItems("", Qt::MatchContains);
-    for (const auto item : items) {
-        if (auto menu = item->data(Qt::UserRole).value<RoundMenu*>()) {
-            delete menu;
+
+    const QList<QListWidgetItem *> items = d->view->findItems(QString(), Qt::MatchContains);
+    for (QListWidgetItem *item : items) {
+        QVariant data = item->data(Qt::UserRole);
+        if (data.canConvert<RoundMenu *>()) {
+            RoundMenu *menu = data.value<RoundMenu *>();
+            if (menu) {
+                delete menu;
+            }
         }
     }
 }
 
-
-void RoundMenu::setItemHeight(int height) {
+void RoundMenu::setItemHeight(int height)
+{
     Q_D(RoundMenu);
-    d->_view->setItemHeight(height);
+    d->view->setItemHeight(height);
 }
 
-void RoundMenu::setMaxVisibleItems(int num) {
+void RoundMenu::setMaxVisibleItems(int num)
+{
     Q_D(RoundMenu);
-    d->_view->setMaxVisibleItems(num);
+    d->view->setMaxVisibleItems(num);
 }
 
-void RoundMenu::addAction(QAction* action) {
+void RoundMenu::addAction(QAction *action)
+{
     Q_D(RoundMenu);
+
+    if (!action)
+        return;
+
     QListWidgetItem *item = d->createActionItem(action);
-    d->_view->addItem(item);;
+    d->view->addItem(item);
     adjustMenuSize();
 }
 
-void RoundMenu::insertAction(QAction* before, QAction* action) {
+void RoundMenu::insertAction(QAction *before, QAction *action)
+{
     Q_D(RoundMenu);
 
-    for (int i = 0; i < d->_view->count(); ++i) {
-        QListWidgetItem* item = d->_view->item(i);
-        if (item->data(Qt::UserRole).value<QAction*>() == before) {
-            d->createActionItem(action);
-            QListWidgetItem* newItem = d->_view->takeItem(d->_view->count() - 1);
-            d->_view->insertItem(i, newItem);
+    if (!action || !before)
+        return;
+
+    for (int i = 0; i < d->view->count(); ++i) {
+        QListWidgetItem *item = d->view->item(i);
+        QVariant data = item->data(Qt::UserRole);
+        if (data.canConvert<QAction *>() && data.value<QAction *>() == before) {
+            QListWidgetItem *newItem = d->createActionItem(action, before);
+            d->view->insertItem(i, newItem);
+            adjustMenuSize();
             return;
         }
     }
@@ -94,25 +108,36 @@ void RoundMenu::insertAction(QAction* before, QAction* action) {
     addAction(action);
 }
 
-void RoundMenu::removeAction(QAction* action) {
+void RoundMenu::removeAction(QAction *action)
+{
     Q_D(RoundMenu);
 
-    for (int i = 0; i < d->_view->count(); ++i) {
-        QListWidgetItem* item = d->_view->item(i);
-        if (item->data(Qt::UserRole).value<QAction*>() == action) {
-            delete d->_view->takeItem(i);
+    if (!action)
+        return;
+
+    for (int i = 0; i < d->view->count(); ++i) {
+        QListWidgetItem *item = d->view->item(i);
+        QVariant data = item->data(Qt::UserRole);
+        if (data.canConvert<QAction *>() && data.value<QAction *>() == action) {
+            delete d->view->takeItem(i);
+            d->actions.removeOne(action);
+            adjustMenuSize();
             return;
         }
     }
 }
 
-void RoundMenu::addMenu(RoundMenu* menu) {
+void RoundMenu::addMenu(RoundMenu *menu)
+{
     Q_D(RoundMenu);
-    if (menu == nullptr)
+
+    if (!menu)
         return;
-    if (d->_parentMenu) {
-        d->_parentMenu->removeMenu(menu);
+
+    if (d->parentMenu) {
+        d->parentMenu->removeMenu(menu);
     }
+
     d->createSubMenuItem(menu);
     adjustMenuSize();
 }
@@ -121,249 +146,251 @@ void RoundMenu::insertMenu(QAction *before, RoundMenu *menu)
 {
     Q_D(RoundMenu);
 
-    if (!menu)
+    if (!menu || !before)
         return;
 
-    if (!d->_actions.contains(before))
+    if (!d->actions.contains(before))
         return;
 
     d->createSubMenuItem(menu);
-    auto beforeItem = before->property("item").value<QListWidgetItem*>();
-    int index = d->_view->row(beforeItem);
-    d->_view->insertItem(index, menu->d_ptr->_menuItem);
-    // d->_view->setItemWidget(menu->d_ptr->_menuItem, menu->m_menuItemWidget);
-    adjustMenuSize();
+
+    QVariant itemData = before->property("item");
+    if (!itemData.canConvert<QListWidgetItem *>())
+        return;
+
+    QListWidgetItem *beforeItem = itemData.value<QListWidgetItem *>();
+    int index = d->view->row(beforeItem);
+
+    if (index >= 0 && menu->dPtr->menuItem) {
+        d->view->insertItem(index, menu->dPtr->menuItem);
+        adjustMenuSize();
+    }
 }
 
 void RoundMenu::removeMenu(RoundMenu *menu)
 {
     Q_D(RoundMenu);
-    if (!d->_subMenus.contains(menu))
+
+    if (!menu || !d->subMenus.contains(menu))
         return;
 
-    auto item = menu->d_ptr->_menuItem;
-    d->_subMenus.removeOne(menu);
+    QListWidgetItem *item = menu->dPtr->menuItem;
+    d->subMenus.removeOne(menu);
     d->removeItem(item);
-}
-
-void RoundMenu::addSeparator() {
-    Q_D(RoundMenu);
-
-    QMargins m = d->_view->contentsMargins();
-    int w = d->_view->width()-m.left()-m.right();
-
-    QListWidgetItem* separator = new QListWidgetItem;
-    separator->setFlags(Qt::NoItemFlags);
-    separator->setSizeHint(QSize(w, 9));
-    separator->setData(Qt::DecorationRole, "separator");
-    d->_view->addItem(separator);
     adjustMenuSize();
-    adjustSize();
 }
 
-void RoundMenu::clear() {
+void RoundMenu::addSeparator()
+{
     Q_D(RoundMenu);
 
-    d->_view->clear();
+    QMargins margins = d->view->contentsMargins();
+    int width = d->view->width() - margins.left() - margins.right();
+
+    QListWidgetItem *separator = new QListWidgetItem;
+    separator->setFlags(Qt::NoItemFlags);
+    separator->setSizeHint(QSize(width, 9));
+    separator->setData(Qt::DecorationRole, QStringLiteral("separator"));
+
+    d->view->addItem(separator);
+    adjustMenuSize();
 }
 
-
-void RoundMenu::exec(const QPoint& pos, bool animate, Fluent::MenuAnimation aniType) {
+void RoundMenu::clear()
+{
     Q_D(RoundMenu);
 
-    d->_view->adjustSize(pos, aniType);
-    if (!animate) aniType = Fluent::MenuAnimation::NONE;
+    d->actions.clear();
+    d->subMenus.clear();
+    d->view->clear();
+}
+
+void RoundMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniType)
+{
+    Q_D(RoundMenu);
+
+    d->view->adjustSize(pos, aniType);
+
+    if (!animate)
+        aniType = Fluent::MenuAnimation::NONE;
+
     MenuAnimationManager::make(this, aniType)->exec(pos);
     adjustMenuSize();
 
     show();
-    if (d->_isSubMenu)
-        d->_menuItem->setSelected(true);
+
+    if (d->isSubMenu && d->menuItem) {
+        d->menuItem->setSelected(true);
+    }
 }
 
-
-
-void RoundMenu::adjustMenuSize() {
+void RoundMenu::adjustMenuSize()
+{
     Q_D(RoundMenu);
 
-    QSize viewSize = d->_view->size();
-    setFixedSize(viewSize.width() + d->_layout->contentsMargins().left() +
-                 d->_layout->contentsMargins().right(),
-                 viewSize.height() + d->_layout->contentsMargins().top() +
-                 d->_layout->contentsMargins().bottom() + 2);
+    QSize viewSize = d->view->size();
+    QMargins margins = d->layout->contentsMargins();
+
+    setFixedSize(viewSize.width() + margins.left() + margins.right(),
+                 viewSize.height() + margins.top() + margins.bottom() + 2);
 }
 
 int RoundMenu::itemHeight() const
 {
     Q_D(const RoundMenu);
-
-    return d->_view->itemHeight();
+    return d->view->itemHeight();
 }
 
-MenuActionListWidget* RoundMenu::view()
+MenuActionListWidget *RoundMenu::view() const
 {
-    Q_D(RoundMenu);
-
-    return d->_view;
+    Q_D(const RoundMenu);
+    return d->view;
 }
 
-void RoundMenu::closeEvent(QCloseEvent* e) {
-    Q_UNUSED(e);
+void RoundMenu::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
     Q_D(RoundMenu);
 
     emit closed();
-    if (d->_parentMenu) {
-        d->_parentMenu->close();
+
+    if (d->parentMenu) {
+        d->parentMenu->close();
     }
-    d->_view->clearSelection();
-    d->_view->setCurrentItem(nullptr);
-    d->_view->clearFocus();
-    d->_isHideBySystem = true;
+
+    d->view->clearSelection();
+    d->view->setCurrentItem(nullptr);
+    d->view->clearFocus();
+    d->isHideBySystem = true;
 }
 
-QList<QAction*> RoundMenu::menuActions()
+QList<QAction *> RoundMenu::menuActions() const
 {
-    Q_D(RoundMenu);
-
-    return d->_actions;
+    Q_D(const RoundMenu);
+    return d->actions;
 }
 
 void RoundMenu::setDefaultAction(QAction *action)
 {
     Q_D(RoundMenu);
 
-    if (!d->_actions.contains(action)) {
+    if (!action || !d->actions.contains(action))
         return;
-    }
-    QListWidgetItem* item = qvariant_cast<QListWidgetItem*>(action->property("item"));
-    if (item) {
-        d->_view->setCurrentItem(item);
+
+    QVariant itemData = action->property("item");
+    if (itemData.canConvert<QListWidgetItem *>()) {
+        QListWidgetItem *item = itemData.value<QListWidgetItem *>();
+        if (item) {
+            d->view->setCurrentItem(item);
+        }
     }
 }
 
-
-void RoundMenu::paintEvent(QPaintEvent *)
+void RoundMenu::paintEvent(QPaintEvent *event)
 {
-
+    Q_UNUSED(event);
 }
 
 void RoundMenu::hideMenu(bool isHideBySystem)
 {
     Q_D(RoundMenu);
-    d->_isHideBySystem = isHideBySystem;
-    d->_view->clearSelection();
-    if (d->_isSubMenu) {
+
+    d->isHideBySystem = isHideBySystem;
+    d->view->clearSelection();
+
+    if (d->isSubMenu) {
         hide();
     } else {
         close();
     }
 }
 
-// void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
-//     Q_D(RoundMenu);
-
-//     if (!d->_isSubMenu) {
-//         return;
-//     }
-
-//     QPoint pos = e->globalPosition().toPoint();
-
-//     // get the rect of menu item
-//     QMargins margin = d->_view->contentsMargins();
-//     QRect rect = d->_view->visualItemRect(nullptr)
-//                      .translated(d->_view->mapToGlobal(QPoint(0, 0)));
-//     rect.translate(margin.left(), margin.top() + 2);
-
-//     if (d->_view->geometry().contains(pos) &&
-//         !rect.contains(pos) &&
-//         !this->geometry().contains(pos)) {
-//         d->_view->clearSelection();
-//         hideMenu(false);
-//     }
-// }
-
-void RoundMenu::mouseMoveEvent(QMouseEvent* e) {
+void RoundMenu::mouseMoveEvent(QMouseEvent *event)
+{
     Q_D(RoundMenu);
-    if (!d->_isSubMenu) {
+
+    if (!d->isSubMenu || !d->parentMenu)
         return;
-    }
 
-    // 获取鼠标全局位置
-    QPoint pos = e->globalPos();  // 直接使用 globalPos() 函数
+    QPoint globalPos = event->globalPos();
 
-    auto view = d->_parentMenu->view();
-    // 获取当前菜单项的矩形区域
-    QMargins margin = view->contentsMargins();
-    QRect rect = view->visualItemRect(d->_menuItem).translated(view->mapToGlobal(QPoint(0, 0)));
+    MenuActionListWidget *parentView = d->parentMenu->view();
+    if (!parentView || !d->menuItem)
+        return;
 
-    rect.translate(margin.left(), margin.top() + 2);
+    QMargins margins = parentView->contentsMargins();
+    QRect itemRect = parentView->visualItemRect(d->menuItem);
+    itemRect.translate(parentView->mapToGlobal(QPoint(0, 0)));
+    itemRect.translate(margins.left(), margins.top() + 2);
 
-    // 检查鼠标是否在父菜单区域内，但不在当前菜单项矩形区域内，且也不在当前子菜单区域内
-    if (d->_parentMenu && d->_parentMenu->geometry().contains(pos) &&
-        !rect.contains(pos) &&
-        !this->geometry().contains(pos)) {
-        view->clearSelection();
+    if (d->parentMenu->geometry().contains(globalPos) &&
+        !itemRect.contains(globalPos) &&
+        !geometry().contains(globalPos)) {
+        parentView->clearSelection();
         hideMenu(false);
     }
 }
 
-void RoundMenu::mousePressEvent(QMouseEvent* e) {
+void RoundMenu::mousePressEvent(QMouseEvent *event)
+{
     Q_D(RoundMenu);
 
-    QWidget* w = this->childAt(e->pos());
-    if (w != d->_view && !d->_view->isAncestorOf(w)) {
+    QWidget *widget = childAt(event->pos());
+    if (widget != d->view && !d->view->isAncestorOf(widget)) {
         hideMenu(true);
     }
 }
-
 
 void RoundMenu::addWidget(QWidget *widget, bool selectable)
 {
     Q_D(RoundMenu);
 
-    auto action = new QAction();
+    if (!widget)
+        return;
+
+    QAction *action = new QAction(this);
     action->setSeparator(selectable);
 
-    auto item = d->createActionItem(action);
+    QListWidgetItem *item = d->createActionItem(action);
     item->setSizeHint(widget->size());
 
-    d->_view->addItem(item);
-    d->_view->setItemWidget(item, widget);
-    d->_view->adjustSize();
+    d->view->addItem(item);
+    d->view->setItemWidget(item, widget);
+    d->view->adjustSize();
 
     if (!selectable) {
         item->setFlags(Qt::NoItemFlags);
     }
 
     adjustMenuSize();
-    adjustSize();
 }
-
 
 int RoundMenu::adjustItemText(QListWidgetItem *item, QAction *action)
 {
     Q_D(RoundMenu);
 
-    if (!item || !action) return 0;
+    if (!item || !action)
+        return 0;
 
     QString text = action->text();
-    text.remove('&');
+    text.remove(QLatin1Char('&'));
 
-    QFontMetrics fm(item->font());
+    QFontMetrics fontMetrics(item->font());
     int shortcutWidth = d->longestShortcutWidth();
+
     if (shortcutWidth > 0) {
-        shortcutWidth += 22; // 保留空间
+        shortcutWidth += 22;
     }
 
     int width;
     bool hasIcon = d->hasItemIcon();
 
     if (!hasIcon) {
-        width = 40 + fm.horizontalAdvance(text) + shortcutWidth;
+        width = 40 + fontMetrics.horizontalAdvance(text) + shortcutWidth;
     } else {
-        text = " " + text;
-        int space = 4 - fm.horizontalAdvance(" ");
-        width = 60 + fm.horizontalAdvance(text) + shortcutWidth + space;
+        text = QLatin1Char(' ') + text;
+        int space = 4 - fontMetrics.horizontalAdvance(QLatin1String(" "));
+        width = 60 + fontMetrics.horizontalAdvance(text) + shortcutWidth + space;
         item->setText(text);
     }
 

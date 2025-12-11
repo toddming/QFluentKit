@@ -7,7 +7,6 @@
 #include "QFluent/LineEdit.h"
 #include "QFluent/EditableComboBox.h"
 
-
 namespace EditableComboBoxDetail {
 struct ComboItem {
     QString text;
@@ -28,16 +27,16 @@ class EditableComboBoxPrivate : public QObject {
     Q_DECLARE_PUBLIC(EditableComboBox)
 
 public:
-    explicit EditableComboBoxPrivate(EditableComboBox* parent);
+    explicit EditableComboBoxPrivate(EditableComboBox *parent);
 
     void handleMenuAction(QAction *action);
     void toggleComboMenu();
 
-    bool _isPressed;
-    bool _isHover;
-    QString _placeholderText;
-    int _currentIndex;
-    int _maxVisibleItems;
+    bool isPressed;
+    bool isHover;
+    QString placeholderText;
+    int currentIndex;
+    int maxVisibleItems;
 
     void onClearButtonClicked();
     void onDropMenuClosed();
@@ -45,10 +44,10 @@ public:
     void onActivated(const QString &text);
     void onReturnPressed();
 
-    LineEditButton *_dropButton = nullptr;
-    ComboBoxMenu *_dropMenu = nullptr;
-    TranslateYAnimation *_arrowAni = nullptr;
-    QVector<EditableComboBoxDetail::ComboItem> _items;
+    LineEditButton *dropButton = nullptr;
+    ComboBoxMenu *dropMenu = nullptr;
+    TranslateYAnimation *arrowAni = nullptr;
+    QVector<EditableComboBoxDetail::ComboItem> items;
 
     ComboBoxMenu* createComboMenu();
     void updateTextState(bool isPlaceholder);

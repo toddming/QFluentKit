@@ -29,15 +29,15 @@ public:
     explicit ComboBoxPrivate(ComboBox *parent);
     void handleMenuAction(QAction *action);
 
-    bool _isPressed;
-    bool _isHover;
-    QString _placeholderText;
-    int _currentIndex;
-    int _maxVisibleItems;
+    bool isPressed;
+    bool isHover;
+    QString placeholderText;
+    int currentIndex;
+    int maxVisibleItems;
 
-    ComboBoxMenu *_dropMenu = nullptr;
-    TranslateYAnimation *_arrowAni = nullptr;
-    QVector<ComboBoxDetail::ComboItem> _items;
+    ComboBoxMenu *dropMenu = nullptr;
+    TranslateYAnimation *arrowAni = nullptr;
+    QVector<ComboBoxDetail::ComboItem> items;
 
     ComboBoxMenu* createComboMenu();
     void updateTextState(bool isPlaceholder);
@@ -47,5 +47,4 @@ public:
 
 private:
     ComboBox * const q_ptr;
-
 };
