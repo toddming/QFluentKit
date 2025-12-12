@@ -12,20 +12,14 @@
 #include "QFluent/RadioButton.h"
 #include "QFluent/SwitchButton.h"
 #include "QFluent/EditableComboBox.h"
+#include "QFluent/MultiViewComboBox.h"
 
 BasicInputInterface::BasicInputInterface(QWidget *parent)
     : GalleryInterface("基本输入", "", parent)
 {
     setObjectName("basicInputInterface");
 
-    auto pushButton = new PushButton("标准按钮", this);
-    auto testMenu = new RoundMenu("menu", this);
-    testMenu->addWidget(new CheckBox("项目1", testMenu));
-    testMenu->addWidget(new CheckBox("项目2", testMenu));
-    connect(pushButton, &PushButton::clicked, this, [=](){
-        testMenu->exec(QCursor::pos());
-    });
-    addExampleCard("带有文本的简单按钮", pushButton);
+    addExampleCard("带有文本的简单按钮", new PushButton("标准按钮", this));
 
     auto button = new ToolButton(QIcon(":/res/Slices.png"), this);
     button->setIconSize(QSize(40, 40));
@@ -55,6 +49,12 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     editableComboBox->addItems({"可编辑的项目_1" , "可编辑的项目_2", "可编辑的项目_3", "可编辑的项目_4"});
     editableComboBox->setMinimumWidth(210);
     addExampleCard("可编辑的下拉框", editableComboBox);
+
+    auto multComboBox = new MultiViewComboBox(this);
+    multComboBox->setPlaceholderText("多选下拉框");
+    multComboBox->setFixedWidth(210);
+    multComboBox->addItems({"项目1", "项目2", "项目3", "项目4", "项目5"});
+    addExampleCard("多选下拉框", multComboBox);
 
     auto dropDownPushButtonMenu = new RoundMenu("menu", this);
     dropDownPushButtonMenu->addAction(new Action(FluentIcon(Fluent::IconType::SEND).qicon(), "发送"));
