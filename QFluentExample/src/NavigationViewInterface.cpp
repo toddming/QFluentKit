@@ -29,7 +29,7 @@ QWidget* NavigationViewInterface::createTabWidget()
     tabView->setMinimumHeight(200);
 
     tabBar = new TabBar(tabView);
-    tabBar->setMovable(false);         // 禁用拖拽标签
+    tabBar->setMovable(true);         // 禁用拖拽标签
     tabBar->setTabsClosable(true);     // 显示关闭按钮
     tabBar->setAddButtonVisible(true); // 显示添加按钮
     tabBar->setScrollable(false);      // 禁用标签滚动
