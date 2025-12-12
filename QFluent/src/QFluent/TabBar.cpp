@@ -564,7 +564,7 @@ void TabBar::onItemPressed()
     if (!pressedItem)
         return;
 
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         item->setSelected(item == pressedItem);
     }
 
@@ -583,7 +583,7 @@ void TabBar::setCloseButtonDisplayMode(TabCloseButtonDisplayMode mode)
         return;
 
     m_closeButtonDisplayMode = mode;
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         item->setCloseButtonDisplayMode(mode);
     }
 }
@@ -706,7 +706,7 @@ void TabBar::setTabSelectedBackgroundColor(const QColor &light, const QColor &da
     m_lightSelectedBackgroundColor = light;
     m_darkSelectedBackgroundColor = dark;
 
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         item->setSelectedBackgroundColor(light, dark);
     }
 }
@@ -717,7 +717,7 @@ void TabBar::setTabShadowEnabled(bool enabled)
         return;
 
     m_isTabShadowEnabled = enabled;
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         item->setShadowEnabled(enabled);
     }
 }
@@ -762,7 +762,7 @@ void TabBar::setScrollable(bool scrollable)
 {
     m_isScrollable = scrollable;
     const int width = scrollable ? m_tabMaxWidth : m_tabMinWidth;
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         item->setMinimumWidth(width);
     }
 }
@@ -773,7 +773,7 @@ void TabBar::setTabMaximumWidth(int width)
         return;
 
     m_tabMaxWidth = width;
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         item->setMaximumWidth(width);
     }
 }
@@ -786,7 +786,7 @@ void TabBar::setTabMinimumWidth(int width)
     m_tabMinWidth = width;
 
     if (!isScrollable()) {
-        for (TabItem *item : qAsConst(m_items)) {
+        for (TabItem *item : std::as_const(m_items)) {
             item->setMinimumWidth(width);
         }
     }
@@ -875,12 +875,12 @@ void TabBar::adjustLayout()
 {
     sender()->disconnect(this);
 
-    for (TabItem *item : qAsConst(m_items)) {
+    for (TabItem *item : std::as_const(m_items)) {
         m_itemLayout->removeWidget(item);
     }
 
-    for (TabItem *item : qAsConst(m_items)) {
-        m_itemLayout->addWidget(item);
+    for (TabItem *item : std::as_const(m_items)) {
+        m_itemLayout->addWidget(item, 1);
     }
 }
 

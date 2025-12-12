@@ -2,6 +2,7 @@
 
 #include "GalleryInterface.h"
 #include "QFluent/TabBar.h"
+#include "QFluent/StackedWidget.h"
 
 class NavigationViewInterface : public GalleryInterface
 {
@@ -16,5 +17,9 @@ private:
     void removeTab(int index);
 
     TabBar* tabBar;
+    StackedWidget* stacked;
+
+    QMap<int, QWidget*> tabMap;
+
     int tabCount = 0;
 };
