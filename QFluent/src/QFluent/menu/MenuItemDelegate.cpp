@@ -136,11 +136,11 @@ void CheckableMenuItemDelegate::paint(QPainter *painter,
         return;
 
     QAction *action = qvariant_cast<QAction*>(actionData);
-    if (!action || !action->isChecked())
+    if (!action)
         return;
 
     painter->save();
-    drawIndicator(painter, option, index);
+    drawIndicator(painter, option, index, action->isChecked());
     painter->restore();
 }
 
@@ -151,8 +151,10 @@ RadioIndicatorMenuItemDelegate::RadioIndicatorMenuItemDelegate(QObject *parent)
 
 void RadioIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
                                                    const QStyleOptionViewItem &option,
-                                                   const QModelIndex &index) const
+                                                   const QModelIndex &index, bool checked) const
 {
+    if (!checked)
+        return;
     QRect rect = option.rect;
     int r = 5;
     int x = rect.x() + 22;
@@ -175,17 +177,27 @@ CheckIndicatorMenuItemDelegate::CheckIndicatorMenuItemDelegate(QObject *parent)
 
 void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
                                                    const QStyleOptionViewItem &option,
-                                                   const QModelIndex &index) const
+                                                   const QModelIndex &index, bool checked) const
 {
     QRect rect = option.rect;
-    int s = 11;
+
+    int s = 16;
     int x = rect.x() + 19;
-    int y = rect.center().y() - s / 2;
+    int y = rect.center().y() - s / 2 + 2;
 
     painter->setRenderHints(QPainter::Antialiasing);
     if (!(option.state & QStyle::State_MouseOver)) {
         painter->setOpacity(0.75);
     }
 
-    FluentIcon(Fluent::IconType::ACCEPT).render(painter, rect);
+    bool isDark = Theme::instance()->isDarkTheme();
+    painter->setPen(isDark ? (checked ? Theme::instance()->themeColor() : QColor(255, 255, 255, 141))
+                           : (checked ? Theme::instance()->themeColor(): QColor(0, 0, 0, 122)));
+    painter->setBrush(checked ? Theme::instance()->themeColor() : QColor(0, 0, 0, 6));
+    painter->drawRoundedRect(QRectF(x, y, s, s), 2.5, 2.5);
+
+    const QString fillPath = ":/res/images/check_box/%1_{color}.svg";
+    if (checked) {
+        FluentIconUtils::drawIcon(FluentIcon(fillPath.arg("Accept")), painter, QRectF(x, y, s, s));
+    }
 }

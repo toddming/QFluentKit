@@ -78,3 +78,8 @@ MenuActionListWidget::item:selected:active {
 #checkableListWidget::item {
     padding-left: 36px;
 }
+
+#multiListWidget::item {
+    margin-top: 2px;
+    padding-left: 36px;
+}

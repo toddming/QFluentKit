@@ -49,6 +49,7 @@ public:
 
     bool isSubMenu;
     bool isHideBySystem;
+    bool isHideByClick;
 
     MenuActionListWidget *view;
     QHBoxLayout *layout;

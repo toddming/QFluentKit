@@ -20,7 +20,7 @@ struct ComboItem {
 };
 }
 
-class ComboBoxMenu;
+class MultiViewComboBoxMenu;
 class TranslateYAnimation;
 class CheckBox;
 class MultiViewComboBoxPrivate : public QObject {
@@ -36,11 +36,11 @@ public:
     int maxVisibleItems = -1;
     QList<int> selectedIndexes;  // 选中的索引列表
 
-    ComboBoxMenu *dropMenu = nullptr;
+    MultiViewComboBoxMenu *dropMenu = nullptr;
     TranslateYAnimation *arrowAni = nullptr;
     QVector<MultiViewComboBoxDetail::ComboItem> items;
 
-    ComboBoxMenu* createComboMenu();
+    MultiViewComboBoxMenu* createComboMenu();
     void showComboMenu();
     void closeComboMenu();
     void toggleComboMenu();

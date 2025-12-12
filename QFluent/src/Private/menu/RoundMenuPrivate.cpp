@@ -20,6 +20,7 @@ RoundMenuPrivate::RoundMenuPrivate(RoundMenu *parent)
     , q_ptr(parent)
     , isSubMenu(false)
     , isHideBySystem(true)
+    , isHideByClick(true)
     , view(nullptr)
     , layout(nullptr)
     , showTimer(nullptr)
@@ -80,8 +81,9 @@ void RoundMenuPrivate::onItemClicked(QListWidgetItem *item)
                 QApplication::sendEvent(view->viewport(), &hoverLeave);
                 view->update();
             }
-
-            q->close();
+            if (isHideByClick) {
+                q->close();
+            }
         }
     }
 }

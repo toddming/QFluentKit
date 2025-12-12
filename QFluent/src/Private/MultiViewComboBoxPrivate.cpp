@@ -1,8 +1,7 @@
 ﻿#include "MultiViewComboBoxPrivate.h"
 #include "QFluent/MultiViewComboBox.h"
-#include "QFluent/menu/ComboBoxMenu.h"
+#include "QFluent/menu/MultiViewComboBoxMenu.h"
 #include "QFluent/menu/MenuActionListWidget.h"
-#include "QFluent/CheckBox.h"
 #include "FluentGlobal.h"
 
 #include <QStyle>
@@ -35,23 +34,24 @@ void MultiViewComboBoxPrivate::updateText()
     q->adjustSize();
 }
 
-ComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
+MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
 {
     Q_Q(MultiViewComboBox);
 
-    ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
+    MultiViewComboBoxMenu *menu = new MultiViewComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
 
     for (int i = 0; i < q->count(); ++i) {
-        CheckBox *checkBox = new CheckBox(items[i].text, menu);
-        checkBox->setChecked(selectedIndexes.contains(i));
-        connect(checkBox, &CheckBox::toggled, [=](bool checked) {
+        QAction *action = new QAction(items[i].icon, items[i].text, menu);
+        action->setCheckable(true);
+        action->setChecked(selectedIndexes.contains(i));
+        menu->addAction(action);
+        connect(action, &QAction::triggered, q, [=](bool checked) {
             handleCheckBoxToggled(i, checked);
         });
-        menu->addWidget(checkBox);
     }
 
-    connect(menu, &ComboBoxMenu::closed, q, [=]() {
+    connect(menu, &MultiViewComboBoxMenu::closed, q, [=]() {
         QPoint pos = q->mapFromGlobal(QCursor::pos());
         if (!q->rect().contains(pos)) {
             dropMenu = nullptr;
@@ -103,7 +103,6 @@ void MultiViewComboBoxPrivate::closeComboMenu()
     if (!dropMenu) {
         return;
     }
-    dropMenu->close();
     dropMenu = nullptr;
 }
 

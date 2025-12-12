@@ -61,7 +61,7 @@ protected:
 
     virtual void drawIndicator(QPainter *painter,
                                const QStyleOptionViewItem &option,
-                               const QModelIndex &index) const = 0;
+                               const QModelIndex &index, bool checked) const = 0;
 };
 
 class RadioIndicatorMenuItemDelegate : public CheckableMenuItemDelegate
@@ -74,7 +74,7 @@ public:
 protected:
     void drawIndicator(QPainter *painter,
                        const QStyleOptionViewItem &option,
-                       const QModelIndex &index) const override;
+                       const QModelIndex &index, bool checked) const override;
 };
 
 class CheckIndicatorMenuItemDelegate : public CheckableMenuItemDelegate
@@ -87,5 +87,5 @@ public:
 protected:
     void drawIndicator(QPainter *painter,
                        const QStyleOptionViewItem &option,
-                       const QModelIndex &index) const override;
+                       const QModelIndex &index, bool checked) const override;
 };

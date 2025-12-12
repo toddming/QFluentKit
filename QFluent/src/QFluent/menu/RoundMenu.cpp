@@ -396,3 +396,9 @@ int RoundMenu::adjustItemText(QListWidgetItem *item, QAction *action)
 
     return width;
 }
+
+void RoundMenu::setHideByClick(bool enabled)
+{
+    Q_D(RoundMenu);
+    d->isHideByClick = enabled;
+}
