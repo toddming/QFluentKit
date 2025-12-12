@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "GalleryInterface.h"
-#include "QFluent/TabView.h"
+#include "QFluent/TabBar.h"
 
 class NavigationViewInterface : public GalleryInterface
 {

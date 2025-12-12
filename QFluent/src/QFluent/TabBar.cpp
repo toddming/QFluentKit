@@ -1,4 +1,4 @@
-﻿#include "TabView.h"
+﻿#include "TabBar.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QLinearGradient>

@@ -1,5 +1,4 @@
-﻿#ifndef TAB_VIEW_H
-#define TAB_VIEW_H
+﻿#pragma once
 
 #include <QPushButton>
 
@@ -182,5 +181,3 @@ private:
     QHBoxLayout* widgetLayout;
     TabToolButton* addButton;
 };
-
-#endif // TAB_VIEW_H
