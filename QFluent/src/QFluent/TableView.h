@@ -1,26 +1,32 @@
 ﻿#ifndef TABLE_VIEW_H
 #define TABLE_VIEW_H
 
-#include <QStyledItemDelegate>
 #include <QTableView>
 #include <QTableWidget>
-#include <QKeyEvent>
-#include <QModelIndex>
-#include <QSet>
-#include <QWidget>
-#include <QApplication>
+#include <QStyledItemDelegate>
 #include <QHeaderView>
-#include <QEvent>
-#include <QResizeEvent>
+#include <QSet>
+#include <QList>
+#include <QModelIndex>
 #include <QMouseEvent>
 
-#include "Theme.h"
+class QPainter;
+class QEvent;
+class QKeyEvent;
+class QResizeEvent;
+class QMouseEvent;
+class QStyleOptionViewItem;
+class QWidget;
+class TableItemDelegate;
+
 #include "FluentGlobal.h"
 #include "StyleSheet.h"
 
-
-class QPainter;
+/**
+ * @brief 自定义表格项代理，处理绘制和编辑
+ */
 class TableItemDelegate : public QStyledItemDelegate {
+    Q_OBJECT
 public:
     explicit TableItemDelegate(QTableView* parent = nullptr);
 
@@ -35,65 +41,59 @@ public:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
 private:
-    void _drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    void _drawIndicator(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    void _drawCheckBox(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void drawIndicator(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void drawCheckBox(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
-    int margin = 2;
-    int hoverRow = -1;
-    int pressedRow = -1;
-    QSet<int> selectedRows;
+private:
+    int m_margin;
+    int m_hoverRow;
+    int m_pressedRow;
+    QSet<int> m_selectedRows;
 };
 
+/**
+ * @brief 表格基类模板，用于混入 QTableView 或 QTableWidget
+ * 注意：模板类的实现必须放在头文件中
+ */
 template <typename Base>
 class TableBase : public Base {
 public:
-    explicit TableBase(QWidget* parent = nullptr) : Base(parent),
-        delegate(new TableItemDelegate(this)),
-
-        _isSelectRightClickedRow(false) {
-
+    explicit TableBase(QWidget* parent = nullptr)
+        : Base(parent)
+        , m_delegate(new TableItemDelegate(this)) // delegate 父对象为 this，无需手动 delete
+        , m_isRightClickSelection(false)
+    {
+        // 注册样式
         StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TABLE_VIEW);
 
-        this->setShowGrid(false);
-        this->setMouseTracking(true);
-        this->setAlternatingRowColors(true);
-        this->setItemDelegate(delegate);
-        this->setSelectionBehavior(QAbstractItemView::SelectRows);
-        this->horizontalHeader()->setHighlightSections(false);
-        this->verticalHeader()->setHighlightSections(false);
-        this->verticalHeader()->setDefaultSectionSize(38);
-
-        QObject::connect(this, &QAbstractItemView::entered, [this](const QModelIndex& index) {
-            _setHoverRow(index.row());
-        });
-        QObject::connect(this, &QAbstractItemView::pressed, [this](const QModelIndex& index) {
-            _setPressedRow(index.row());
-        });
-        QObject::connect(this->verticalHeader(), &QHeaderView::sectionClicked, [this](int logicalIndex) {
-            this->selectRow(logicalIndex);
-        });
+        setupUI();
+        setupConnections();
     }
 
-    ~TableBase() {
-        delete delegate;
-    }
+    virtual ~TableBase() = default;
 
     void setBorderVisible(bool isVisible) {
         this->setProperty("isBorderVisible", isVisible);
-        this->setStyle(QApplication::style());
+        this->style()->polish(this); // 强制刷新样式
     }
 
+    // 预留接口
     void setBorderRadius(int radius) {
-        // QString qss = QString("QTableView{border-radius: %1px}").arg(radius);
-        // // setCustomStyleSheet(this, qss, qss); // 未实现
-        // this->setProperty("lightCustomQss", qss);
-        // this->setProperty("darkCustomQss", qss);
+        Q_UNUSED(radius);
+        // this->setProperty("lightCustomQss", ...);
     }
+
+    void setItemDelegate(TableItemDelegate* delegate) {
+        m_delegate = delegate;
+        Base::setItemDelegate(delegate);
+    }
+
+    // --- 事件重写 ---
 
     void leaveEvent(QEvent* event) override {
         Base::leaveEvent(event);
-        _setHoverRow(-1);
+        setHoverRow(-1);
     }
 
     void resizeEvent(QResizeEvent* event) override {
@@ -107,32 +107,33 @@ public:
     }
 
     void mousePressEvent(QMouseEvent* event) override {
-        if (event->button() == Qt::LeftButton || _isSelectRightClickedRow) {
+        // 如果是左键或者是启用了右键选中
+        if (event->button() == Qt::LeftButton || m_isRightClickSelection) {
             Base::mousePressEvent(event);
             return;
         }
 
+        // 处理其他情况（如右键且未启用选中），仅更新按下状态但不改变选中项
         QModelIndex index = this->indexAt(event->pos());
         if (index.isValid()) {
-            _setPressedRow(index.row());
+            setPressedRow(index.row());
         }
 
-        QWidget::mousePressEvent(event); // 调用基类QWidget版本
+        // 调用 QWidget 的处理而不是 Base (QTableView) 的处理，以避免触发默认的选择行为
+        QWidget::mousePressEvent(event);
     }
 
     void mouseReleaseEvent(QMouseEvent* event) override {
         Base::mouseReleaseEvent(event);
         updateSelectedRows();
 
+        // 点击空白处或右键释放时清除按下状态
         if (this->indexAt(event->pos()).row() < 0 || event->button() == Qt::RightButton) {
-            _setPressedRow(-1);
+            setPressedRow(-1);
         }
     }
 
-    void setItemDelegate(TableItemDelegate* delegate) {
-        this->delegate = delegate;
-        Base::setItemDelegate(delegate);
-    }
+    // --- 选中状态管理 ---
 
     void selectAll() override {
         Base::selectAll();
@@ -154,46 +155,75 @@ public:
         updateSelectedRows();
     }
 
-    bool isSelectRightClickedRow() const {
-        return _isSelectRightClickedRow;
+    // --- Getters & Setters ---
+
+    bool isRightClickSelectionEnabled() const {
+        return m_isRightClickSelection;
     }
 
-    void setSelectRightClickedRow(bool isSelect) {
-        _isSelectRightClickedRow = isSelect;
+    void setRightClickSelectionEnabled(bool enabled) {
+        m_isRightClickSelection = enabled;
     }
 
 protected:
-    void _setHoverRow(int row) {
-        delegate->setHoverRow(row);
+    void setHoverRow(int row) {
+        m_delegate->setHoverRow(row);
         this->viewport()->update();
     }
 
-    void _setPressedRow(int row) {
+    void setPressedRow(int row) {
         if (this->selectionMode() == QAbstractItemView::NoSelection) {
             return;
         }
-        delegate->setPressedRow(row);
+        m_delegate->setPressedRow(row);
         this->viewport()->update();
     }
 
-    void _setSelectedRows(const QList<QModelIndex>& indexes) {
+    void setSelectedRows(const QList<QModelIndex>& indexes) {
         if (this->selectionMode() == QAbstractItemView::NoSelection) {
             return;
         }
-        delegate->setSelectedRows(indexes);
+        m_delegate->setSelectedRows(indexes);
         this->viewport()->update();
     }
 
     void updateSelectedRows() {
-        _setSelectedRows(this->selectedIndexes());
+        setSelectedRows(this->selectedIndexes());
+    }
+
+private:
+    void setupUI() {
+        this->setShowGrid(false);
+        this->setMouseTracking(true);
+        this->setAlternatingRowColors(true);
+        this->setItemDelegate(m_delegate);
+        this->setSelectionBehavior(QAbstractItemView::SelectRows);
+        this->horizontalHeader()->setHighlightSections(false);
+        this->verticalHeader()->setHighlightSections(false);
+        this->verticalHeader()->setDefaultSectionSize(38);
+    }
+
+    void setupConnections() {
+        QObject::connect(this, &QAbstractItemView::entered, [this](const QModelIndex& index) {
+            setHoverRow(index.row());
+        });
+        QObject::connect(this, &QAbstractItemView::pressed, [this](const QModelIndex& index) {
+            setPressedRow(index.row());
+        });
+        QObject::connect(this->verticalHeader(), &QHeaderView::sectionClicked, [this](int logicalIndex) {
+            this->selectRow(logicalIndex);
+        });
     }
 
 protected:
-    TableItemDelegate* delegate;
-    bool _isSelectRightClickedRow;
+    TableItemDelegate* m_delegate;
+    bool m_isRightClickSelection;
 };
 
+// 导出类定义
+
 class QFLUENT_EXPORT TableWidget : public TableBase<QTableWidget> {
+    Q_OBJECT
 public:
     explicit TableWidget(QWidget* parent = nullptr);
 
@@ -202,6 +232,7 @@ public:
 };
 
 class QFLUENT_EXPORT TableView : public TableBase<QTableView> {
+    Q_OBJECT
 public:
     explicit TableView(QWidget* parent = nullptr);
 };

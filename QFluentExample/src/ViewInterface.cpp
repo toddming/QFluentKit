@@ -11,7 +11,7 @@ ViewInterface::ViewInterface(QWidget *parent)
     tableWidget->setFixedSize(725, 440);
     tableWidget->verticalHeader()->hide();
     tableWidget->setBorderVisible(true);
-    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     QVector<QStringList> demoData = {
