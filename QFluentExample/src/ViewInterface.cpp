@@ -1,5 +1,6 @@
 ﻿#include "ViewInterface.h"
 
+#include "QFluent/ListView.h"
 #include "QFluent/TableView.h"
 
 ViewInterface::ViewInterface(QWidget *parent)
@@ -45,6 +46,49 @@ ViewInterface::ViewInterface(QWidget *parent)
     }
 
     addExampleCard("简单的表格组件", tableWidget);
+
+    auto listWidget = new ListWidget(this);
+    QStringList stands = {
+        "隐者之紫", "黄金体验", "虚无之王", "纸月之王",
+        "骇人恶兽", "男子领域", "20世纪男孩", "牙 Act 4",
+        "铁球破坏者", "性感手枪", "天生完美",
+        "软又湿", "佩斯利公园", "奇迹于你", "行走的心",
+        "护霜旅行者", "十一月雨", "调情圣手", "片刻静候"
+    };
+    foreach (const QString &stand, stands) {
+        auto item = new QListWidgetItem(stand);
+        // item->setIcon(QIcon(":/res/Slices.png"));
+        listWidget->addItem(item);
+    }
+    auto listFrame = new Frame(this);
+    listFrame->addWidget(listWidget);
+    listFrame->setFixedSize(300, 400);
+
+    addExampleCard("简单的列表组件", listFrame);
+}
+
+Frame::Frame(QWidget *parent)
+    : QFrame(parent)
+    , hBoxLayout(new QHBoxLayout(this))
+{
+    setupUI();
+    applyStyleSheet();
 }
 
 
+void Frame::setupUI()
+{
+    hBoxLayout->setContentsMargins(0, 8, 0, 0);
+    setObjectName("frame");
+}
+
+void Frame::addWidget(QWidget *widget)
+{
+    hBoxLayout->addWidget(widget);
+}
+
+void Frame::applyStyleSheet()
+{
+    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/view_interface.qss");
+    StyleSheetManager::instance()->registerWidget(styleSource, this);
+}

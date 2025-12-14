@@ -28,7 +28,7 @@ class TableItemDelegate;
 class TableItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
 public:
-    explicit TableItemDelegate(QTableView* parent = nullptr);
+    explicit TableItemDelegate(QAbstractItemView* parent = nullptr);
 
     void setHoverRow(int row);
     void setPressedRow(int row);
@@ -39,10 +39,11 @@ public:
     void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
     void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const override;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+    int pressedRow() const;
 
 private:
-    void drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    void drawIndicator(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void drawIndicator(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void drawCheckBox(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
 private:

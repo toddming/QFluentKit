@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QHeaderView>
-#include <QDebug>
+#include <QListView>
 
 #include "Theme.h"
 #include "QFluent/LineEdit.h"
@@ -15,7 +15,7 @@
 // TableItemDelegate Implementation
 // ==========================================
 
-TableItemDelegate::TableItemDelegate(QTableView* parent)
+TableItemDelegate::TableItemDelegate(QAbstractItemView* parent)
     : QStyledItemDelegate(parent)
     , m_margin(2)
     , m_hoverRow(-1)
@@ -33,11 +33,9 @@ void TableItemDelegate::setPressedRow(int row) {
 
 void TableItemDelegate::setSelectedRows(const QList<QModelIndex>& indexes) {
     m_selectedRows.clear();
-    // 预分配空间，稍微优化性能
     m_selectedRows.reserve(indexes.size());
     for (const auto& index : indexes) {
         m_selectedRows.insert(index.row());
-        // 如果按下的行变成了选中行，清除按下状态以避免视觉冲突
         if (index.row() == m_pressedRow) {
             m_pressedRow = -1;
         }
@@ -52,10 +50,8 @@ QSize TableItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMod
 }
 
 QWidget* TableItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
-    // 确保 LineEdit 构造正确
     LineEdit* lineEdit = new LineEdit(parent);
     lineEdit->setProperty("transparent", false);
-    // lineEdit->setStyle(QApplication::style()); // 通常不需要手动设置 style，除非有特殊需求
     lineEdit->setText(option.text);
     lineEdit->setClearButtonEnabled(true);
     return lineEdit;
@@ -103,7 +99,7 @@ void TableItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     painter->setPen(Qt::NoPen);
     painter->setRenderHint(QPainter::Antialiasing);
 
-    // 裁剪区域，防止绘制溢出
+    // 裁剪区域,防止绘制溢出
     painter->setClipping(true);
     painter->setClipRect(option.rect);
 
@@ -114,7 +110,7 @@ void TableItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     bool isHover = (m_hoverRow == index.row());
     bool isPressed = (m_pressedRow == index.row());
 
-    // 修正：检查 parent 是否存在
+    // 修正:检查 parent 是否存在
     const auto* tableView = qobject_cast<const QTableView*>(parent());
     bool isAlternate = tableView && (index.row() % 2 == 0) && tableView->alternatingRowColors();
     bool isDark = Theme::instance()->isDarkTheme();
@@ -146,7 +142,15 @@ void TableItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 
     // 绘制选中指示器 (仅当水平滚动条在最左侧时)
     if (isSelected && index.column() == 0) {
-        if (tableView && tableView->horizontalScrollBar()->value() == 0) {
+        QScrollBar* hScrollBar = nullptr;
+
+        if (const auto* tableView = qobject_cast<const QTableView*>(parent())) {
+            hScrollBar = tableView->horizontalScrollBar();
+        } else if (const auto* listView = qobject_cast<const QListView*>(parent())) {
+            hScrollBar = listView->horizontalScrollBar();
+        }
+
+        if (hScrollBar && hScrollBar->value() == 0) {
             drawIndicator(painter, adjustedOption, index);
         }
     }
@@ -232,6 +236,11 @@ void TableItemDelegate::drawCheckBox(QPainter* painter, const QStyleOptionViewIt
     }
 
     painter->restore();
+}
+
+int TableItemDelegate::pressedRow() const
+{
+    return m_pressedRow;
 }
 
 // ==========================================
