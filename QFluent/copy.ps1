@@ -1,5 +1,5 @@
 $source = Join-Path $PSScriptRoot "src"
-$dest   = Join-Path $PSScriptRoot "..\QFluentExample\libs\src"
+$dest   = Join-Path $PSScriptRoot "..\QFluentExample\libs\include"
 
 # 确保目标根目录存在
 if (!(Test-Path -Path $dest)) {

@@ -49,11 +49,36 @@ ViewInterface::ViewInterface(QWidget *parent)
 
     auto listWidget = new ListWidget(this);
     QStringList stands = {
-        "隐者之紫", "黄金体验", "虚无之王", "纸月之王",
-        "骇人恶兽", "男子领域", "20世纪男孩", "牙 Act 4",
-        "铁球破坏者", "性感手枪", "天生完美",
-        "软又湿", "佩斯利公园", "奇迹于你", "行走的心",
-        "护霜旅行者", "十一月雨", "调情圣手", "片刻静候"
+        "安卓", "Android Auto", "Android TV", "内置 Google 的汽车",
+        "谷歌浏览器", "Chromebook and ChromeOS", "联系人", "数字健康",
+        "文件", "财经", "Find Hub", "Fitbit",
+        "谷歌航班", "Gboard", "Gemini", "谷歌邮箱",
+        "谷歌艺术与文化", "谷歌助手", "谷歌身份验证器", "谷歌日历",
+        "Google Cast", "谷歌聊天", "谷歌课堂", "谷歌文档",
+        "谷歌云端硬盘", "谷歌地球", "谷歌家庭联系", "Google Fi Wireless",
+        "谷歌健康", "Google Fonts", "谷歌表单", "Google Home",
+        "谷歌备忘录", "谷歌地图", "谷歌会议", "谷歌信息",
+        "Google Nest", "谷歌新闻", "Google One", "谷歌支付",
+        "谷歌相册", "Google Play", "Google Play 图书", "Google Play 游戏",
+        "Google Play Pass", "Google Play 保护机制", "谷歌表格", "谷歌协作平台",
+        "谷歌幻灯片", "谷歌任务", "谷歌翻译", "谷歌趋势",
+        "Google TV", "Google TV Streamer", "谷歌语音", "谷歌钱包",
+        "Google Workspace", "谷歌智能镜头", "NotebookLM", "Pixel",
+        "Pixel Buds", "Pixel 平板电脑", "Pixel Watch", "谷歌学术",
+        "谷歌搜索", "谷歌购物", "街景", "谷歌旅行",
+        "Waze", "Wear OS by Google", "YouTube", "YouTube Kids",
+        "YouTube Music", "YouTube TV", "Android Enterprise", "Blogger",
+        "商家资料", "Chrome Enterprise", "ChromeOS", "Demand Gen",
+        "谷歌广告", "Google AdMob", "Google AdSense", "Google Ad Manager",
+        "谷歌分析", "谷歌助手", "谷歌云", "谷歌地图平台",
+        "谷歌营销平台", "谷歌搜索中心", "Google Workspace", "本地服务广告",
+        "Manufacturer Center", "Merchant Center", "效果最大化", "Pixel for Business",
+        "搜索广告", "购物广告", "Tag Manager", "YouTube 广告",
+        "AI for Developers", "安卓", "云计算", "Firebase",
+        "Flutter", "Google AdMob", "谷歌广告", "谷歌分析",
+        "谷歌云", "Google for Developers", "Google Identity Platform", "谷歌地图平台",
+        "谷歌支付", "Google Play", "谷歌钱包", "Interactive Media Ads",
+        "谷歌搜索", "TensorFlow", "Web"
     };
     foreach (const QString &stand, stands) {
         auto item = new QListWidgetItem(stand);
