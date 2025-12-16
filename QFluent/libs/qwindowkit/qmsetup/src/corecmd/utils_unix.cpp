@@ -324,6 +324,14 @@ namespace Utils {
                 throw std::runtime_error("Failed to add rpaths: " + std::string(e.what()));
             }
         }
+
+        // Remove code signature if it exists
+        try {
+            std::ignore = executeCommand("codesign", {"--remove-signature", file});
+            std::ignore = executeCommand("codesign", {"-s", "-", file});
+        } catch (const std::exception &e) {
+            throw std::runtime_error("Failed to resign: " + std::string(e.what()));
+        }
     }
 
     std::vector<std::string> getMacAbsoluteDependencies(const std::string &file) {

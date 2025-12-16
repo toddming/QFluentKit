@@ -14,8 +14,6 @@
 // version without notice, or may even be removed.
 //
 
-#include <QtCore/QHash>
-
 #include <QWKCore/styleagent.h>
 
 namespace QWK {
@@ -31,11 +29,13 @@ namespace QWK {
         StyleAgent *q_ptr;
 
         StyleAgent::SystemTheme systemTheme = StyleAgent::Unknown;
+        QColor systemAccentColor;
 
         void setupSystemThemeHook();
         void removeSystemThemeHook();
 
         void notifyThemeChanged(StyleAgent::SystemTheme theme);
+        void notifyAccentColorChanged(const QColor &color);
     };
 
 }

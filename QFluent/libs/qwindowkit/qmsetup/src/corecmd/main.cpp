@@ -866,7 +866,7 @@ static int cmd_deploy(const SCL::ParseResult &result) {
         }
 
         // Read configuration
-        const auto &configFiles = result.option("-@").allValues();
+        const auto &configFiles = result.option("--linkdirs-file").allValues();
         for (const auto &item : configFiles) {
             std::ifstream file(fs::path(str2tstr(item.toString())), std::ios::binary);
             if (!file.is_open()) {
@@ -876,10 +876,8 @@ static int cmd_deploy(const SCL::ParseResult &result) {
             // Skip BOM
             char bom[3];
             file.read(bom, 3);
-            if (file.gcount() != 3) {
-                continue;
-            }
-            if (!(bom[0] == (char) 0xEF && bom[1] == (char) 0xBB && bom[2] == (char) 0xBF)) {
+            if (file.gcount() != 3 ||
+                !(bom[0] == (char) 0xEF && bom[1] == (char) 0xBB && bom[2] == (char) 0xBF)) {
                 file.seekg(0);
             }
 
@@ -887,6 +885,8 @@ static int cmd_deploy(const SCL::ParseResult &result) {
             while (std::getline(file, line)) {
                 if (line.empty())
                     continue;
+                if (line.size() >= 2 && line.front() == '\"' && line.back() == '\"')
+                    line = line.substr(1, line.size() - 2);
                 tmp.emplace_back(Utils::cleanPath(fs::absolute(str2tstr(Utils::trim(line)))));
             }
         }
@@ -1156,6 +1156,104 @@ static int cmd_deploy(const SCL::ParseResult &result) {
             targetPath = copyCanonical(file, dest, force, verbose);
         }
         targetDependencies.insert(targetPath);
+    }
+
+    // Extra step: strip non-native architectures from universal binaries
+    {
+        // Get current architecture
+        std::string currentArch;
+        try {
+            currentArch = Utils::executeCommand("uname", {"-m"});
+            currentArch = Utils::trim(currentArch);
+        } catch (const std::exception &e) {
+            if (verbose) {
+                u8info("Warning: Failed to get current architecture: %s\n", e.what());
+            }
+            currentArch = "unknown";
+        }
+
+        if (currentArch != "unknown") {
+            const auto &stripUniversalBinary = [verbose, &currentArch](const fs::path &file) {
+                if (!fs::is_regular_file(file)) {
+                    return;
+                }
+
+                // Check if file is a universal binary using lipo
+                std::string lipoInfo;
+                try {
+                    lipoInfo = Utils::executeCommand("lipo", {"-info", file.string()});
+                } catch (const std::exception &) {
+                    // Not a binary file or lipo failed, skip
+                    return;
+                }
+
+                // Check if it's a universal binary (contains "Architectures")
+                if (lipoInfo.find("Architectures") == std::string::npos) {
+                    return; // Not a universal binary
+                }
+
+                // Check if current architecture is present
+                if (lipoInfo.find(currentArch) == std::string::npos) {
+                    if (verbose) {
+                        u8info(
+                            "Warning: Universal binary \"%s\" does not contain %s architecture\n",
+                            file.string().data(), currentArch.data());
+                    }
+                    return;
+                }
+
+                // Extract current architecture
+                bool lipoPassed = false;
+                try {
+                    if (verbose) {
+                        u8info("Strip universal binary: \"%s\" (keep %s)\n", file.string().data(),
+                               currentArch.data());
+                    }
+                    std::ignore = Utils::executeCommand(
+                        "lipo", {file.string(), "-thin", currentArch, "-output", file.string()});
+                    lipoPassed = true;
+                } catch (const std::exception &e) {
+                    if (verbose) {
+                        u8info("Warning: Failed to strip universal binary \"%s\": %s\n",
+                               file.string().data(), e.what());
+                    }
+                }
+            };
+
+            // Process original files
+            for (const auto &file : std::as_const(targetOrgFiles)) {
+                if (isFramework(file)) {
+                    fs::path lib = framework2lib(file);
+                    if (!lib.empty()) {
+                        stripUniversalBinary(lib);
+                    }
+
+                    fs::path libDebug = framework2lib_debug(file);
+                    if (!libDebug.empty()) {
+                        stripUniversalBinary(libDebug);
+                    }
+                } else {
+                    stripUniversalBinary(file);
+                }
+            }
+
+            // Process dependencies
+            for (const auto &file : std::as_const(targetDependencies)) {
+                if (isFramework(file)) {
+                    fs::path lib = framework2lib(file);
+                    if (!lib.empty()) {
+                        stripUniversalBinary(lib);
+                    }
+
+                    fs::path libDebug = framework2lib_debug(file);
+                    if (!libDebug.empty()) {
+                        stripUniversalBinary(libDebug);
+                    }
+                } else {
+                    stripUniversalBinary(file);
+                }
+            }
+        }
     }
 
     // Extra step: normalize dependencies
@@ -1440,7 +1538,7 @@ int main(int argc, char *argv[]) {
                 .arg("dir")
                 .multi()
                 .short_match(SCL::Option::ShortMatchSingleChar),
-            SCL::Option({"-@", "--linkdirs"}, "Add library searching paths from a list file")
+            SCL::Option({"--linkdirs-file"}, "Add library searching paths from a list file")
                 .arg("file")
                 .multi()
                 .short_match(SCL::Option::ShortMatchSingleChar),
@@ -1505,12 +1603,13 @@ int main(int argc, char *argv[]) {
 
     int ret;
     try {
+        int parseOptions = SCL::Parser::EnableResponseFile;
 #ifdef _WIN32
         std::ignore = argc;
         std::ignore = argv;
-        ret = parser.invoke(SCL::commandLineArguments());
+        ret = parser.invoke(SCL::commandLineArguments(), -1, parseOptions);
 #else
-        ret = parser.invoke(argc, argv);
+        ret = parser.invoke(argc, argv, -1, parseOptions);
 #endif
     } catch (const std::exception &e) {
         std::string msg = e.what();

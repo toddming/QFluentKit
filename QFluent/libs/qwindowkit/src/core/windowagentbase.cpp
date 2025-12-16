@@ -9,13 +9,16 @@
 
 #include "qwkglobal_p.h"
 
-#if defined(Q_OS_WINDOWS) && !QWINDOWKIT_CONFIG(ENABLE_QT_WINDOW_CONTEXT)
+#if defined(Q_OS_WINDOWS)
 #  include "win32windowcontext_p.h"
-#elif defined(Q_OS_MAC) && !QWINDOWKIT_CONFIG(ENABLE_QT_WINDOW_CONTEXT)
+#elif defined(Q_OS_MAC)
 #  include "cocoawindowcontext_p.h"
-#else
-#  include "qtwindowcontext_p.h"
+#elif defined(Q_OS_LINUX) && QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#  include "qwindowkit_linux.h"
+#  include "linuxwaylandcontext_p.h"
+#  include "linuxx11context_p.h"
 #endif
+#include "qtwindowcontext_p.h"
 
 Q_LOGGING_CATEGORY(qWindowKitLog, "qwindowkit")
 
@@ -50,12 +53,22 @@ namespace QWK {
         if (windowContextFactoryMethod) {
             return windowContextFactoryMethod();
         }
-
-#if defined(Q_OS_WINDOWS) && !QWINDOWKIT_CONFIG(ENABLE_QT_WINDOW_CONTEXT)
-        return new Win32WindowContext();
-#elif defined(Q_OS_MAC) && !QWINDOWKIT_CONFIG(ENABLE_QT_WINDOW_CONTEXT)
-        return new CocoaWindowContext();
+#if QWINDOWKIT_CONFIG(FORCE_QT_WINDOW_CONTEXT)
+        return new QtWindowContext();
 #else
+#  if defined(Q_OS_WINDOWS)
+        return new Win32WindowContext();
+#  elif defined(Q_OS_MAC)
+        return new CocoaWindowContext();
+#  elif defined(Q_OS_LINUX) && QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        if (Private::isWaylandPlatform() && Private::waylandAPI().isValid()) {
+            return new LinuxWaylandContext();
+        }
+        if (Private::isX11Platform() && Private::x11API().isValid()) {
+            return new LinuxX11Context();
+        }
+#  endif
+        // Final fallback, no native features.
         return new QtWindowContext();
 #endif
     }

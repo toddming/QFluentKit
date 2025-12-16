@@ -8,7 +8,7 @@
 #include <memory>
 
 #include <QtCore/QObject>
-#include <QtGui/QWindow>
+#include <QtGui/QColor>
 
 #include <QWKCore/qwkglobal.h>
 
@@ -33,9 +33,11 @@ namespace QWK {
 
     public:
         SystemTheme systemTheme() const;
+        QColor systemAccentColor() const;
 
     Q_SIGNALS:
         void systemThemeChanged();
+        void systemAccentColorChanged();
 
     protected:
         StyleAgent(StyleAgentPrivate &d, QObject *parent = nullptr);

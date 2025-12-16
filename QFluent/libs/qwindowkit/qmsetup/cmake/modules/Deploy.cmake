@@ -173,7 +173,7 @@ function(qm_win_applocal_deps _target)
     endif()
 
     foreach(_item IN LISTS _dep_files)
-        list(APPEND _args "-@${_item}")
+        list(APPEND _args "--linkdirs-file" "${_item}")
     endforeach()
 
     foreach(_item IN LISTS FUNC_EXCLUDE)
@@ -308,7 +308,7 @@ function(qm_deploy_directory _install_dir)
         endif()
 
         foreach(_item IN LISTS _dep_files)
-            list(APPEND _args -@ "${_item}")
+            list(APPEND _args "--linkdirs-file" "${_item}")
         endforeach()
 
         set(_script_quoted "cmd /c \"${QMSETUP_MODULES_DIR}/scripts/windeps.bat\"")

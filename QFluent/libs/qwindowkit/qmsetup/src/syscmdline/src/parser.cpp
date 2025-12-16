@@ -372,17 +372,8 @@ namespace SysCmdLine {
                                 break;
                             }
 
-                            bool hasRemainder =
-                                optData.multiValueArgIndex >= 0 &&
-                                dd->arguments[optData.multiValueArgIndex].number() ==
-                                    Argument::Remainder;
                             auto end = std::min(params.size(), i + maxArgCount + 1);
-                            for (int argIndex = minArgCount; j < end; ++j, ++argIndex) {
-                                if (hasRemainder && argIndex >= optData.multiValueArgIndex) {
-                                    j = end;
-                                    break;
-                                }
-
+                            for (; j < end; ++j) {
                                 const auto &curToken = params[j];
 
                                 // Break at next option

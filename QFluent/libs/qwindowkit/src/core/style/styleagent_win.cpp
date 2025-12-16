@@ -5,8 +5,6 @@
 #include "styleagent_p.h"
 
 #include <QtCore/QSet>
-#include <QtCore/QVariant>
-#include <QtGui/QColor>
 
 #include <QWKCore/private/qwkwindowsextra_p.h>
 #include <QWKCore/private/nativeeventfilter_p.h>
@@ -28,8 +26,10 @@ namespace QWK {
 
     static void notifyAllStyleAgents() {
         auto theme = getSystemTheme();
+        auto color = getAccentColor();
         for (auto &&ap : std::as_const(*g_styleAgentSet())) {
             ap->notifyThemeChanged(theme);
+            ap->notifyAccentColorChanged(color);
         }
     }
 
@@ -84,6 +84,7 @@ namespace QWK {
 
     void StyleAgentPrivate::setupSystemThemeHook() {
         systemTheme = getSystemTheme();
+        systemAccentColor = getAccentColor();
 
         g_styleAgentSet->insert(this);
         SystemSettingEventFilter::install();

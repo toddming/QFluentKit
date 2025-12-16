@@ -22,7 +22,7 @@ usage() {
     echo "  --qml <qml_module>          Relative path to QML directory (repeatable)"
     echo "  --plugin <plugin>           Specify a Qt plugin to deploy (repeatable)"
     echo "  --copy <src> <dest>         Specify additional binary file to copy and its destination directory (repeatable)"
-    echo "  -@                          Add library searching paths from a list file"
+    echo "  --linkdirs-file             Add library searching paths from a list file"
     echo "  -L                          Add a library searching path"
     echo "  -f                          Force overwrite existing files"
     echo "  -s                          Ignore C/C++ runtime and system libraries"
@@ -41,20 +41,20 @@ FILES=""
 # Parse command line
 while (( "$#" )); do
     case "$1" in
-        -i)            INPUT_DIR="$2"; shift 2;;
-        -m)            CORECMD_PATH="$2"; shift 2;;
-        -@)            ARGS+=("-@ \"$2\""); shift 2;;
-        -L)            ARGS+=("-L \"$2\""); shift 2;;
-        --plugindir)   PLUGIN_DIR="$2"; shift 2;;
-        --libdir)      LIB_DIR="$2"; shift 2;;
-        --qmldir)      QML_DIR="$2"; shift 2;;
-        --qmake)       QMAKE_PATH="$2"; shift 2;;
-        --extra)       EXTRA_PLUGIN_PATHS+=("$2"); shift 2;;
-        --plugin)      PLUGINS+=("$2"); shift 2;;
-        --qml)         QML_REL_PATHS+=("$2"); shift 2;;
-        --copy)        ARGS+=("-c \"$2\" \"$3\""); shift 3;;
-        -f|-s)         ARGS+=("$1"); shift;;
-        -V)            VERBOSE="-V"; shift;;
+        -i)                INPUT_DIR="$2"; shift 2;;
+        -m)                CORECMD_PATH="$2"; shift 2;;
+        -L)                ARGS+=("-L \"$2\""); shift 2;;
+        --linkdirs-file)   ARGS+=("--linkdirs-file \"$2\""); shift 2;;
+        --plugindir)       PLUGIN_DIR="$2"; shift 2;;
+        --libdir)          LIB_DIR="$2"; shift 2;;
+        --qmldir)          QML_DIR="$2"; shift 2;;
+        --qmake)           QMAKE_PATH="$2"; shift 2;;
+        --extra)           EXTRA_PLUGIN_PATHS+=("$2"); shift 2;;
+        --plugin)          PLUGINS+=("$2"); shift 2;;
+        --qml)             QML_REL_PATHS+=("$2"); shift 2;;
+        --copy)            ARGS+=("-c \"$2\" \"$3\""); shift 3;;
+        -f|-s)             ARGS+=("$1"); shift;;
+        -V)                VERBOSE="-V"; shift;;
         -h) usage; exit 0;;
         *) echo "Error: Unsupported argument $1"; usage; exit 1;;
     esac
@@ -146,7 +146,7 @@ for plugin_path in "${PLUGINS[@]}"; do
                     found_plugins+="$plugin_name "
                     ARGS+=("-c \"$plugin\" \"$dest_dir\"")
                 fi
-            done < <(find "${search_path}/${category}" -name "lib${name}.*" ! -name "*debug*" -print)
+            done < <(find "${search_path}/${category}" -name "lib${name}.*" ! -name "*debug*" ! -d -print)
         done
 
         if [ ${#found_plugins[@]} -eq 0 ]; then

@@ -6,8 +6,6 @@
 
 #include <Cocoa/Cocoa.h>
 
-#include <QtCore/QVariant>
-
 namespace QWK {
 
     static StyleAgent::SystemTheme getSystemTheme() {
@@ -15,6 +13,17 @@ namespace QWK {
             [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
         bool isDark = [osxMode isEqualToString:@"Dark"];
         return isDark ? StyleAgent::Dark : StyleAgent::Light;
+    }
+
+    static QColor getAccentColor() {
+        if (@available(macOS 10.14, *)) {
+            NSColor *color = [NSColor controlAccentColor];
+            NSColor *rgbColor = [color colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
+            if (rgbColor) {
+                return QColor::fromRgbF(rgbColor.redComponent, rgbColor.greenComponent, rgbColor.blueComponent, rgbColor.alphaComponent);
+            }
+        }
+        return {};
     }
 
     static void notifyAllStyleAgents();
@@ -34,10 +43,14 @@ namespace QWK {
 - (id)init {
     self = [super init];
     if (self) {
-        [[NSDistributedNotificationCenter defaultCenter]
-            addObserver:self
+        NSDistributedNotificationCenter *center = [NSDistributedNotificationCenter defaultCenter];
+        [center addObserver:self
                selector:@selector(interfaceModeChanged:)
                    name:@"AppleInterfaceThemeChangedNotification"
+                 object:nil];
+        [center addObserver:self
+               selector:@selector(interfaceModeChanged:)
+                   name:@"AppleColorPreferencesChangedNotification"
                  object:nil];
     }
     return self;
@@ -68,13 +81,16 @@ namespace QWK {
 
     void notifyAllStyleAgents() {
         auto theme = getSystemTheme();
+        auto color = getAccentColor();
         for (auto &&ap : std::as_const(*g_styleAgentSet())) {
             ap->notifyThemeChanged(theme);
+            ap->notifyAccentColorChanged(color);
         }
     }
 
     void StyleAgentPrivate::setupSystemThemeHook() {
         systemTheme = getSystemTheme();
+        systemAccentColor = getAccentColor();
 
         // Alloc
         if (g_styleAgentSet->isEmpty()) {
