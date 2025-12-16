@@ -1,7 +1,7 @@
 ﻿#include "MultiViewComboBoxPrivate.h"
 #include "QFluent/MultiViewComboBox.h"
-#include "QFluent/menu/MultiViewComboBoxMenu.h"
-#include "QFluent/menu/MenuActionListWidget.h"
+#include "QFluent/Menu/MultiViewComboBoxMenu.h"
+#include "QFluent/Menu/MenuActionListWidget.h"
 #include "FluentGlobal.h"
 
 #include <QStyle>

@@ -5,7 +5,7 @@
 
 #include "Screen.h"
 #include "MenuItemDelegate.h"
-#include "QFluent/scrollbar/ScrollBar.h"
+#include "QFluent/Scrollbar/ScrollBar.h"
 
 MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     : QListWidget(parent) {

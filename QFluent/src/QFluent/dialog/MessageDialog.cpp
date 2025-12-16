@@ -9,7 +9,7 @@
 #include "StyleSheet.h"
 #include "QFluent/Label.h"
 #include "QFluent/PushButton.h"
-#include "Private/dialog/MessageDialogPrivate.h"
+#include "Private/Dialog/MessageDialogPrivate.h"
 
 MessageDialog::MessageDialog(const QString &title, const QString &content, QWidget *parent)
     : MaskDialogBase(*new MessageDialogPrivate(), parent)

@@ -4,9 +4,9 @@
 #include <QActionGroup>
 #include "QFluent/PushButton.h"
 #include "QFluent/ProfileCard.h"
-#include "QFluent/menu/RoundMenu.h"
-#include "QFluent/menu/CheckableMenu.h"
-#include "QFluent/menu/MenuActionListWidget.h"
+#include "QFluent/Menu/RoundMenu.h"
+#include "QFluent/Menu/CheckableMenu.h"
+#include "QFluent/Menu/MenuActionListWidget.h"
 
 MenuInterface::MenuInterface(QWidget *parent)
     : GalleryInterface("菜单", "", parent)

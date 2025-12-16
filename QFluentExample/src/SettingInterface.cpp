@@ -4,9 +4,9 @@
 #include "Theme.h"
 #include "StyleSheet.h"
 #include "FluentIcon.h"
-#include "QFluent/settings/SettingCard.h"
-#include "QFluent/settings/SettingCardGroup.h"
-#include "QFluent/settings/OptionsSettingCard.h"
+#include "QFluent/Settings/SettingCard.h"
+#include "QFluent/Settings/SettingCardGroup.h"
+#include "QFluent/Settings/OptionsSettingCard.h"
 
 #include "MainWindow.h"
 #include "ConfigManager.h"

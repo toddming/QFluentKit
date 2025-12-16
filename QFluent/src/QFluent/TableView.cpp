@@ -9,7 +9,7 @@
 
 #include "Theme.h"
 #include "QFluent/LineEdit.h"
-#include "QFluent/scrollbar/ScrollBar.h"
+#include "QFluent/Scrollbar/ScrollBar.h"
 
 // ==========================================
 // TableItemDelegate Implementation

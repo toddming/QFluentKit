@@ -5,7 +5,7 @@
 #include "StyleSheet.h"
 #include "QFluent/Label.h"
 #include "QFluent/StackedWidget.h"
-#include "QFluent/navigation/NavigationBar.h"
+#include "QFluent/Navigation/NavigationBar.h"
 
 NavbarWidget::NavbarWidget()
 {

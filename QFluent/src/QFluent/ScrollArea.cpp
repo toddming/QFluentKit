@@ -1,6 +1,6 @@
 ﻿#include "ScrollArea.h"
-#include "scrollbar/ScrollBar.h"
-#include "scrollbar/SmoothScroll.h"
+#include "Scrollbar/ScrollBar.h"
+#include "Scrollbar/SmoothScroll.h"
 
 #include <QWheelEvent>
 #include <QKeyEvent>

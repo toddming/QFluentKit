@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "FluentGlobal.h"
-#include "../layout/ExpandLayout.h"
+#include "../Layout/ExpandLayout.h"
 
 class QLabel;
 class QVBoxLayout;

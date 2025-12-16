@@ -11,7 +11,7 @@
 #include <QResizeEvent>
 
 #include "Theme.h"
-#include "Private/dialog/MaskDialogBasePrivate.h"
+#include "Private/Dialog/MaskDialogBasePrivate.h"
 
 
 MaskDialogBase::MaskDialogBase(QWidget* parent)

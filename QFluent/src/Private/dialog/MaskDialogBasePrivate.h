@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "QFluent/dialog/MaskDialogBase.h"
+#include "QFluent/Dialog/MaskDialogBase.h"
 
 class QFrame;
 class QWidget;

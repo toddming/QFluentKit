@@ -11,9 +11,9 @@
 #include <QGraphicsDropShadowEffect>
 
 #include "Screen.h"
-#include "QFluent/menu/RoundMenu.h"
-#include "QFluent/menu/MenuActionListWidget.h"
-#include "QFluent/menu/SubMenuItemWidget.h"
+#include "QFluent/Menu/RoundMenu.h"
+#include "QFluent/Menu/MenuActionListWidget.h"
+#include "QFluent/Menu/SubMenuItemWidget.h"
 
 RoundMenuPrivate::RoundMenuPrivate(RoundMenu *parent)
     : QObject(parent)

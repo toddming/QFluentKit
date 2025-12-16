@@ -1,6 +1,6 @@
 ﻿#include "EditableComboBoxPrivate.h"
-#include "QFluent/menu/ComboBoxMenu.h"
-#include "QFluent/menu/MenuActionListWidget.h"
+#include "QFluent/Menu/ComboBoxMenu.h"
+#include "QFluent/Menu/MenuActionListWidget.h"
 #include "FluentGlobal.h"
 
 #include <QStyle>

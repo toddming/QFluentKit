@@ -9,7 +9,7 @@
 #include <QMouseEvent>
 
 #include "QFluent/CardWidget.h"
-#include "QFluent/layout/FlowLayout.h"
+#include "QFluent/Layout/FlowLayout.h"
 
 class IconWidget;
 class FlowLayout;

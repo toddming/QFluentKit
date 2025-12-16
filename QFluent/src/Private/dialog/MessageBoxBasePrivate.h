@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "MaskDialogBasePrivate.h"
-#include "QFluent/dialog/MaskDialogBase.h"
-#include "QFluent/dialog/MessageBoxBase.h"
+#include "QFluent/Dialog/MaskDialogBase.h"
+#include "QFluent/Dialog/MessageBoxBase.h"
 #include <QString>
 
 class QFrame;

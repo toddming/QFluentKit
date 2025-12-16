@@ -6,7 +6,7 @@
 #include <QTableView>
 
 #include "Theme.h"
-#include "QFluent/scrollbar/ScrollBar.h"
+#include "QFluent/Scrollbar/ScrollBar.h"
 
 // ==========================================
 // ListItemDelegate Implementation

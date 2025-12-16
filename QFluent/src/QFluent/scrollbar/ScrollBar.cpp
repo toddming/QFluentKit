@@ -1,4 +1,4 @@
-﻿#include "scrollbar.h"
+﻿#include "Scrollbar.h"
 #include <QScrollBar>
 #include <QAbstractScrollArea>
 #include <QPropertyAnimation>

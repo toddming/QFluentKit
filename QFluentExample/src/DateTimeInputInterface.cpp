@@ -1,8 +1,8 @@
 ﻿#include "DateTimeInputInterface.h"
 #include <QDebug>
-#include "QFluent/date_time/DatePicker.h"
-#include "QFluent/date_time/TimePicker.h"
-#include "QFluent/date_time/CalendarPicker.h"
+#include "QFluent/DateTime/DatePicker.h"
+#include "QFluent/DateTime/TimePicker.h"
+#include "QFluent/DateTime/CalendarPicker.h"
 
 DateTimeInputInterface::DateTimeInputInterface(QWidget *parent)
     : GalleryInterface("日期和时间", "", parent)

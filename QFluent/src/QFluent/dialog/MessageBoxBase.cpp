@@ -8,7 +8,7 @@
 #include "StyleSheet.h"
 
 #include "QFluent/PushButton.h"
-#include "Private/dialog/MessageBoxBasePrivate.h"
+#include "Private/Dialog/MessageBoxBasePrivate.h"
 
 MessageBoxBase::MessageBoxBase(QWidget *parent)
     : MaskDialogBase(*new MessageBoxBasePrivate, parent)

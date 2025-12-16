@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "QFluent/ScrollArea.h"
-#include "QFluent/layout/ExpandLayout.h"
-#include "QFluent/dialog/ColorDialog.h"
+#include "QFluent/Layout/ExpandLayout.h"
+#include "QFluent/Dialog/ColorDialog.h"
 
 class SettingInterface : public ScrollArea
 {

@@ -21,7 +21,7 @@
 #include "StyleSheet.h"
 #include "NavigationWidget.h"
 #include "QFluent/Flyout.h"
-#include "QFluent/menu/MenuActionListWidget.h"
+#include "QFluent/Menu/MenuActionListWidget.h"
 
 
 NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)

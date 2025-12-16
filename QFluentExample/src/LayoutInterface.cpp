@@ -3,7 +3,7 @@
 #include <QWidget>
 
 #include "QFluent/PushButton.h"
-#include "QFluent/layout/FlowLayout.h"
+#include "QFluent/Layout/FlowLayout.h"
 
 LayoutInterface::LayoutInterface(QWidget *parent)
     : GalleryInterface("布局", "", parent)

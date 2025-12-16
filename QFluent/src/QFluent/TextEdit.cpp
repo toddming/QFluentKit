@@ -5,7 +5,7 @@
 
 #include "Theme.h"
 #include "StyleSheet.h"
-#include "QFluent/scrollbar/ScrollBar.h"
+#include "QFluent/Scrollbar/ScrollBar.h"
 
 // ============================================================
 // EditLayer

@@ -5,10 +5,10 @@
 #include "QFluent/SpinBox.h"
 #include "QFluent/InfoBar.h"
 #include "QFluent/PushButton.h"
-#include "QFluent/progress/ProgressBar.h"
-#include "QFluent/progress/ProgressRing.h"
-#include "QFluent/progress/IndeterminateProgressBar.h"
-#include "QFluent/progress/IndeterminateProgressRing.h"
+#include "QFluent/Progress/ProgressBar.h"
+#include "QFluent/Progress/ProgressRing.h"
+#include "QFluent/Progress/IndeterminateProgressBar.h"
+#include "QFluent/Progress/IndeterminateProgressRing.h"
 
 StatusInfoInterface::StatusInfoInterface(QWidget *parent)
     : GalleryInterface("状态", "", parent)

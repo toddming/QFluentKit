@@ -24,7 +24,7 @@
 #include "QFluent/LineEdit.h"
 #include "QFluent/PushButton.h"
 #include "QFluent/ScrollArea.h"
-#include "QFluent/layout/FlowLayout.h"
+#include "QFluent/Layout/FlowLayout.h"
 
 
 // Trie树实现

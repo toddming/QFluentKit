@@ -7,9 +7,9 @@
 #include "QFluent/LineEdit.h"
 #include "QFluent/PushButton.h"
 #include "QFluent/TeachingTip.h"
-#include "QFluent/dialog/ColorDialog.h"
-#include "QFluent/dialog/MessageDialog.h"
-#include "QFluent/dialog/MessageBoxBase.h"
+#include "QFluent/Dialog/ColorDialog.h"
+#include "QFluent/Dialog/MessageDialog.h"
+#include "QFluent/Dialog/MessageBoxBase.h"
 
 DialogInputInterface::DialogInputInterface(QWidget *parent)
     : GalleryInterface("对话框", "", parent)

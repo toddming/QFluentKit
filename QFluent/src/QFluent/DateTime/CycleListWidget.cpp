@@ -5,7 +5,7 @@
 #include <QPropertyAnimation>
 
 #include "Theme.h"
-#include "QFluent/scrollbar/ScrollBar.h"
+#include "QFluent/Scrollbar/ScrollBar.h"
 
 // ScrollButton 实现
 ScrollButton::ScrollButton(const FluentIconBase &icon, QWidget* parent)

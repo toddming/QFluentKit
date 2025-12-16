@@ -12,7 +12,7 @@
 #include "Theme.h"
 #include "StyleSheet.h"
 #include "MenuAnimation.h"
-#include "Private/menu/RoundMenuPrivate.h"
+#include "Private/Menu/RoundMenuPrivate.h"
 #include "MenuActionListWidget.h"
 
 RoundMenu::RoundMenu(const QString &title, QWidget *parent)

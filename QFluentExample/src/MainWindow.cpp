@@ -1,8 +1,8 @@
 ﻿#include "MainWindow.h"
 
 #include "Router.h"
-#include "QFluent/navigation/NavigationPanel.h"
-#include "QFluent/navigation/NavigationWidget.h"
+#include "QFluent/Navigation/NavigationPanel.h"
+#include "QFluent/Navigation/NavigationWidget.h"
 
 #include "FluentIcon.h"
 #include "HomeInterface.h"

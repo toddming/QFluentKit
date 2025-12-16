@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-#include "progress/IndeterminateProgressRing.h"
+#include "Progress/IndeterminateProgressRing.h"
 
 
 Loading::Loading(const QString &content, QWidget *parent)

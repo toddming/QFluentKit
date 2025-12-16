@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "MaskDialogBasePrivate.h"
-#include "QFluent/dialog/MessageDialog.h"
+#include "QFluent/Dialog/MessageDialog.h"
 #include <QString>
 
 class QLabel;

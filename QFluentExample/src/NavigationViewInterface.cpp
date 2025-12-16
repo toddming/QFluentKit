@@ -5,7 +5,7 @@
 #include "QFluent/SpinBox.h"
 #include "QFluent/CheckBox.h"
 #include "QFluent/ComboBox.h"
-#include "QFluent/navigation/Pivot.h"
+#include "QFluent/Navigation/Pivot.h"
 
 NavigationViewInterface::NavigationViewInterface(QWidget *parent)
     : GalleryInterface("导航", "", parent)
