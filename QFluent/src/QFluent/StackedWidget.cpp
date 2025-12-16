@@ -1,4 +1,4 @@
-#include "StackedWidget.h"
+﻿#include "StackedWidget.h"
 #include <QAbstractAnimation>
 #include <QScrollBar>
 #include <QHBoxLayout>
@@ -64,7 +64,10 @@ void OpacityAniStackedWidget::__onAniFinished()
 // ==================== PopUpAniStackedWidget ====================
 
 PopUpAniStackedWidget::PopUpAniStackedWidget(QWidget *parent)
-    : QStackedWidget(parent), m_isAnimationEnabled(true), m_nextIndex(-1), m_ani(nullptr)
+    : QStackedWidget(parent)
+    , m_isAnimationEnabled(true)
+    , m_nextIndex(-1)
+    , m_ani(nullptr)
 {
 }
 
@@ -160,7 +163,8 @@ void PopUpAniStackedWidget::__onAniFinished()
 // ==================== StackedWidget ====================
 
 StackedWidget::StackedWidget(QWidget *parent)
-    : QFrame(parent), view(new PopUpAniStackedWidget(this))
+    : QFrame(parent)
+    , view(new PopUpAniStackedWidget(this))
 {
     hBoxLayout = new QHBoxLayout(this);
     hBoxLayout->setContentsMargins(0, 0, 0, 0);

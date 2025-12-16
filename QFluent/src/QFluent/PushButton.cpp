@@ -76,14 +76,14 @@ void PushButton::mouseReleaseEvent(QMouseEvent *e)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void PushButton::enterEvent(QEnterEvent *e)
 {
-    m_isHovered = true;
+    m_isHover = true;
     update();
     QPushButton::enterEvent(e);
 }
 #else
 void PushButton::enterEvent(QEvent *e)
 {
-    m_isHovered = true;
+    m_isHover = true;
     update();
     QPushButton::enterEvent(e);
 }
@@ -91,7 +91,7 @@ void PushButton::enterEvent(QEvent *e)
 
 void PushButton::leaveEvent(QEvent *e)
 {
-    m_isHovered = false;
+    m_isHover = false;
     update();
     QPushButton::leaveEvent(e);
 }
@@ -262,7 +262,7 @@ void DropDownButtonBase::paintEvent(QPaintEvent* /*event*/)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_isHovered) {
+    if (m_isHover) {
         painter.setOpacity(0.8);
     } else if (m_isPressed) {
         painter.setOpacity(0.7);
@@ -324,7 +324,7 @@ void PillPushButton::paintEvent(QPaintEvent* event)
 
         if (!isEnabled()) {
             bgColor = isDark ? QColor(255, 255, 255, 11) : QColor(249, 249, 249, 75);
-        } else if (isPressed() || isHovered()) {
+        } else if (isPressed() || isHover()) {
             bgColor = isDark ? QColor(255, 255, 255, 21) : QColor(249, 249, 249, 128);
         } else {
             bgColor = isDark ? QColor(255, 255, 255, 15) : QColor(243, 243, 243, 194);
@@ -334,7 +334,7 @@ void PillPushButton::paintEvent(QPaintEvent* event)
             bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         } else if (isPressed()) {
             bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
-        } else if (isHovered()) {
+        } else if (isHover()) {
             bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
         } else {
             bgColor = Theme::instance()->themeColor();

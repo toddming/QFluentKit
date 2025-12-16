@@ -379,6 +379,7 @@ TabBar::TabBar(QWidget *parent)
     , m_isTabShadowEnabled(true)
     , m_isDragging(false)
     , m_closeButtonDisplayMode(TabCloseButtonDisplayMode::Always)
+    , m_isAdjustingLayout(false)
 {
     m_view = new QWidget(this);
     m_hBoxLayout = new QHBoxLayout(m_view);
@@ -801,6 +802,11 @@ void TabBar::mousePressEvent(QMouseEvent *event)
         return;
     }
 
+    // 新增:如果正在调整布局,先完成调整
+    if (m_isAdjustingLayout) {
+        forceFinishAdjustment();
+    }
+
     m_dragPos = event->pos();
 }
 
@@ -819,6 +825,11 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
         return;
 
     const int dx = event->pos().x() - m_dragPos.x();
+
+    // 新增:忽略非常小的移动,减少抖动
+    if (qAbs(dx) < 2)
+        return;
+
     m_dragPos = event->pos();
 
     // 第一个标签页不能向左移动
@@ -865,16 +876,39 @@ void TabBar::mouseReleaseEvent(QMouseEvent *event)
 
     const int targetX = tabRect(currentIndex()).x();
     const int duration = qAbs(item->x() - targetX) * 250 / item->width();
-    item->slideTo(targetX, duration);
 
-    connect(item->slideAnimation(), &QPropertyAnimation::finished,
-            this, &TabBar::adjustLayout, Qt::UniqueConnection);
+    // 修改:如果距离很小,直接调整布局,不使用动画
+    if (duration < 50) {
+        item->move(targetX, item->y());
+        adjustLayout();
+    } else {
+        item->slideTo(targetX, duration);
+        connect(item->slideAnimation(), &QPropertyAnimation::finished,
+                this, &TabBar::adjustLayout, Qt::UniqueConnection);
+    }
 }
 
 void TabBar::adjustLayout()
 {
-    sender()->disconnect(this);
+    // 防止重复调用
+    if (m_isAdjustingLayout)
+        return;
 
+    m_isAdjustingLayout = true;
+
+    // 断开信号连接
+    if (sender()) {
+        sender()->disconnect(this);
+    }
+
+    // 停止所有正在运行的动画
+    for (TabItem *item : std::as_const(m_items)) {
+        if (item->slideAnimation()->state() == QAbstractAnimation::Running) {
+            item->slideAnimation()->stop();
+        }
+    }
+
+    // 重新添加到布局
     for (TabItem *item : std::as_const(m_items)) {
         m_itemLayout->removeWidget(item);
     }
@@ -882,6 +916,8 @@ void TabBar::adjustLayout()
     for (TabItem *item : std::as_const(m_items)) {
         m_itemLayout->addWidget(item, 1);
     }
+
+    m_isAdjustingLayout = false;
 }
 
 void TabBar::swapItem(int index)
@@ -894,5 +930,25 @@ void TabBar::swapItem(int index)
 
     m_items.swapItemsAt(currentIndex(), index);
     m_currentIndex = index;
-    swappedItem->slideTo(targetX);
+
+    // 修改:使用更短的动画时间,减少拖动延迟感
+    swappedItem->slideTo(targetX, 150);
+}
+
+void TabBar::forceFinishAdjustment()
+{
+    // 停止所有动画
+    for (TabItem *item : std::as_const(m_items)) {
+        if (item->slideAnimation()->state() == QAbstractAnimation::Running) {
+            item->slideAnimation()->stop();
+        }
+    }
+
+    // 如果正在调整,立即完成
+    if (m_isAdjustingLayout) {
+        m_isAdjustingLayout = false;
+    }
+
+    // 确保布局正确
+    adjustLayout();
 }

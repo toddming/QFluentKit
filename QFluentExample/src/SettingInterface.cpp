@@ -56,9 +56,9 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                             aboutGroup);
 
     HyperlinkCard *helpCard = new HyperlinkCard("https://github.com/toddming/QFluentExample",
-                                                "项目地址", FluentIcon(Fluent::IconType::HELP).qicon(),
-                                                "帮助",
-                                                "QQ: 1912229135");
+                                                "项目地址", FluentIcon(Fluent::IconType::GITHUB).qicon(),
+                                                "GitHub",
+                                                "https://github.com/toddming/QFluentExample");
 
     personalGroup->addSettingCard(colorCard);
     personalGroup->addSettingCard(themeCard);

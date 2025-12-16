@@ -24,7 +24,7 @@ public:
     FluentIconBase* fluentIcon() const;
 
     bool isPressed() const { return m_isPressed; }
-    bool isHovered() const { return m_isHovered; }
+    bool isHover() const { return m_isHover; }
 
 
 protected:
@@ -43,7 +43,7 @@ private:
     void init();
 
     bool m_isPressed;
-    bool m_isHovered;
+    bool m_isHover;
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
@@ -128,7 +128,7 @@ private:
     QPointer<RoundMenu> m_menu;
     TranslateYAnimation* m_arrowAni;
 
-    bool m_isHovered = false;
+    bool m_isHover = false;
     bool m_isPressed = false;
 };
 

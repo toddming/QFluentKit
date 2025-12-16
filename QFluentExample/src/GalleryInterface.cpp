@@ -155,7 +155,7 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
     : ScrollArea(parent)
 {
     view = new QWidget(this);
-    toolBar = new ToolBar(title, subtitle.isEmpty() ? "https://github.com/toddming/QFluentExample" : subtitle, this);
+    toolBar = new ToolBar(title, subtitle.isEmpty() ? "遇到问题可以告诉我哦，看到就会及时处理。🐧1912229135" : subtitle, this);
     vBoxLayout = new QVBoxLayout(view);
 
     setViewportMargins(0, toolBar->height(), 0, 0);

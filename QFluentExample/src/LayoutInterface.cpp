@@ -28,14 +28,7 @@ QWidget *LayoutInterface::createWidget(bool animation)
           << "演示专用"
           << "点完就跑"
           << "无效操作"
-          << "仅供观赏"
-          << "点击无效"
-          << "看看就好"
-          << "莫当真啊"
-          << "稍后上线"
-          << "假装成功"
-          << "快点我呀"
-          << "其实没用";
+          << "仅供观赏";
     auto widget = new QWidget();
     auto layout = new FlowLayout(widget, animation);
 

@@ -192,6 +192,7 @@ private:
     void initWidget();
     void initLayout();
     void swapItem(int index);
+    void forceFinishAdjustment();
 
     // 成员变量
     QWidget *m_view;
@@ -217,4 +218,6 @@ private:
     bool m_isDragging;
 
     TabCloseButtonDisplayMode m_closeButtonDisplayMode;
+
+    bool m_isAdjustingLayout;
 };

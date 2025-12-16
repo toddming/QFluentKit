@@ -15,8 +15,8 @@
 #include <vector>
 #include <deque>
 
-#include "FluentIcon.h"
 #include "Theme.h"
+#include "FluentIcon.h"
 #include "QFluent/AvatarWidget.h"
 
 NavigationWidget::NavigationWidget(bool isSelectable, QWidget* parent)
@@ -252,8 +252,9 @@ void NavigationSeparator::setCompacted(bool isCompacted) {
 }
 
 void NavigationSeparator::paintEvent(QPaintEvent* e) {
+    Q_UNUSED(e);
     QPainter painter(this);
-    int c = 1 ? 255 : 0;
+    int c = Theme::instance()->isDarkTheme() ? 255 : 0;
     QPen pen(QColor(c, c, c, 15));
     pen.setCosmetic(true);
     painter.setPen(pen);

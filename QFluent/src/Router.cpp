@@ -76,10 +76,10 @@ void StackedHistory::goToTop()
 
     const QString key = top();
     if (QWidget* w = m_stacked->findChild<QWidget*>(key)) {
-        m_stacked->setCurrentWidget(w);
+        m_stacked->setCurrentWidget(w, false);
     } else if (!key.isEmpty() && key != m_defaultRouteKey) {
         if (QWidget* w = m_stacked->findChild<QWidget*>(m_defaultRouteKey))
-            m_stacked->setCurrentWidget(w);
+            m_stacked->setCurrentWidget(w, false);
     }
 }
 

@@ -41,7 +41,7 @@ ToolButton::ToolButton(const FluentIconBase &icon, QWidget* parent)
 void ToolButton::init()
 {
     m_isPressed = false;
-    m_isHovered = false;
+    m_isHover = false;
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::BUTTON);
 }
 
@@ -71,14 +71,14 @@ void ToolButton::mouseReleaseEvent(QMouseEvent* event)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void ToolButton::enterEvent(QEnterEvent* event)
 {
-    m_isHovered = true;
+    m_isHover = true;
     update();
     QToolButton::enterEvent(event);
 }
 #else
 void ToolButton::enterEvent(QEvent* event)
 {
-    m_isHovered = true;
+    m_isHover = true;
     update();
     QToolButton::enterEvent(event);
 }
@@ -86,7 +86,7 @@ void ToolButton::enterEvent(QEvent* event)
 
 void ToolButton::leaveEvent(QEvent* event)
 {
-    m_isHovered = false;
+    m_isHover = false;
     update();
     QToolButton::leaveEvent(event);
 }
@@ -180,7 +180,7 @@ void PillToolButton::paintEvent(QPaintEvent* event)
 
         if (!isEnabled()) {
             bgColor = isDark ? QColor(255, 255, 255, 11) : QColor(249, 249, 249, 75);
-        } else if (isPressed() || isHovered()) {
+        } else if (isPressed() || isHover()) {
             bgColor = isDark ? QColor(255, 255, 255, 21) : QColor(249, 249, 249, 128);
         } else {
             bgColor = isDark ? QColor(255, 255, 255, 15) : QColor(243, 243, 243, 194);
@@ -190,7 +190,7 @@ void PillToolButton::paintEvent(QPaintEvent* event)
             bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         } else if (isPressed()) {
             bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
-        } else if (isHovered()) {
+        } else if (isHover()) {
             bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
         } else {
             bgColor = Theme::instance()->themeColor();
@@ -287,7 +287,7 @@ void DropDownToolButtonBase::paintEvent(QPaintEvent* /*event*/)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_isHovered) {
+    if (m_isHover) {
         painter.setOpacity(0.8);
     } else if (m_isPressed) {
         painter.setOpacity(0.7);
@@ -369,7 +369,7 @@ void SplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Fluent::Th
 
     if (isPressed()) {
         painter->setOpacity(0.5);
-    } else if (isHovered()) {
+    } else if (isHover()) {
         painter->setOpacity(1);
     } else {
         painter->setOpacity(0.63);
@@ -395,7 +395,7 @@ void PrimarySplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Flu
 
     if (isPressed()) {
         painter->setOpacity(0.5);
-    } else if (isHovered()) {
+    } else if (isHover()) {
         painter->setOpacity(1);
     } else {
         painter->setOpacity(0.63);
