@@ -3,6 +3,7 @@
 #include "GalleryInterface.h"
 #include "QFluent/TabBar.h"
 #include "QFluent/StackedWidget.h"
+#include "QFluent/Navigation/Pivot.h"
 
 class NavigationViewInterface : public GalleryInterface
 {
@@ -11,13 +12,19 @@ public:
     explicit NavigationViewInterface(QWidget *parent = nullptr);
 
 private:
+    QWidget* createPivotWidget();
+
     QWidget* createTabWidget();
+
+    void addPage(const QString &routeKey, const QString &text, const FluentIconBase &icon);
 
     void addTab();
     void removeTab(int index);
 
+    Pivot *pivot;
     TabBar* tabBar;
-    StackedWidget* stacked;
+    StackedWidget* pivotStacked;
+    StackedWidget* tabStacked;
 
     QMap<int, QWidget*> tabMap;
 
