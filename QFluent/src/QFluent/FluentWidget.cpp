@@ -11,8 +11,8 @@
 #include "QWKWidgets/widgetwindowagent.h"
 
 
-FluentWidget::FluentWidget(QMainWindow *parent)
-    : QMainWindow(parent)
+FluentWidget::FluentWidget(QWidget *parent)
+    : QWidget(parent)
     , d_ptr(new FluentWidgetPrivate)
 {
     Q_D(FluentWidget);
@@ -34,8 +34,6 @@ FluentWidget::FluentWidget(QMainWindow *parent)
     agent->setSystemButton(QWK::WindowAgentBase::Minimize, d->_windowBar->minButton());
     agent->setSystemButton(QWK::WindowAgentBase::Maximize, d->_windowBar->maxButton());
     agent->setSystemButton(QWK::WindowAgentBase::Close, d->_windowBar->closeButton());
-
-    setMenuWidget(d->_windowBar);
 
     connect(d->_windowBar, &FluentTitleBar::themeRequested, this, [d](bool checked){
         d->_windowBar->themeButton()->setChecked(checked);
@@ -62,34 +60,8 @@ FluentWidget::FluentWidget(QMainWindow *parent)
 
 FluentWidget::~FluentWidget()
 {
+
 }
-
-bool FluentWidget::event(QEvent *event) {
-    switch (event->type()) {
-    case QEvent::WindowActivate: {
-        auto menu = menuWidget();
-        if (menu) {
-            menu->setProperty("bar-active", true);
-            style()->polish(menu);
-        }
-        break;
-    }
-
-    case QEvent::WindowDeactivate: {
-        auto menu = menuWidget();
-        if (menu) {
-            menu->setProperty("bar-active", false);
-            style()->polish(menu);
-        }
-        break;
-    }
-
-    default:
-        break;
-    }
-    return QMainWindow::event(event);
-}
-
 
 void FluentWidget::setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable)
 {
@@ -108,7 +80,6 @@ Fluent::WindowButtonHints FluentWidget::windowButtonHints() const
     Q_D(const FluentWidget);
     return d->_windowBar->windowButtonHints();
 }
-
 
 void FluentWidget::setWindowEffect(Fluent::WindowEffect effect)
 {
@@ -149,4 +120,12 @@ void FluentWidget::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
 
     d->_windowBar->iconLabel()->setPixmap(pixmap);
     d->_windowBar->iconLabel()->setFixedSize(size);
+}
+
+void FluentWidget::resizeEvent(QResizeEvent *e)
+{
+    Q_D(FluentWidget);
+    d->_windowBar->setGeometry(0, 0, window()->width(), d->_windowBar->height());
+    d->_windowBar->raise();
+    QWidget::resizeEvent(e);
 }

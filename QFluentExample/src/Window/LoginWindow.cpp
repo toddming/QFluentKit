@@ -15,7 +15,6 @@ LoginWidget::LoginWidget(bool autoLogin)
     Fluent::WindowButtonHints hints = Fluent::WindowButtonHint::Minimize |
             Fluent::WindowButtonHint::Close;
     setWindowButtonHints(hints);
-    // setWindowEffect(ApplicationType::Mica);
 
     setContentsMargins(0, 0, 0, 0);
     setFixedSize(380, 300);
@@ -28,16 +27,13 @@ LoginWidget::LoginWidget(bool autoLogin)
 
 void LoginWidget::initUI()
 {
-    auto w = new QWidget(this);
-    setCentralWidget(w);
-
-    auto c = new QWidget(w);
+    auto c = new QWidget(this);
     c->setFixedWidth(220);
-    auto hLayout = new QHBoxLayout(w);
+    auto hLayout = new QHBoxLayout(this);
     hLayout->addStretch();
     hLayout->addWidget(c);
     hLayout->addStretch();
-    hLayout->setContentsMargins(0, 0, 0, 0);
+    hLayout->setContentsMargins(0, 45, 0, 0);
     auto vLayout = new QVBoxLayout(c);
     vLayout->setContentsMargins(0, 0, 0, 0);
     vLayout->setSpacing(8);

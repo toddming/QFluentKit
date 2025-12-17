@@ -16,7 +16,7 @@ class QFLUENT_EXPORT FluentWindow : public QMainWindow
     Q_DECLARE_PRIVATE_D(d_ptr, FluentWindow)
 
 public:
-    FluentWindow(QMainWindow *parent = nullptr);
+    FluentWindow(QWidget *parent = nullptr);
     ~FluentWindow();
 
     void setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable = true);

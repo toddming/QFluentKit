@@ -25,12 +25,9 @@ void NavbarWidget::initUI()
     setWindowTitle("QFluentKit");
     setWindowIcon(QPixmap(":/res/example.png"));
 
-    auto w = new QWidget(this);
-    setCentralWidget(w);
-
-    auto hBoxLayout = new QHBoxLayout(w);
+    auto hBoxLayout = new QHBoxLayout(this);
     hBoxLayout->setSpacing(0);
-    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    hBoxLayout->setContentsMargins(0, 45, 0, 0);
 
     auto stacked = new StackedWidget(this);
     stacked->addWidget(createWidget("主页", stacked));

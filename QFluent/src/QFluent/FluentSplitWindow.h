@@ -14,7 +14,7 @@ class QFLUENT_EXPORT FluentSplitWindow : public QMainWindow
     Q_DECLARE_PRIVATE_D(d_ptr, FluentSplitWindow)
 
 public:
-    FluentSplitWindow(QMainWindow *parent = nullptr);
+    FluentSplitWindow(QWidget *parent = nullptr);
     ~FluentSplitWindow();
 
     void setWindowButtonHint(Fluent::WindowButtonHint hint, bool isEnable = true);

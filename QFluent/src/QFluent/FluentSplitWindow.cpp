@@ -13,7 +13,7 @@
 #include "Private/FluentSplitWindowPrivate.h"
 #include "QWKWidgets/widgetwindowagent.h"
 
-FluentSplitWindow::FluentSplitWindow(QMainWindow *parent)
+FluentSplitWindow::FluentSplitWindow(QWidget *parent)
     : QMainWindow(parent)
     , d_ptr(new FluentSplitWindowPrivate)
 {

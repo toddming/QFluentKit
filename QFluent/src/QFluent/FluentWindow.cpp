@@ -14,7 +14,7 @@
 #include "Private/FluentWindowPrivate.h"
 #include "QWKWidgets/widgetwindowagent.h"
 
-FluentWindow::FluentWindow(QMainWindow *parent)
+FluentWindow::FluentWindow(QWidget *parent)
     : QMainWindow(parent)
     , d_ptr(new FluentWindowPrivate)
 {
