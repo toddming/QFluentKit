@@ -717,6 +717,11 @@ void NavigationAvatarWidget::setAvatar(const QVariant &avatar)
     update();
 }
 
+QString NavigationAvatarWidget::name() const
+{
+    return m_name;
+}
+
 void NavigationAvatarWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
@@ -725,7 +730,7 @@ void NavigationAvatarWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    if (property("isPressed").toBool()) { // 假设 NavigationWidget 提供 isPressed()
+    if (property("isPressed").toBool()) {
         painter.setOpacity(0.7);
     }
 

@@ -11,7 +11,7 @@ class Flyout;
 class AvatarWidget;
 class QVBoxLayout;
 class QPropertyAnimation;
-class NavigationWidget : public QWidget {
+class QFLUENT_EXPORT NavigationWidget : public QWidget {
     Q_OBJECT
 public:
     explicit NavigationWidget(bool isSelectable, QWidget* parent = nullptr);
@@ -56,7 +56,7 @@ private:
 
 
 // NavigationPushButton
-class NavigationPushButton : public NavigationWidget {
+class QFLUENT_EXPORT NavigationPushButton : public NavigationWidget {
     Q_OBJECT
 public:
     NavigationPushButton(const QString &text, const FluentIconBase &icon, bool isSelectable, QWidget* parent = nullptr);
@@ -83,7 +83,7 @@ private:
 
 
 // NavigationToolButton
-class NavigationToolButton : public NavigationPushButton {
+class QFLUENT_EXPORT NavigationToolButton : public NavigationPushButton {
     Q_OBJECT
 public:
     NavigationToolButton(const FluentIconBase &icon, QWidget* parent = nullptr);
@@ -104,7 +104,7 @@ protected:
 class NavigationTreeWidget; // 前向声明
 
 // NavigationTreeItem
-class NavigationTreeItem : public NavigationPushButton {
+class QFLUENT_EXPORT NavigationTreeItem : public NavigationPushButton {
     Q_OBJECT
     Q_PROPERTY(float arrowAngle READ getArrowAngle WRITE setArrowAngle)
 public:
@@ -129,7 +129,7 @@ private:
 };
 
 // NavigationTreeWidgetBase
-class NavigationTreeWidgetBase : public NavigationWidget {
+class QFLUENT_EXPORT NavigationTreeWidgetBase : public NavigationWidget {
     Q_OBJECT
 public:
     explicit NavigationTreeWidgetBase(bool isSelectable, QWidget* parent = nullptr)
@@ -144,7 +144,7 @@ public:
 };
 
 // NavigationTreeWidget
-class NavigationTreeWidget : public NavigationTreeWidgetBase {
+class QFLUENT_EXPORT NavigationTreeWidget : public NavigationTreeWidgetBase {
     Q_OBJECT
 public:
     NavigationTreeWidget(const QString &text, const FluentIconBase &icon, bool isSelectable, QWidget* parent = nullptr);
@@ -199,7 +199,7 @@ private:
 
 
 // NavigationFlyoutMenu
-class NavigationFlyoutMenu : public ScrollArea {
+class QFLUENT_EXPORT NavigationFlyoutMenu : public ScrollArea {
     Q_OBJECT
 public:
     NavigationFlyoutMenu(NavigationTreeWidget* tree, QWidget* parent = nullptr);
@@ -232,6 +232,8 @@ public:
 
     void setName(const QString &name);
     void setAvatar(const QVariant &avatar);
+
+    QString name() const;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

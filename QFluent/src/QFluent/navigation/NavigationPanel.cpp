@@ -36,7 +36,6 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     m_scrollWidget = new QWidget();
 
     m_menuButton = new NavigationToolButton(FluentIcon(Fluent::IconType::MENU), this);
-    m_avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/app/avatar.png"), this);
 
     m_vBoxLayout = new NavigationItemLayout(this);
     m_topLayout = new QVBoxLayout();
@@ -109,7 +108,6 @@ void NavigationPanel::initLayout() {
     m_scrollLayout->setAlignment(Qt::AlignTop);
     m_bottomLayout->setAlignment(Qt::AlignBottom);
 
-    m_topLayout->addWidget(m_avatarWidget, 0, Qt::AlignTop);
     m_topLayout->addWidget(m_menuButton, 0, Qt::AlignTop);
 }
 
@@ -171,6 +169,7 @@ void NavigationPanel::insertWidget(int index, const QString& routeKey, Navigatio
         return;
     }
 
+    widget->setExpandWidth(m_expandWidth);
     registerWidget(routeKey, parentRouteKey, widget, onClick, tooltip);
 
     if (!parentRouteKey.isEmpty()) {
@@ -286,7 +285,6 @@ void NavigationPanel::setExpandWidth(int width) {
     }
 
     m_expandWidth = width;
-    m_avatarWidget->setExpandWidth(width);
 }
 
 void NavigationPanel::setAcrylicEnabled(bool isEnabled) {
@@ -554,9 +552,6 @@ void NavigationPanel::paintEvent(QPaintEvent* e) {
     QFrame::paintEvent(e);
 }
 
-NavigationAvatarWidget* NavigationPanel::avatarWidget() const {
-    return m_avatarWidget;
-}
 
 void NavigationItemLayout::setGeometry(const QRect& rect) {
     QVBoxLayout::setGeometry(rect);

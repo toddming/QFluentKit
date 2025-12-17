@@ -3,6 +3,7 @@
 #include "Router.h"
 #include "QFluent/Navigation/NavigationPanel.h"
 #include "QFluent/Navigation/NavigationWidget.h"
+#include "QFluent/Dialog/MessageDialog.h"
 
 #include "FluentIcon.h"
 #include "HomeInterface.h"
@@ -53,14 +54,12 @@ MainWindow::MainWindow()
     addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
 
     navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
-    addSubInterface("14", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
+    auto avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/app/avatar.png"), this);
+    navigationInterface()->addWidget("14", avatarWidget, [this](){showDialog();}, Fluent::NavigationItemPosition::BOTTOM);
+    addSubInterface("15", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
 
     qrouter->setDefaultRouteKey(stackedWidget(), "homeInterface");
     navigationInterface()->setCurrentItem("1");
-
-    NavigationAvatarWidget* avatar = navigationInterface()->avatarWidget();
-    avatar->setName("Administrator");
-    avatar->setAvatar(QImage(":/res/avatar.png"));
 
     connect(this, &MainWindow::backRequested, this, [=](){
         qrouter->pop();
@@ -71,4 +70,13 @@ void MainWindow::setCurrentInterface(const QString &routeKey, int index)
 {
     qrouter->push(stackedWidget(), routeKey);
     navigationInterface()->setCurrentItem(QString::number(index));
+}
+
+void MainWindow::showDialog()
+{
+    auto box = new MessageDialog("你是遇到问题了吗?",
+                                 "遇到问题？欢迎加我 QQ（1912229135）反馈～看到后我会第一时间修复，感谢你让这个项目变得越来越棒！",
+                                 this->window());
+    box->setIsClosableOnMaskClicked(true);
+    box->exec();
 }

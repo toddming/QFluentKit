@@ -14,7 +14,6 @@ class QPropertyAnimation;
 class NavigationToolButton;
 class NavigationTreeWidget;
 class NavigationFlyoutMenu;
-class NavigationAvatarWidget;
 class RouteKeyError : public std::exception {
 public:
     RouteKeyError(const QString& message) : m_message(message.toUtf8()) {}
@@ -77,7 +76,6 @@ public:
     void toggle();
     bool isCollapsed() const;
 
-    NavigationAvatarWidget *avatarWidget() const;
     // 信号
 signals:
     void displayModeChanged(Fluent::NavigationDisplayMode mode);
@@ -115,7 +113,6 @@ private:
     QWidget* m_scrollWidget;
 
     NavigationToolButton* m_menuButton;
-    NavigationAvatarWidget* m_avatarWidget;
 
     QVBoxLayout* m_vBoxLayout;
     QVBoxLayout* m_topLayout;

@@ -9,4 +9,7 @@ public:
     explicit MainWindow();
 
     void setCurrentInterface(const QString &routeKey, int index);
+
+private:
+    void showDialog();
 };

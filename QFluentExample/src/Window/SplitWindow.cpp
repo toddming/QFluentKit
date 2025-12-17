@@ -28,7 +28,6 @@ void SplitWidget::initUI()
     setWindowTitle("QFluentKit");
     setWindowIcon(QPixmap(":/res/example.png"));
 
-    navigationInterface()->avatarWidget()->hide();
     navigationInterface()->setExpandWidth(200);
 
     addSubInterface("1", FluentIcon(Fluent::IconType::HOME), "主页", createWidget("主页", this), true, Fluent::NavigationItemPosition::TOP);
