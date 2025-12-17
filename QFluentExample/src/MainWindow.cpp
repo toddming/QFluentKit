@@ -54,7 +54,7 @@ MainWindow::MainWindow()
     addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
 
     navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
-    auto avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/app/avatar.png"), this);
+    auto avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/avatar.png"), this);
     navigationInterface()->addWidget("14", avatarWidget, [this](){showDialog();}, Fluent::NavigationItemPosition::BOTTOM);
     addSubInterface("15", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
 
