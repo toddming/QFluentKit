@@ -3,6 +3,7 @@
 #include <QEnterEvent>
 #include <QEasingCurve>
 #include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QEvent>
@@ -16,6 +17,7 @@
 #include <deque>
 
 #include "Theme.h"
+#include "Animation.h"
 #include "FluentIcon.h"
 #include "QFluent/AvatarWidget.h"
 
@@ -712,6 +714,9 @@ void NavigationAvatarWidget::setAvatar(const QVariant &avatar)
         if (!pixmap.isNull()) {
             m_avatar->setImage(pixmap);
         }
+    } else if (avatar.canConvert<QIcon>()) {
+        QIcon icon = avatar.value<QIcon>();
+        m_avatar->setImage(icon.pixmap(icon.availableSizes().value(0)));
     }
     m_avatar->setRadius(12);
     update();
@@ -750,3 +755,431 @@ void NavigationAvatarWidget::paintEvent(QPaintEvent *event)
 }
 
 
+// ============================================================================
+// NavigationUserCard 实现
+// ============================================================================
+
+NavigationUserCard::NavigationUserCard(QWidget *parent)
+    : NavigationAvatarWidget("", QVariant(), parent)
+    , m_titleSize(14)
+    , m_subtitleSize(12)
+    , m_textOpacity(0.0f)
+    , m_animationDuration(250)
+{
+    // 初始化动画组
+    m_animationGroup = new QParallelAnimationGroup(this);
+
+    // Avatar radius 动画
+    AvatarWidget *avatar = findChild<AvatarWidget*>();
+    if (avatar) {
+        m_radiusAni = new QPropertyAnimation(avatar, "radius", this);
+        m_radiusAni->setDuration(m_animationDuration);
+        m_radiusAni->setEasingCurve(QEasingCurve::OutCubic);
+        connect(m_radiusAni, &QPropertyAnimation::valueChanged,
+                this, &NavigationUserCard::_updateAvatarPosition);
+    }
+
+    // Text opacity 动画
+    m_opacityAni = new QPropertyAnimation(this, "textOpacity", this);
+    m_opacityAni->setDuration(static_cast<int>(m_animationDuration * 0.8));
+    m_opacityAni->setEasingCurve(QEasingCurve::InOutQuad);
+
+    m_animationGroup->addAnimation(m_radiusAni);
+    m_animationGroup->addAnimation(m_opacityAni);
+
+    connect(m_animationGroup, &QParallelAnimationGroup::finished,
+            this, QOverload<>::of(&QWidget::update));
+
+    // 初始大小
+    setFixedSize(40, 36);
+}
+
+void NavigationUserCard::setAvatarIcon(const QIcon &icon)
+{
+    // 获取 avatar widget 并设置图标
+    AvatarWidget *avatar = findChild<AvatarWidget*>();
+    if (avatar) {
+        avatar->setImage(icon.pixmap(icon.availableSizes().value(0)));
+    }
+    update();
+}
+
+void NavigationUserCard::setAvatarBackgroundColor(const QColor &light, const QColor &dark)
+{
+    AvatarWidget *avatar = findChild<AvatarWidget*>();
+    if (avatar) {
+        avatar->setBackgroundColor(light, dark);
+    }
+    update();
+}
+
+QString NavigationUserCard::title() const
+{
+    return m_title;
+}
+
+void NavigationUserCard::setTitle(const QString &title)
+{
+    m_title = title;
+    setName(title);  // 同时更新父类的 name
+    update();
+}
+
+QString NavigationUserCard::subtitle() const
+{
+    return m_subtitle;
+}
+
+void NavigationUserCard::setSubtitle(const QString &subtitle)
+{
+    m_subtitle = subtitle;
+    update();
+}
+
+void NavigationUserCard::setTitleFontSize(int size)
+{
+    m_titleSize = size;
+    update();
+}
+
+void NavigationUserCard::setSubtitleFontSize(int size)
+{
+    m_subtitleSize = size;
+    update();
+}
+
+void NavigationUserCard::setAnimationDuration(int duration)
+{
+    m_animationDuration = duration;
+    m_radiusAni->setDuration(duration);
+    m_opacityAni->setDuration(static_cast<int>(duration * 0.8));
+}
+
+void NavigationUserCard::setCompacted(bool isCompacted)
+{
+    if (isCompacted == property("isCompacted").toBool())
+        return;
+
+    setProperty("isCompacted", isCompacted);
+
+    AvatarWidget *avatar = findChild<AvatarWidget*>();
+    if (!avatar)
+        return;
+
+    if (isCompacted) {
+        // 紧凑模式：24x24 avatar
+        setFixedSize(40, 36);
+        m_radiusAni->setDuration(0);
+        m_radiusAni->setStartValue(avatar->radius());
+        m_radiusAni->setEndValue(12);  // 24px 直径
+        m_opacityAni->setStartValue(m_textOpacity);
+        m_opacityAni->setEndValue(0.0f);
+    } else {
+        // 展开模式：大头像和文本
+        setFixedSize(expandWidth(), 80);
+        m_radiusAni->setDuration(m_animationDuration);
+        m_radiusAni->setStartValue(avatar->radius());
+        m_radiusAni->setEndValue(32);  // 64px 直径
+        m_opacityAni->setStartValue(m_textOpacity);
+        m_opacityAni->setEndValue(1.0f);
+    }
+
+    m_animationGroup->start();
+}
+
+float NavigationUserCard::textOpacity() const
+{
+    return m_textOpacity;
+}
+
+void NavigationUserCard::setTextOpacity(float opacity)
+{
+    m_textOpacity = opacity;
+    update();
+}
+
+QColor NavigationUserCard::subtitleColor() const
+{
+    return m_subtitleColor;
+}
+
+void NavigationUserCard::setSubtitleColor(const QColor &color)
+{
+    m_subtitleColor = color;
+    update();
+}
+
+void NavigationUserCard::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform |
+                           QPainter::Antialiasing |
+                           QPainter::TextAntialiasing);
+
+    if (property("isPressed").toBool()) {
+        painter.setOpacity(0.7);
+    }
+
+    // 绘制悬停背景
+    if (property("isEnter").toBool()) {
+        int c = Theme::instance()->isDarkTheme() ? 255 : 0;
+        painter.setBrush(QColor(c, c, c, 10));
+        painter.setPen(Qt::NoPen);
+        painter.drawRoundedRect(rect(), 5, 5);
+    }
+
+    // 在展开模式下绘制文本
+    if (!property("isCompacted").toBool() && m_textOpacity > 0) {
+        _drawText(painter);
+    }
+}
+
+void NavigationUserCard::_drawText(QPainter &painter)
+{
+    AvatarWidget *avatar = findChild<AvatarWidget*>();
+    if (!avatar)
+        return;
+
+    int textX = 16 + static_cast<int>(avatar->radius() * 2) + 12;
+    int textWidth = width() - textX - 16;
+
+    // 绘制标题
+    QFont titleFont = font();
+    titleFont.setPointSize(m_titleSize);
+    titleFont.setBold(true);
+    painter.setFont(titleFont);
+
+    QColor c = textColor();
+    c.setAlpha(static_cast<int>(255 * m_textOpacity));
+    painter.setPen(c);
+
+    int titleY = height() / 2 - 2;
+    painter.drawText(QRectF(textX, 0, textWidth, titleY),
+                     Qt::AlignLeft | Qt::AlignBottom,
+                     m_title);
+
+    // 绘制副标题
+    if (!m_subtitle.isEmpty()) {
+        QFont subtitleFont = font();
+        subtitleFont.setPointSize(m_subtitleSize);
+        painter.setFont(subtitleFont);
+
+        QColor subtitleC = m_subtitleColor.isValid() ? m_subtitleColor : textColor();
+        subtitleC.setAlpha(static_cast<int>(150 * m_textOpacity));
+        painter.setPen(subtitleC);
+
+        int subtitleY = height() / 2 + 2;
+        painter.drawText(QRectF(textX, subtitleY, textWidth, height() - subtitleY),
+                         Qt::AlignLeft | Qt::AlignTop,
+                         m_subtitle);
+    }
+}
+
+void NavigationUserCard::_updateAvatarPosition()
+{
+    AvatarWidget *avatar = findChild<AvatarWidget*>();
+    if (!avatar)
+        return;
+
+    if (property("isCompacted").toBool()) {
+        avatar->move(8, 6);
+    } else {
+        avatar->move(16, (height() - avatar->height()) / 2);
+    }
+}
+
+
+// ============================================================================
+// NavigationIndicator 实现
+// ============================================================================
+
+NavigationIndicator::NavigationIndicator(QWidget *parent)
+    : QWidget(parent)
+{
+    m_scaleSlideAni = new ScaleSlideAnimation(this, Qt::Vertical);
+
+    resize(3, 16);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+    setAttribute(Qt::WA_TranslucentBackground);
+    hide();
+
+    connect(m_scaleSlideAni, &ScaleSlideAnimation::valueChanged, this, [this](const QVariant &value) {
+        setGeometry(value.toRectF().toRect());
+    });
+
+    connect(m_scaleSlideAni, &ScaleSlideAnimation::finished, this, &NavigationIndicator::aniFinished);
+}
+
+void NavigationIndicator::startAnimation(const QRectF &startRect, const QRectF &endRect, bool useCrossFade)
+{
+    setGeometry(startRect.toRect());
+    show();
+
+    m_scaleSlideAni->setGeometry(startRect);
+    m_scaleSlideAni->startAnimation(endRect, useCrossFade);
+}
+
+void NavigationIndicator::stopAnimation()
+{
+    m_scaleSlideAni->stopAnimation();
+    hide();
+}
+
+void NavigationIndicator::setIndicatorColor(const QColor &light, const QColor &dark)
+{
+    m_lightColor = light;
+    m_darkColor = dark;
+    update();
+}
+
+void NavigationIndicator::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
+
+    // 根据主题选择颜色
+    QColor color = Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor;
+    if (!color.isValid()) {
+        color = Theme::instance()->themeColor();
+    }
+
+    painter.setBrush(color);
+    painter.drawRoundedRect(rect(), 1.5, 1.5);
+}
+
+
+// ============================================================================
+// NavigationItemHeader 实现
+// ============================================================================
+
+NavigationItemHeader::NavigationItemHeader(const QString &text, QWidget *parent)
+    : NavigationWidget(false, parent)
+    , m_text(text)
+    , m_targetHeight(30)
+{   
+    Theme::instance()->setFont(this, 12);
+
+    // 覆盖文本颜色为标题样式 - 灰色
+    setLightTextColor(QColor(96, 96, 96));   // 浅色模式下的灰色
+    setDarkTextColor(QColor(160, 160, 160)); // 深色模式下的浅灰色
+
+    // 高度动画
+    m_heightAni = new QPropertyAnimation(this, "maximumHeight", this);
+    m_heightAni->setDuration(150);
+    m_heightAni->setEasingCurve(QEasingCurve::OutQuad);
+    connect(m_heightAni, &QPropertyAnimation::valueChanged,
+            this, &NavigationItemHeader::_onHeightChanged);
+
+    // 普通光标，不是手型光标
+    setCursor(Qt::ArrowCursor);
+
+    // 初始化为隐藏状态
+    setFixedHeight(0);
+}
+
+QString NavigationItemHeader::text() const
+{
+    return m_text;
+}
+
+void NavigationItemHeader::setText(const QString &text)
+{
+    m_text = text;
+    update();
+}
+
+void NavigationItemHeader::setCompacted(bool isCompacted)
+{
+    setProperty("isCompacted", isCompacted);
+
+    // 停止任何正在运行的动画
+    m_heightAni->stop();
+
+    if (isCompacted) {
+        // 紧凑模式，动画到高度 0
+        setFixedWidth(40);
+        m_heightAni->setStartValue(height());
+        m_heightAni->setEndValue(0);
+        connect(m_heightAni, &QPropertyAnimation::finished,
+                this, &NavigationItemHeader::_onCollapseFinished);
+    } else {
+        // 展开模式，动画到完整高度
+        setFixedWidth(expandWidth());
+        setVisible(true);  // 确保在展开前可见
+        m_heightAni->setStartValue(height());
+        m_heightAni->setEndValue(m_targetHeight);
+        // 断开之前的 finished 连接
+        disconnect(m_heightAni, &QPropertyAnimation::finished,
+                   this, &NavigationItemHeader::_onCollapseFinished);
+    }
+
+    m_heightAni->start();
+    update();
+}
+
+void NavigationItemHeader::_onCollapseFinished()
+{
+    setVisible(false);
+    disconnect(m_heightAni, &QPropertyAnimation::finished,
+               this, &NavigationItemHeader::_onCollapseFinished);
+}
+
+void NavigationItemHeader::_onHeightChanged(const QVariant &value)
+{
+    setFixedHeight(value.toInt());
+}
+
+void NavigationItemHeader::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+
+    if (height() == 0 || !isVisible())
+        return;
+
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+
+    // 根据高度计算透明度，实现淡入淡出效果
+    qreal opacity = qMin(1.0, static_cast<qreal>(height()) / qMax(1, m_targetHeight));
+    painter.setOpacity(opacity);
+
+    if (!property("isCompacted").toBool()) {
+        // 在展开模式下绘制标题文本
+        painter.setFont(font());
+        painter.setPen(textColor());
+        painter.drawText(QRectF(16, 0, width() - 16, height()),
+                        Qt::AlignLeft | Qt::AlignVCenter,
+                        m_text);
+    }
+}
+
+void NavigationItemHeader::mousePressEvent(QMouseEvent *e)
+{
+    // 标题不可点击，忽略事件
+    e->ignore();
+}
+
+void NavigationItemHeader::mouseReleaseEvent(QMouseEvent *e)
+{
+    // 标题不可点击，忽略事件
+    e->ignore();
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void NavigationItemHeader::enterEvent(QEnterEvent *e) {
+    Q_UNUSED(e);
+}
+#else
+void NavigationItemHeader::enterEvent(QEvent *e) {
+    Q_UNUSED(e);
+}
+#endif
+
+void NavigationItemHeader::leaveEvent(QEvent *e)
+{
+    // 不显示悬停效果
+    Q_UNUSED(e);
+}

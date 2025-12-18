@@ -14,6 +14,7 @@ class QPropertyAnimation;
 class NavigationToolButton;
 class NavigationTreeWidget;
 class NavigationFlyoutMenu;
+class NavigationUserCard;
 class RouteKeyError : public std::exception {
 public:
     RouteKeyError(const QString& message) : m_message(message.toUtf8()) {}
@@ -39,6 +40,13 @@ public:
 
     // 公共方法
     NavigationWidget* widget(const QString& routeKey);
+
+    NavigationUserCard* addUserCard(const QString& routeKey, const QVariant& avatar,
+                                const QString& title, const QString& subtitle,
+                                std::function<void()> onClick,
+                                Fluent::NavigationItemPosition position,
+                                bool aboveMenuButton);
+
     void addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                  const std::function<void()>& onClick = nullptr, bool selectable = true,
                  Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
@@ -60,7 +68,9 @@ public:
                       const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
     void addSeparator(Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
+    void addItemHeader(const QString &text, Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
     void insertSeparator(int index, Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
+    void insertItemHeader(int index, const QString &text, Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
     void removeWidget(const QString& routeKey);
     void setCurrentItem(const QString& routeKey);
 

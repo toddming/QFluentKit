@@ -1,6 +1,4 @@
-﻿#ifndef NAVIGATION_WIDGET_H
-#define NAVIGATION_WIDGET_H
-
+﻿#pragma once
 #include <QWidget>
 
 #include "FluentIcon.h"
@@ -11,6 +9,8 @@ class Flyout;
 class AvatarWidget;
 class QVBoxLayout;
 class QPropertyAnimation;
+class ScaleSlideAnimation;
+class QParallelAnimationGroup;
 class QFLUENT_EXPORT NavigationWidget : public QWidget {
     Q_OBJECT
 public:
@@ -243,4 +243,131 @@ private:
     AvatarWidget *m_avatar;
 };
 
-#endif // NAVIGATION_WIDGET_H
+
+// NavigationUserCard 类
+class QFLUENT_EXPORT NavigationUserCard : public NavigationAvatarWidget
+{
+    Q_OBJECT
+    Q_PROPERTY(float textOpacity READ textOpacity WRITE setTextOpacity)
+    Q_PROPERTY(QColor subtitleColor READ subtitleColor WRITE setSubtitleColor)
+
+public:
+    explicit NavigationUserCard(QWidget *parent = nullptr);
+
+    // Avatar icon and color
+    void setAvatarIcon(const QIcon &icon);
+    void setAvatarBackgroundColor(const QColor &light, const QColor &dark);
+
+    // Title and subtitle
+    QString title() const;
+    void setTitle(const QString &title);
+
+    QString subtitle() const;
+    void setSubtitle(const QString &subtitle);
+
+    // Font sizes
+    void setTitleFontSize(int size);
+    void setSubtitleFontSize(int size);
+
+    // Animation
+    void setAnimationDuration(int duration);
+
+    // Override setCompacted to add animation
+    void setCompacted(bool isCompacted) override;
+
+    // Properties
+    float textOpacity() const;
+    void setTextOpacity(float opacity);
+
+    QColor subtitleColor() const;
+    void setSubtitleColor(const QColor &color);
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
+private:
+    void _drawText(QPainter &painter);
+    void _updateAvatarPosition();
+
+    // Text properties
+    QString m_title;
+    QString m_subtitle;
+    int m_titleSize;
+    int m_subtitleSize;
+    QColor m_subtitleColor;
+
+    // Animation properties
+    float m_textOpacity;
+    int m_animationDuration;
+    QParallelAnimationGroup *m_animationGroup;
+    QPropertyAnimation *m_radiusAni;
+    QPropertyAnimation *m_opacityAni;
+};
+
+
+// NavigationIndicator 类
+class QFLUENT_EXPORT NavigationIndicator : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit NavigationIndicator(QWidget *parent = nullptr);
+
+    // Start animation from startRect to endRect
+    void startAnimation(const QRectF &startRect, const QRectF &endRect, bool useCrossFade = false);
+
+    // Stop animation
+    void stopAnimation();
+
+    // Set indicator color
+    void setIndicatorColor(const QColor &light, const QColor &dark);
+
+signals:
+    void aniFinished();
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
+private:
+    QColor m_lightColor;
+    QColor m_darkColor;
+    ScaleSlideAnimation *m_scaleSlideAni;
+};
+
+
+// NavigationItemHeader 类
+class QFLUENT_EXPORT NavigationItemHeader : public NavigationWidget
+{
+    Q_OBJECT
+    Q_PROPERTY(int maximumHeight READ maximumHeight WRITE setMaximumHeight)
+
+public:
+    explicit NavigationItemHeader(const QString &text, QWidget *parent = nullptr);
+
+    // Text
+    QString text() const;
+    void setText(const QString &text);
+
+    // Override setCompacted for animation
+    void setCompacted(bool isCompacted) override;
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void enterEvent(QEnterEvent *e) override;
+#else
+    void enterEvent(QEvent *e) override;
+#endif
+    void leaveEvent(QEvent *e) override;
+
+private slots:
+    void _onCollapseFinished();
+    void _onHeightChanged(const QVariant &value);
+
+private:
+    QString m_text;
+    int m_targetHeight;
+    QPropertyAnimation *m_heightAni;
+};

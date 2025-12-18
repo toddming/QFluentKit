@@ -23,6 +23,8 @@
 
 #include "ConfigManager.h"
 
+using NavPos = Fluent::NavigationItemPosition;
+
 MainWindow::MainWindow()
 {
     setWindowTitle("QFluentKit");
@@ -35,28 +37,30 @@ MainWindow::MainWindow()
     Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()));
     Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
 
-    navigationInterface()->setExpandWidth(200);
+    navigationInterface()->setExpandWidth(240);
+    auto userCard = navigationInterface()->addUserCard("userCard", ":/res/Shizuka.png", "Shizuka", "shizuka@gmail.com",
+                                       nullptr, NavPos::TOP, false);
+    userCard->setTitleFontSize(12);
+    userCard->setSubtitleFontSize(10);
 
     QString iconPath = QString(":/res/icons/%1_{color}.svg");
-    addSubInterface("1", FluentIcon(Fluent::IconType::HOME), "主页", new HomeInterface(this), true, Fluent::NavigationItemPosition::TOP);
-    addSubInterface("2", FluentIcon(Fluent::IconType::EMOJI_TAB_SYMBOLS), "图标", new IconInterface(this), true, Fluent::NavigationItemPosition::TOP);
+    addSubInterface("1", FluentIcon(Fluent::IconType::HOME), "主页", new HomeInterface(this), true, NavPos::TOP);
+    addSubInterface("2", FluentIcon(Fluent::IconType::EMOJI_TAB_SYMBOLS), "图标", new IconInterface(this), true, NavPos::TOP);
     navigationInterface()->addSeparator();
-    addSubInterface("3", FluentIcon(Fluent::IconType::CHECKBOX), "基本输入", new BasicInputInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("4", FluentIcon(Fluent::IconType::DATE_TIME), "日期和时间", new DateTimeInputInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("5", FluentIcon(Fluent::IconType::MESSAGE), "对话框", new DialogInputInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("6", FluentIcon(Fluent::IconType::LAYOUT), "布局", new LayoutInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("7", FluentIcon(iconPath.arg("Menu")), "菜单", new MenuInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("8", FluentIcon(Fluent::IconType::MENU), "导航", new NavigationViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("9", FluentIcon(Fluent::IconType::APPLICATION), "窗口", new WindowInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("10", FluentIcon(Fluent::IconType::SCROLL), "滚动", new ScrollInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("11", FluentIcon(Fluent::IconType::CHAT), "状态", new StatusInfoInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
-    addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, Fluent::NavigationItemPosition::SCROLL);
+    addSubInterface("3", FluentIcon(Fluent::IconType::CHECKBOX), "基本输入", new BasicInputInterface(this), true, NavPos::SCROLL);
+    addSubInterface("4", FluentIcon(Fluent::IconType::DATE_TIME), "日期和时间", new DateTimeInputInterface(this), true, NavPos::SCROLL);
+    addSubInterface("5", FluentIcon(Fluent::IconType::MESSAGE), "对话框", new DialogInputInterface(this), true, NavPos::SCROLL);
+    addSubInterface("6", FluentIcon(Fluent::IconType::LAYOUT), "布局", new LayoutInterface(this), true, NavPos::SCROLL);
+    addSubInterface("7", FluentIcon(iconPath.arg("Menu")), "菜单", new MenuInterface(this), true, NavPos::SCROLL);
+    addSubInterface("8", FluentIcon(Fluent::IconType::MENU), "导航", new NavigationViewInterface(this), true, NavPos::SCROLL);
+    addSubInterface("9", FluentIcon(Fluent::IconType::APPLICATION), "窗口", new WindowInterface(this), true, NavPos::SCROLL);
+    addSubInterface("10", FluentIcon(Fluent::IconType::SCROLL), "滚动", new ScrollInterface(this), true, NavPos::SCROLL);
+    addSubInterface("11", FluentIcon(Fluent::IconType::CHAT), "状态", new StatusInfoInterface(this), true, NavPos::SCROLL);
+    addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, NavPos::SCROLL);
+    addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NavPos::SCROLL);
 
-    navigationInterface()->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
-    auto avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/avatar.png"), this);
-    navigationInterface()->addWidget("14", avatarWidget, [this](){showDialog();}, Fluent::NavigationItemPosition::BOTTOM);
-    addSubInterface("15", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, Fluent::NavigationItemPosition::BOTTOM);
+    navigationInterface()->addSeparator(NavPos::BOTTOM);
+    addSubInterface("15", FluentIcon(Fluent::IconType::SETTING), "设置", new SettingInterface(this), true, NavPos::BOTTOM);
 
     qrouter->setDefaultRouteKey(stackedWidget(), "homeInterface");
     navigationInterface()->setCurrentItem("1");

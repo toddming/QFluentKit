@@ -11,7 +11,6 @@ NavigationViewInterface::NavigationViewInterface(QWidget *parent)
 {
     setObjectName("NavigationViewInterface");
 
-
     addExampleCard("顶部导航栏", createPivotWidget(), "", 1);
 
     addExampleCard("标签导航", createTabWidget(), "", 1);
@@ -24,13 +23,13 @@ QWidget* NavigationViewInterface::createPivotWidget()
 
     pivotStacked = new StackedWidget(pivotView);
     pivotStacked->setStyleSheet(R"(
-StackedWidget {
-    border-right: none;
-    border-bottom: none;
-    border-top-left-radius: 10px;
-    background-color: transparent;
-    border: none;
-}
+    StackedWidget {
+        border-right: none;
+        border-bottom: none;
+        border-top-left-radius: 10px;
+        background-color: transparent;
+        border: none;
+    }
 )");
 
     pivot = new Pivot(pivotView);
@@ -48,7 +47,7 @@ StackedWidget {
     auto vBoxLayout = new QVBoxLayout(pivotView);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);
 
-    vBoxLayout->addWidget(pivotView);
+    vBoxLayout->addWidget(pivot);
     vBoxLayout->addWidget(pivotStacked);
 
     return pivotView;
@@ -71,13 +70,13 @@ QWidget* NavigationViewInterface::createTabWidget()
 
     tabStacked = new StackedWidget(tabView);
     tabStacked->setStyleSheet(R"(
-StackedWidget {
-    border-right: none;
-    border-bottom: none;
-    border-top-left-radius: 10px;
-    background-color: transparent;
-    border: none;
-}
+    StackedWidget {
+        border-right: none;
+        border-bottom: none;
+        border-top-left-radius: 10px;
+        background-color: transparent;
+        border: none;
+    }
 )");
 
     tabBar = new TabBar(tabView);

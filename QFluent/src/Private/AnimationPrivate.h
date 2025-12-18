@@ -1,11 +1,12 @@
-﻿#ifndef ANIMATIONPRIVATE_H
-#define ANIMATIONPRIVATE_H
+﻿#pragma once
 
 #include <QPropertyAnimation>
 #include <QColor>
 #include <QPoint>
 #include <QMap>
 #include <functional>
+#include <QRectF>
+#include <Qt>
 
 class QGraphicsDropShadowEffect;
 class BackgroundColorObject;
@@ -81,4 +82,15 @@ public:
     static QMap<int, std::function<class FluentAnimation*(QObject*)>> animations;
 };
 
-#endif // ANIMATIONPRIVATE_H
+// ScaleSlideAnimationPrivate
+class ScaleSlideAnimationPrivate {
+public:
+    ScaleSlideAnimationPrivate()
+        : orient(Qt::Horizontal)
+        , _geometry(0, 0, 16, 3)
+    {}
+
+    Qt::Orientation orient;
+    QRectF _geometry;
+};
+

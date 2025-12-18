@@ -134,6 +134,57 @@ NavigationWidget* NavigationPanel::widget(const QString& routeKey) {
     return m_items[routeKey].widget;
 }
 
+NavigationUserCard* NavigationPanel::addUserCard(const QString& routeKey, const QVariant& avatar,
+                            const QString& title, const QString& subtitle,
+                            std::function<void()> onClick,
+                            Fluent::NavigationItemPosition position,
+                            bool aboveMenuButton)
+{
+    Q_UNUSED(routeKey);
+    auto card = new NavigationUserCard(this);
+    card->setExpandWidth(m_expandWidth);
+
+    if (!avatar.isNull()) {
+        if (avatar.canConvert<QIcon>()) {
+            QIcon icon = avatar.value<QIcon>();
+            card->setAvatar(icon);
+        } else if (avatar.canConvert<QString>()) {
+            QString imagePath = avatar.value<QString>();
+            card->setAvatar(imagePath);
+        }
+        // Assuming there's a way to set FluentIconBase. This part might need adaptation.
+    }
+
+    card->setTitle(title);
+    card->setSubtitle(subtitle);
+
+    int index = -1;
+    if (aboveMenuButton && position == Fluent::NavigationItemPosition::TOP) {
+        for (int i = 0; i < m_topLayout->count(); ++i) {
+            auto item = m_topLayout->itemAt(i);
+            if (item->widget() == m_menuButton) {
+                index = i;
+                break;
+            }
+        }
+    }
+
+    if (index >= 0) {
+        // Insert widget at specific position in Qt is done via QBoxLayout::insertWidget
+        m_topLayout->insertWidget(index, card);
+    } else {
+        // Assuming addWidget function adds widgets according to position
+        m_topLayout->addWidget(card);
+    }
+
+    // Connect onClick if provided
+    if (onClick != nullptr) {
+        connect(card, &NavigationUserCard::clicked, this, [onClick]() { onClick(); });
+    }
+
+    return card;
+}
+
 void NavigationPanel::addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                               const std::function<void()>& onClick, bool selectable,
                               Fluent::NavigationItemPosition position, const QString& tooltip,
@@ -183,10 +234,21 @@ void NavigationPanel::addSeparator(Fluent::NavigationItemPosition position) {
     insertSeparator(-1, position);
 }
 
+void NavigationPanel::addItemHeader(const QString &text, Fluent::NavigationItemPosition position)
+{
+    insertItemHeader(-1, text, position);
+}
+
 void NavigationPanel::insertSeparator(int index, Fluent::NavigationItemPosition position) {
     NavigationSeparator* separator = new NavigationSeparator(this);
     separator->setExpandWidth(m_expandWidth);
     insertWidgetToLayout(index, separator, position);
+}
+
+void NavigationPanel::insertItemHeader(int index, const QString &text, Fluent::NavigationItemPosition position)
+{
+    auto header = new NavigationItemHeader(text, this);
+    insertWidgetToLayout(index, header, position);
 }
 
 void NavigationPanel::registerWidget(const QString& routeKey, const QString& parentRouteKey,

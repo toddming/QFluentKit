@@ -9,7 +9,7 @@ ViewInterface::ViewInterface(QWidget *parent)
     setObjectName("ViewInterface");
 
     auto tableWidget = new TableWidget(this);
-    tableWidget->setFixedSize(725, 440);
+    tableWidget->setFixedSize(625, 440);
     tableWidget->verticalHeader()->hide();
     tableWidget->setBorderVisible(true);
     tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);

@@ -1,11 +1,11 @@
-﻿#ifndef ANIMATION_H
-#define ANIMATION_H
+﻿#pragma once
 
 #include <QObject>
 #include <QWidget>
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 #include <QVariant>
+#include <QParallelAnimationGroup>
 
 #include "FluentGlobal.h"
 
@@ -16,6 +16,7 @@ class BackgroundColorObjectPrivate;
 class DropShadowAnimationPrivate;
 class FluentAnimationProperObjectPrivate;
 class FluentAnimationPrivate;
+class ScaleSlideAnimationPrivate;
 
 // 枚举定义
 enum class FluentAnimationSpeed {
@@ -328,4 +329,42 @@ public:
     int speedToDuration(FluentAnimationSpeed speed) override;
 };
 
-#endif // ANIMATION_H
+// ScaleSlideAnimation
+class QFLUENT_EXPORT ScaleSlideAnimation : public QParallelAnimationGroup {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(ScaleSlideAnimation)
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+    Q_PROPERTY(qreal length READ length WRITE setLength)
+    Q_PROPERTY(QRectF geometry READ geometry WRITE setGeometry)
+
+public:
+    explicit ScaleSlideAnimation(QWidget *parent = nullptr, Qt::Orientation orient = Qt::Horizontal);
+    ~ScaleSlideAnimation() override;
+
+    void startAnimation(const QRectF &endRect, bool useCrossFade = false);
+    void stopAnimation();
+
+    QPointF pos() const;
+    void setPos(const QPointF &pos);
+
+    qreal length() const;
+    void setLength(qreal length);
+
+    QRectF geometry() const;
+    void setGeometry(const QRectF &rect);
+
+    void moveLeft(qreal x);
+    void setValue(const QRectF &rect);
+
+    bool isHorizontal() const;
+
+signals:
+    void valueChanged(const QRectF &rect);
+
+private:
+    void _startSlideAnimation(const QRectF &startRect, const QRectF &endRect,
+                             qreal from, qreal to, qreal dimension);
+    void _startCrossFadeAnimation(const QRectF &startRect, const QRectF &endRect);
+
+    QScopedPointer<ScaleSlideAnimationPrivate> d_ptr;
+};

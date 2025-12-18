@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QGraphicsDropShadowEffect>
+#include <QSequentialAnimationGroup>
 
 // ==================== AnimationBase ====================
 AnimationBase::AnimationBase(QWidget *parent)
@@ -584,4 +585,235 @@ FadeInOutAnimation::FadeInOutAnimation(QObject *parent) : FluentAnimation(parent
 int FadeInOutAnimation::speedToDuration(FluentAnimationSpeed speed) {
     Q_UNUSED(speed);
     return 83;
+}
+
+
+// ==================== ScaleSlideAnimation ====================
+ScaleSlideAnimation::ScaleSlideAnimation(QWidget *parent, Qt::Orientation orient)
+    : QParallelAnimationGroup(parent)
+    , d_ptr(new ScaleSlideAnimationPrivate())
+{
+    Q_D(ScaleSlideAnimation);
+    d->orient = orient;
+
+    if (isHorizontal()) {
+        d->_geometry = QRectF(0, 0, 16, 3);
+    } else {
+        d->_geometry = QRectF(0, 0, 3, 16);
+    }
+}
+
+ScaleSlideAnimation::~ScaleSlideAnimation() {}
+
+void ScaleSlideAnimation::startAnimation(const QRectF &endRect, bool useCrossFade) {
+    stopAnimation();
+
+    QRectF startRect = geometry();
+
+    // 判断是否在同一层级
+    bool sameLevel;
+    qreal dim, start, end;
+
+    if (isHorizontal()) {
+        sameLevel = qAbs(startRect.y() - endRect.y()) < 1;
+        dim = startRect.width();
+        start = startRect.x();
+        end = endRect.x();
+    } else {
+        sameLevel = qAbs(startRect.x() - endRect.x()) < 1;
+        dim = startRect.height();
+        start = startRect.y();
+        end = endRect.y();
+    }
+
+    if (sameLevel && !useCrossFade) {
+        _startSlideAnimation(startRect, endRect, start, end, dim);
+    } else {
+        _startCrossFadeAnimation(startRect, endRect);
+    }
+}
+
+void ScaleSlideAnimation::stopAnimation() {
+    stop();
+    clear();
+}
+
+void ScaleSlideAnimation::_startSlideAnimation(const QRectF &startRect, const QRectF &endRect,
+                                              qreal from, qreal to, qreal dimension) {
+    /* 使用 WinUI 3 的挤压和拉伸逻辑来动画化指示器
+     *
+     * 核心算法:
+     * 1. middleScale = abs(to - from) / dimension + (from < to ? endScale : beginScale)
+     * 2. 在 33% 进度时,指示器会拉伸以覆盖两个项目之间的距离
+     */
+
+    // 创建位置动画序列
+    QPropertyAnimation *posAni1 = new QPropertyAnimation(this, "pos");
+    QPropertyAnimation *posAni2 = new QPropertyAnimation(this, "pos");
+    posAni1->setDuration(200);
+    posAni2->setDuration(400);
+    posAni1->setEasingCurve(FluentAnimation::createBezierCurve(0.9f, 0.1f, 1.0f, 0.2f));
+    posAni2->setEasingCurve(FluentAnimation::createBezierCurve(0.1f, 0.9f, 0.2f, 1.0f));
+
+    // 创建长度动画序列
+    QPropertyAnimation *lengthAni1 = new QPropertyAnimation(this, "length");
+    QPropertyAnimation *lengthAni2 = new QPropertyAnimation(this, "length");
+    lengthAni1->setDuration(200);
+    lengthAni2->setDuration(400);
+    lengthAni1->setEasingCurve(FluentAnimation::createBezierCurve(0.9f, 0.1f, 1.0f, 0.2f));
+    lengthAni2->setEasingCurve(FluentAnimation::createBezierCurve(0.1f, 0.9f, 0.2f, 1.0f));
+
+    // 创建序列动画组
+    QSequentialAnimationGroup *posAniGroup = new QSequentialAnimationGroup();
+    QSequentialAnimationGroup *lengthAniGroup = new QSequentialAnimationGroup();
+    posAniGroup->addAnimation(posAni1);
+    posAniGroup->addAnimation(posAni2);
+    lengthAniGroup->addAnimation(lengthAni1);
+    lengthAniGroup->addAnimation(lengthAni2);
+
+    addAnimation(posAniGroup);
+    addAnimation(lengthAniGroup);
+
+    qreal dist = qAbs(to - from);
+    qreal midLength = dist + dimension;
+    bool isForward = to > from;
+
+    QPointF startPos = startRect.topLeft();
+    QPointF endPos = endRect.topLeft();
+
+    if (isForward) {
+        // A--B   ----M--->    A'--B'
+        // 0->0.33: B 移动到 M (长度增加)
+        posAni1->setStartValue(startPos);
+        posAni1->setEndValue(startPos);
+        lengthAni1->setStartValue(dimension);
+        lengthAni1->setEndValue(midLength);
+
+        // 0.33->1.0: A 移动到 A', B (在 M) 移动到 B'
+        posAni2->setStartValue(startPos);
+        posAni2->setEndValue(endPos);
+        lengthAni2->setStartValue(midLength);
+        lengthAni2->setEndValue(dimension);
+    } else {
+        // A'--B'   <----M----    A--B
+        // 0->0.33: A 移动到 M (长度增加)
+        posAni1->setStartValue(startPos);
+        posAni1->setEndValue(endPos);
+        lengthAni1->setStartValue(dimension);
+        lengthAni1->setEndValue(midLength);
+
+        // 0.33->1.0: A (在 M) 移动到 A', B 移动到 B'
+        posAni2->setStartValue(endPos);
+        posAni2->setEndValue(endPos);
+        lengthAni2->setStartValue(midLength);
+        lengthAni2->setEndValue(dimension);
+    }
+
+    start();
+}
+
+void ScaleSlideAnimation::_startCrossFadeAnimation(const QRectF &startRect, const QRectF &endRect) {
+    setGeometry(endRect);
+
+    // 根据相对位置确定增长方向
+    // WinUI 3 逻辑: 根据方向从顶部/底部边缘增长
+    bool isNextBelow;
+    if (isHorizontal()) {
+        isNextBelow = endRect.x() > startRect.x();
+    } else {
+        isNextBelow = endRect.y() > startRect.y();
+    }
+
+    QRectF startGeo;
+    qreal dim;
+
+    if (isHorizontal()) {
+        dim = endRect.width();
+        startGeo = QRectF(
+            endRect.x() + (isNextBelow ? 0 : dim),
+            endRect.y(),
+            0,
+            endRect.height()
+        );
+    } else {
+        dim = endRect.height();
+        startGeo = QRectF(
+            endRect.x(),
+            endRect.y() + (isNextBelow ? 0 : dim),
+            endRect.width(),
+            0
+        );
+    }
+
+    setGeometry(startGeo);
+
+    // 创建长度动画
+    QPropertyAnimation *lenAni = new QPropertyAnimation(this, "length");
+    lenAni->setDuration(600);
+    lenAni->setStartValue(0);
+    lenAni->setEndValue(dim);
+    lenAni->setEasingCurve(QEasingCurve::OutQuint);
+
+    // 创建位置动画
+    QPropertyAnimation *posAni = new QPropertyAnimation(this, "pos");
+    posAni->setDuration(600);
+    posAni->setStartValue(startGeo.topLeft());
+    posAni->setEndValue(endRect.topLeft());
+    posAni->setEasingCurve(QEasingCurve::OutQuint);
+
+    addAnimation(lenAni);
+    addAnimation(posAni);
+    start();
+}
+
+bool ScaleSlideAnimation::isHorizontal() const {
+    Q_D(const ScaleSlideAnimation);
+    return d->orient == Qt::Horizontal;
+}
+
+QPointF ScaleSlideAnimation::pos() const {
+    return geometry().topLeft();
+}
+
+void ScaleSlideAnimation::setPos(const QPointF &pos) {
+    Q_D(ScaleSlideAnimation);
+    d->_geometry.moveTopLeft(pos);
+    emit valueChanged(geometry());
+}
+
+qreal ScaleSlideAnimation::length() const {
+    QRectF geo = geometry();
+    return isHorizontal() ? geo.width() : geo.height();
+}
+
+void ScaleSlideAnimation::setLength(qreal length) {
+    Q_D(ScaleSlideAnimation);
+
+    if (isHorizontal()) {
+        d->_geometry.setWidth(length);
+    } else {
+        d->_geometry.setHeight(length);
+    }
+
+    emit valueChanged(geometry());
+}
+
+QRectF ScaleSlideAnimation::geometry() const {
+    Q_D(const ScaleSlideAnimation);
+    return d->_geometry;
+}
+
+void ScaleSlideAnimation::setGeometry(const QRectF &rect) {
+    Q_D(ScaleSlideAnimation);
+    d->_geometry = rect;
+}
+
+void ScaleSlideAnimation::moveLeft(qreal x) {
+    Q_D(ScaleSlideAnimation);
+    d->_geometry.moveLeft(x);
+    emit valueChanged(geometry());
+}
+
+void ScaleSlideAnimation::setValue(const QRectF &rect) {
+    setGeometry(rect);
 }
