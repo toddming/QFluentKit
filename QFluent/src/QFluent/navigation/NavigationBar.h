@@ -1,5 +1,4 @@
-﻿#ifndef NAVIGATION_BAR_H
-#define NAVIGATION_BAR_H
+﻿#pragma once
 
 #include <QWidget>
 #include <QPropertyAnimation>
@@ -132,4 +131,3 @@ private:
     bool m_isAcrylicEnabled;
 };
 
-#endif // NAVIGATION_BAR_H

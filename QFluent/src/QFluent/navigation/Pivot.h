@@ -1,5 +1,4 @@
-﻿#ifndef PIVOT_H
-#define PIVOT_H
+﻿#pragma once
 
 #include <QMap>
 #include <QWidget>
@@ -75,4 +74,3 @@ private:
     FluentAnimation *slideAni;
 };
 
-#endif // PIVOT_H
