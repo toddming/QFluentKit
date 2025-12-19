@@ -20,7 +20,7 @@
 #include "Theme.h"
 #include "Animation.h"
 #include "FluentIcon.h"
-#include "QFluent/AvatarWidget.h"
+#include "QFluent/ImageLabel.h"
 
 // ============================================================================
 // NavigationWidget 实现

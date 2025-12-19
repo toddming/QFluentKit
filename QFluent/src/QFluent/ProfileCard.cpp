@@ -3,7 +3,7 @@
 #include <QFont>
 
 #include "Theme.h"
-#include "AvatarWidget.h"
+#include "ImageLabel.h"
 #include "Label.h"
 #include "PushButton.h"
 

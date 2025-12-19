@@ -11,7 +11,7 @@
 #include "FluentIcon.h"
 #include "QFluent/Label.h"
 #include "QFluent/ToolButton.h"
-#include "QFluent/AvatarWidget.h"
+#include "QFluent/ImageLabel.h"
 
 // ============================================================================
 // FlyoutIconWidget 实现

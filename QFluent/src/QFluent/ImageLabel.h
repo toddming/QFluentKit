@@ -1,8 +1,17 @@
-﻿#ifndef IMAGELABEL_H
-#define IMAGELABEL_H
-
+﻿#pragma once
 #include <QLabel>
+#include <QColor>
 
+// 前置声明
+class QImage;
+class QPixmap;
+class QMovie;
+class QVariant;
+class QPainter;
+
+/**
+ * @brief 支持圆角和动画的图片标签
+ */
 class ImageLabel : public QLabel
 {
     Q_OBJECT
@@ -13,18 +22,13 @@ class ImageLabel : public QLabel
 
 public:
     explicit ImageLabel(QWidget *parent = nullptr);
-    ImageLabel(const QString &image, QWidget *parent = nullptr);
+    ImageLabel(const QString &imagePath, QWidget *parent = nullptr);
     ImageLabel(const QImage &image, QWidget *parent = nullptr);
-    ImageLabel(const QPixmap &image, QWidget *parent = nullptr);
+    ImageLabel(const QPixmap &pixmap, QWidget *parent = nullptr);
+    ~ImageLabel() override = default;
 
+    // 圆角设置
     void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight);
-
-    void scaledToWidth(int width);
-    void scaledToHeight(int height);
-    void setScaledSize(const QSize &size);
-    bool isNull() const;
-    QPixmap pixmap() const;
-    void setMovie(QMovie *movie);
 
     int topLeftRadius() const;
     void setTopLeftRadius(int radius);
@@ -38,8 +42,18 @@ public:
     int bottomRightRadius() const;
     void setBottomRightRadius(int radius);
 
+    // 图片操作
     QImage image() const;
     void setImage(const QVariant &image);
+    QPixmap pixmap() const;
+    void setMovie(QMovie *movie);
+
+    // 缩放操作
+    void scaledToWidth(int width);
+    void scaledToHeight(int height);
+    void setScaledSize(const QSize &size);
+
+    bool isNull() const;
 
 signals:
     void clicked();
@@ -49,10 +63,10 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private slots:
-    void _onFrameChanged(int frameNumber);
+    void onFrameChanged(int frameNumber);
 
 private:
-    void _postInit();
+    void postInit();
 
     QImage m_image;
     int m_topLeftRadius;
@@ -61,6 +75,10 @@ private:
     int m_bottomRightRadius;
 };
 
+/**
+ * @brief 圆形头像控件
+ * 支持显示图片或文本首字母
+ */
 class AvatarWidget : public ImageLabel
 {
     Q_OBJECT
@@ -70,9 +88,10 @@ class AvatarWidget : public ImageLabel
 
 public:
     explicit AvatarWidget(QWidget *parent = nullptr);
-    AvatarWidget(const QString &image, QWidget *parent = nullptr);
+    AvatarWidget(const QString &imagePath, QWidget *parent = nullptr);
     AvatarWidget(const QImage &image, QWidget *parent = nullptr);
-    AvatarWidget(const QPixmap &image, QWidget *parent = nullptr);
+    AvatarWidget(const QPixmap &pixmap, QWidget *parent = nullptr);
+    ~AvatarWidget() override = default;
 
     int radius() const;
     void setRadius(int radius);
@@ -90,12 +109,10 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    void _drawImageAvatar(QPainter &painter);
-    void _drawTextAvatar(QPainter &painter);
+    void drawImageAvatar(QPainter &painter);
+    void drawTextAvatar(QPainter &painter);
 
     int m_radius;
     QColor m_lightBackgroundColor;
     QColor m_darkBackgroundColor;
 };
-
-#endif // IMAGELABEL_H

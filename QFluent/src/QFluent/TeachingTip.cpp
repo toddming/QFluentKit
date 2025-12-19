@@ -5,7 +5,7 @@
 
 #include "Theme.h"
 #include "Screen.h"
-#include "QFluent/AvatarWidget.h"
+#include "QFluent/ImageLabel.h"
 
 // ============================================================================
 // TeachingTipView 实现
