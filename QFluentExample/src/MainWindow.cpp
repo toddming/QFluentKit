@@ -61,7 +61,7 @@ MainWindow::MainWindow()
     addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NIP::SCROLL);
 
     navigationInterface()->addSeparator(NIP::BOTTOM);
-    addSubInterface("15", FluentIcon(FIT::SETTING), "设置", new SettingInterface(this), true, NIP::BOTTOM);
+    addSubInterface("14", FluentIcon(FIT::SETTING), "设置", new SettingInterface(this), true, NIP::BOTTOM);
 
     qrouter->setDefaultRouteKey(stackedWidget(), "homeInterface");
     navigationInterface()->setCurrentItem("1");
@@ -69,6 +69,9 @@ MainWindow::MainWindow()
     connect(this, &MainWindow::backRequested, this, [=](){
         qrouter->pop();
         navigationInterface()->setCurrentItem(QString::number(stackedWidget()->currentIndex() + 1));
+    });
+    connect(userCard, &NavigationUserCard::clicked, this, [this](){
+        showDialog();
     });
 }
 
@@ -80,7 +83,7 @@ void MainWindow::setCurrentInterface(const QString &routeKey, int index)
 
 void MainWindow::showDialog()
 {
-    auto box = new MessageDialog("你是遇到问题了吗?",
+    auto box = new MessageDialog("你是遇到问题了吗🧐",
                                  "遇到问题？欢迎加我 QQ（1912229135）反馈～看到后我会第一时间修复，感谢你让这个项目变得越来越棒！",
                                  this->window());
     box->setIsClosableOnMaskClicked(true);
