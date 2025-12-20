@@ -2,7 +2,6 @@
 #define CARDWIDGET_H
 
 #include "Animation.h"
-#include <QFrame>
 #include <QPainter>
 #include <QPainterPath>
 #include <QMouseEvent>

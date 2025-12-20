@@ -2,22 +2,19 @@
 #define TEACHING_TIP_H
 
 #include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPainter>
-#include <QPropertyAnimation>
-#include <QEvent>
-#include <QIcon>
-#include <QPixmap>
-#include <QImage>
-#include <QGraphicsDropShadowEffect>
-#include <QPainterPath>
-#include <QPolygonF>
+
 
 #include "Flyout.h"
 #include "FluentGlobal.h"
 
-// 前向声明
+class QHBoxLayout;
+class QVBoxLayout;
+class QPainter;
+class QPropertyAnimation;
+class QGraphicsDropShadowEffect;
+class QIcon;
+class QPixmap;
+class FlyoutViewBase;
 class TeachingTipManager;
 
 // 尾巴位置枚举

@@ -3,6 +3,7 @@
 #include <QScreen>
 #include <QCursor>
 #include <QTimer>
+#include <QPainterPath>
 
 #include "Theme.h"
 #include "Screen.h"
