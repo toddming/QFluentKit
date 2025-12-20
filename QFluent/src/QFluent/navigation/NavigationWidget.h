@@ -9,6 +9,7 @@
 class Flyout;
 class AvatarWidget;
 class QVBoxLayout;
+class QVariantAnimation;
 class QPropertyAnimation;
 class ScaleSlideAnimation;
 class QParallelAnimationGroup;
@@ -295,7 +296,6 @@ protected:
 
 private:
     void drawText(QPainter &painter);
-    void updateAvatarPosition();
 
     QString m_title;
     QString m_subtitle;
@@ -303,11 +303,12 @@ private:
     int m_subtitleSize{12};
     QColor m_subtitleColor;
 
-    float m_textOpacity{0.0f};
-    int m_animationDuration{250};
+    float m_textOpacity{1.0f};
+    int m_animationDuration{150};
     QParallelAnimationGroup *m_animationGroup{nullptr};
     QPropertyAnimation *m_radiusAnimation{nullptr};
-    QPropertyAnimation *m_opacityAnimation{nullptr};
+    QPropertyAnimation *m_posAnimation{nullptr};
+    QVariantAnimation *m_sizeAnimation{nullptr};
 };
 
 

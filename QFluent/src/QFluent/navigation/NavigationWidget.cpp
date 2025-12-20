@@ -16,6 +16,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <QVariantAnimation>
 
 #include "Theme.h"
 #include "Animation.h"
@@ -194,7 +195,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |
-                          QPainter::SmoothPixmapTransform);
+                           QPainter::SmoothPixmapTransform);
     painter.setPen(Qt::NoPen);
 
     if (property("isPressed").toBool())
@@ -213,7 +214,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 
     if (canDrawIndicator()) {
         painter.setBrush(QColor(colorValue, colorValue, colorValue,
-                               property("isEnter").toBool() ? 6 : 10));
+                                property("isEnter").toBool() ? 6 : 10));
         painter.drawRoundedRect(rect(), 5, 5);
 
         // 绘制指示器
@@ -228,7 +229,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
     // 绘制图标
     if (m_fluentIcon) {
         FluentIconUtils::drawIcon(*m_fluentIcon, &painter,
-                                 QRectF(11.5 + leftMargin, 10, 16, 16));
+                                  QRectF(11.5 + leftMargin, 10, 16, 16));
     }
 
     // 绘制文本
@@ -239,7 +240,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 
     const int textLeft = m_fluentIcon ? 44 + leftMargin : leftMargin + 16;
     painter.drawText(QRectF(textLeft, 0, width() - 13 - textLeft - rightMargin, height()),
-                    Qt::AlignVCenter, text());
+                     Qt::AlignVCenter, text());
 }
 
 // ============================================================================
@@ -453,7 +454,7 @@ void NavigationTreeWidget::setFont(const QFont& font) {
 
 NavigationTreeWidget* NavigationTreeWidget::clone() const {
     NavigationTreeWidget* root = new NavigationTreeWidget(
-        text(), *m_fluentIcon, property("isSelectable").toBool(), parentWidget());
+                text(), *m_fluentIcon, property("isSelectable").toBool(), parentWidget());
 
     root->setSelected(property("isSelected").toBool());
     root->setFixedSize(size());
@@ -484,7 +485,7 @@ int NavigationTreeWidget::suitableWidth() const {
 void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
     NavigationTreeWidget* treeChild = dynamic_cast<NavigationTreeWidget*>(child);
     if (!treeChild || std::find(m_treeChildren.begin(), m_treeChildren.end(), treeChild)
-        != m_treeChildren.end())
+            != m_treeChildren.end())
         return;
 
     treeChild->setTreeParent(this);
@@ -866,22 +867,27 @@ NavigationUserCard::NavigationUserCard(QWidget *parent)
     if (avatar) {
         m_radiusAnimation = new QPropertyAnimation(avatar, "radius", this);
         m_radiusAnimation->setDuration(m_animationDuration);
-        m_radiusAnimation->setEasingCurve(QEasingCurve::OutCubic);
-        connect(m_radiusAnimation, &QPropertyAnimation::valueChanged,
-                this, &NavigationUserCard::updateAvatarPosition);
-
+        m_radiusAnimation->setEasingCurve(QEasingCurve::Linear);
         m_animationGroup->addAnimation(m_radiusAnimation);
+
+        m_posAnimation = new QPropertyAnimation(avatar, "pos", this);
+        m_posAnimation->setDuration(m_animationDuration);
+        m_posAnimation->setEasingCurve(QEasingCurve::Linear);
+
+        m_animationGroup->addAnimation(m_posAnimation);
     }
-
-    // Text opacity 动画
-    m_opacityAnimation = new QPropertyAnimation(this, "textOpacity", this);
-    m_opacityAnimation->setDuration(static_cast<int>(m_animationDuration * 0.8));
-    m_opacityAnimation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    m_animationGroup->addAnimation(m_opacityAnimation);
 
     connect(m_animationGroup, &QParallelAnimationGroup::finished,
             this, QOverload<>::of(&QWidget::update));
+
+    m_sizeAnimation = new QVariantAnimation(this);
+    m_sizeAnimation->setDuration(m_animationDuration);
+    m_sizeAnimation->setEasingCurve(QEasingCurve::Linear);
+    connect(m_sizeAnimation, &QVariantAnimation::valueChanged,
+            this, [this](const QVariant &value){
+        setFixedSize(value.toSize());
+    });
+    m_animationGroup->addAnimation(m_sizeAnimation);
 
     setFixedSize(40, 36);
 }
@@ -948,8 +954,11 @@ void NavigationUserCard::setAnimationDuration(int duration)
     if (m_radiusAnimation) {
         m_radiusAnimation->setDuration(duration);
     }
-    if (m_opacityAnimation) {
-        m_opacityAnimation->setDuration(static_cast<int>(duration * 0.8));
+    if (m_posAnimation) {
+        m_posAnimation->setDuration(duration);
+    }
+    if (m_sizeAnimation) {
+        m_sizeAnimation->setDuration(duration);
     }
 }
 
@@ -965,26 +974,30 @@ void NavigationUserCard::setCompacted(bool isCompacted)
         return;
 
     if (isCompacted) {
-        setFixedSize(40, 36);
+        if (m_sizeAnimation) {
+            m_sizeAnimation->setStartValue(size());
+            m_sizeAnimation->setEndValue(QSize(40, 36));
+        }
         if (m_radiusAnimation) {
-            m_radiusAnimation->setDuration(0);
             m_radiusAnimation->setStartValue(avatar->radius());
             m_radiusAnimation->setEndValue(12);
         }
-        if (m_opacityAnimation) {
-            m_opacityAnimation->setStartValue(m_textOpacity);
-            m_opacityAnimation->setEndValue(0.0f);
+        if (m_posAnimation) {
+            m_posAnimation->setStartValue(avatar->pos());
+            m_posAnimation->setEndValue(QPoint(8, 6));
         }
     } else {
-        setFixedSize(expandWidth(), 80);
+        if (m_sizeAnimation) {
+            m_sizeAnimation->setStartValue(size());
+            m_sizeAnimation->setEndValue(QSize(expandWidth(), 80));
+        }
         if (m_radiusAnimation) {
-            m_radiusAnimation->setDuration(m_animationDuration);
             m_radiusAnimation->setStartValue(avatar->radius());
             m_radiusAnimation->setEndValue(32);
         }
-        if (m_opacityAnimation) {
-            m_opacityAnimation->setStartValue(m_textOpacity);
-            m_opacityAnimation->setEndValue(1.0f);
+        if (m_posAnimation) {
+            m_posAnimation->setStartValue(avatar->pos());
+            m_posAnimation->setEndValue(QPoint(16, 8));
         }
     }
 
@@ -1081,19 +1094,6 @@ void NavigationUserCard::drawText(QPainter &painter)
     }
 }
 
-void NavigationUserCard::updateAvatarPosition()
-{
-    AvatarWidget *avatar = findChild<AvatarWidget*>();
-    if (!avatar)
-        return;
-
-    if (property("isCompacted").toBool()) {
-        avatar->move(8, 6);
-    } else {
-        avatar->move(16, (height() - avatar->height()) / 2);
-    }
-}
-
 // ============================================================================
 // NavigationIndicator 实现
 // ============================================================================
@@ -1118,7 +1118,7 @@ NavigationIndicator::NavigationIndicator(QWidget *parent)
 }
 
 void NavigationIndicator::startAnimation(const QRectF &startRect, const QRectF &endRect,
-                                        bool useCrossFade)
+                                         bool useCrossFade)
 {
     setGeometry(startRect.toRect());
     show();
@@ -1263,8 +1263,8 @@ void NavigationItemHeader::paintEvent(QPaintEvent *event)
         painter.setFont(font());
         painter.setPen(textColor());
         painter.drawText(QRectF(16, 0, width() - 16, height()),
-                        Qt::AlignLeft | Qt::AlignVCenter,
-                        m_text);
+                         Qt::AlignLeft | Qt::AlignVCenter,
+                         m_text);
     }
 }
 

@@ -60,8 +60,6 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
 
 NavigationPanel::~NavigationPanel()
 {
-    // Qt 父子关系会自动清理子对象
-    // m_items 中的 widget 指针由 Qt 管理,无需手动删除
 }
 
 void NavigationPanel::initWidget()
@@ -90,7 +88,7 @@ void NavigationPanel::initWidget()
 
     // 创建展开动画
     m_expandAnimation = new QPropertyAnimation(this, "minimumWidth", this);
-    m_expandAnimation->setEasingCurve(QEasingCurve::OutQuad);
+    m_expandAnimation->setEasingCurve(QEasingCurve::Linear);
     m_expandAnimation->setDuration(ANIMATION_DURATION);
     connect(m_expandAnimation, &QPropertyAnimation::finished,
             this, &NavigationPanel::onExpandAnimationFinished);
@@ -161,6 +159,8 @@ NavigationUserCard* NavigationPanel::addUserCard(
     Fluent::NavigationItemPosition position,
     bool aboveMenuButton)
 {
+    Q_UNUSED(routeKey);
+
     auto* card = new NavigationUserCard(this);
     card->setExpandWidth(m_expandWidth);
 
