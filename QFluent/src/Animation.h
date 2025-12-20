@@ -110,9 +110,8 @@ public:
     explicit BackgroundAnimationWidget(QWidget *parent = nullptr);
     ~BackgroundAnimationWidget() override;
 
-    QColor getBackgroundColor() const;
+    QColor backgroundColor() const;
     void setBackgroundColor(const QColor &color);
-    QColor backgroundColor() const { return getBackgroundColor(); }
 
     virtual QColor _normalBackgroundColor() const;
     virtual QColor _hoverBackgroundColor() const;

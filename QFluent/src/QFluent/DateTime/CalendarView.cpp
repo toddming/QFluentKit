@@ -1,6 +1,5 @@
 ﻿#include "CalendarView.h"
 #include <QLocale>
-#include <QTimer>
 #include <QApplication>
 #include <QPushButton>
 #include <QHBoxLayout>

@@ -6,7 +6,6 @@
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QPropertyAnimation>
-#include <QTimer>
 #include <QEvent>
 #include <QIcon>
 #include <QPixmap>

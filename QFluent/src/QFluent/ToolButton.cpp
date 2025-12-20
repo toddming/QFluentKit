@@ -2,7 +2,6 @@
 #include <QPainter>
 #include <QStyleOptionButton>
 #include <QApplication>
-#include <QTimer>
 #include <QSize>
 #include <QIcon>
 #include <QMouseEvent>

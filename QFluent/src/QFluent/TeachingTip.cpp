@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QScreen>
 #include <QCursor>
+#include <QTimer>
 
 #include "Theme.h"
 #include "Screen.h"

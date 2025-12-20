@@ -12,7 +12,7 @@ SampleCard::SampleCard(const QIcon &icon, const QString &title, const QString &c
 {
     m_iconWidget = new IconWidget(icon, this);
     m_titleLabel = new QLabel(title, this);
-    m_contentLabel = new QLabel(TextWrap::wrap(content, 45, false).first, this);
+    m_contentLabel = new QLabel(TextWrap::wrap(content, 42, false).first, this);
 
     initWidget();
 }

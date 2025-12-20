@@ -1,5 +1,4 @@
 ﻿#include "CycleListWidget.h"
-#include <QTimer>
 #include <QPainter>
 #include <QWheelEvent>
 #include <QPropertyAnimation>
@@ -149,9 +148,9 @@ void CycleListWidget::setSelectedItem(const QString& text)
         setCurrentIndex(row(items[0]));
     }
     
-    QTimer::singleShot(0, this, [this](){
+    QMetaObject::invokeMethod(this, [this]() {
         QListWidget::scrollToItem(currentItem(), QAbstractItemView::PositionAtCenter);
-    });
+    }, Qt::QueuedConnection);
 }
 
 void CycleListWidget::scrollToItem(QListWidgetItem* item, QAbstractItemView::ScrollHint hint)

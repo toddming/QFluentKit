@@ -4,7 +4,6 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyleOptionButton>
-#include <QTimer>
 #include <QEnterEvent>
 
 #include "Theme.h"

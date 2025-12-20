@@ -10,6 +10,9 @@ CardWidget::CardWidget(QWidget *parent)
     , _isClickEnabled(false)
     , _borderRadius(5)
 {
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [this](){
+        this->_updateBackgroundColor();
+    });
 }
 
 void CardWidget::mouseReleaseEvent(QMouseEvent *e)
@@ -111,17 +114,6 @@ void CardWidget::paintEvent(QPaintEvent *e)
     painter.setPen(Qt::NoPen);
     QRect rect = this->rect().adjusted(1, 1, -1, -1);
 
-    // 设置背景颜色（假设BackgroundAnimationWidget提供了backgroundColor()方法）
-    // 如果没有，您需要根据状态设置颜色
-    if (isPressed()) {
-        painter.setBrush(_pressedBackgroundColor());
-    } else if (isHover()) {
-        painter.setBrush(_hoverBackgroundColor());
-    } else {
-        painter.setBrush(_normalBackgroundColor());
-    }
-
+    painter.setBrush(this->backgroundColor());
     painter.drawRoundedRect(rect, r, r);
-
-    BackgroundAnimationWidget::paintEvent(e);
 }

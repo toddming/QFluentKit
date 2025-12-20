@@ -4,7 +4,6 @@
 #include <QtCore/QLocale>
 #include <QtGui/QtEvents>
 #include <QHBoxLayout>
-#include <QTimer>
 #include <QLabel>
 #include <QPushButton>
 #include <QCoreApplication>
@@ -21,35 +20,44 @@ static inline void emulateLeaveEvent(QWidget *widget) {
     if (!widget) {
         return;
     }
-    QTimer::singleShot(0, widget, [widget]() {
+
+    QMetaObject::invokeMethod(widget, [widget]() {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
         const QScreen *screen = widget->screen();
 #else
-        const QScreen *screen = widget->windowHandle()->screen();
+        const QScreen *screen = widget->windowHandle() ? widget->windowHandle()->screen() : nullptr;
 #endif
+        // 安全检查：screen 可能为空（例如 widget 尚未显示）
+        if (!screen) {
+            return;
+        }
+
         const QPoint globalPos = QCursor::pos(screen);
-        if (!QRect(widget->mapToGlobal(QPoint{0, 0}), widget->size()).contains(globalPos)) {
+        const QRect widgetRect(widget->mapToGlobal(QPoint{0, 0}), widget->size());
+
+        if (!widgetRect.contains(globalPos)) {
             QCoreApplication::postEvent(widget, new QEvent(QEvent::Leave));
+
             if (widget->testAttribute(Qt::WA_Hover)) {
                 const QPoint localPos = widget->mapFromGlobal(globalPos);
-                const QPoint scenePos = widget->window()->mapFromGlobal(globalPos);
+                const QPoint scenePos = widget->window() ? widget->window()->mapFromGlobal(globalPos) : localPos;
                 static constexpr const auto oldPos = QPoint{};
                 const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
+
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 4, 0))
-                const auto event =
-                        new QHoverEvent(QEvent::HoverLeave, scenePos, globalPos, oldPos, modifiers);
+                auto event = new QHoverEvent(QEvent::HoverLeave, scenePos, globalPos, oldPos, modifiers);
                 Q_UNUSED(localPos);
 #elif (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-                const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, globalPos, oldPos, modifiers);
+                auto event = new QHoverEvent(QEvent::HoverLeave, localPos, globalPos, oldPos, modifiers);
                 Q_UNUSED(scenePos);
 #else
-                const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, oldPos, modifiers);
+                auto event = new QHoverEvent(QEvent::HoverLeave, localPos, oldPos, modifiers);
                 Q_UNUSED(scenePos);
 #endif
                 QCoreApplication::postEvent(widget, event);
             }
         }
-    });
+    }, Qt::QueuedConnection);
 }
 
 FluentTitleBar::FluentTitleBar(QWidget *parent)

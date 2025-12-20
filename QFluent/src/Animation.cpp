@@ -116,9 +116,13 @@ BackgroundColorObject::BackgroundColorObject(QWidget *parent)
     , d_ptr(new BackgroundColorObjectPrivate())
 {
     Q_D(BackgroundColorObject);
-    if (auto widget = qobject_cast<BackgroundAnimationWidget*>(parent)) {
-        d->_backgroundColor = widget->_normalBackgroundColor();
-    }
+
+    QMetaObject::invokeMethod(this, [this, parent]() {
+        if (auto widget = qobject_cast<BackgroundAnimationWidget*>(parent)) {
+            Q_D(BackgroundColorObject);
+            d->_backgroundColor = widget->_normalBackgroundColor();
+        }
+    }, Qt::QueuedConnection);
 }
 
 BackgroundColorObject::~BackgroundColorObject() {}
@@ -276,7 +280,7 @@ void BackgroundAnimationWidget::setPressed(bool pressed) {
     d->m_isPressed = pressed;
 }
 
-QColor BackgroundAnimationWidget::getBackgroundColor() const {
+QColor BackgroundAnimationWidget::backgroundColor() const {
     Q_D(const BackgroundAnimationWidget);
     return d->bgColorObject->backgroundColor();
 }

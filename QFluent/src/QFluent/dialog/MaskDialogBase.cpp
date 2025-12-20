@@ -6,7 +6,6 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QTimer>
 #include <QFrame>
 #include <QResizeEvent>
 
@@ -193,10 +192,11 @@ bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
         QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
         resize(resizeEvent->size());
     } else if (obj == window() && event->type() == QEvent::ScreenChangeInternal) {
-        QTimer::singleShot(0, this, [=](){
-            QWidget *w = qobject_cast<QWidget*>(this->parent());
-            setGeometry(0, 0, w->width(), w->height());
-        });
+        QMetaObject::invokeMethod(this, [this]() {
+            if (QWidget *w = qobject_cast<QWidget*>(parent())) {
+                setGeometry(0, 0, w->width(), w->height());
+            }
+        }, Qt::QueuedConnection);
     } else if (obj == d->_windowMask && event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton && d->_isClosableOnMaskClicked) {
