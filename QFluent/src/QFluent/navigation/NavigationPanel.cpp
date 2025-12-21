@@ -12,12 +12,10 @@
 #include <QScrollArea>
 #include <QStyle>
 
-#include "Theme.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "NavigationWidget.h"
 #include "QFluent/Flyout.h"
-#include "QFluent/Menu/MenuActionListWidget.h"
 
 // 常量定义
 namespace {
@@ -88,7 +86,7 @@ void NavigationPanel::initWidget()
 
     // 创建展开动画
     m_expandAnimation = new QPropertyAnimation(this, "minimumWidth", this);
-    m_expandAnimation->setEasingCurve(QEasingCurve::Linear);
+    m_expandAnimation->setEasingCurve(QEasingCurve::OutCubic);
     m_expandAnimation->setDuration(ANIMATION_DURATION);
     connect(m_expandAnimation, &QPropertyAnimation::finished,
             this, &NavigationPanel::onExpandAnimationFinished);

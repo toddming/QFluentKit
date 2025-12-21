@@ -390,7 +390,7 @@ void AvatarWidget::paintEvent(QPaintEvent *event)
 void AvatarWidget::drawImageAvatar(QPainter &painter)
 {
     const qreal dpr = devicePixelRatioF();
-    const QSize targetSize = size() * dpr;
+    const QSize targetSize = size() * (dpr + 0.1);
 
     // 按比例扩展缩放图像(保持宽高比,填充整个区域)
     QImage scaledImage = image().scaled(

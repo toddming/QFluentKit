@@ -969,6 +969,8 @@ void NavigationUserCard::setCompacted(bool isCompacted)
 
     setProperty("isCompacted", isCompacted);
 
+    m_radiusAnimation->setEasingCurve(isCompacted ? QEasingCurve::OutCubic : QEasingCurve::InOutSine);
+
     AvatarWidget *avatar = findChild<AvatarWidget*>();
     if (!avatar)
         return;
