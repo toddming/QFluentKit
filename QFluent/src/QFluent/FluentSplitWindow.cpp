@@ -43,8 +43,6 @@ FluentSplitWindow::FluentSplitWindow(QWidget *parent)
     agent->setSystemButton(QWK::WindowAgentBase::Maximize, d->_windowBar->maxButton());
     agent->setSystemButton(QWK::WindowAgentBase::Close, d->_windowBar->closeButton());
 
-    setMenuWidget(d->_windowBar);
-
     connect(d->_windowBar, &FluentTitleBar::themeRequested, this, [d](bool checked){
         d->_windowBar->themeButton()->setChecked(checked);
         d->setDarkTheme(!checked);
@@ -64,17 +62,19 @@ FluentSplitWindow::FluentSplitWindow(QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout(d->_userWidget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    d->_navPanel = new NavigationPanel(d->_userWidget);
+    d->_navPanel = new NavigationPanel(this);
     d->_stacked = new StackedWidget(d->_userWidget);
     d->_stacked->setProperty("noRadius", true);
 
-    auto vBoxLayout = new QVBoxLayout();
-    vBoxLayout->addWidget(d->_navPanel);
-    vBoxLayout->setSpacing(0);
-    vBoxLayout->setContentsMargins(0, 48, 0, 0);
+    auto hBoxLayout = new QHBoxLayout();
+    hBoxLayout->addWidget(d->_navPanel);
+    hBoxLayout->setSpacing(0);
+    hBoxLayout->setContentsMargins(0, 48, 0, 0);
 
-    layout->addLayout(vBoxLayout, 0);
+    layout->addLayout(hBoxLayout, 0);
     layout->addWidget(d->_stacked, 1);
+
+    setCentralWidget(d->_userWidget);
 
     d->setDarkTheme(Theme::instance()->isDarkTheme());
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
@@ -197,7 +197,7 @@ void FluentSplitWindow::addSubInterface(const QString& routeKey, const FluentIco
 void FluentSplitWindow::resizeEvent(QResizeEvent *e)
 {
     Q_D(FluentSplitWindow);
-    d->_userWidget->setGeometry(0, 0, window()->width(), window()->height());
+    d->_windowBar->setGeometry(0, 0, window()->width(), d->_windowBar->height());
     d->_windowBar->raise();
     QMainWindow::resizeEvent(e);
 }

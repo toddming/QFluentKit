@@ -23,7 +23,7 @@ namespace {
     constexpr int DEFAULT_EXPAND_WIDTH = 160;
     constexpr int MIN_EXPAND_WIDTH = 42;
     constexpr int MENU_WIDTH_OFFSET = 15;
-    constexpr int ANIMATION_DURATION = 150;
+    constexpr int ANIMATION_DURATION = 200;
     constexpr int DEFAULT_MIN_EXPAND_WIDTH = 1008;
     constexpr int LAYOUT_TOP_MARGIN = 5;
     constexpr int LAYOUT_BOTTOM_MARGIN = 5;
