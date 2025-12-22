@@ -304,7 +304,7 @@ private:
     QColor m_subtitleColor;
 
     float m_textOpacity{1.0f};
-    int m_animationDuration{200};
+    int m_animationDuration{185};
     QParallelAnimationGroup *m_animationGroup{nullptr};
     QPropertyAnimation *m_radiusAnimation{nullptr};
     QPropertyAnimation *m_posAnimation{nullptr};

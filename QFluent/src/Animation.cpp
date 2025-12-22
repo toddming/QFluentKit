@@ -117,12 +117,12 @@ BackgroundColorObject::BackgroundColorObject(QWidget *parent)
 {
     Q_D(BackgroundColorObject);
 
-    QMetaObject::invokeMethod(this, [this, parent]() {
-        if (auto widget = qobject_cast<BackgroundAnimationWidget*>(parent)) {
-            Q_D(BackgroundColorObject);
-            d->_backgroundColor = widget->_normalBackgroundColor();
-        }
-    }, Qt::QueuedConnection);
+    // QMetaObject::invokeMethod(this, [this, parent]() {
+    //     if (auto widget = qobject_cast<BackgroundAnimationWidget*>(parent)) {
+    //         Q_D(BackgroundColorObject);
+    //         d->_backgroundColor = widget->_normalBackgroundColor();
+    //     }
+    // }, Qt::QueuedConnection);
 }
 
 BackgroundColorObject::~BackgroundColorObject() {}

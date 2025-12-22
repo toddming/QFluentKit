@@ -10,6 +10,7 @@ CardWidget::CardWidget(QWidget *parent)
     , _isClickEnabled(false)
     , _borderRadius(5)
 {
+    setBackgroundColor(_normalBackgroundColor());
     connect(Theme::instance(), &Theme::themeModeChanged, this, [this](){
         this->_updateBackgroundColor();
     });
