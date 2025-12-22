@@ -867,12 +867,12 @@ NavigationUserCard::NavigationUserCard(QWidget *parent)
     if (avatar) {
         m_radiusAnimation = new QPropertyAnimation(avatar, "radius", this);
         m_radiusAnimation->setDuration(m_animationDuration);
-        m_radiusAnimation->setEasingCurve(QEasingCurve::Linear);
+        m_radiusAnimation->setEasingCurve(QEasingCurve::OutCubic);
         m_animationGroup->addAnimation(m_radiusAnimation);
 
         m_posAnimation = new QPropertyAnimation(avatar, "pos", this);
         m_posAnimation->setDuration(m_animationDuration);
-        m_posAnimation->setEasingCurve(QEasingCurve::Linear);
+        m_posAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
         m_animationGroup->addAnimation(m_posAnimation);
     }
@@ -882,7 +882,7 @@ NavigationUserCard::NavigationUserCard(QWidget *parent)
 
     m_sizeAnimation = new QVariantAnimation(this);
     m_sizeAnimation->setDuration(m_animationDuration);
-    m_sizeAnimation->setEasingCurve(QEasingCurve::Linear);
+    m_sizeAnimation->setEasingCurve(QEasingCurve::OutCubic);
     connect(m_sizeAnimation, &QVariantAnimation::valueChanged,
             this, [this](const QVariant &value){
         setFixedSize(value.toSize());
@@ -970,6 +970,8 @@ void NavigationUserCard::setCompacted(bool isCompacted)
     setProperty("isCompacted", isCompacted);
 
     m_radiusAnimation->setEasingCurve(isCompacted ? QEasingCurve::OutCubic : QEasingCurve::InOutSine);
+    m_sizeAnimation->setEasingCurve(isCompacted ? QEasingCurve::OutCubic : QEasingCurve::InOutSine);
+    m_posAnimation->setEasingCurve(isCompacted ? QEasingCurve::OutCubic : QEasingCurve::InOutSine);
 
     AvatarWidget *avatar = findChild<AvatarWidget*>();
     if (!avatar)
