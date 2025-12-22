@@ -2,6 +2,7 @@
 #include <QLabel>
 #include <QColor>
 
+#include "FluentGlobal.h"
 // 前置声明
 class QImage;
 class QPixmap;
@@ -12,7 +13,7 @@ class QPainter;
 /**
  * @brief 支持圆角和动画的图片标签
  */
-class ImageLabel : public QLabel
+class QFLUENT_EXPORT ImageLabel : public QLabel
 {
     Q_OBJECT
     Q_PROPERTY(int topLeftRadius READ topLeftRadius WRITE setTopLeftRadius)
@@ -79,7 +80,7 @@ private:
  * @brief 圆形头像控件
  * 支持显示图片或文本首字母
  */
-class AvatarWidget : public ImageLabel
+class QFLUENT_EXPORT AvatarWidget : public ImageLabel
 {
     Q_OBJECT
     Q_PROPERTY(int radius READ radius WRITE setRadius)

@@ -22,7 +22,7 @@ class FluentIconBase;
 class ColoredFluentIcon;
 class Icon;
 
-class FluentIconUtils {
+class QFLUENT_EXPORT FluentIconUtils {
 public:
     static QString getIconColor(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO, bool reverse = false);
     static void drawSvgIcon(const QByteArray& icon, QPainter* painter, const QRectF& rect);
@@ -31,6 +31,10 @@ public:
     static QIcon toQIcon(const QVariant& icon);
     static void drawIcon(const FluentIconBase& icon, QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                          QIcon::State state = QIcon::Off, const QMap<QString, QString>& attributes = {});
+
+    // 新增: 公共的枚举映射功能
+    static const QMap<Fluent::IconType, QString>& fluentIcons();
+    static QString enumToString(Fluent::IconType e);
 
 private:
     // 缓存着色后的 SVG 字节数组
@@ -139,19 +143,31 @@ protected:
 class QFLUENT_EXPORT ColoredFluentIcon : public FluentIconBase {
 public:
     ColoredFluentIcon(const FluentIconBase& icon, const QColor& lightColor, const QColor& darkColor);
+    explicit ColoredFluentIcon(Fluent::IconType iconEnum, const QColor& lightColor, const QColor& darkColor);
+    explicit ColoredFluentIcon(const QString& templatePath, const QColor& lightColor, const QColor& darkColor);
+
     ~ColoredFluentIcon() override = default;
 
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     void render(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                 const QList<int>& indexes = {}, const QMap<QString, QString>& attributes = {}) const override;
+
+    Fluent::IconType value() const { return m_iconEnum; }
+
     FluentIconBase* clone() const override {
-        return new ColoredFluentIcon(*m_fluentIcon, m_lightColor, m_darkColor);
+        if (m_iconEnum == Fluent::IconType::CUSTOM_PATH) {
+            return new ColoredFluentIcon(m_templatePath, m_lightColor, m_darkColor);
+        }
+        return new ColoredFluentIcon(m_iconEnum, m_lightColor, m_darkColor);
     }
 
 private:
-    std::unique_ptr<FluentIconBase> m_fluentIcon;
+    Fluent::IconType m_iconEnum;
+    QString m_templatePath;
     QColor m_lightColor;
     QColor m_darkColor;
+    mutable QString m_cachedLightPath;
+    mutable QString m_cachedDarkPath;
 };
 
 class QFLUENT_EXPORT FluentIcon : public FluentIconBase {
@@ -162,7 +178,6 @@ public:
 
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     Fluent::IconType value() const { return m_iconEnum; }
-    static const QMap<Fluent::IconType, QString>& fluentIcons();
     QIcon qicon(bool reverse = false) const;
 
     FluentIconBase* clone() const override {
@@ -176,8 +191,6 @@ private:
     Fluent::IconType m_iconEnum;
     mutable QString m_cachedLightPath;
     mutable QString m_cachedDarkPath;
-
-    QString enumToString(Fluent::IconType e) const;
 };
 
 class QFLUENT_EXPORT Icon : public QIcon {
