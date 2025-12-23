@@ -10,9 +10,9 @@ CardWidget::CardWidget(QWidget *parent)
     , _isClickEnabled(false)
     , _borderRadius(5)
 {
-    setBackgroundColor(_normalBackgroundColor());
+    setBackgroundColor(normalBackgroundColor());
     connect(Theme::instance(), &Theme::themeModeChanged, this, [this](){
-        this->_updateBackgroundColor();
+        this->updateBackgroundColor();
     });
 }
 
@@ -35,17 +35,17 @@ bool CardWidget::isClickEnabled() const
     return _isClickEnabled;
 }
 
-QColor CardWidget::_normalBackgroundColor() const
+QColor CardWidget::normalBackgroundColor() const
 {
     return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 13 : 170);
 }
 
-QColor CardWidget::_hoverBackgroundColor() const
+QColor CardWidget::hoverBackgroundColor() const
 {
     return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 21 : 64);
 }
 
-QColor CardWidget::_pressedBackgroundColor() const
+QColor CardWidget::pressedBackgroundColor() const
 {
     return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 8 : 64);
 }

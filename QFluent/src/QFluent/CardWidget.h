@@ -31,9 +31,9 @@ protected:
     void paintEvent(QPaintEvent *e) override;
 
 private:
-    QColor _normalBackgroundColor() const override;
-    QColor _hoverBackgroundColor() const override;
-    QColor _pressedBackgroundColor() const override;
+    QColor normalBackgroundColor() const override;
+    QColor hoverBackgroundColor() const override;
+    QColor pressedBackgroundColor() const override;
 
     bool _isClickEnabled;
     int _borderRadius;

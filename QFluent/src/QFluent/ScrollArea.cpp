@@ -18,10 +18,10 @@ ScrollArea::ScrollArea(QWidget *parent)
 void ScrollArea::setSmoothMode(Fluent::SmoothMode smoothMode, Qt::Orientation orientation)
 {
     if (orientation & Qt::Horizontal) {
-        m_scrollDelegate->getHScroll()->setSmoothMode(smoothMode);
+        m_scrollDelegate->horizontalSmoothScroll()->setSmoothMode(smoothMode);
     }
     if (orientation & Qt::Vertical) {
-        m_scrollDelegate->getVScroll()->setSmoothMode(smoothMode);
+        m_scrollDelegate->verticalSmoothScroll()->setSmoothMode(smoothMode);
     }
 }
 
@@ -124,8 +124,8 @@ SmoothScrollArea::SmoothScrollArea(QWidget *parent)
 void SmoothScrollArea::setScrollAnimation(Qt::Orientation orient, int duration, QEasingCurve::Type easing)
 {
     SmoothScrollBar *bar = (orient == Qt::Horizontal)
-        ? m_delegate->getHScrollBar()
-        : m_delegate->getVScrollBar();
+        ? m_delegate->horizontalScrollBar()
+        : m_delegate->verticalScrollBar();
 
     if (bar) {
         bar->setScrollAnimation(duration, easing);
