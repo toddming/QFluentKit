@@ -50,7 +50,7 @@ void ArrowButton::paintEvent(QPaintEvent* e) {
     int s = isDown() ? 7 : 8;
     qreal x = (width() - s) / 2.0;
 
-    QMap<QString, QString> attrs;
+    QHash<QString, QString> attrs;
     attrs["fill"] = color.name();
     FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, x, s, s), Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
 

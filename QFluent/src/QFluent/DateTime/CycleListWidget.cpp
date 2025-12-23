@@ -41,7 +41,7 @@ void ScrollButton::paintEvent(QPaintEvent* e)
     qreal y = (height() - h) / 2.0;
 
     if (!Theme::instance()->isDarkTheme()) {
-        QMap<QString, QString> attrs;
+        QHash<QString, QString> attrs;
         attrs["fill"] = "#5e5e5e";
         FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, y, w, h), Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
     } else {

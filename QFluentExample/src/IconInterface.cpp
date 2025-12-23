@@ -3,21 +3,6 @@
 #include <QFontMetrics>
 #include <QMetaEnum>
 
-// 辅助函数（需要根据实际实现）
-Fluent::IconType getDefaultFluentIcon() {
-    // 返回一个默认的 FluentIcon，实际实现中需要具体定义
-    static Fluent::IconType defaultIcon;
-    return defaultIcon;
-}
-
-QVector<Fluent::IconType> getAllFluentIcons() {
-    // 返回所有 FluentIcon，实际实现中需要具体定义
-    QVector<Fluent::IconType> icons;
-    // 填充 icons
-    return icons;
-}
-
-
 // TrieNode 实现
 TrieNode::TrieNode() {}
 
@@ -174,7 +159,7 @@ IconInfoPanel::IconInfoPanel(Fluent::IconType icon, QWidget* parent)
 }
 
 void IconInfoPanel::setIcon(Fluent::IconType icon) {
-    static QMap<Fluent::IconType, QString> icons = FluentIconUtils::fluentIcons();
+    static QHash<Fluent::IconType, QString> icons = FluentIconUtils::fluentIconsMap();
 
     m_iconWidget->setFluentIcon(FluentIcon(icon));
     m_nameLabel->setText(icons.value(icon));
@@ -220,7 +205,7 @@ IconCardView::IconCardView(QWidget* parent)
 
 
     m_scrollWidget = new QWidget(m_scrollArea);
-    m_infoPanel = new IconInfoPanel(getDefaultFluentIcon(), this);
+    m_infoPanel = new IconInfoPanel(Fluent::IconType::UP, this);
 
     m_vBoxLayout = new QVBoxLayout(this);
     m_hBoxLayout = new QHBoxLayout(m_view);
@@ -255,8 +240,11 @@ void IconCardView::initWidget() {
     connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
     connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
-    const QMap<Fluent::IconType, QString> allIcons = FluentIconUtils::fluentIcons();
-    for (Fluent::IconType icon : allIcons.keys()) {
+    const QHash<Fluent::IconType, QString> allIcons = FluentIconUtils::fluentIconsMap();
+    QList<Fluent::IconType> sortedKeys = allIcons.keys();
+    std::sort(sortedKeys.begin(), sortedKeys.end()); // 如果 Fluent::IconType 支持 operator<
+
+    for (const Fluent::IconType& icon : sortedKeys) {
         addIcon(icon, allIcons.value(icon));
     }
 

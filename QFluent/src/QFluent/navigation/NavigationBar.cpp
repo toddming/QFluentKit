@@ -136,7 +136,7 @@ void NavigationBarPushButton::_drawIcon(QPainter& painter) {
     }
 
     if (property("isSelected").toBool()) {
-            QMap<QString, QString> attrs;
+            QHash<QString, QString> attrs;
             attrs["fill"] = Theme::instance()->themeColor().name();
 
             FluentIconUtils::drawIcon(*m_fluentIcon, &painter, rect, Fluent::ThemeMode::AUTO, QIcon::Off, attrs);

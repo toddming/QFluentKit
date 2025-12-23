@@ -135,7 +135,7 @@ void PushButton::drawIcon(QPainter* painter, const QRectF& rect)
 void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
     if (isEnabled()) {
-        QMap<QString, QString> attrs;
+        QHash<QString, QString> attrs;
         attrs["fill"] = Theme::instance()->themeColor().name();
         FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
     } else {
@@ -250,7 +250,7 @@ void DropDownButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
     if (Theme::instance()->isDarkTheme()) {
         FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
     } else {
-        QMap<QString, QString> attrs;
+        QHash<QString, QString> attrs;
         attrs["fill"] = "#646464";
         FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
     }

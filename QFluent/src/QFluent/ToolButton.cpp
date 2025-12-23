@@ -275,7 +275,7 @@ void DropDownToolButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& r
     if (Theme::instance()->isDarkTheme()) {
         FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
     } else {
-        QMap<QString, QString> attrs;
+        QHash<QString, QString> attrs;
         attrs["fill"] = "#646464";
         FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
     }

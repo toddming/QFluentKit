@@ -33,7 +33,7 @@ void TabToolButton::drawIcon(QPainter *painter, const QRectF &rect,
 {
     const QString color = Theme::instance()->isDarkTheme() ?
                          QStringLiteral("#eaeaea") : QStringLiteral("#484848");
-    QMap<QString, QString> attrs;
+    QHash<QString, QString> attrs;
     attrs[QStringLiteral("fill")] = color;
     FluentIconUtils::drawIcon(*fluentIcon(), painter, rect,
                              Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
