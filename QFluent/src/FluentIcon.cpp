@@ -24,7 +24,7 @@ QString FluentIconUtils::iconColor(Fluent::ThemeMode theme, bool reverse)
     if (theme == Fluent::ThemeMode::AUTO) {
         return Theme::instance()->isDarkTheme() ? darkColor : lightColor;
     }
-    return (theme == Fluent::ThemeMode::DARK) ? darkColor : lightColor;
+    return (theme == Fluent::ThemeMode::DARK) ? "black" : "white";
 }
 
 void FluentIconUtils::drawSvgIcon(const QByteArray& iconData, QPainter* painter, const QRectF& rect)
