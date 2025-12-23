@@ -5,68 +5,86 @@
 #include <QToolButton>
 #include <QEasingCurve>
 
-#include "FluentIcon.h"
-#include "SmoothScroll.h"
+#include "FluentGlobal.h"
 
 class QScrollBar;
 class QPaintEvent;
+class QPropertyAnimation;
+class QAbstractScrollArea;
+class FluentIconBase;
+class SmoothScroll;
+
+/**
+ * @brief 箭头按钮类 - 用于滚动条的上下/左右箭头
+ */
 class ArrowButton : public QToolButton {
     Q_OBJECT
 public:
-    ArrowButton(const FluentIconBase &icon, QWidget* parent = nullptr);
+    explicit ArrowButton(const FluentIconBase &icon, QWidget* parent = nullptr);
+    ~ArrowButton() override = default;
+
     void setOpacity(qreal opacity);
     void setLightColor(const QColor& color);
     void setDarkColor(const QColor& color);
 
 protected:
-    void paintEvent(QPaintEvent* e) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private:
-    QColor lightColor = QColor(0, 0, 0, 114);
-    QColor darkColor = QColor(255, 255, 255, 139);
-    qreal m_opacity = 1.0;
+    QColor m_lightColor{0, 0, 0, 114};
+    QColor m_darkColor{255, 255, 255, 139};
+    qreal m_opacity{1.0};
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
-class QPropertyAnimation;
+/**
+ * @brief 滚动条槽类 - 滚动条的背景槽
+ */
 class ScrollBarGroove : public QWidget {
     Q_OBJECT
     Q_PROPERTY(qreal opacity READ getOpacity WRITE setOpacity)
+
 public:
-    ScrollBarGroove(Qt::Orientation orient, QWidget* parent = nullptr);
+    explicit ScrollBarGroove(Qt::Orientation orient, QWidget* parent = nullptr);
+    ~ScrollBarGroove() override = default;
+
     void setLightBackgroundColor(const QColor& color);
     void setDarkBackgroundColor(const QColor& color);
     void fadeIn();
     void fadeOut();
     void setOpacity(qreal opacity);
     qreal getOpacity() const;
-    ArrowButton* getUpButton();
-    ArrowButton* getDownButton();
-    QPropertyAnimation* getOpacityAni();
+    
+    ArrowButton* getUpButton() const;
+    ArrowButton* getDownButton() const;
+    QPropertyAnimation* getOpacityAnimation() const;
 
 protected:
-    void paintEvent(QPaintEvent* e) override;
+    void paintEvent(QPaintEvent* event) override;
 
 signals:
-    void opacityChanged(qreal);  // 如果需要外部监听
-
-public slots:
-    void onOpacityAniValueChanged(const QVariant& value);
+    void opacityChanged(qreal opacity);
 
 private:
-    qreal m_opacity = 1.0;
-    QColor lightBackgroundColor = QColor(252, 252, 252, 217);
-    QColor darkBackgroundColor = QColor(44, 44, 44, 245);
-    ArrowButton* upButton;
-    ArrowButton* downButton;
-    QPropertyAnimation* opacityAni;
+    qreal m_opacity{1.0};
+    QColor m_lightBackgroundColor{252, 252, 252, 217};
+    QColor m_darkBackgroundColor{44, 44, 44, 245};
+    ArrowButton* m_upButton{nullptr};
+    ArrowButton* m_downButton{nullptr};
+    QPropertyAnimation* m_opacityAnimation{nullptr};
 };
 
+/**
+ * @brief 滚动条滑块类
+ */
 class ScrollBarHandle : public QWidget {
     Q_OBJECT
     Q_PROPERTY(qreal opacity READ getOpacity WRITE setOpacity)
+
 public:
-    ScrollBarHandle(Qt::Orientation orient, QWidget* parent = nullptr);
+    explicit ScrollBarHandle(Qt::Orientation orient, QWidget* parent = nullptr);
+    ~ScrollBarHandle() override = default;
+
     void setLightColor(const QColor& color);
     void setDarkColor(const QColor& color);
     void fadeIn();
@@ -75,21 +93,28 @@ public:
     qreal getOpacity() const;
 
 protected:
-    void paintEvent(QPaintEvent* e) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private:
-    qreal m_opacity = 1.0;
-    QPropertyAnimation* opacityAni;
-    QColor lightColor = QColor(0, 0, 0, 114);
-    QColor darkColor = QColor(255, 255, 255, 139);
-    Qt::Orientation m_orient;
+    qreal m_opacity{1.0};
+    QPropertyAnimation* m_opacityAnimation{nullptr};
+    QColor m_lightColor{0, 0, 0, 114};
+    QColor m_darkColor{255, 255, 255, 139};
+    Qt::Orientation m_orientation;
 };
 
+/**
+ * @brief 自定义滚动条类
+ */
 class QFLUENT_EXPORT ScrollBar : public QWidget {
     Q_OBJECT
     Q_PROPERTY(int val READ value WRITE setVal NOTIFY valueChanged)
+
 public:
-    ScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent = nullptr);
+    explicit ScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent = nullptr);
+    ~ScrollBar() override = default;
+
+    // Getters
     int value() const;
     int minimum() const;
     int maximum() const;
@@ -97,6 +122,8 @@ public:
     int pageStep() const;
     int singleStep() const;
     bool isSliderDown() const;
+
+    // Setters
     void setValue(int value);
     void setMinimum(int min);
     void setMaximum(int max);
@@ -108,39 +135,41 @@ public:
     void setArrowColor(const QColor& light, const QColor& dark);
     void setGrooveColor(const QColor& light, const QColor& dark);
     void setHandleDisplayMode(Fluent::ScrollBarHandleDisplayMode mode);
-    void expand();
-    void collapse();
     void setForceHidden(bool isHidden);
 
+    // 展开/折叠
+    void expand();
+    void collapse();
+
 signals:
-    void rangeChanged(const QPair<int, int>&);
-    void valueChanged(int);
+    void rangeChanged(int min, int max);
+    void valueChanged(int value);
     void sliderPressed();
     void sliderReleased();
     void sliderMoved();
 
 protected:
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    void enterEvent(QEnterEvent *e) override;
+    void enterEvent(QEnterEvent *event) override;
 #else
-    void enterEvent(QEvent *e) override;
+    void enterEvent(QEvent *event) override;
 #endif
-    void leaveEvent(QEvent* e) override;
-    bool eventFilter(QObject* obj, QEvent* e) override;
-    void resizeEvent(QResizeEvent* e) override;
-    void mousePressEvent(QMouseEvent* e) override;
-    void mouseReleaseEvent(QMouseEvent* e) override;
-    void mouseMoveEvent(QMouseEvent* e) override;
-    void wheelEvent(QWheelEvent* e) override;
+    void leaveEvent(QEvent* event) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
 public slots:
     void setVal(int value);
 
-public slots:
+private slots:
     void onPageUp();
     void onPageDown();
     void onValueChanged(int value);
-    void onOpacityAniValueChanged(const QVariant& value);
+    void onOpacityAnimationValueChanged(const QVariant& value);
 
 private:
     void initWidget(QAbstractScrollArea* parent);
@@ -151,45 +180,54 @@ private:
     int slideLength() const;
     bool isSlideRegion(const QPoint& pos) const;
 
-    ScrollBarGroove* groove;
-    ScrollBarHandle* handle;
+    ScrollBarGroove* m_groove{nullptr};
+    ScrollBarHandle* m_handle{nullptr};
     Qt::Orientation m_orientation;
-    int m_singleStep = 1;
-    int m_pageStep = 50;
-    int m_padding = 14;
-    int m_minimum = 0;
-    int m_maximum = 0;
-    int m_value = 0;
-    bool m_isPressed = false;
-    bool m_isEnter = false;
-    bool m_isExpanded = false;
+    int m_singleStep{1};
+    int m_pageStep{50};
+    int m_padding{14};
+    int m_minimum{0};
+    int m_maximum{0};
+    int m_value{0};
+    bool m_isPressed{false};
+    bool m_isEnter{false};
+    bool m_isExpanded{false};
     QPoint m_pressedPos;
-    bool m_isForceHidden = false;
-    Fluent::ScrollBarHandleDisplayMode handleDisplayMode = Fluent::ScrollBarHandleDisplayMode::ALWAYS;
-    QScrollBar* partnerBar;
+    bool m_isForceHidden{false};
+    Fluent::ScrollBarHandleDisplayMode m_handleDisplayMode;
+    QScrollBar* m_partnerBar{nullptr};
 };
 
+/**
+ * @brief 平滑滚动条类
+ */
 class QFLUENT_EXPORT SmoothScrollBar : public ScrollBar {
     Q_OBJECT
+
 public:
-    SmoothScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent = nullptr);
-    void setValue(int value, bool useAni = true);
-    void scrollValue(int value, bool useAni = true);
-    void scrollTo(int value, bool useAni = true);
+    explicit SmoothScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent = nullptr);
+    ~SmoothScrollBar() override = default;
+
+    void setValue(int value, bool useAnimation = true);
+    void scrollValue(int value, bool useAnimation = true);
+    void scrollTo(int value, bool useAnimation = true);
     void resetValue(int value);
     void setScrollAnimation(int duration, QEasingCurve::Type easing = QEasingCurve::OutCubic);
 
 protected:
-    void mousePressEvent(QMouseEvent* e) override;
-    void mouseMoveEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
-    int duration = 500;
-    QPropertyAnimation* ani;
-    int m_valueInternal = 0;
+    int m_duration{500};
+    QPropertyAnimation* m_animation{nullptr};
+    int m_valueInternal{0};
 };
 
-class SmoothScrollDelegate : public QObject {
+/**
+ * @brief 平滑滚动委托类 - 管理滚动区域的平滑滚动行为
+ */
+class QFLUENT_EXPORT SmoothScrollDelegate : public QObject {
     Q_OBJECT
 
 public:
@@ -199,8 +237,8 @@ public:
     bool eventFilter(QObject* obj, QEvent* event) override;
 
     // Getters
-    class SmoothScroll* verticalSmoothScroll() const;
-    class SmoothScroll* horizontalSmoothScroll() const;
+    SmoothScroll* verticalSmoothScroll() const;
+    SmoothScroll* horizontalSmoothScroll() const;
     SmoothScrollBar* verticalScrollBar() const;
     SmoothScrollBar* horizontalScrollBar() const;
 
@@ -209,7 +247,7 @@ public:
     void setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy);
 
 private:
-    bool m_useAnimation;
+    bool m_useAnimation{false};
     SmoothScrollBar* m_verticalScrollBar{nullptr};
     SmoothScrollBar* m_horizontalScrollBar{nullptr};
     SmoothScroll* m_verticalSmoothScroll{nullptr};

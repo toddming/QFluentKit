@@ -1,22 +1,25 @@
-﻿#include "Scrollbar.h"
-#include <QScrollBar>
-#include <QAbstractScrollArea>
-#include <QPropertyAnimation>
-#include <QTimer>
-#include <QEvent>
-#include <QPainter>
-#include <QColor>
-#include <QMouseEvent>
-#include <QRectF>
-#include <QPoint>
-#include <QObject>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QApplication>
-#include <QAbstractItemView>
-#include <QListView>
+#include "ScrollBar.h"
 
+#include <QAbstractItemView>
+#include <QAbstractScrollArea>
+#include <QApplication>
+#include <QEvent>
+#include <QHBoxLayout>
+#include <QListView>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPropertyAnimation>
+#include <QScrollBar>
+#include <QTimer>
+#include <QVBoxLayout>
+
+#include "FluentIcon.h"
+#include "SmoothScroll.h"
 #include "Theme.h"
+
+// ============================================================================
+// ArrowButton 实现
+// ============================================================================
 
 ArrowButton::ArrowButton(const FluentIconBase &icon, QWidget* parent)
     : QToolButton(parent)
@@ -26,56 +29,66 @@ ArrowButton::ArrowButton(const FluentIconBase &icon, QWidget* parent)
 }
 
 void ArrowButton::setOpacity(qreal opacity) {
-    m_opacity = opacity;
+    m_opacity = qBound(0.0, opacity, 1.0);
     update();
 }
 
 void ArrowButton::setLightColor(const QColor& color) {
-    lightColor = color;
+    m_lightColor = color;
     update();
 }
 
 void ArrowButton::setDarkColor(const QColor& color) {
-    darkColor = color;
+    m_darkColor = color;
     update();
 }
 
-void ArrowButton::paintEvent(QPaintEvent* e) {
+void ArrowButton::paintEvent(QPaintEvent* event) {
+    Q_UNUSED(event)
+    
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
-    QColor color = Theme::instance()->isDarkTheme() ? darkColor : lightColor;
+    QColor color = Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor;
     painter.setOpacity(m_opacity * color.alphaF());
 
-    int s = isDown() ? 7 : 8;
-    qreal x = (width() - s) / 2.0;
+    int size = isDown() ? 7 : 8;
+    qreal x = (width() - size) / 2.0;
 
-    QHash<QString, QString> attrs;
-    attrs["fill"] = color.name();
-    FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, x, s, s), Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
-
+    QHash<QString, QString> attributes;
+    attributes["fill"] = color.name();
+    FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, x, size, size), 
+                             Fluent::ThemeMode::AUTO, QIcon::Off, attributes);
 }
 
-ScrollBarGroove::ScrollBarGroove(Qt::Orientation orient, QWidget* parent) : QWidget(parent) {
-    opacityAni = new QPropertyAnimation(this, "opacity", this);
+// ============================================================================
+// ScrollBarGroove 实现
+// ============================================================================
+
+ScrollBarGroove::ScrollBarGroove(Qt::Orientation orient, QWidget* parent) 
+    : QWidget(parent) 
+{
+    m_opacityAnimation = new QPropertyAnimation(this, "opacity", this);
 
     if (orient == Qt::Vertical) {
         setFixedWidth(12);
-        upButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_UP_SOLID), this);
-        downButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_DOWN_SOLID), this);
+        m_upButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_UP_SOLID), this);
+        m_downButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_DOWN_SOLID), this);
+        
         QVBoxLayout* layout = new QVBoxLayout(this);
-        layout->addWidget(upButton, 0, Qt::AlignHCenter);
+        layout->addWidget(m_upButton, 0, Qt::AlignHCenter);
         layout->addStretch(1);
-        layout->addWidget(downButton, 0, Qt::AlignHCenter);
+        layout->addWidget(m_downButton, 0, Qt::AlignHCenter);
         layout->setContentsMargins(0, 3, 0, 3);
     } else {
         setFixedHeight(12);
-        upButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_LEFT_SOLID), this);
-        downButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_RIGHT_SOLID), this);
+        m_upButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_LEFT_SOLID), this);
+        m_downButton = new ArrowButton(FluentIcon(Fluent::IconType::CARE_RIGHT_SOLID), this);
+        
         QHBoxLayout* layout = new QHBoxLayout(this);
-        layout->addWidget(upButton, 0, Qt::AlignVCenter);
+        layout->addWidget(m_upButton, 0, Qt::AlignVCenter);
         layout->addStretch(1);
-        layout->addWidget(downButton, 0, Qt::AlignVCenter);
+        layout->addWidget(m_downButton, 0, Qt::AlignVCenter);
         layout->setContentsMargins(3, 0, 3, 0);
     }
 
@@ -83,74 +96,90 @@ ScrollBarGroove::ScrollBarGroove(Qt::Orientation orient, QWidget* parent) : QWid
 }
 
 void ScrollBarGroove::setLightBackgroundColor(const QColor& color) {
-    lightBackgroundColor = color;
+    m_lightBackgroundColor = color;
     update();
 }
 
 void ScrollBarGroove::setDarkBackgroundColor(const QColor& color) {
-    darkBackgroundColor = color;
+    m_darkBackgroundColor = color;
     update();
 }
 
 void ScrollBarGroove::fadeIn() {
-    opacityAni->stop();
-    opacityAni->setStartValue(m_opacity);
-    opacityAni->setEndValue(1.0);
-    opacityAni->setDuration(150);
-    opacityAni->start();
+    if (!m_opacityAnimation) return;
+    
+    m_opacityAnimation->stop();
+    m_opacityAnimation->setStartValue(m_opacity);
+    m_opacityAnimation->setEndValue(1.0);
+    m_opacityAnimation->setDuration(150);
+    m_opacityAnimation->start();
 }
 
 void ScrollBarGroove::fadeOut() {
-    opacityAni->stop();
-    opacityAni->setStartValue(m_opacity);
-    opacityAni->setEndValue(0.0);
-    opacityAni->setDuration(150);
-    opacityAni->start();
+    if (!m_opacityAnimation) return;
+    
+    m_opacityAnimation->stop();
+    m_opacityAnimation->setStartValue(m_opacity);
+    m_opacityAnimation->setEndValue(0.0);
+    m_opacityAnimation->setDuration(150);
+    m_opacityAnimation->start();
 }
 
-void ScrollBarGroove::paintEvent(QPaintEvent* e) {
+void ScrollBarGroove::paintEvent(QPaintEvent* event) {
+    Q_UNUSED(event)
+    
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setOpacity(m_opacity);
     painter.setPen(Qt::NoPen);
 
-    QColor brushColor = Theme::instance()->isDarkTheme() ? darkBackgroundColor : lightBackgroundColor;
+    QColor brushColor = Theme::instance()->isDarkTheme() 
+                       ? m_darkBackgroundColor 
+                       : m_lightBackgroundColor;
     painter.setBrush(brushColor);
     painter.drawRoundedRect(rect(), 6, 6);
 }
 
 void ScrollBarGroove::setOpacity(qreal opacity) {
-    m_opacity = opacity;
-    upButton->setOpacity(opacity);
-    downButton->setOpacity(opacity);
+    m_opacity = qBound(0.0, opacity, 1.0);
+    
+    if (m_upButton) {
+        m_upButton->setOpacity(m_opacity);
+    }
+    if (m_downButton) {
+        m_downButton->setOpacity(m_opacity);
+    }
+    
     update();
+    emit opacityChanged(m_opacity);
 }
 
-ArrowButton* ScrollBarGroove::getUpButton()
-{
-    return upButton;
+ArrowButton* ScrollBarGroove::getUpButton() const {
+    return m_upButton;
 }
 
-ArrowButton* ScrollBarGroove::getDownButton()
-{
-    return downButton;
+ArrowButton* ScrollBarGroove::getDownButton() const {
+    return m_downButton;
 }
 
-QPropertyAnimation* ScrollBarGroove::getOpacityAni()
-{
-    return opacityAni;
+QPropertyAnimation* ScrollBarGroove::getOpacityAnimation() const {
+    return m_opacityAnimation;
 }
 
 qreal ScrollBarGroove::getOpacity() const {
     return m_opacity;
 }
 
-void ScrollBarGroove::onOpacityAniValueChanged(const QVariant& value) {
+// ============================================================================
+// ScrollBarHandle 实现
+// ============================================================================
 
-}
-
-ScrollBarHandle::ScrollBarHandle(Qt::Orientation orient, QWidget* parent) : QWidget(parent), m_orient(orient) {
-    opacityAni = new QPropertyAnimation(this, "opacity", this);
+ScrollBarHandle::ScrollBarHandle(Qt::Orientation orient, QWidget* parent) 
+    : QWidget(parent)
+    , m_orientation(orient) 
+{
+    m_opacityAnimation = new QPropertyAnimation(this, "opacity", this);
+    
     if (orient == Qt::Vertical) {
         setFixedWidth(3);
     } else {
@@ -159,45 +188,52 @@ ScrollBarHandle::ScrollBarHandle(Qt::Orientation orient, QWidget* parent) : QWid
 }
 
 void ScrollBarHandle::setLightColor(const QColor& color) {
-    lightColor = color;
+    m_lightColor = color;
     update();
 }
 
 void ScrollBarHandle::setDarkColor(const QColor& color) {
-    darkColor = color;
+    m_darkColor = color;
     update();
 }
 
-void ScrollBarHandle::paintEvent(QPaintEvent* e) {
+void ScrollBarHandle::paintEvent(QPaintEvent* event) {
+    Q_UNUSED(event)
+    
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    qreal r = (m_orient == Qt::Vertical ? width() : height()) / 2.0;
+    qreal radius = (m_orientation == Qt::Vertical ? width() : height()) / 2.0;
     painter.setOpacity(m_opacity);
-    QColor brushColor = Theme::instance()->isDarkTheme() ? darkColor : lightColor;
+    
+    QColor brushColor = Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor;
     painter.setBrush(brushColor);
-    painter.drawRoundedRect(rect(), r, r);
+    painter.drawRoundedRect(rect(), radius, radius);
 }
 
 void ScrollBarHandle::fadeIn() {
-    opacityAni->stop();
-    opacityAni->setStartValue(m_opacity);
-    opacityAni->setEndValue(1.0);
-    opacityAni->setDuration(150);
-    opacityAni->start();
+    if (!m_opacityAnimation) return;
+    
+    m_opacityAnimation->stop();
+    m_opacityAnimation->setStartValue(m_opacity);
+    m_opacityAnimation->setEndValue(1.0);
+    m_opacityAnimation->setDuration(150);
+    m_opacityAnimation->start();
 }
 
 void ScrollBarHandle::fadeOut() {
-    opacityAni->stop();
-    opacityAni->setStartValue(m_opacity);
-    opacityAni->setEndValue(0.0);
-    opacityAni->setDuration(150);
-    opacityAni->start();
+    if (!m_opacityAnimation) return;
+    
+    m_opacityAnimation->stop();
+    m_opacityAnimation->setStartValue(m_opacity);
+    m_opacityAnimation->setEndValue(0.0);
+    m_opacityAnimation->setDuration(150);
+    m_opacityAnimation->start();
 }
 
 void ScrollBarHandle::setOpacity(qreal opacity) {
-    m_opacity = opacity;
+    m_opacity = qBound(0.0, opacity, 1.0);
     update();
 }
 
@@ -205,33 +241,57 @@ qreal ScrollBarHandle::getOpacity() const {
     return m_opacity;
 }
 
-ScrollBar::ScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent) : QWidget(parent),
-    m_orientation(orient), partnerBar(nullptr) {
-    groove = new ScrollBarGroove(orient, this);
-    handle = new ScrollBarHandle(orient, this);
+// ============================================================================
+// ScrollBar 实现
+// ============================================================================
+
+ScrollBar::ScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent) 
+    : QWidget(parent)
+    , m_orientation(orient)
+{
+    m_groove = new ScrollBarGroove(orient, this);
+    m_handle = new ScrollBarHandle(orient, this);
     initWidget(parent);
 }
 
 void ScrollBar::initWidget(QAbstractScrollArea* parent) {
-    connect(groove->getUpButton(), &QToolButton::clicked, this, &ScrollBar::onPageUp);
-    connect(groove->getDownButton(), &QToolButton::clicked, this, &ScrollBar::onPageDown);
-    connect(groove->getOpacityAni(), &QPropertyAnimation::valueChanged, this, &ScrollBar::onOpacityAniValueChanged);
+    if (!parent) return;
+    
+    // 连接槽按钮信号
+    if (m_groove) {
+        if (ArrowButton* upBtn = m_groove->getUpButton()) {
+            connect(upBtn, &QToolButton::clicked, this, &ScrollBar::onPageUp);
+        }
+        if (ArrowButton* downBtn = m_groove->getDownButton()) {
+            connect(downBtn, &QToolButton::clicked, this, &ScrollBar::onPageDown);
+        }
+        if (QPropertyAnimation* ani = m_groove->getOpacityAnimation()) {
+            connect(ani, &QPropertyAnimation::valueChanged, 
+                   this, &ScrollBar::onOpacityAnimationValueChanged);
+        }
+    }
 
+    // 设置伙伴滚动条
     if (m_orientation == Qt::Vertical) {
-        partnerBar = parent->verticalScrollBar();
+        m_partnerBar = parent->verticalScrollBar();
         parent->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     } else {
-        partnerBar = parent->horizontalScrollBar();
+        m_partnerBar = parent->horizontalScrollBar();
         parent->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
 
-    connect(partnerBar, &QScrollBar::rangeChanged, [this](int min, int max) { setRange(min, max); });
-    connect(partnerBar, &QScrollBar::valueChanged, this, &ScrollBar::onValueChanged);
-    connect(this, &ScrollBar::valueChanged, partnerBar, &QScrollBar::setValue);
+    if (m_partnerBar) {
+        connect(m_partnerBar, &QScrollBar::rangeChanged, 
+                this, [this](int min, int max) { setRange(min, max); });
+        connect(m_partnerBar, &QScrollBar::valueChanged, 
+                this, &ScrollBar::onValueChanged);
+        connect(this, &ScrollBar::valueChanged, 
+                m_partnerBar, &QScrollBar::setValue);
+                
+        setRange(m_partnerBar->minimum(), m_partnerBar->maximum());
+    }
 
     parent->installEventFilter(this);
-
-    setRange(partnerBar->minimum(), partnerBar->maximum());
     setVisible(maximum() > 0 && !m_isForceHidden);
     adjustPos(parent->size());
 }
@@ -254,18 +314,52 @@ int ScrollBar::value() const {
 
 void ScrollBar::setVal(int value) {
     if (value == m_value) return;
-    value = qMax(minimum(), qMin(value, maximum()));
+    
+    value = qBound(minimum(), value, maximum());
     m_value = value;
+    
     emit valueChanged(value);
     adjustHandlePos();
+}
+
+void ScrollBar::setValue(int value) {
+    setVal(value);
 }
 
 int ScrollBar::minimum() const {
     return m_minimum;
 }
 
+void ScrollBar::setMinimum(int min) {
+    if (m_minimum == min) return;
+    m_minimum = min;
+    adjustHandleSize();
+    adjustHandlePos();
+}
+
 int ScrollBar::maximum() const {
     return m_maximum;
+}
+
+void ScrollBar::setMaximum(int max) {
+    if (m_maximum == max) return;
+    m_maximum = max;
+    setVisible(max > 0 && !m_isForceHidden);
+    adjustHandleSize();
+    adjustHandlePos();
+}
+
+void ScrollBar::setRange(int min, int max) {
+    if (m_minimum == min && m_maximum == max) return;
+    
+    m_minimum = min;
+    m_maximum = max;
+    
+    setVisible(max > 0 && !m_isForceHidden);
+    adjustHandleSize();
+    adjustHandlePos();
+    
+    emit rangeChanged(min, max);
 }
 
 Qt::Orientation ScrollBar::orientation() const {
@@ -276,163 +370,161 @@ int ScrollBar::pageStep() const {
     return m_pageStep;
 }
 
+void ScrollBar::setPageStep(int step) {
+    m_pageStep = qMax(1, step);
+}
+
 int ScrollBar::singleStep() const {
     return m_singleStep;
+}
+
+void ScrollBar::setSingleStep(int step) {
+    m_singleStep = qMax(1, step);
 }
 
 bool ScrollBar::isSliderDown() const {
     return m_isPressed;
 }
 
-void ScrollBar::setValue(int value) {
-    setVal(value);
-}
-
-void ScrollBar::setMinimum(int min) {
-    if (min == m_minimum) return;
-    m_minimum = min;
-    emit rangeChanged(qMakePair(min, maximum()));
-}
-
-void ScrollBar::setMaximum(int max) {
-    if (max == m_maximum) return;
-    m_maximum = max;
-    emit rangeChanged(qMakePair(minimum(), max));
-}
-
-void ScrollBar::setRange(int min, int max) {
-    if (min > max || (min == minimum() && max == maximum())) return;
-    setMinimum(min);
-    setMaximum(max);
-    adjustHandleSize();
-    adjustHandlePos();
-    setVisible(max > 0 && !m_isForceHidden);
-    emit rangeChanged(qMakePair(min, max));
-}
-
-void ScrollBar::setPageStep(int step) {
-    if (step >= 1) m_pageStep = step;
-}
-
-void ScrollBar::setSingleStep(int step) {
-    if (step >= 1) m_singleStep = step;
-}
-
 void ScrollBar::setSliderDown(bool isDown) {
     m_isPressed = isDown;
-    if (isDown) emit sliderPressed();
-    else emit sliderReleased();
 }
 
 void ScrollBar::setHandleColor(const QColor& light, const QColor& dark) {
-    handle->setLightColor(light);
-    handle->setDarkColor(dark);
+    if (m_handle) {
+        m_handle->setLightColor(light);
+        m_handle->setDarkColor(dark);
+    }
 }
 
 void ScrollBar::setArrowColor(const QColor& light, const QColor& dark) {
-    groove->getUpButton()->setLightColor(light);
-    groove->getUpButton()->setDarkColor(dark);
-    groove->getDownButton()->setLightColor(light);
-    groove->getDownButton()->setDarkColor(dark);
+    if (!m_groove) return;
+    
+    if (ArrowButton* upBtn = m_groove->getUpButton()) {
+        upBtn->setLightColor(light);
+        upBtn->setDarkColor(dark);
+    }
+    if (ArrowButton* downBtn = m_groove->getDownButton()) {
+        downBtn->setLightColor(light);
+        downBtn->setDarkColor(dark);
+    }
 }
 
 void ScrollBar::setGrooveColor(const QColor& light, const QColor& dark) {
-    groove->setLightBackgroundColor(light);
-    groove->setDarkBackgroundColor(dark);
+    if (m_groove) {
+        m_groove->setLightBackgroundColor(light);
+        m_groove->setDarkBackgroundColor(dark);
+    }
 }
 
 void ScrollBar::setHandleDisplayMode(Fluent::ScrollBarHandleDisplayMode mode) {
-    if (mode == handleDisplayMode) return;
-    handleDisplayMode = mode;
-    if (mode == Fluent::ScrollBarHandleDisplayMode::ON_HOVER && !m_isEnter) {
-        handle->fadeOut();
-    } else if (mode == Fluent::ScrollBarHandleDisplayMode::ALWAYS) {
-        handle->fadeIn();
-    }
+    m_handleDisplayMode = mode;
 }
 
 void ScrollBar::expand() {
-    if (m_isExpanded || !m_isEnter) return;
+    if (m_isExpanded || !m_groove) return;
+    
     m_isExpanded = true;
-    groove->fadeIn();
-    handle->fadeIn();
+    m_groove->fadeIn();
 }
 
 void ScrollBar::collapse() {
-    if (!m_isExpanded || m_isEnter) return;
+    if (!m_isExpanded || !m_groove) return;
+    
     m_isExpanded = false;
-    groove->fadeOut();
-    if (handleDisplayMode == Fluent::ScrollBarHandleDisplayMode::ON_HOVER) {
-        handle->fadeOut();
-    }
+    m_groove->fadeOut();
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void ScrollBar::enterEvent(QEnterEvent *e) {
-    m_isEnter = true;
-    QTimer::singleShot(200, this, &ScrollBar::expand);
-}
+void ScrollBar::enterEvent(QEnterEvent *event) {
 #else
-void ScrollBar::enterEvent(QEvent *e) {
-    m_isEnter = true;
-    QTimer::singleShot(200, this, &ScrollBar::expand);
-}
+void ScrollBar::enterEvent(QEvent *event) {
 #endif
+    m_isEnter = true;
+    expand();
+    QWidget::enterEvent(event);
+}
 
-void ScrollBar::leaveEvent(QEvent* e) {
+void ScrollBar::leaveEvent(QEvent* event) {
     m_isEnter = false;
-    QTimer::singleShot(200, this, &ScrollBar::collapse);
+    collapse();
+    QWidget::leaveEvent(event);
 }
 
-bool ScrollBar::eventFilter(QObject* obj, QEvent* e) {
-    if (obj != parent()) return QWidget::eventFilter(obj, e);
-    if (e->type() == QEvent::Resize) {
-        QResizeEvent* re = static_cast<QResizeEvent*>(e);
-        adjustPos(re->size());
+bool ScrollBar::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::Resize) {
+        QAbstractScrollArea* scrollArea = qobject_cast<QAbstractScrollArea*>(obj);
+        if (scrollArea) {
+            adjustPos(scrollArea->size());
+        }
     }
-    return QWidget::eventFilter(obj, e);
+    return QWidget::eventFilter(obj, event);
 }
 
-void ScrollBar::resizeEvent(QResizeEvent* e) {
-    groove->resize(size());
+void ScrollBar::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);
+    
+    if (m_groove) {
+        m_groove->resize(size());
+    }
+    
+    adjustHandleSize();
+    adjustHandlePos();
 }
 
-void ScrollBar::mousePressEvent(QMouseEvent* e) {
-    QWidget::mousePressEvent(e);
+void ScrollBar::mousePressEvent(QMouseEvent* event) {
+    QWidget::mousePressEvent(event);
+    
+    if (!m_handle || event->button() != Qt::LeftButton) return;
+
     m_isPressed = true;
-    m_pressedPos = e->pos();
-    if (childAt(e->pos()) == handle || !isSlideRegion(e->pos())) return;
+    m_pressedPos = event->pos();
 
-    int valuePos;
-    if (orientation() == Qt::Vertical) {
-        if (e->pos().y() > handle->geometry().bottom()) {
-            valuePos = e->pos().y() - handle->height() - m_padding;
-        } else {
-            valuePos = e->pos().y() - m_padding;
-        }
-    } else {
-        if (e->pos().x() > handle->geometry().right()) {
-            valuePos = e->pos().x() - handle->width() - m_padding;
-        } else {
-            valuePos = e->pos().x() - m_padding;
-        }
+    if (m_handle->geometry().contains(event->pos())) {
+        emit sliderPressed();
+        return;
     }
 
-    setValue(double(valuePos) / qMax(slideLength(), 1) * maximum());
-    emit sliderPressed();
+    // 点击槽区域时跳转
+    if (isSlideRegion(event->pos())) {
+        int valuePos = 0;
+        
+        if (orientation() == Qt::Vertical) {
+            valuePos = event->pos().y() - m_padding;
+        } else {
+            valuePos = event->pos().x() - m_padding;
+        }
+        
+        int newValue = static_cast<int>(
+            static_cast<qreal>(valuePos) / qMax(slideLength(), 1) * maximum()
+        );
+        setValue(newValue);
+        emit sliderPressed();
+    }
 }
 
-void ScrollBar::mouseReleaseEvent(QMouseEvent* e) {
-    QWidget::mouseReleaseEvent(e);
+void ScrollBar::mouseReleaseEvent(QMouseEvent* event) {
+    QWidget::mouseReleaseEvent(event);
     m_isPressed = false;
     emit sliderReleased();
 }
 
-void ScrollBar::mouseMoveEvent(QMouseEvent* e) {
-    int dv = (orientation() == Qt::Vertical ? e->pos().y() - m_pressedPos.y() : e->pos().x() - m_pressedPos.x());
-    dv = double(dv) / qMax(slideLength(), 1) * (maximum() - minimum());
-    setValue(value() + dv);
-    m_pressedPos = e->pos();
+void ScrollBar::mouseMoveEvent(QMouseEvent* event) {
+    if (!m_isPressed) return;
+
+    int delta = (orientation() == Qt::Vertical) 
+               ? (event->pos().y() - m_pressedPos.y())
+               : (event->pos().x() - m_pressedPos.x());
+               
+    int slideLen = slideLength();
+    if (slideLen <= 0) return;
+    
+    int deltaValue = static_cast<int>(
+        static_cast<qreal>(delta) / slideLen * (maximum() - minimum())
+    );
+    
+    setValue(value() + deltaValue);
+    m_pressedPos = event->pos();
     emit sliderMoved();
 }
 
@@ -447,30 +539,37 @@ void ScrollBar::adjustPos(const QSize& size) {
 }
 
 void ScrollBar::adjustHandleSize() {
-    QAbstractScrollArea* p = qobject_cast<QAbstractScrollArea*>(parent());
-    if (!p) return;
+    QAbstractScrollArea* scrollArea = qobject_cast<QAbstractScrollArea*>(parent());
+    if (!scrollArea || !m_handle) return;
 
-    int total, s;
+    int total = 0;
+    int size = 0;
+    
     if (orientation() == Qt::Vertical) {
-        total = maximum() - minimum() + p->height();
-        s = static_cast<int>(grooveLength() * p->height() / qMax(total, 1));
-        handle->setFixedHeight(qMax(30, s));
+        total = maximum() - minimum() + scrollArea->height();
+        size = static_cast<int>(grooveLength() * scrollArea->height() / qMax(total, 1));
+        m_handle->setFixedHeight(qMax(30, size));
     } else {
-        total = maximum() - minimum() + p->width();
-        s = static_cast<int>(grooveLength() * p->width() / qMax(total, 1));
-        handle->setFixedWidth(qMax(30, s));
+        total = maximum() - minimum() + scrollArea->width();
+        size = static_cast<int>(grooveLength() * scrollArea->width() / qMax(total, 1));
+        m_handle->setFixedWidth(qMax(30, size));
     }
 }
 
 void ScrollBar::adjustHandlePos() {
-    int total = qMax(maximum() - minimum(), 1);
-    int delta = static_cast<int>(value() / static_cast<qreal>(total) * slideLength());
+    if (!m_handle) return;
+    
+    int totalRange = qMax(maximum() - minimum(), 1);
+    int delta = static_cast<int>(
+        value() / static_cast<qreal>(totalRange) * slideLength()
+    );
+    
     if (orientation() == Qt::Vertical) {
-        int x = width() - handle->width() - 3;
-        handle->move(x, m_padding + delta);
+        int x = width() - m_handle->width() - 3;
+        m_handle->move(x, m_padding + delta);
     } else {
-        int y = height() - handle->height() - 3;
-        handle->move(m_padding + delta, y);
+        int y = height() - m_handle->height() - 3;
+        m_handle->move(m_padding + delta, y);
     }
 }
 
@@ -479,21 +578,35 @@ int ScrollBar::grooveLength() const {
 }
 
 int ScrollBar::slideLength() const {
-    return grooveLength() - (orientation() == Qt::Vertical ? handle->height() : handle->width());
+    if (!m_handle) return 0;
+    
+    int handleSize = (orientation() == Qt::Vertical) 
+                    ? m_handle->height() 
+                    : m_handle->width();
+    return grooveLength() - handleSize;
 }
 
 bool ScrollBar::isSlideRegion(const QPoint& pos) const {
-    return (orientation() == Qt::Vertical ? (m_padding <= pos.y() && pos.y() <= height() - m_padding) :
-                                            (m_padding <= pos.x() && pos.x() <= width() - m_padding));
+    if (orientation() == Qt::Vertical) {
+        return m_padding <= pos.y() && pos.y() <= height() - m_padding;
+    } else {
+        return m_padding <= pos.x() && pos.x() <= width() - m_padding;
+    }
 }
 
-void ScrollBar::onOpacityAniValueChanged(const QVariant& value) {
-    qreal opacity = groove->getOpacity();
+void ScrollBar::onOpacityAnimationValueChanged(const QVariant& value) {
+    Q_UNUSED(value)
+    
+    if (!m_groove || !m_handle) return;
+    
+    qreal opacity = m_groove->getOpacity();
+    
     if (orientation() == Qt::Vertical) {
-        handle->setFixedWidth(static_cast<int>(3 + opacity * 3));
+        m_handle->setFixedWidth(static_cast<int>(3 + opacity * 3));
     } else {
-        handle->setFixedHeight(static_cast<int>(3 + opacity * 3));
+        m_handle->setFixedHeight(static_cast<int>(3 + opacity * 3));
     }
+    
     adjustHandlePos();
 }
 
@@ -502,70 +615,97 @@ void ScrollBar::setForceHidden(bool isHidden) {
     setVisible(maximum() > 0 && !isHidden);
 }
 
-void ScrollBar::wheelEvent(QWheelEvent* e) {
-    QApplication::sendEvent(qobject_cast<QAbstractScrollArea*>(parent())->viewport(), e);
+void ScrollBar::wheelEvent(QWheelEvent* event) {
+    QAbstractScrollArea* scrollArea = qobject_cast<QAbstractScrollArea*>(parent());
+    if (scrollArea && scrollArea->viewport()) {
+        QApplication::sendEvent(scrollArea->viewport(), event);
+    }
 }
 
-SmoothScrollBar::SmoothScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent) : ScrollBar(orient, parent) {
-    ani = new QPropertyAnimation(this, "val", this);
-    ani->setEasingCurve(QEasingCurve::OutCubic);
-    ani->setDuration(duration);
+// ============================================================================
+// SmoothScrollBar 实现
+// ============================================================================
+
+SmoothScrollBar::SmoothScrollBar(Qt::Orientation orient, QAbstractScrollArea* parent) 
+    : ScrollBar(orient, parent) 
+{
+    m_animation = new QPropertyAnimation(this, "val", this);
+    m_animation->setEasingCurve(QEasingCurve::OutCubic);
+    m_animation->setDuration(m_duration);
     m_valueInternal = value();
 }
 
-void SmoothScrollBar::setValue(int value, bool useAni) {
+void SmoothScrollBar::setValue(int value, bool useAnimation) {
     if (value == ScrollBar::value()) return;
-    ani->stop();
-    if (!useAni) {
+    
+    if (m_animation) {
+        m_animation->stop();
+    }
+    
+    if (!useAnimation) {
         ScrollBar::setVal(value);
         return;
     }
 
-    int dv = qAbs(value - ScrollBar::value());
-    if (dv < 50) {
-        ani->setDuration(static_cast<int>(duration * dv / 70.0));
+    if (!m_animation) return;
+    
+    int deltaValue = qAbs(value - ScrollBar::value());
+    if (deltaValue < 50) {
+        m_animation->setDuration(static_cast<int>(m_duration * deltaValue / 70.0));
     } else {
-        ani->setDuration(duration);
+        m_animation->setDuration(m_duration);
     }
 
-    ani->setStartValue(ScrollBar::value());
-    ani->setEndValue(value);
-    ani->start();
+    m_animation->setStartValue(ScrollBar::value());
+    m_animation->setEndValue(value);
+    m_animation->start();
 }
 
-void SmoothScrollBar::scrollValue(int value, bool useAni) {
+void SmoothScrollBar::scrollValue(int value, bool useAnimation) {
     m_valueInternal += value;
-    m_valueInternal = qMax(minimum(), qMin(m_valueInternal, maximum()));
-    setValue(m_valueInternal, useAni);
+    m_valueInternal = qBound(minimum(), m_valueInternal, maximum());
+    setValue(m_valueInternal, useAnimation);
 }
 
-void SmoothScrollBar::scrollTo(int value, bool useAni) {
-    m_valueInternal = value;
-    m_valueInternal = qMax(minimum(), qMin(m_valueInternal, maximum()));
-    setValue(m_valueInternal, useAni);
+void SmoothScrollBar::scrollTo(int value, bool useAnimation) {
+    m_valueInternal = qBound(minimum(), value, maximum());
+    setValue(m_valueInternal, useAnimation);
 }
 
 void SmoothScrollBar::resetValue(int value) {
     m_valueInternal = value;
 }
 
-void SmoothScrollBar::mousePressEvent(QMouseEvent* e) {
-    ani->stop();
-    ScrollBar::mousePressEvent(e);
+void SmoothScrollBar::mousePressEvent(QMouseEvent* event) {
+    if (m_animation) {
+        m_animation->stop();
+    }
+    
+    ScrollBar::mousePressEvent(event);
     m_valueInternal = ScrollBar::value();
 }
 
-void SmoothScrollBar::mouseMoveEvent(QMouseEvent* e) {
-    ani->stop();
-    ScrollBar::mouseMoveEvent(e);
+void SmoothScrollBar::mouseMoveEvent(QMouseEvent* event) {
+    if (m_animation) {
+        m_animation->stop();
+    }
+    
+    ScrollBar::mouseMoveEvent(event);
     m_valueInternal = ScrollBar::value();
 }
 
 void SmoothScrollBar::setScrollAnimation(int duration, QEasingCurve::Type easing) {
-    this->duration = duration;
-    ani->setDuration(duration);
-    ani->setEasingCurve(easing);
+    m_duration = duration;
+    
+    if (m_animation) {
+        m_animation->setDuration(duration);
+        m_animation->setEasingCurve(easing);
+    }
 }
+
+// ============================================================================
+// SmoothScrollDelegate 实现
+// ============================================================================
 
 SmoothScrollDelegate::SmoothScrollDelegate(QAbstractScrollArea* parent, bool useAnimation)
     : QObject(parent)
@@ -587,7 +727,9 @@ SmoothScrollDelegate::SmoothScrollDelegate(QAbstractScrollArea* parent, bool use
     // 特殊处理 QListView
     if (QListView* listView = qobject_cast<QListView*>(parent)) {
         listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        listView->horizontalScrollBar()->setStyleSheet("QScrollBar:horizontal{height: 0px}");
+        if (QScrollBar* hBar = listView->horizontalScrollBar()) {
+            hBar->setStyleSheet("QScrollBar:horizontal{height: 0px}");
+        }
     }
 
     if (parent->viewport()) {
