@@ -1,34 +1,32 @@
-﻿#ifndef FLYOUT_H
-#define FLYOUT_H
-
-#include <QWidget>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPainter>
-#include <QColor>
-#include <QIcon>
-#include <QPixmap>
-#include <QImage>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QEasingCurve>
-#include <QGraphicsDropShadowEffect>
-#include <QPoint>
-#include <QEvent>
-#include <QMouseEvent>
-#include <QScreen>
-#include <QGuiApplication>
-#include <QCursor>
-#include <QMap>
+﻿#pragma once
 
 #include "FluentGlobal.h"
-// 前向声明
-class ImageLabel;
-class FluentIconBase;
-class TransparentToolButton;
 
+#include <QWidget>
+#include <QIcon>
+#include <QPixmap>
+#include <QColor>
+#include <QPoint>
+
+// 前向声明 - Qt 类
+class QLabel;
+class QHBoxLayout;
+class QVBoxLayout;
+class QPaintEvent;
+class QShowEvent;
+class QCloseEvent;
+class QPropertyAnimation;
+class QParallelAnimationGroup;
+class QGraphicsDropShadowEffect;
+
+// 前向声明 - 自定义类
+class ImageLabel;
+class TransparentToolButton;
+class FlyoutAnimationManager;
+
+// ============================================================================
 // 动画类型枚举
+// ============================================================================
 enum class FlyoutAnimationType {
     PULL_UP,
     DROP_DOWN,
@@ -38,7 +36,9 @@ enum class FlyoutAnimationType {
     NONE
 };
 
+// ============================================================================
 // 图标组件
+// ============================================================================
 class FlyoutIconWidget : public QWidget {
     Q_OBJECT
 public:
@@ -52,13 +52,17 @@ private:
     QIcon m_icon;
 };
 
-// Flyout视图基类
+// ============================================================================
+// Flyout 视图基类
+// ============================================================================
 class QFLUENT_EXPORT FlyoutViewBase : public QWidget {
     Q_OBJECT
 public:
     explicit FlyoutViewBase(QWidget* parent = nullptr);
+    virtual ~FlyoutViewBase() = default;
+
     virtual void addWidget(QWidget* widget, int stretch = 0, Qt::Alignment align = Qt::AlignLeft);
-    
+
     QColor backgroundColor() const;
     QColor borderColor() const;
 
@@ -66,26 +70,27 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 };
 
-// Flyout视图
+// ============================================================================
+// Flyout 视图
+// ============================================================================
 class QFLUENT_EXPORT FlyoutView : public FlyoutViewBase {
     Q_OBJECT
 public:
-    explicit FlyoutView(const QString& title, 
+    explicit FlyoutView(const QString& title,
                        const QString& content,
                        const QIcon& icon = QIcon(),
                        const QPixmap& image = QPixmap(),
                        bool isClosable = false,
                        QWidget* parent = nullptr);
 
+    ~FlyoutView() override = default;
+
     void addWidget(QWidget* widget, int stretch = 0, Qt::Alignment align = Qt::AlignLeft) override;
 
-    QVBoxLayout* widgetLayout() const {return m_widgetLayout;}
-
-    QVBoxLayout* vBoxLayout() const {return m_vBoxLayout;}
-
-    QHBoxLayout* viewLayout() const {return m_viewLayout;}
-
-    ImageLabel* imageLabel() const {return m_imageLabel;}
+    QVBoxLayout* widgetLayout() const { return m_widgetLayout; }
+    QVBoxLayout* vBoxLayout() const { return m_vBoxLayout; }
+    QHBoxLayout* viewLayout() const { return m_viewLayout; }
+    ImageLabel* imageLabel() const { return m_imageLabel; }
 
 signals:
     void closed();
@@ -118,17 +123,18 @@ private:
     TransparentToolButton* m_closeButton;
 };
 
-// 前向声明
-class FlyoutAnimationManager;
-
-// Flyout主类
+// ============================================================================
+// Flyout 主类
+// ============================================================================
 class QFLUENT_EXPORT Flyout : public QWidget {
     Q_OBJECT
 public:
-    explicit Flyout(FlyoutViewBase* view, 
+    explicit Flyout(FlyoutViewBase* view,
                    QWidget* parent = nullptr,
                    bool isDeleteOnClose = true,
                    bool isMacInputMethodEnabled = false);
+
+    ~Flyout() override;
 
     void setShadowEffect(int blurRadius = 35, const QPoint& offset = QPoint(0, 8));
     void exec(const QPoint& pos, FlyoutAnimationType aniType = FlyoutAnimationType::PULL_UP);
@@ -172,12 +178,14 @@ private:
     bool m_isMacInputMethodEnabled;
 };
 
+// ============================================================================
 // 动画管理器基类
+// ============================================================================
 class FlyoutAnimationManager : public QObject {
     Q_OBJECT
 public:
     explicit FlyoutAnimationManager(Flyout* flyout);
-    virtual ~FlyoutAnimationManager() = default;
+    ~FlyoutAnimationManager() override = default;
 
     virtual void exec(const QPoint& pos);
     virtual QPoint position(QWidget* target);
@@ -194,7 +202,9 @@ protected:
     QPropertyAnimation* m_opacityAni;
 };
 
+// ============================================================================
 // 各种动画管理器实现
+// ============================================================================
 class PullUpFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
@@ -242,5 +252,3 @@ public:
     QPoint position(QWidget* target) override;
     void exec(const QPoint& pos) override;
 };
-
-#endif // FLYOUT_H

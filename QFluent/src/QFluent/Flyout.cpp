@@ -1,7 +1,19 @@
-﻿#include "flyout.h"
+﻿#include "Flyout.h"
+
 #include <QApplication>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPainter>
 #include <QPainterPath>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <QEasingCurve>
+#include <QGraphicsDropShadowEffect>
+#include <QMouseEvent>
 #include <QScreen>
+#include <QGuiApplication>
+#include <QCursor>
 #include <algorithm>
 
 #include "Theme.h"
@@ -17,7 +29,8 @@
 // FlyoutIconWidget 实现
 // ============================================================================
 FlyoutIconWidget::FlyoutIconWidget(const QIcon& icon, QWidget* parent)
-    : QWidget(parent), m_icon(icon)
+    : QWidget(parent)
+    , m_icon(icon)
 {
     setFixedSize(36, 54);
 }
@@ -31,7 +44,7 @@ void FlyoutIconWidget::setIcon(const QIcon& icon)
 void FlyoutIconWidget::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
-    
+
     if (m_icon.isNull()) {
         return;
     }
@@ -61,18 +74,22 @@ void FlyoutViewBase::addWidget(QWidget* widget, int stretch, Qt::Alignment align
 
 QColor FlyoutViewBase::backgroundColor() const
 {
-    return Theme::instance()->isDarkTheme() ? QColor(40, 40, 40) : QColor(248, 248, 248);
+    return Theme::instance()->isDarkTheme()
+        ? QColor(40, 40, 40)
+        : QColor(248, 248, 248);
 }
 
 QColor FlyoutViewBase::borderColor() const
 {
-    return Theme::instance()->isDarkTheme() ? QColor(0, 0, 0, 45) : QColor(0, 0, 0, 17);
+    return Theme::instance()->isDarkTheme()
+        ? QColor(0, 0, 0, 45)
+        : QColor(0, 0, 0, 17);
 }
 
 void FlyoutViewBase::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
-    
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -86,15 +103,26 @@ void FlyoutViewBase::paintEvent(QPaintEvent* event)
 // ============================================================================
 // FlyoutView 实现
 // ============================================================================
-FlyoutView::FlyoutView(const QString& title, const QString& content,
-                       const QIcon& icon, const QPixmap& image,
-                       bool isClosable, QWidget* parent)
+FlyoutView::FlyoutView(const QString& title,
+                       const QString& content,
+                       const QIcon& icon,
+                       const QPixmap& image,
+                       bool isClosable,
+                       QWidget* parent)
     : FlyoutViewBase(parent)
     , m_title(title)
     , m_content(content)
     , m_icon(icon)
     , m_image(image)
     , m_isClosable(isClosable)
+    , m_vBoxLayout(nullptr)
+    , m_viewLayout(nullptr)
+    , m_widgetLayout(nullptr)
+    , m_titleLabel(nullptr)
+    , m_contentLabel(nullptr)
+    , m_iconWidget(nullptr)
+    , m_imageLabel(nullptr)
+    , m_closeButton(nullptr)
 {
     m_vBoxLayout = new QVBoxLayout(this);
     m_viewLayout = new QHBoxLayout();
@@ -111,19 +139,27 @@ FlyoutView::FlyoutView(const QString& title, const QString& content,
 
 void FlyoutView::initWidgets()
 {
+    if (!m_imageLabel || !m_closeButton || !m_titleLabel ||
+        !m_contentLabel || !m_iconWidget) {
+        return;
+    }
+
     m_imageLabel->setImage(m_image);
 
     m_closeButton->setFixedSize(32, 32);
     m_closeButton->setIconSize(QSize(12, 12));
     m_closeButton->setVisible(m_isClosable);
+
     m_titleLabel->setVisible(!m_title.isEmpty());
     m_contentLabel->setVisible(!m_content.isEmpty());
     m_iconWidget->setHidden(m_icon.isNull());
 
-    connect(m_closeButton, &TransparentToolButton::clicked, this, &FlyoutView::closed);
+    connect(m_closeButton, &TransparentToolButton::clicked,
+            this, &FlyoutView::closed);
 
     m_titleLabel->setObjectName("titleLabel");
     m_contentLabel->setObjectName("contentLabel");
+
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TEACHING_TIP);
 
     initLayout();
@@ -131,6 +167,10 @@ void FlyoutView::initWidgets()
 
 void FlyoutView::initLayout()
 {
+    if (!m_vBoxLayout || !m_viewLayout || !m_widgetLayout) {
+        return;
+    }
+
     m_vBoxLayout->setContentsMargins(1, 1, 1, 1);
     m_widgetLayout->setContentsMargins(0, 8, 0, 8);
     m_viewLayout->setSpacing(4);
@@ -168,12 +208,20 @@ void FlyoutView::initLayout()
 
 void FlyoutView::addWidget(QWidget* widget, int stretch, Qt::Alignment align)
 {
+    if (!widget || !m_widgetLayout) {
+        return;
+    }
+
     m_widgetLayout->addSpacing(8);
     m_widgetLayout->addWidget(widget, stretch, align);
 }
 
 void FlyoutView::addImageToLayout()
 {
+    if (!m_imageLabel || !m_vBoxLayout) {
+        return;
+    }
+
     m_imageLabel->setBorderRadius(8, 8, 0, 0);
     m_imageLabel->setHidden(m_imageLabel->isNull());
     m_vBoxLayout->insertWidget(0, m_imageLabel);
@@ -181,6 +229,10 @@ void FlyoutView::addImageToLayout()
 
 void FlyoutView::adjustText()
 {
+    if (!m_titleLabel || !m_contentLabel) {
+        return;
+    }
+
     QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
     int screenWidth = screen ? screen->geometry().width() : 1920;
     int w = qMin(900, screenWidth - 200);
@@ -196,6 +248,10 @@ void FlyoutView::adjustText()
 
 void FlyoutView::adjustImage()
 {
+    if (!m_imageLabel || !m_vBoxLayout) {
+        return;
+    }
+
     int w = m_vBoxLayout->sizeHint().width() - 2;
     m_imageLabel->scaledToWidth(w);
 }
@@ -210,20 +266,27 @@ void FlyoutView::showEvent(QShowEvent* event)
 // ============================================================================
 // Flyout 实现
 // ============================================================================
-Flyout::Flyout(FlyoutViewBase* view, QWidget* parent,
-               bool isDeleteOnClose, bool isMacInputMethodEnabled)
+Flyout::Flyout(FlyoutViewBase* view,
+               QWidget* parent,
+               bool isDeleteOnClose,
+               bool isMacInputMethodEnabled)
     : QWidget(parent)
     , m_view(view)
+    , m_hBoxLayout(nullptr)
     , m_aniManager(nullptr)
     , m_shadowEffect(nullptr)
     , m_fadeOutAni(nullptr)
     , m_isDeleteOnClose(isDeleteOnClose)
     , m_isMacInputMethodEnabled(isMacInputMethodEnabled)
 {
+    if (!m_view) {
+        return;
+    }
+
     m_hBoxLayout = new QHBoxLayout(this);
     m_hBoxLayout->setContentsMargins(15, 8, 15, 20);
     m_hBoxLayout->addWidget(m_view);
-    
+
     setShadowEffect();
 
     setAttribute(Qt::WA_TranslucentBackground);
@@ -240,85 +303,143 @@ Flyout::Flyout(FlyoutViewBase* view, QWidget* parent,
 #endif
 }
 
+Flyout::~Flyout()
+{
+    // m_view, m_hBoxLayout 由 Qt 父子关系自动管理
+    // m_aniManager 由 Qt 父子关系自动管理 (parent 是 this)
+    // m_shadowEffect 由 Qt 自动管理
+    // m_fadeOutAni 由 Qt 父子关系自动管理 (parent 是 this)
+}
+
 bool Flyout::eventFilter(QObject* watched, QEvent* event)
 {
 #ifdef Q_OS_MAC
-    if (m_isMacInputMethodEnabled && isVisible() && event->type() == QEvent::MouseButtonPress) {
+    if (!m_isMacInputMethodEnabled) {
+        return QWidget::eventFilter(watched, event);
+    }
+
+    if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        if (!rect().contains(mapFromGlobal(mouseEvent->globalPos()))) {
+        if (!this->geometry().contains(mouseEvent->globalPosition().toPoint())) {
             close();
         }
     }
+#else
+    Q_UNUSED(watched);
+    Q_UNUSED(event);
 #endif
-    return QWidget::eventFilter(watched, event);
-}
 
-void Flyout::setShadowEffect(int blurRadius, const QPoint& offset)
-{
-    QColor color = Theme::instance()->isDarkTheme() ? QColor(0, 0, 0, 80) : QColor(0, 0, 0, 30);
-    m_shadowEffect = new QGraphicsDropShadowEffect(m_view);
-    m_shadowEffect->setBlurRadius(blurRadius);
-    m_shadowEffect->setOffset(offset);
-    m_shadowEffect->setColor(color);
-    m_view->setGraphicsEffect(m_shadowEffect);
+    return QWidget::eventFilter(watched, event);
 }
 
 void Flyout::closeEvent(QCloseEvent* event)
 {
+    emit closed();
+
     if (m_isDeleteOnClose) {
         deleteLater();
     }
 
     QWidget::closeEvent(event);
-    emit closed();
 }
 
 void Flyout::showEvent(QShowEvent* event)
 {
-    activateWindow();
     QWidget::showEvent(event);
+
+    if (m_view) {
+        m_view->adjustSize();
+    }
+}
+
+void Flyout::setShadowEffect(int blurRadius, const QPoint& offset)
+{
+    if (!m_view) {
+        return;
+    }
+
+    m_shadowEffect = new QGraphicsDropShadowEffect(this);
+    m_shadowEffect->setBlurRadius(blurRadius);
+    m_shadowEffect->setOffset(offset);
+    m_shadowEffect->setColor(QColor(0, 0, 0, 50));
+    m_view->setGraphicsEffect(m_shadowEffect);
 }
 
 void Flyout::exec(const QPoint& pos, FlyoutAnimationType aniType)
 {
-    m_aniManager = FlyoutAnimationManager::make(aniType, this);
-    show();
-    m_aniManager->exec(pos);
-}
-
-Flyout* Flyout::make(FlyoutViewBase* view, QWidget* target, QWidget* parent,
-                     FlyoutAnimationType aniType, bool isDeleteOnClose,
-                     bool isMacInputMethodEnabled)
-{
-    Flyout* w = new Flyout(view, parent, isDeleteOnClose, isMacInputMethodEnabled);
-
-    if (!target) {
-        return w;
+    // 清理之前的动画管理器
+    if (m_aniManager) {
+        m_aniManager->deleteLater();
+        m_aniManager = nullptr;
     }
 
-    w->show();
-
-    QPoint pos = FlyoutAnimationManager::make(aniType, w)->position(target);
-    w->exec(pos, aniType);
-    return w;
+    m_aniManager = FlyoutAnimationManager::make(aniType, this);
+    if (m_aniManager) {
+        m_aniManager->exec(pos);
+    }
 }
 
-Flyout* Flyout::create(const QString& title, const QString& content,
-                       const QIcon& icon, const QPixmap& image,
-                       bool isClosable, QWidget* target, QWidget* parent,
-                       FlyoutAnimationType aniType, bool isDeleteOnClose,
+Flyout* Flyout::make(FlyoutViewBase* view,
+                     QWidget* target,
+                     QWidget* parent,
+                     FlyoutAnimationType aniType,
+                     bool isDeleteOnClose,
+                     bool isMacInputMethodEnabled)
+{
+    if (!view) {
+        return nullptr;
+    }
+
+    Flyout* flyout = new Flyout(view, parent, isDeleteOnClose, isMacInputMethodEnabled);
+
+    if (!target) {
+        return flyout;
+    }
+
+    flyout->show();
+
+    FlyoutAnimationManager* manager = FlyoutAnimationManager::make(aniType, flyout);
+    if (manager) {
+        QPoint pos = manager->position(target);
+        flyout->exec(pos, aniType);
+        manager->deleteLater();
+    }
+
+    return flyout;
+}
+
+Flyout* Flyout::create(const QString& title,
+                       const QString& content,
+                       const QIcon& icon,
+                       const QPixmap& image,
+                       bool isClosable,
+                       QWidget* target,
+                       QWidget* parent,
+                       FlyoutAnimationType aniType,
+                       bool isDeleteOnClose,
                        bool isMacInputMethodEnabled)
 {
     FlyoutView* view = new FlyoutView(title, content, icon, image, isClosable);
-    Flyout* w = make(view, target, parent, aniType, isDeleteOnClose, isMacInputMethodEnabled);
-    connect(view, &FlyoutView::closed, w, &Flyout::close);
-    return w;
+    Flyout* flyout = make(view, target, parent, aniType, isDeleteOnClose, isMacInputMethodEnabled);
+
+    if (flyout && view) {
+        connect(view, &FlyoutView::closed, flyout, &Flyout::close);
+    }
+
+    return flyout;
 }
 
 void Flyout::fadeOut()
 {
+    // 清理之前的淡出动画
+    if (m_fadeOutAni) {
+        m_fadeOutAni->stop();
+        m_fadeOutAni->deleteLater();
+    }
+
     m_fadeOutAni = new QPropertyAnimation(this, "windowOpacity", this);
     connect(m_fadeOutAni, &QPropertyAnimation::finished, this, &Flyout::close);
+
     m_fadeOutAni->setStartValue(1.0);
     m_fadeOutAni->setEndValue(0.0);
     m_fadeOutAni->setDuration(120);
@@ -331,7 +452,14 @@ void Flyout::fadeOut()
 FlyoutAnimationManager::FlyoutAnimationManager(Flyout* flyout)
     : QObject(flyout)
     , m_flyout(flyout)
+    , m_aniGroup(nullptr)
+    , m_slideAni(nullptr)
+    , m_opacityAni(nullptr)
 {
+    if (!m_flyout) {
+        return;
+    }
+
     m_aniGroup = new QParallelAnimationGroup(this);
     m_slideAni = new QPropertyAnimation(flyout, "pos", this);
     m_opacityAni = new QPropertyAnimation(flyout, "windowOpacity", this);
@@ -344,36 +472,45 @@ FlyoutAnimationManager::FlyoutAnimationManager(Flyout* flyout)
 
     m_slideAni->setEasingCurve(QEasingCurve::OutQuad);
     m_opacityAni->setEasingCurve(QEasingCurve::OutQuad);
-    
+
     m_aniGroup->addAnimation(m_slideAni);
     m_aniGroup->addAnimation(m_opacityAni);
 }
 
 void FlyoutAnimationManager::exec(const QPoint& pos)
 {
-    // 基类实现为空，由子类重写
     Q_UNUSED(pos);
+    // 基类实现为空，由子类重写
 }
 
 QPoint FlyoutAnimationManager::position(QWidget* target)
 {
-    // 基类实现为空，由子类重写
     Q_UNUSED(target);
+    // 基类实现为空，由子类重写
     return QPoint();
 }
 
 QPoint FlyoutAnimationManager::adjustPosition(const QPoint& pos)
 {
+    if (!m_flyout) {
+        return pos;
+    }
+
     QRect rect = Screen::getCurrentScreenGeometry();
     int w = m_flyout->sizeHint().width() + 5;
     int h = m_flyout->sizeHint().height();
     int x = qMax(rect.left(), qMin(pos.x(), rect.right() - w));
     int y = qMax(rect.top(), qMin(pos.y() - 4, rect.bottom() - h + 5));
+
     return QPoint(x, y);
 }
 
 FlyoutAnimationManager* FlyoutAnimationManager::make(FlyoutAnimationType aniType, Flyout* flyout)
 {
+    if (!flyout) {
+        return nullptr;
+    }
+
     switch (aniType) {
         case FlyoutAnimationType::PULL_UP:
             return new PullUpFlyoutAnimationManager(flyout);
@@ -402,15 +539,24 @@ PullUpFlyoutAnimationManager::PullUpFlyoutAnimationManager(Flyout* flyout)
 
 QPoint PullUpFlyoutAnimationManager::position(QWidget* target)
 {
+    if (!target || !m_flyout || !m_flyout->layout()) {
+        return QPoint();
+    }
+
     QPoint pos = target->mapToGlobal(QPoint());
     int x = pos.x() + target->width() / 2 - m_flyout->sizeHint().width() / 2;
-    int y = pos.y() - m_flyout->sizeHint().height() + 
+    int y = pos.y() - m_flyout->sizeHint().height() +
             m_flyout->layout()->contentsMargins().bottom();
+
     return QPoint(x, y);
 }
 
 void PullUpFlyoutAnimationManager::exec(const QPoint& pos)
 {
+    if (!m_slideAni || !m_aniGroup) {
+        return;
+    }
+
     QPoint adjustedPos = adjustPosition(pos);
     m_slideAni->setStartValue(adjustedPos + QPoint(0, 8));
     m_slideAni->setEndValue(adjustedPos);
@@ -427,14 +573,23 @@ DropDownFlyoutAnimationManager::DropDownFlyoutAnimationManager(Flyout* flyout)
 
 QPoint DropDownFlyoutAnimationManager::position(QWidget* target)
 {
+    if (!target || !m_flyout || !m_flyout->layout()) {
+        return QPoint();
+    }
+
     QPoint pos = target->mapToGlobal(QPoint(0, target->height()));
     int x = pos.x() + target->width() / 2 - m_flyout->sizeHint().width() / 2;
     int y = pos.y() - m_flyout->layout()->contentsMargins().top() + 8;
+
     return QPoint(x, y);
 }
 
 void DropDownFlyoutAnimationManager::exec(const QPoint& pos)
 {
+    if (!m_slideAni || !m_aniGroup) {
+        return;
+    }
+
     QPoint adjustedPos = adjustPosition(pos);
     m_slideAni->setStartValue(adjustedPos - QPoint(0, 8));
     m_slideAni->setEndValue(adjustedPos);
@@ -451,15 +606,24 @@ SlideLeftFlyoutAnimationManager::SlideLeftFlyoutAnimationManager(Flyout* flyout)
 
 QPoint SlideLeftFlyoutAnimationManager::position(QWidget* target)
 {
+    if (!target || !m_flyout || !m_flyout->layout()) {
+        return QPoint();
+    }
+
     QPoint pos = target->mapToGlobal(QPoint(0, 0));
     int x = pos.x() - m_flyout->sizeHint().width() + 8;
     int y = pos.y() - m_flyout->sizeHint().height() / 2 + target->height() / 2 +
             m_flyout->layout()->contentsMargins().top();
+
     return QPoint(x, y);
 }
 
 void SlideLeftFlyoutAnimationManager::exec(const QPoint& pos)
 {
+    if (!m_slideAni || !m_aniGroup) {
+        return;
+    }
+
     QPoint adjustedPos = adjustPosition(pos);
     m_slideAni->setStartValue(adjustedPos + QPoint(8, 0));
     m_slideAni->setEndValue(adjustedPos);
@@ -476,15 +640,24 @@ SlideRightFlyoutAnimationManager::SlideRightFlyoutAnimationManager(Flyout* flyou
 
 QPoint SlideRightFlyoutAnimationManager::position(QWidget* target)
 {
+    if (!target || !m_flyout || !m_flyout->layout()) {
+        return QPoint();
+    }
+
     QPoint pos = target->mapToGlobal(QPoint(0, 0));
     int x = pos.x() + target->width() - 8;
     int y = pos.y() - m_flyout->sizeHint().height() / 2 + target->height() / 2 +
             m_flyout->layout()->contentsMargins().top();
+
     return QPoint(x, y);
 }
 
 void SlideRightFlyoutAnimationManager::exec(const QPoint& pos)
 {
+    if (!m_slideAni || !m_aniGroup) {
+        return;
+    }
+
     QPoint adjustedPos = adjustPosition(pos);
     m_slideAni->setStartValue(adjustedPos - QPoint(8, 0));
     m_slideAni->setEndValue(adjustedPos);
@@ -501,15 +674,24 @@ FadeInFlyoutAnimationManager::FadeInFlyoutAnimationManager(Flyout* flyout)
 
 QPoint FadeInFlyoutAnimationManager::position(QWidget* target)
 {
+    if (!target || !m_flyout || !m_flyout->layout()) {
+        return QPoint();
+    }
+
     QPoint pos = target->mapToGlobal(QPoint());
     int x = pos.x() + target->width() / 2 - m_flyout->sizeHint().width() / 2;
-    int y = pos.y() - m_flyout->sizeHint().height() + 
+    int y = pos.y() - m_flyout->sizeHint().height() +
             m_flyout->layout()->contentsMargins().bottom();
+
     return QPoint(x, y);
 }
 
 void FadeInFlyoutAnimationManager::exec(const QPoint& pos)
 {
+    if (!m_flyout || !m_slideAni || !m_aniGroup) {
+        return;
+    }
+
     m_flyout->move(adjustPosition(pos));
     m_aniGroup->removeAnimation(m_slideAni);
     m_aniGroup->start();
@@ -525,12 +707,20 @@ DummyFlyoutAnimationManager::DummyFlyoutAnimationManager(Flyout* flyout)
 
 QPoint DummyFlyoutAnimationManager::position(QWidget* target)
 {
+    if (!target || !m_flyout || !m_flyout->layout()) {
+        return QPoint();
+    }
+
     QMargins m = m_flyout->layout()->contentsMargins();
-    return target->mapToGlobal(QPoint(-m.left(), 
+    return target->mapToGlobal(QPoint(-m.left(),
                                      -m_flyout->sizeHint().height() + m.bottom() - 8));
 }
 
 void DummyFlyoutAnimationManager::exec(const QPoint& pos)
 {
+    if (!m_flyout) {
+        return;
+    }
+
     m_flyout->move(adjustPosition(pos));
 }

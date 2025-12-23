@@ -1,9 +1,17 @@
 ﻿#include "TeachingTip.h"
+
 #include <QApplication>
 #include <QScreen>
 #include <QCursor>
 #include <QTimer>
+#include <QPainter>
 #include <QPainterPath>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPropertyAnimation>
+#include <QGraphicsDropShadowEffect>
+#include <QIcon>
+#include <QPixmap>
 
 #include "Theme.h"
 #include "Screen.h"
@@ -12,11 +20,16 @@
 // ============================================================================
 // TeachingTipView 实现
 // ============================================================================
-TeachingTipView::TeachingTipView(const QString& title, const QString& content,
-                                 const QIcon& icon, const QPixmap& image,
-                                 bool isClosable, TeachingTipTailPosition tailPosition,
+TeachingTipView::TeachingTipView(const QString& title,
+                                 const QString& content,
+                                 const QIcon& icon,
+                                 const QPixmap& image,
+                                 bool isClosable,
+                                 TeachingTipTailPosition tailPosition,
                                  QWidget* parent)
     : FlyoutView(title, content, icon, image, isClosable, parent)
+    , m_manager(nullptr)
+    , m_hBoxLayout(nullptr)
 {
     m_manager = TeachingTipManager::make(tailPosition);
     m_hBoxLayout = new QHBoxLayout();
@@ -31,6 +44,10 @@ void TeachingTipView::paintEvent(QPaintEvent* event)
 
 void TeachingTipView::adjustImage()
 {
+    if (!m_manager || !imageLabel() || !vBoxLayout()) {
+        return;
+    }
+
     ImagePosition pos = m_manager->imagePosition();
     if (pos == ImagePosition::TOP || pos == ImagePosition::BOTTOM) {
         FlyoutView::adjustImage();
@@ -43,6 +60,10 @@ void TeachingTipView::adjustImage()
 
 void TeachingTipView::addImageToLayout()
 {
+    if (!imageLabel() || !m_manager || !vBoxLayout() || !viewLayout() || !m_hBoxLayout) {
+        return;
+    }
+
     imageLabel()->setHidden(imageLabel()->isNull());
     ImagePosition pos = m_manager->imagePosition();
 
@@ -55,20 +76,26 @@ void TeachingTipView::addImageToLayout()
         vBoxLayout()->addWidget(imageLabel());
     }
     else if (pos == ImagePosition::LEFT) {
-        vBoxLayout()->removeItem(vBoxLayout()->itemAt(0));
-        hBoxLayout()->addLayout(viewLayout());
-        vBoxLayout()->addLayout(hBoxLayout());
+        QLayoutItem* item = vBoxLayout()->itemAt(0);
+        if (item) {
+            vBoxLayout()->removeItem(item);
+        }
+        m_hBoxLayout->addLayout(viewLayout());
+        vBoxLayout()->addLayout(m_hBoxLayout);
 
         imageLabel()->setBorderRadius(8, 0, 8, 0);
-        hBoxLayout()->insertWidget(0, imageLabel());
+        m_hBoxLayout->insertWidget(0, imageLabel());
     }
     else if (pos == ImagePosition::RIGHT) {
-        vBoxLayout()->removeItem(vBoxLayout()->itemAt(0));
-        hBoxLayout()->addLayout(viewLayout());
-        vBoxLayout()->addLayout(hBoxLayout());
+        QLayoutItem* item = vBoxLayout()->itemAt(0);
+        if (item) {
+            vBoxLayout()->removeItem(item);
+        }
+        m_hBoxLayout->addLayout(viewLayout());
+        vBoxLayout()->addLayout(m_hBoxLayout);
 
         imageLabel()->setBorderRadius(0, 8, 0, 8);
-        hBoxLayout()->addWidget(imageLabel());
+        m_hBoxLayout->addWidget(imageLabel());
     }
 }
 
@@ -79,19 +106,33 @@ TeachTipBubble::TeachTipBubble(FlyoutViewBase* view,
                                TeachingTipTailPosition tailPosition,
                                QWidget* parent)
     : QWidget(parent)
+    , m_manager(nullptr)
+    , m_hBoxLayout(nullptr)
     , m_view(view)
 {
     m_manager = TeachingTipManager::make(tailPosition);
     m_hBoxLayout = new QHBoxLayout(this);
-    
-    m_manager->doLayout(this);
-    m_hBoxLayout->addWidget(m_view);
+
+    if (m_manager) {
+        m_manager->doLayout(this);
+    }
+
+    if (m_hBoxLayout && m_view) {
+        m_hBoxLayout->addWidget(m_view);
+    }
 }
 
 void TeachTipBubble::setView(QWidget* view)
 {
-    m_hBoxLayout->removeWidget(m_view);
-    m_view->deleteLater();
+    if (!m_hBoxLayout || !view) {
+        return;
+    }
+
+    if (m_view) {
+        m_hBoxLayout->removeWidget(m_view);
+        m_view->deleteLater();
+    }
+
     m_view = qobject_cast<FlyoutViewBase*>(view);
     m_hBoxLayout->addWidget(view);
 }
@@ -99,6 +140,10 @@ void TeachTipBubble::setView(QWidget* view)
 void TeachTipBubble::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
+
+    if (!m_manager) {
+        return;
+    }
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -113,12 +158,20 @@ void TeachTipBubble::paintEvent(QPaintEvent* event)
 // ============================================================================
 // TeachingTip 实现
 // ============================================================================
-TeachingTip::TeachingTip(FlyoutViewBase* view, QWidget* target, int duration,
-                         TeachingTipTailPosition tailPosition, QWidget* parent,
+TeachingTip::TeachingTip(FlyoutViewBase* view,
+                         QWidget* target,
+                         int duration,
+                         TeachingTipTailPosition tailPosition,
+                         QWidget* parent,
                          bool isDeleteOnClose)
     : QWidget(parent)
     , target(target)
     , duration(duration)
+    , m_manager(nullptr)
+    , m_hBoxLayout(nullptr)
+    , m_opacityAni(nullptr)
+    , m_bubble(nullptr)
+    , m_shadowEffect(nullptr)
     , m_isDeleteOnClose(isDeleteOnClose)
 {
     m_manager = TeachingTipManager::make(tailPosition);
@@ -126,8 +179,11 @@ TeachingTip::TeachingTip(FlyoutViewBase* view, QWidget* target, int duration,
     m_opacityAni = new QPropertyAnimation(this, "windowOpacity", this);
     m_bubble = new TeachTipBubble(view, tailPosition, this);
 
-    m_hBoxLayout->setContentsMargins(15, 8, 15, 20);
-    m_hBoxLayout->addWidget(m_bubble);
+    if (m_hBoxLayout) {
+        m_hBoxLayout->setContentsMargins(15, 8, 15, 20);
+        m_hBoxLayout->addWidget(m_bubble);
+    }
+
     setShadowEffect();
 
     // 设置样式
@@ -141,7 +197,14 @@ TeachingTip::TeachingTip(FlyoutViewBase* view, QWidget* target, int duration,
 
 void TeachingTip::setShadowEffect(int blurRadius, const QPoint& offset)
 {
-    QColor color = Theme::instance()->isDarkTheme() ? QColor(0, 0, 0, 80) : QColor(0, 0, 0, 30);
+    if (!m_bubble) {
+        return;
+    }
+
+    QColor color = Theme::instance()->isDarkTheme()
+        ? QColor(0, 0, 0, 80)
+        : QColor(0, 0, 0, 30);
+
     m_shadowEffect = new QGraphicsDropShadowEffect(m_bubble);
     m_shadowEffect->setBlurRadius(blurRadius);
     m_shadowEffect->setOffset(offset);
@@ -151,6 +214,10 @@ void TeachingTip::setShadowEffect(int blurRadius, const QPoint& offset)
 
 void TeachingTip::fadeOut()
 {
+    if (!m_opacityAni) {
+        return;
+    }
+
     m_opacityAni->setDuration(167);
     m_opacityAni->setStartValue(1.0);
     m_opacityAni->setEndValue(0.0);
@@ -164,14 +231,19 @@ void TeachingTip::showEvent(QShowEvent* event)
         QTimer::singleShot(duration, this, &TeachingTip::fadeOut);
     }
 
-    move(m_manager->position(this));
+    if (m_manager) {
+        move(m_manager->position(this));
+    }
+
     adjustSize();
-    
-    m_opacityAni->setDuration(167);
-    m_opacityAni->setStartValue(0.0);
-    m_opacityAni->setEndValue(1.0);
-    m_opacityAni->start();
-    
+
+    if (m_opacityAni) {
+        m_opacityAni->setDuration(167);
+        m_opacityAni->setStartValue(0.0);
+        m_opacityAni->setEndValue(1.0);
+        m_opacityAni->start();
+    }
+
     QWidget::showEvent(event);
 }
 
@@ -185,11 +257,15 @@ void TeachingTip::closeEvent(QCloseEvent* event)
 
 bool TeachingTip::eventFilter(QObject* obj, QEvent* event)
 {
-    QWidget *p = qobject_cast<QWidget*>(parent());
+    QWidget* p = qobject_cast<QWidget*>(parent());
     if (p && obj == p->window()) {
         QEvent::Type type = event->type();
-        if (type == QEvent::Resize || type == QEvent::WindowStateChange || type == QEvent::Move) {
-            move(m_manager->position(this));
+        if (type == QEvent::Resize ||
+            type == QEvent::WindowStateChange ||
+            type == QEvent::Move) {
+            if (m_manager) {
+                move(m_manager->position(this));
+            }
         }
     }
     return QWidget::eventFilter(obj, event);
@@ -197,39 +273,70 @@ bool TeachingTip::eventFilter(QObject* obj, QEvent* event)
 
 void TeachingTip::setView(FlyoutViewBase* view)
 {
-    m_bubble->setView(view);
+    if (m_bubble) {
+        m_bubble->setView(view);
+    }
 }
 
 void TeachingTip::addWidget(QWidget* widget, int stretch, Qt::Alignment align)
 {
-    view()->addWidget(widget, stretch, align);
+    FlyoutViewBase* v = view();
+    if (v && widget) {
+        v->addWidget(widget, stretch, align);
+    }
 }
 
-TeachingTip* TeachingTip::make(FlyoutViewBase* view, QWidget* target, int duration,
-                               TeachingTipTailPosition tailPosition, QWidget* parent,
+TeachingTip* TeachingTip::make(FlyoutViewBase* view,
+                               QWidget* target,
+                               int duration,
+                               TeachingTipTailPosition tailPosition,
+                               QWidget* parent,
                                bool isDeleteOnClose)
 {
-    TeachingTip* w = new TeachingTip(view, target, duration, tailPosition, parent, isDeleteOnClose);
-    w->show();
-    return w;
+    if (!view || !target) {
+        return nullptr;
+    }
+
+    TeachingTip* tip = new TeachingTip(view, target, duration, tailPosition,
+                                       parent, isDeleteOnClose);
+    tip->show();
+    return tip;
 }
 
-TeachingTip* TeachingTip::create(QWidget* target, const QString& title, const QString& content,
-                                 const QIcon& icon, const QPixmap& image, bool isClosable,
-                                 int duration, TeachingTipTailPosition tailPosition,
-                                 QWidget* parent, bool isDeleteOnClose)
+TeachingTip* TeachingTip::create(QWidget* target,
+                                 const QString& title,
+                                 const QString& content,
+                                 const QIcon& icon,
+                                 const QPixmap& image,
+                                 bool isClosable,
+                                 int duration,
+                                 TeachingTipTailPosition tailPosition,
+                                 QWidget* parent,
+                                 bool isDeleteOnClose)
 {
-    TeachingTipView* view = new TeachingTipView(title, content, icon, image, isClosable, tailPosition);
-    TeachingTip* w = make(view, target, duration, tailPosition, parent, isDeleteOnClose);
-    connect(view, &TeachingTipView::closed, w, &TeachingTip::close);
-    return w;
+    if (!target) {
+        return nullptr;
+    }
+
+    TeachingTipView* view = new TeachingTipView(title, content, icon, image,
+                                                isClosable, tailPosition);
+    TeachingTip* tip = make(view, target, duration, tailPosition, parent, isDeleteOnClose);
+
+    if (tip && view) {
+        connect(view, &TeachingTipView::closed, tip, &TeachingTip::close);
+    }
+
+    return tip;
 }
 
 // ============================================================================
 // PopupTeachingTip 实现
 // ============================================================================
-PopupTeachingTip::PopupTeachingTip(FlyoutViewBase* view, QWidget* target, int duration,
-                                   TeachingTipTailPosition tailPosition, QWidget* parent,
+PopupTeachingTip::PopupTeachingTip(FlyoutViewBase* view,
+                                   QWidget* target,
+                                   int duration,
+                                   TeachingTipTailPosition tailPosition,
+                                   QWidget* parent,
                                    bool isDeleteOnClose)
     : TeachingTip(view, target, duration, tailPosition, parent, isDeleteOnClose)
 {
@@ -289,14 +396,14 @@ TeachingTipManager* TeachingTipManager::make(TeachingTipTailPosition position)
             return new LeftTailTeachingTipManager();
         case TeachingTipTailPosition::RIGHT:
             return new RightTailTeachingTipManager();
-        case TeachingTipTailPosition::TOP_RIGHT:
-            return new TopRightTailTeachingTipManager();
-        case TeachingTipTailPosition::BOTTOM_RIGHT:
-            return new BottomRightTailTeachingTipManager();
         case TeachingTipTailPosition::TOP_LEFT:
             return new TopLeftTailTeachingTipManager();
+        case TeachingTipTailPosition::TOP_RIGHT:
+            return new TopRightTailTeachingTipManager();
         case TeachingTipTailPosition::BOTTOM_LEFT:
             return new BottomLeftTailTeachingTipManager();
+        case TeachingTipTailPosition::BOTTOM_RIGHT:
+            return new BottomRightTailTeachingTipManager();
         case TeachingTipTailPosition::LEFT_TOP:
             return new LeftTopTailTeachingTipManager();
         case TeachingTipTailPosition::LEFT_BOTTOM:
@@ -306,7 +413,6 @@ TeachingTipManager* TeachingTipManager::make(TeachingTipTailPosition position)
         case TeachingTipTailPosition::RIGHT_BOTTOM:
             return new RightBottomTailTeachingTipManager();
         case TeachingTipTailPosition::NONE:
-            return new TeachingTipManager();
         default:
             return new TeachingTipManager();
     }
@@ -491,13 +597,17 @@ TopLeftTailTeachingTipManager::TopLeftTailTeachingTipManager(QObject* parent)
 
 void TopLeftTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip || !tip->hBoxLayout()) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pt = tip->hBoxLayout()->contentsMargins().top();
 
     QPainterPath path;
     path.addRoundedRect(1, pt, w - 2, h - pt - 1, 8, 8);
-    
+
     QPolygonF polygon;
     polygon << QPointF(20, pt) << QPointF(27, 1) << QPointF(34, pt);
     path.addPolygon(polygon);
@@ -507,10 +617,15 @@ void TopLeftTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 
 QPoint TopLeftTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QPoint p = target->mapToGlobal(QPoint(0, target->height()));
     int x = p.x() - tip->layout()->contentsMargins().left();
     int y = p.y() - tip->layout()->contentsMargins().top();
+
     return QPoint(x, y);
 }
 
@@ -524,13 +639,17 @@ TopRightTailTeachingTipManager::TopRightTailTeachingTipManager(QObject* parent)
 
 void TopRightTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip || !tip->hBoxLayout()) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pt = tip->hBoxLayout()->contentsMargins().top();
 
     QPainterPath path;
     path.addRoundedRect(1, pt, w - 2, h - pt - 1, 8, 8);
-    
+
     QPolygonF polygon;
     polygon << QPointF(w - 20, pt) << QPointF(w - 27, 1) << QPointF(w - 34, pt);
     path.addPolygon(polygon);
@@ -540,10 +659,15 @@ void TopRightTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter
 
 QPoint TopRightTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QPoint p = target->mapToGlobal(QPoint(target->width(), target->height()));
     int x = p.x() - tip->sizeHint().width() + tip->layout()->contentsMargins().left();
     int y = p.y() - tip->layout()->contentsMargins().top();
+
     return QPoint(x, y);
 }
 
@@ -557,13 +681,17 @@ BottomLeftTailTeachingTipManager::BottomLeftTailTeachingTipManager(QObject* pare
 
 void BottomLeftTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip || !tip->hBoxLayout()) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pb = tip->hBoxLayout()->contentsMargins().bottom();
 
     QPainterPath path;
     path.addRoundedRect(1, 1, w - 2, h - pb - 1, 8, 8);
-    
+
     QPolygonF polygon;
     polygon << QPointF(20, h - pb) << QPointF(27, h - 1) << QPointF(34, h - pb);
     path.addPolygon(polygon);
@@ -573,10 +701,15 @@ void BottomLeftTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& paint
 
 QPoint BottomLeftTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QPoint p = target->mapToGlobal(QPoint());
     int x = p.x() - tip->layout()->contentsMargins().left();
     int y = p.y() - tip->sizeHint().height() + tip->layout()->contentsMargins().bottom();
+
     return QPoint(x, y);
 }
 
@@ -590,15 +723,21 @@ BottomRightTailTeachingTipManager::BottomRightTailTeachingTipManager(QObject* pa
 
 void BottomRightTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip || !tip->hBoxLayout()) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pb = tip->hBoxLayout()->contentsMargins().bottom();
 
     QPainterPath path;
     path.addRoundedRect(1, 1, w - 2, h - pb - 1, 8, 8);
-    
+
     QPolygonF polygon;
-    polygon << QPointF(w - 20, h - pb) << QPointF(w - 27, h - 1) << QPointF(w - 34, h - pb);
+    polygon << QPointF(w - 20, h - pb)
+            << QPointF(w - 27, h - 1)
+            << QPointF(w - 34, h - pb);
     path.addPolygon(polygon);
 
     painter.drawPath(path.simplified());
@@ -606,10 +745,15 @@ void BottomRightTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& pain
 
 QPoint BottomRightTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QPoint p = target->mapToGlobal(QPoint(target->width(), 0));
     int x = p.x() - tip->sizeHint().width() + tip->layout()->contentsMargins().left();
     int y = p.y() - tip->sizeHint().height() + tip->layout()->contentsMargins().bottom();
+
     return QPoint(x, y);
 }
 
@@ -628,13 +772,17 @@ ImagePosition LeftTopTailTeachingTipManager::imagePosition() const
 
 void LeftTopTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pl = 8;
 
     QPainterPath path;
     path.addRoundedRect(pl, 1, w - pl - 2, h - 2, 8, 8);
-    
+
     QPolygonF polygon;
     polygon << QPointF(pl, 10) << QPointF(1, 17) << QPointF(pl, 24);
     path.addPolygon(polygon);
@@ -644,11 +792,16 @@ void LeftTopTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 
 QPoint LeftTopTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QMargins m = tip->layout()->contentsMargins();
     QPoint p = target->mapToGlobal(QPoint(target->width(), 0));
     int x = p.x() - m.left();
     int y = p.y() - m.top();
+
     return QPoint(x, y);
 }
 
@@ -667,13 +820,17 @@ ImagePosition LeftBottomTailTeachingTipManager::imagePosition() const
 
 void LeftBottomTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pl = 9;
 
     QPainterPath path;
     path.addRoundedRect(pl, 1, w - pl - 1, h - 2, 8, 8);
-    
+
     QPolygonF polygon;
     polygon << QPointF(pl, h - 10) << QPointF(1, h - 17) << QPointF(pl, h - 24);
     path.addPolygon(polygon);
@@ -683,11 +840,16 @@ void LeftBottomTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& paint
 
 QPoint LeftBottomTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QMargins m = tip->layout()->contentsMargins();
     QPoint p = target->mapToGlobal(QPoint(target->width(), target->height()));
     int x = p.x() - m.left();
     int y = p.y() - tip->sizeHint().height() + m.bottom();
+
     return QPoint(x, y);
 }
 
@@ -706,13 +868,17 @@ ImagePosition RightTopTailTeachingTipManager::imagePosition() const
 
 void RightTopTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pr = 8;
 
     QPainterPath path;
     path.addRoundedRect(1, 1, w - pr - 1, h - 2, 8, 8);
-    
+
     QPolygonF polygon;
     polygon << QPointF(w - pr, 10) << QPointF(w - 1, 17) << QPointF(w - pr, 24);
     path.addPolygon(polygon);
@@ -722,11 +888,16 @@ void RightTopTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter
 
 QPoint RightTopTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QMargins m = tip->layout()->contentsMargins();
     QPoint p = target->mapToGlobal(QPoint(0, 0));
     int x = p.x() - tip->sizeHint().width() + m.right();
     int y = p.y() - m.top();
+
     return QPoint(x, y);
 }
 
@@ -745,6 +916,10 @@ ImagePosition RightBottomTailTeachingTipManager::imagePosition() const
 
 void RightBottomTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 {
+    if (!tip) {
+        return;
+    }
+
     int w = tip->width();
     int h = tip->height();
     int pr = 8;
@@ -761,10 +936,15 @@ void RightBottomTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& pain
 
 QPoint RightBottomTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->target || !tip->layout()) {
+        return QPoint();
+    }
+
     QWidget* target = tip->target;
     QMargins m = tip->layout()->contentsMargins();
     QPoint p = target->mapToGlobal(QPoint(0, target->height()));
     int x = p.x() - tip->sizeHint().width() + m.right();
     int y = p.y() - tip->sizeHint().height() + m.bottom();
+
     return QPoint(x, y);
 }
