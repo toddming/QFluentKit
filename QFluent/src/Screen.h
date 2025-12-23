@@ -1,6 +1,4 @@
-#ifndef SCREEN_H
-#define SCREEN_H
-
+﻿#pragma once
 #include <QRect>
 
 class QScreen;
@@ -20,5 +18,3 @@ public:
      */
     static QRect getCurrentScreenGeometry(bool available = true);
 };
-
-#endif // SCREEN_H

@@ -1,5 +1,4 @@
-﻿#ifndef ICONWIDGET_H
-#define ICONWIDGET_H
+﻿#pragma once
 
 #include <QWidget>
 
@@ -37,5 +36,3 @@ private:
     QScopedPointer<IconWidgetPrivate> d_ptr;
 
 };
-
-#endif // ICONWIDGET_H

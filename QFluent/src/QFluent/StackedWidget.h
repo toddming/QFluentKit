@@ -1,5 +1,4 @@
-﻿#ifndef STACKEDWIDGET_H
-#define STACKEDWIDGET_H
+﻿#pragma once
 
 #include <QStackedWidget>
 #include <QEasingCurve>
@@ -109,5 +108,3 @@ private:
     QHBoxLayout *hBoxLayout;
     PopUpAniStackedWidget *view;
 };
-
-#endif // STACKEDWIDGET_H

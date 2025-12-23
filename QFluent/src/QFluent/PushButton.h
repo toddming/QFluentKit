@@ -1,5 +1,4 @@
-﻿#ifndef PUSHBUTTON_H
-#define PUSHBUTTON_H
+﻿#pragma once
 
 #include <memory>
 #include <QPointer>
@@ -187,6 +186,3 @@ protected:
 };
 
 
-
-
-#endif // PUSHBUTTON_H

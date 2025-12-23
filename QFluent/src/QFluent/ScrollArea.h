@@ -1,5 +1,4 @@
-﻿#ifndef SCROLLAREA_H
-#define SCROLLAREA_H
+﻿#pragma once
 
 #include <QEasingCurve>
 #include <QScrollArea>
@@ -66,4 +65,3 @@ private:
     SmoothScrollDelegate *m_delegate;
 };
 
-#endif // SCROLLAREA_H

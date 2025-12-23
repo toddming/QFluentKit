@@ -1,5 +1,4 @@
-﻿#ifndef TEXTWRAPPRIVATE_H
-#define TEXTWRAPPRIVATE_H
+﻿#pragma once
 
 #include <QString>
 #include <QVector>
@@ -72,5 +71,3 @@ private:
 uint qHash(const TextWrapPrivate::WidthKey &key, uint seed = 0);
 uint qHash(const TextWrapPrivate::TokenizeKey &key, uint seed = 0);
 uint qHash(const TextWrapPrivate::SplitKey &key, uint seed = 0);
-
-#endif // TEXTWRAPPRIVATE_H

@@ -1,5 +1,4 @@
-﻿#ifndef RADIOBUTTON_H
-#define RADIOBUTTON_H
+﻿#pragma once
 
 #include <QRadioButton>
 
@@ -32,4 +31,3 @@ private:
     bool isHover_;
 };
 
-#endif // RADIOBUTTON_H

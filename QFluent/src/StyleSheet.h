@@ -1,5 +1,4 @@
-﻿#ifndef STYLESHEET_H
-#define STYLESHEET_H
+﻿#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -200,4 +199,3 @@ public:
                              bool registerWidget = true);
 };
 
-#endif // STYLESHEET_H

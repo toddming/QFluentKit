@@ -1,5 +1,4 @@
-﻿#ifndef FLUENTWINDOW_H
-#define FLUENTWINDOW_H
+﻿#pragma once
 
 #include <QMainWindow>
 
@@ -46,4 +45,3 @@ private:
     QScopedPointer<FluentWindowPrivate> d_ptr;
 
 };
-#endif // FLUENTWINDOW_H

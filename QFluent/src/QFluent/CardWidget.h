@@ -1,5 +1,4 @@
-﻿#ifndef CARDWIDGET_H
-#define CARDWIDGET_H
+﻿#pragma once
 
 #include "Animation.h"
 #include <QPainter>
@@ -39,4 +38,3 @@ private:
     int _borderRadius;
 };
 
-#endif // CARDWIDGET_H

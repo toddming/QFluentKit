@@ -1,5 +1,4 @@
-﻿#ifndef SMOOTH_SCROLL_H
-#define SMOOTH_SCROLL_H
+﻿#pragma once
 
 #include <QObject>
 #include <deque>
@@ -78,4 +77,3 @@ private:
     Fluent::SmoothMode m_smoothMode;
 };
 
-#endif // SMOOTH_SCROLL_H

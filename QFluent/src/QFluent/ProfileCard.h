@@ -1,5 +1,4 @@
-﻿#ifndef PROFILECARD_H
-#define PROFILECARD_H
+﻿#pragma once
 
 #include <QWidget>
 #include "FluentGlobal.h"
@@ -24,5 +23,3 @@ private:
     CaptionLabel *emailLabel;
     HyperlinkButton *logoutButton;
 };
-
-#endif // PROFILECARD_H

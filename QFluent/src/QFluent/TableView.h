@@ -1,5 +1,4 @@
-﻿#ifndef TABLE_VIEW_H
-#define TABLE_VIEW_H
+﻿#pragma once
 
 #include <QTableView>
 #include <QTableWidget>
@@ -238,4 +237,3 @@ public:
     explicit TableView(QWidget* parent = nullptr);
 };
 
-#endif // TABLE_VIEW_H

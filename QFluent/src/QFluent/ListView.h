@@ -1,5 +1,4 @@
-#ifndef LIST_VIEW_H
-#define LIST_VIEW_H
+﻿#pragma once
 
 #include <QSet>
 #include <QList>
@@ -193,5 +192,3 @@ class QFLUENT_EXPORT ListView : public ListBase<QListView> {
 public:
     explicit ListView(QWidget* parent = nullptr);
 };
-
-#endif // LIST_VIEW_H

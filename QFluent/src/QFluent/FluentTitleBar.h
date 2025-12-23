@@ -1,5 +1,4 @@
-﻿#ifndef FLUENTTITLEBAR_H
-#define FLUENTTITLEBAR_H
+﻿#pragma once
 
 #include <QFrame>
 #include <QAbstractButton>
@@ -51,6 +50,3 @@ private:
 
 };
 
-
-
-#endif // FLUENTTITLEBAR_H

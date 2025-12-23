@@ -1,6 +1,4 @@
-﻿#ifndef FLUENTICON_H
-#define FLUENTICON_H
-
+﻿#pragma once
 #include <QIcon>
 #include <QIconEngine>
 #include <QColor>
@@ -330,5 +328,3 @@ public:
 private:
     QSharedPointer<FluentIconBase> m_fluentIcon;
 };
-
-#endif // FLUENTICON_H

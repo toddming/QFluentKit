@@ -1,5 +1,4 @@
-﻿#ifndef SCROLL_BAR_H
-#define SCROLL_BAR_H
+﻿#pragma once
 
 #include <QWidget>
 #include <QToolButton>
@@ -260,4 +259,3 @@ private:
     SmoothScroll* m_horizontalSmoothScroll{nullptr};
 };
 
-#endif // SCROLL_BAR_H

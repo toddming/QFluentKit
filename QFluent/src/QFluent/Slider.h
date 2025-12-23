@@ -1,6 +1,4 @@
-﻿#ifndef SLIDER_H
-#define SLIDER_H
-
+﻿#pragma once
 #include <QWidget>
 #include <QSlider>
 #include <QColor>
@@ -135,5 +133,3 @@ public:
 private:
     QMap<QString, QVariant> m_config;
 };
-
-#endif // SLIDER_H

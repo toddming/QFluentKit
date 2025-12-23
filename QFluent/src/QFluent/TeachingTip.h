@@ -1,5 +1,4 @@
-﻿#ifndef TEACHING_TIP_H
-#define TEACHING_TIP_H
+﻿#pragma once
 
 #include "Flyout.h"
 #include "FluentGlobal.h"
@@ -335,5 +334,3 @@ public:
 protected:
     QPoint pos(TeachingTip* tip) override;
 };
-
-#endif // TEACHING_TIP_H

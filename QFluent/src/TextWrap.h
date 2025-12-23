@@ -1,5 +1,4 @@
-﻿#ifndef TEXTWRAP_H
-#define TEXTWRAP_H
+﻿#pragma once
 
 #include <QString>
 #include <QScopedPointer>
@@ -30,4 +29,3 @@ private:
     QScopedPointer<TextWrapPrivate> d_ptr;
 };
 
-#endif // TEXTWRAP_H

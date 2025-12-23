@@ -1,5 +1,4 @@
-﻿#ifndef PAGINATION_H
-#define PAGINATION_H
+﻿#pragma once
 
 #include <QFrame>
 #include "FluentGlobal.h"
@@ -101,5 +100,3 @@ private slots:
     /** 页码前进5 */
     void toNext5 ();
 };
-
-#endif // PAGINATION_H
