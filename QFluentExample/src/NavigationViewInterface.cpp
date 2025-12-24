@@ -22,6 +22,7 @@ QWidget* NavigationViewInterface::createPivotWidget()
     pivotView->setFixedHeight(200);
 
     pivotStacked = new StackedWidget(pivotView);
+    pivotStacked->setAnimationEnabled(false);
     pivotStacked->setStyleSheet(R"(
     StackedWidget {
         border-right: none;
@@ -69,6 +70,7 @@ QWidget* NavigationViewInterface::createTabWidget()
     tabView->setMinimumHeight(200);
 
     tabStacked = new StackedWidget(tabView);
+    tabStacked->setAnimationEnabled(false);
     tabStacked->setStyleSheet(R"(
     StackedWidget {
         border-right: none;

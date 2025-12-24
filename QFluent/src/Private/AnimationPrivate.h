@@ -4,132 +4,93 @@
 #include <QColor>
 #include <QPoint>
 #include <QMap>
-#include <QRectF>
 #include <functional>
+#include <QRectF>
+#include <Qt>
 
-// 前置声明
 class QGraphicsDropShadowEffect;
 class BackgroundColorObject;
 class FluentAnimationProperObject;
-class FluentAnimation;
 
-namespace Qt {
-enum Orientation;
-}
-
-/**
- * @brief AnimationBase的私有实现
- */
+// AnimationBasePrivate
 class AnimationBasePrivate {
 public:
-    AnimationBasePrivate() = default;
-    virtual ~AnimationBasePrivate() = default;
-
-    // 禁用拷贝和移动
-    AnimationBasePrivate(const AnimationBasePrivate &) = delete;
-    AnimationBasePrivate &operator=(const AnimationBasePrivate &) = delete;
-    AnimationBasePrivate(AnimationBasePrivate &&) = delete;
-    AnimationBasePrivate &operator=(AnimationBasePrivate &&) = delete;
+    AnimationBasePrivate() {}
+    virtual ~AnimationBasePrivate() {}
 };
 
-/**
- * @brief TranslateYAnimation的私有实现
- */
+// TranslateYAnimationPrivate
 class TranslateYAnimationPrivate : public AnimationBasePrivate {
 public:
-    TranslateYAnimationPrivate()
-        : m_yOffset(0.0f)
-        , m_maxOffset(2)
-        , m_animation(nullptr)
-    {}
+    TranslateYAnimationPrivate() : _y(0.0f), maxOffset(2), ani(nullptr) {}
 
-    ~TranslateYAnimationPrivate() override = default;
-
-    float m_yOffset;
-    int m_maxOffset;
-    QPropertyAnimation *m_animation;  // 由父对象管理生命周期
+    float _y;
+    int maxOffset;
+    QPropertyAnimation *ani;
 };
 
-/**
- * @brief BackgroundColorObject的私有实现
- */
+// BackgroundColorObjectPrivate
 class BackgroundColorObjectPrivate {
 public:
-    BackgroundColorObjectPrivate() = default;
-    ~BackgroundColorObjectPrivate() = default;
+    BackgroundColorObjectPrivate() {}
 
-    QColor m_backgroundColor;
+    QColor _backgroundColor;
 };
 
-/**
- * @brief BackgroundAnimationWidget的私有实现
- */
+// BackgroundAnimationWidgetPrivate
 class BackgroundAnimationWidgetPrivate {
 public:
     BackgroundAnimationWidgetPrivate()
         : m_isHover(false)
         , m_isPressed(false)
-        , m_backgroundColorObject(nullptr)
-        , m_backgroundColorAnimation(nullptr)
+        , bgColorObject(nullptr)
+        , backgroundColorAni(nullptr)
     {}
-
-    ~BackgroundAnimationWidgetPrivate() = default;
 
     bool m_isHover;
     bool m_isPressed;
-    BackgroundColorObject *m_backgroundColorObject;  // 由父对象管理生命周期
-    QPropertyAnimation *m_backgroundColorAnimation;  // 由父对象管理生命周期
+    BackgroundColorObject *bgColorObject;
+    QPropertyAnimation *backgroundColorAni;
 };
 
-/**
- * @brief DropShadowAnimation的私有实现
- */
+// DropShadowAnimationPrivate
 class DropShadowAnimationPrivate {
 public:
     DropShadowAnimationPrivate()
-        : m_normalColor(0, 0, 0, 0)
-        , m_hoverColor(0, 0, 0, 75)
-        , m_offset(0, 0)
-        , m_blurRadius(38)
-        , m_isHover(false)
-        , m_shadowEffect(nullptr)
+        : normalColor(0, 0, 0, 0)
+        , hoverColor(0, 0, 0, 75)
+        , offset(0, 0)
+        , blurRadius(38)
+        , isHover(false)
+        , shadowEffect(nullptr)
     {}
 
-    ~DropShadowAnimationPrivate() = default;
-
-    QColor m_normalColor;
-    QColor m_hoverColor;
-    QPoint m_offset;
-    int m_blurRadius;
-    bool m_isHover;
-    QGraphicsDropShadowEffect *m_shadowEffect;  // 由父对象管理生命周期
+    QColor normalColor;
+    QColor hoverColor;
+    QPoint offset;
+    int blurRadius;
+    bool isHover;
+    QGraphicsDropShadowEffect *shadowEffect;
 };
 
-/**
- * @brief FluentAnimation的私有实现
- */
+// FluentAnimationPrivate
 class FluentAnimationPrivate {
 public:
-    FluentAnimationPrivate() = default;
-    ~FluentAnimationPrivate() = default;
+    FluentAnimationPrivate() {}
 
-    // 注册表 - 用于创建不同类型的动画对象和属性对象
-    static QMap<int, std::function<FluentAnimationProperObject*(QObject*)>> propertyObjects;
-    static QMap<int, std::function<FluentAnimation*(QObject*)>> animations;
+    static QMap<int, std::function<FluentAnimationProperObject*(QObject*)>> objects;
+    static QMap<int, std::function<class FluentAnimation*(QObject*)>> animations;
 };
 
-/**
- * @brief ScaleSlideAnimation的私有实现
- */
+// ScaleSlideAnimationPrivate
 class ScaleSlideAnimationPrivate {
 public:
     ScaleSlideAnimationPrivate()
-        : m_orientation(Qt::Horizontal)
-        , m_geometry(0, 0, 16, 3)
+        : orient(Qt::Horizontal)
+        , _geometry(0, 0, 16, 3)
     {}
 
-    ~ScaleSlideAnimationPrivate() = default;
-
-    Qt::Orientation m_orientation;
-    QRectF m_geometry;
+    Qt::Orientation orient;
+    QRectF _geometry;
 };
+

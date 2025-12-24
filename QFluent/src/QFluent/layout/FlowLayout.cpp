@@ -12,11 +12,11 @@ QT_BEGIN_NAMESPACE
 
 // 匿名命名空间，用于内部常量
 namespace {
-    constexpr int DEFAULT_VERTICAL_SPACING = 10;
-    constexpr int DEFAULT_HORIZONTAL_SPACING = 10;
-    constexpr int DEFAULT_ANIMATION_DURATION = 300;
-    constexpr int LAYOUT_DEBOUNCE_MS = 80;
-    const char *ANIMATION_PROPERTY_NAME = "flowLayoutAnimation";
+constexpr int DEFAULT_VERTICAL_SPACING = 10;
+constexpr int DEFAULT_HORIZONTAL_SPACING = 10;
+constexpr int DEFAULT_ANIMATION_DURATION = 300;
+constexpr int LAYOUT_DEBOUNCE_MS = 80;
+const char *ANIMATION_PROPERTY_NAME = "flowLayoutAnimation";
 }
 
 FlowLayout::FlowLayout(QWidget *parent, bool enableAnimation, bool tightMode)
@@ -364,8 +364,7 @@ bool FlowLayout::eventFilter(QObject *object, QEvent *event)
         // 处理控件父窗口变化
         QWidget *widget = qobject_cast<QWidget *>(object);
         if (widget) {
-            // 检查该控件是否在布局中
-            for (const QLayoutItem *item : qAsConst(m_items)) {
+            for (QLayoutItem *item : m_items) {  // ← 去掉 const
                 if (item && item->widget() == widget) {
                     QWidget *newParent = widget->parentWidget();
                     if (newParent && newParent != m_parentWidget) {
@@ -393,18 +392,18 @@ int FlowLayout::calculateHeight(const QRect &rect) const
     int lineHeight = 0;
     const int maxWidth = rect.right() - margins.right();
 
-    for (const QLayoutItem *item : qAsConst(m_items)) {
+    for (QLayoutItem *item : m_items) {  // ← 不再使用 const，也不需要 qAsConst
         if (!item) {
             continue;
         }
 
         // 紧凑模式下跳过不可见的控件
-        const QWidget *widget = item->widget();
+        QWidget *widget = item->widget();  // ← 返回 QWidget*，不是 const
         if (m_tightMode && widget && !widget->isVisible()) {
             continue;
         }
 
-        const QSize itemSize = item->sizeHint();
+        const QSize itemSize = item->sizeHint();  // sizeHint() 也是非 const！
         const int nextX = x + itemSize.width();
 
         // 检查是否需要换行
@@ -466,7 +465,7 @@ int FlowLayout::doLayout(const QRect &rect, bool applyGeometry)
 
                 // 仅当目标位置改变时才重启动画
                 if (!currentEndValue.isValid() ||
-                    currentEndValue.toRect() != targetGeometry) {
+                        currentEndValue.toRect() != targetGeometry) {
                     animation->stop();
                     animation->setEndValue(targetGeometry);
                     animationNeedsRestart = true;

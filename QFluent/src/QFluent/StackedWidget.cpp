@@ -5,59 +5,94 @@
 #include <QAbstractScrollArea>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
+#include <QParallelAnimationGroup>
+#include <QSequentialAnimationGroup>
+#include <QLabel>
+#include <QPixmap>
+#include <QPainter>
+#include <QPauseAnimation>
+
+// 辅助函数：创建自定义贝塞尔曲线
+static QEasingCurve createBezierCurve(qreal c1x, qreal c1y, qreal c2x, qreal c2y)
+{
+    QEasingCurve curve(QEasingCurve::BezierSpline);
+    curve.addCubicBezierSegment(QPointF(c1x, c1y), QPointF(c2x, c2y), QPointF(1.0, 1.0));
+    return curve;
+}
+
 
 // ==================== OpacityAniStackedWidget ====================
 
 OpacityAniStackedWidget::OpacityAniStackedWidget(QWidget *parent)
-    : QStackedWidget(parent), __nextIndex(0)
+    : QStackedWidget(parent)
+    , m_nextIndex(0)
 {
 }
 
-void OpacityAniStackedWidget::addWidget(QWidget *w)
+void OpacityAniStackedWidget::addWidget(QWidget *widget)
 {
-    QStackedWidget::addWidget(w);
+    if (!widget) {
+        return;
+    }
 
+    QStackedWidget::addWidget(widget);
+
+    // 创建透明度效果
     auto effect = new QGraphicsOpacityEffect(this);
     effect->setOpacity(1.0);
-    auto ani = new QPropertyAnimation(effect, "opacity", this);
-    ani->setDuration(220);
-    connect(ani, &QPropertyAnimation::finished, this, &OpacityAniStackedWidget::__onAniFinished);
 
-    __effects.append(effect);
-    __anis.append(ani);
-    w->setGraphicsEffect(effect);
+    // 创建动画
+    auto animation = new QPropertyAnimation(effect, "opacity", this);
+    animation->setDuration(220);
+    connect(animation, &QPropertyAnimation::finished,
+            this, &OpacityAniStackedWidget::onAnimationFinished);
+
+    m_effects.append(effect);
+    m_animations.append(animation);
+    widget->setGraphicsEffect(effect);
 }
 
 void OpacityAniStackedWidget::setCurrentIndex(int index)
 {
-    int currentIndex = this->currentIndex();
-    if (index == currentIndex) return;
-
-    QPropertyAnimation *ani;
-    if (index > currentIndex) {
-        ani = __anis[index];
-        ani->setStartValue(0.0);
-        ani->setEndValue(1.0);
-        QStackedWidget::setCurrentIndex(index); // 先切换，再动画显示
-    } else {
-        ani = __anis[currentIndex];
-        ani->setStartValue(1.0);
-        ani->setEndValue(0.0);
+    int currentIdx = currentIndex();
+    if (index == currentIdx || index < 0 || index >= count()) {
+        return;
     }
 
-    widget(currentIndex)->show(); // 确保当前页可见以执行淡出
-    __nextIndex = index;
-    ani->start();
+    QPropertyAnimation *animation = nullptr;
+
+    if (index > currentIdx) {
+        // 前进导航：淡入下一个控件
+        animation = m_animations[index];
+        animation->setStartValue(0.0);
+        animation->setEndValue(1.0);
+        QStackedWidget::setCurrentIndex(index); // 先切换，再执行动画
+    } else {
+        // 后退导航：淡出当前控件
+        animation = m_animations[currentIdx];
+        animation->setStartValue(1.0);
+        animation->setEndValue(0.0);
+    }
+
+    // 确保当前控件可见以执行淡出动画
+    if (QWidget *w = widget(currentIdx)) {
+        w->show();
+    }
+
+    m_nextIndex = index;
+    animation->start();
 }
 
-void OpacityAniStackedWidget::setCurrentWidget(QWidget *w)
+void OpacityAniStackedWidget::setCurrentWidget(QWidget *widget)
 {
-    setCurrentIndex(indexOf(w));
+    if (widget) {
+        setCurrentIndex(indexOf(widget));
+    }
 }
 
-void OpacityAniStackedWidget::__onAniFinished()
+void OpacityAniStackedWidget::onAnimationFinished()
 {
-    QStackedWidget::setCurrentIndex(__nextIndex);
+    QStackedWidget::setCurrentIndex(m_nextIndex);
 }
 
 
@@ -67,24 +102,30 @@ PopUpAniStackedWidget::PopUpAniStackedWidget(QWidget *parent)
     : QStackedWidget(parent)
     , m_isAnimationEnabled(true)
     , m_nextIndex(-1)
-    , m_ani(nullptr)
+    , m_currentAnimation(nullptr)
 {
 }
 
 void PopUpAniStackedWidget::addWidget(QWidget *widget, int deltaX, int deltaY)
 {
+    if (!widget) {
+        return;
+    }
+
     QStackedWidget::addWidget(widget);
 
-    auto ani = new QPropertyAnimation(widget, "pos", this);
-    m_aniInfos.append(PopUpAniInfo(widget, deltaX, deltaY, ani));
+    auto animation = new QPropertyAnimation(widget, "pos", this);
+    m_animationInfos.append(PopUpAniInfo(widget, deltaX, deltaY, animation));
 }
 
 void PopUpAniStackedWidget::removeWidget(QWidget *widget)
 {
     int index = indexOf(widget);
-    if (index == -1) return;
+    if (index == -1) {
+        return;
+    }
 
-    m_aniInfos.removeAt(index);
+    m_animationInfos.removeAt(index);
     QStackedWidget::removeWidget(widget);
 }
 
@@ -93,48 +134,66 @@ void PopUpAniStackedWidget::setAnimationEnabled(bool isEnabled)
     m_isAnimationEnabled = isEnabled;
 }
 
-void PopUpAniStackedWidget::setCurrentIndex(int index, bool needPopOut, bool showNextWidgetDirectly,
+void PopUpAniStackedWidget::setCurrentIndex(int index, bool needPopOut,
+                                            bool showNextWidgetDirectly,
                                             int duration, QEasingCurve easingCurve)
 {
-    if (index < 0 || index >= count()) return;
-    if (index == currentIndex()) return;
+    if (index < 0 || index >= count()) {
+        return;
+    }
+
+    if (index == currentIndex()) {
+        return;
+    }
+
     if (!m_isAnimationEnabled) {
         QStackedWidget::setCurrentIndex(index);
         return;
     }
 
-    if (m_ani && m_ani->state() == QAbstractAnimation::Running) {
-        m_ani->stop();
-        __onAniFinished();
+    // 停止正在运行的动画
+    if (m_currentAnimation && m_currentAnimation->state() == QAbstractAnimation::Running) {
+        m_currentAnimation->stop();
+        onAnimationFinished();
     }
 
     m_nextIndex = index;
 
-    PopUpAniInfo &nextAniInfo = m_aniInfos[index];
-    PopUpAniInfo &currentAniInfo = m_aniInfos[currentIndex()];
+    PopUpAniInfo &nextAniInfo = m_animationInfos[index];
+    PopUpAniInfo &currentAniInfo = m_animationInfos[currentIndex()];
 
     QWidget *currentWidget = this->currentWidget();
     QWidget *nextWidget = nextAniInfo.widget;
-    m_ani = needPopOut ? currentAniInfo.ani : nextAniInfo.ani;
 
-    if (needPopOut) {
-        QPoint startPos = currentWidget->pos();
-        QPoint endPos = startPos + QPoint(currentAniInfo.deltaX, currentAniInfo.deltaY);
-        __setAnimation(m_ani, startPos, endPos, duration, easingCurve);
-        nextWidget->setVisible(showNextWidgetDirectly);
-    } else {
-        QPoint startPos = nextWidget->pos() + QPoint(nextAniInfo.deltaX, nextAniInfo.deltaY);
-        QPoint endPos(nextWidget->x(), 0);
-        __setAnimation(m_ani, startPos, endPos, duration, easingCurve);
-        QStackedWidget::setCurrentIndex(index); // 先切换再动画
+    if (!currentWidget || !nextWidget) {
+        QStackedWidget::setCurrentIndex(index);
+        return;
     }
 
-    connect(m_ani, &QPropertyAnimation::finished, this, &PopUpAniStackedWidget::__onAniFinished);
-    m_ani->start();
+    m_currentAnimation = needPopOut ? currentAniInfo.animation : nextAniInfo.animation;
+
+    if (needPopOut) {
+        // 弹出当前控件
+        QPoint startPos = currentWidget->pos();
+        QPoint endPos = startPos + QPoint(currentAniInfo.deltaX, currentAniInfo.deltaY);
+        setAnimation(m_currentAnimation, startPos, endPos, duration, easingCurve);
+        nextWidget->setVisible(showNextWidgetDirectly);
+    } else {
+        // 弹入下一个控件
+        QPoint startPos = nextWidget->pos() + QPoint(nextAniInfo.deltaX, nextAniInfo.deltaY);
+        QPoint endPos(nextWidget->x(), 0);
+        setAnimation(m_currentAnimation, startPos, endPos, duration, easingCurve);
+        QStackedWidget::setCurrentIndex(index); // 先切换，再执行动画
+    }
+
+    connect(m_currentAnimation, &QPropertyAnimation::finished,
+            this, &PopUpAniStackedWidget::onAnimationFinished);
+    m_currentAnimation->start();
     emit aniStart();
 }
 
-void PopUpAniStackedWidget::setCurrentWidget(QWidget *widget, bool needPopOut, bool showNextWidgetDirectly,
+void PopUpAniStackedWidget::setCurrentWidget(QWidget *widget, bool needPopOut,
+                                             bool showNextWidgetDirectly,
                                              int duration, QEasingCurve easingCurve)
 {
     int index = indexOf(widget);
@@ -143,102 +202,621 @@ void PopUpAniStackedWidget::setCurrentWidget(QWidget *widget, bool needPopOut, b
     }
 }
 
-void PopUpAniStackedWidget::__setAnimation(QPropertyAnimation *ani, const QPoint &startValue,
-                                           const QPoint &endValue, int duration, QEasingCurve easingCurve)
+void PopUpAniStackedWidget::setAnimation(QPropertyAnimation *animation,
+                                         const QPoint &startValue,
+                                         const QPoint &endValue,
+                                         int duration,
+                                         QEasingCurve easingCurve)
 {
-    ani->setEasingCurve(easingCurve);
-    ani->setStartValue(startValue);
-    ani->setEndValue(endValue);
-    ani->setDuration(duration);
+    if (!animation) {
+        return;
+    }
+
+    animation->setEasingCurve(easingCurve);
+    animation->setStartValue(startValue);
+    animation->setEndValue(endValue);
+    animation->setDuration(duration);
 }
 
-void PopUpAniStackedWidget::__onAniFinished()
+void PopUpAniStackedWidget::onAnimationFinished()
 {
-    disconnect(m_ani, &QPropertyAnimation::finished, this, &PopUpAniStackedWidget::__onAniFinished);
+    if (m_currentAnimation) {
+        disconnect(m_currentAnimation, &QPropertyAnimation::finished,
+                   this, &PopUpAniStackedWidget::onAnimationFinished);
+    }
+
     QStackedWidget::setCurrentIndex(m_nextIndex);
     emit aniFinished();
 }
 
 
+// ==================== TransitionStackedWidget ====================
+
+TransitionStackedWidget::TransitionStackedWidget(QWidget *parent)
+    : QStackedWidget(parent)
+    , m_animationGroup(new QParallelAnimationGroup(this))
+    , m_currentSnapshot(nullptr)
+    , m_nextSnapshot(nullptr)
+    , m_nextIndex(-1)
+    , m_isAnimationEnabled(true)
+{
+    m_currentSnapshot = createSnapshotLabel();
+    m_nextSnapshot = createSnapshotLabel();
+
+    connect(m_animationGroup, &QParallelAnimationGroup::finished,
+            this, &TransitionStackedWidget::onAnimationFinished);
+}
+
+void TransitionStackedWidget::setAnimationEnabled(bool isEnabled)
+{
+    m_isAnimationEnabled = isEnabled;
+}
+
+void TransitionStackedWidget::setCurrentWidget(QWidget *widget, int duration, bool isBack)
+{
+    setCurrentIndex(indexOf(widget), duration, isBack);
+}
+
+void TransitionStackedWidget::setCurrentIndex(int index, int duration, bool isBack)
+{
+    if (index < 0 || index >= count()) {
+        return;
+    }
+
+    if (index == currentIndex()) {
+        return;
+    }
+
+    if (!m_isAnimationEnabled) {
+        QStackedWidget::setCurrentIndex(index);
+        return;
+    }
+
+    stopAnimation();
+
+    m_nextIndex = index;
+
+    // 设置过渡动画（由子类实现）
+    setUpTransitionAnimation(index, duration, isBack);
+
+    // 开始过渡动画
+    m_animationGroup->start();
+    emit aniStart();
+}
+
+void TransitionStackedWidget::stopAnimation()
+{
+    if (m_animationGroup->state() != QAbstractAnimation::Running) {
+        return;
+    }
+
+    m_animationGroup->stop();
+    onAnimationFinished();
+}
+
+void TransitionStackedWidget::hideSnapshots()
+{
+    if (m_currentSnapshot) {
+        m_currentSnapshot->hide();
+    }
+    if (m_nextSnapshot) {
+        m_nextSnapshot->hide();
+    }
+}
+
+void TransitionStackedWidget::onAnimationFinished()
+{
+    hideSnapshots();
+    m_animationGroup->clear();
+    QStackedWidget::setCurrentIndex(m_nextIndex);
+    emit aniFinished();
+}
+
+QLabel* TransitionStackedWidget::createSnapshotLabel()
+{
+    auto label = new QLabel(this);
+    label->setAttribute(Qt::WA_TranslucentBackground);
+
+    auto effect = new QGraphicsOpacityEffect(label);
+    label->setGraphicsEffect(effect);
+    label->hide();
+
+    return label;
+}
+
+void TransitionStackedWidget::renderSnapshot(QWidget *widget, QLabel *label)
+{
+    if (!widget || !label) {
+        return;
+    }
+
+    // 确保控件具有正确的尺寸
+    widget->resize(size());
+
+    // 使用 grab() 捕获控件内容（即使控件隐藏也能工作）
+    QPixmap pixmap = widget->grab();
+
+    // 如果捕获失败，使用透明填充的备用方案
+    if (pixmap.isNull() || pixmap.size().isEmpty()) {
+        pixmap = QPixmap(widget->size());
+        pixmap.fill(Qt::transparent);
+        widget->render(&pixmap);
+    }
+
+    label->setPixmap(pixmap);
+    label->setGeometry(rect());
+    label->show();
+    label->raise();
+}
+
+
+// ==================== EntranceTransitionStackedWidget ====================
+
+EntranceTransitionStackedWidget::EntranceTransitionStackedWidget(QWidget *parent)
+    : TransitionStackedWidget(parent)
+{
+}
+
+void EntranceTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
+                                                               int duration,
+                                                               bool isBack)
+{
+    const int offset = 140;
+    const int outDuration = 150;
+    const int inDuration = (duration > 0) ? duration : 300;
+
+    QEasingCurve inCurve = createBezierCurve(0.1, 0.9, 0.2, 1.0);
+    QEasingCurve outCurve = createBezierCurve(0.7, 0.0, 1.0, 0.5);
+
+    QWidget *currentWidget = this->currentWidget();
+    QWidget *nextWidget = widget(nextIndex);
+
+    if (!nextWidget) {
+        return;
+    }
+
+    // 淡出并滑出当前控件
+    if (currentWidget) {
+        renderSnapshot(currentWidget, m_currentSnapshot);
+        currentWidget->hide();
+
+        // 淡出动画
+        auto fadeOutAni = new QPropertyAnimation(
+            m_currentSnapshot->graphicsEffect(), "opacity", this);
+        fadeOutAni->setDuration(outDuration);
+        fadeOutAni->setStartValue(1.0);
+        fadeOutAni->setEndValue(0.0);
+        fadeOutAni->setEasingCurve(outCurve);
+        m_animationGroup->addAnimation(fadeOutAni);
+
+        // 滑出动画（仅在后退时）
+        if (isBack) {
+            auto slideOutAni = new QPropertyAnimation(m_currentSnapshot, "pos", this);
+            slideOutAni->setDuration(outDuration);
+            slideOutAni->setStartValue(QPoint(0, 0));
+            slideOutAni->setEndValue(QPoint(0, offset));
+            slideOutAni->setEasingCurve(outCurve);
+            m_animationGroup->addAnimation(slideOutAni);
+        }
+    }
+
+    nextWidget->hide();
+
+    // 在 outDuration 后显示下一个控件
+    auto nextWidgetAniGroup = new QSequentialAnimationGroup(this);
+    auto pauseAni = nextWidgetAniGroup->addPause(outDuration);
+
+    connect(pauseAni, &QPauseAnimation::finished, this, [nextWidget]() {
+        if (nextWidget) {
+            nextWidget->show();
+        }
+    });
+
+    m_animationGroup->addAnimation(nextWidgetAniGroup);
+
+    if (!isBack) {
+        // 滑入下一个控件
+        nextWidget->setGeometry(0, offset, width(), height());
+        auto slideInAni = new QPropertyAnimation(nextWidget, "pos", this);
+        slideInAni->setDuration(inDuration);
+        slideInAni->setStartValue(QPoint(0, offset));
+        slideInAni->setEndValue(QPoint(0, 0));
+        slideInAni->setEasingCurve(inCurve);
+        nextWidgetAniGroup->addAnimation(slideInAni);
+    } else {
+        // 直接显示下一个控件
+        nextWidget->setGeometry(rect());
+    }
+}
+
+
+// ==================== DrillInTransitionStackedWidget ====================
+
+DrillInTransitionStackedWidget::DrillInTransitionStackedWidget(QWidget *parent)
+    : TransitionStackedWidget(parent)
+{
+}
+
+void DrillInTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
+                                                              int duration,
+                                                              bool isBack)
+{
+    QEasingCurve scaleCurve = createBezierCurve(0.1, 0.9, 0.2, 1.0);
+    QEasingCurve opacityCurve = createBezierCurve(0.17, 0.17, 0.0, 1.0);
+    QEasingCurve backScaleCurve = createBezierCurve(0.12, 0.0, 0.0, 1.0);
+
+    qreal inScale, outScale;
+    int inDuration, outDuration;
+    QEasingCurve inScaleCurve;
+
+    if (isBack) {
+        inScale = 1.06;
+        outScale = 0.96;
+        inDuration = (duration > 0) ? duration : 333;
+        outDuration = 100;
+        inScaleCurve = backScaleCurve;
+    } else {
+        inScale = 0.94;
+        outScale = 1.04;
+        inDuration = (duration > 0) ? duration : 333;
+        outDuration = 100;
+        inScaleCurve = scaleCurve;
+    }
+
+    QWidget *currentWidget = this->currentWidget();
+    QWidget *nextWidget = widget(nextIndex);
+    QRect widgetRect = rect();
+
+    if (!nextWidget) {
+        return;
+    }
+
+    // 缩放并淡出当前控件
+    if (currentWidget) {
+        renderSnapshot(currentWidget, m_currentSnapshot);
+        m_currentSnapshot->setScaledContents(true);
+        currentWidget->hide();
+
+        // 计算缩放后的矩形
+        int outW = static_cast<int>(widgetRect.width() * outScale);
+        int outH = static_cast<int>(widgetRect.height() * outScale);
+        int outX = (widgetRect.width() - outW) / 2;
+        int outY = (widgetRect.height() - outH) / 2;
+        QRect outRect(outX, outY, outW, outH);
+
+        // 缩放动画
+        auto scaleOutAni = new QPropertyAnimation(m_currentSnapshot, "geometry", this);
+        scaleOutAni->setDuration(outDuration);
+        scaleOutAni->setStartValue(widgetRect);
+        scaleOutAni->setEndValue(outRect);
+        scaleOutAni->setEasingCurve(scaleCurve);
+        m_animationGroup->addAnimation(scaleOutAni);
+
+        // 淡出动画
+        auto fadeOutAni = new QPropertyAnimation(
+            m_currentSnapshot->graphicsEffect(), "opacity", this);
+        fadeOutAni->setDuration(outDuration);
+        fadeOutAni->setStartValue(1.0);
+        fadeOutAni->setEndValue(0.0);
+        fadeOutAni->setEasingCurve(opacityCurve);
+        m_animationGroup->addAnimation(fadeOutAni);
+    }
+
+    // 缩放并淡入下一个控件
+    renderSnapshot(nextWidget, m_nextSnapshot);
+    m_nextSnapshot->setScaledContents(true);
+    nextWidget->hide();
+
+    // 计算初始缩放矩形
+    int inW = static_cast<int>(widgetRect.width() * inScale);
+    int inH = static_cast<int>(widgetRect.height() * inScale);
+    int inX = (widgetRect.width() - inW) / 2;
+    int inY = (widgetRect.height() - inH) / 2;
+    QRect inRect(inX, inY, inW, inH);
+
+    m_nextSnapshot->setGeometry(inRect);
+
+    // 缩放动画
+    auto scaleInAni = new QPropertyAnimation(m_nextSnapshot, "geometry", this);
+    scaleInAni->setDuration(inDuration);
+    scaleInAni->setStartValue(inRect);
+    scaleInAni->setEndValue(widgetRect);
+    scaleInAni->setEasingCurve(inScaleCurve);
+    m_animationGroup->addAnimation(scaleInAni);
+
+    // 淡入动画
+    auto fadeInAni = new QPropertyAnimation(
+        m_nextSnapshot->graphicsEffect(), "opacity", this);
+    fadeInAni->setDuration(inDuration);
+    fadeInAni->setStartValue(0.0);
+    fadeInAni->setEndValue(1.0);
+    fadeInAni->setEasingCurve(opacityCurve);
+    m_animationGroup->addAnimation(fadeInAni);
+}
+
+
 // ==================== StackedWidget ====================
 
-StackedWidget::StackedWidget(QWidget *parent)
+StackedWidget::StackedWidget(QWidget *parent, AnimationType type)
     : QFrame(parent)
-    , view(new PopUpAniStackedWidget(this))
+    , m_hBoxLayout(new QHBoxLayout(this))
+    , m_view(nullptr)
+    , m_animationType(type)
 {
-    hBoxLayout = new QHBoxLayout(this);
-    hBoxLayout->setContentsMargins(0, 0, 0, 0);
-    hBoxLayout->addWidget(view);
+    m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 
-    connect(view, &PopUpAniStackedWidget::currentChanged, this, &StackedWidget::currentChanged);
+    // 创建指定类型的堆叠控件
+    m_view = createStackedWidget(type);
+    m_hBoxLayout->addWidget(m_view);
+
+    // 连接信号
+    connectSignals();
+
     setAttribute(Qt::WA_StyledBackground);
+}
+
+void StackedWidget::setAnimationType(AnimationType type)
+{
+    if (m_animationType == type) {
+        return;
+    }
+
+    // 断开旧的信号连接
+    disconnectSignals();
+
+    // 移除旧的堆叠控件
+    if (m_view) {
+        m_hBoxLayout->removeWidget(m_view);
+        m_view->deleteLater();
+    }
+
+    // 创建新的堆叠控件
+    m_animationType = type;
+    m_view = createStackedWidget(type);
+    m_hBoxLayout->addWidget(m_view);
+
+    // 连接新的信号
+    connectSignals();
 }
 
 bool StackedWidget::isAnimationEnabled() const
 {
-    return view->isAnimationEnabled();
+    if (!m_view) {
+        return false;
+    }
+
+    // 根据类型调用相应的方法
+    switch (m_animationType) {
+        case AnimationType::Opacity:
+            // OpacityAniStackedWidget 没有动画开关
+            return true;
+
+        case AnimationType::PopUp:
+            return qobject_cast<PopUpAniStackedWidget*>(m_view)->isAnimationEnabled();
+
+        case AnimationType::EntranceTransition:
+        case AnimationType::DrillInTransition:
+            return qobject_cast<TransitionStackedWidget*>(m_view)->isAnimationEnabled();
+    }
+
+    return true;
 }
 
 void StackedWidget::setAnimationEnabled(bool isEnabled)
 {
-    view->setAnimationEnabled(isEnabled);
+    if (!m_view) {
+        return;
+    }
+
+    // 根据类型调用相应的方法
+    switch (m_animationType) {
+        case AnimationType::Opacity:
+            // OpacityAniStackedWidget 没有动画开关
+            break;
+
+        case AnimationType::PopUp:
+            qobject_cast<PopUpAniStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
+            break;
+
+        case AnimationType::EntranceTransition:
+        case AnimationType::DrillInTransition:
+            qobject_cast<TransitionStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
+            break;
+    }
 }
 
-void StackedWidget::addWidget(QWidget *widget)
+void StackedWidget::addWidget(QWidget *widget, int deltaX, int deltaY)
 {
-    view->addWidget(widget);
+    if (!widget || !m_view) {
+        return;
+    }
+
+    // 根据类型调用相应的方法
+    switch (m_animationType) {
+        case AnimationType::Opacity:
+            qobject_cast<OpacityAniStackedWidget*>(m_view)->addWidget(widget);
+            break;
+
+        case AnimationType::PopUp:
+            qobject_cast<PopUpAniStackedWidget*>(m_view)->addWidget(widget, deltaX, deltaY);
+            break;
+
+        case AnimationType::EntranceTransition:
+        case AnimationType::DrillInTransition:
+            m_view->addWidget(widget);
+            break;
+    }
 }
 
 void StackedWidget::removeWidget(QWidget *widget)
 {
-    view->removeWidget(widget);
+    if (!widget || !m_view) {
+        return;
+    }
+
+    // 根据类型调用相应的方法
+    switch (m_animationType) {
+        case AnimationType::PopUp:
+            qobject_cast<PopUpAniStackedWidget*>(m_view)->removeWidget(widget);
+            break;
+
+        default:
+            m_view->removeWidget(widget);
+            break;
+    }
 }
 
 QWidget* StackedWidget::widget(int index) const
 {
-    return view->widget(index);
+    return m_view ? m_view->widget(index) : nullptr;
 }
 
-void StackedWidget::setCurrentWidget(QWidget *widget, bool popOut)
+void StackedWidget::setCurrentWidget(QWidget *widget, bool popOut,
+                                     int duration, bool isBack)
 {
-    // 如果是滚动区域，自动滚到顶部
-    if (auto sa = qobject_cast<QAbstractScrollArea*>(widget)) {
-        if (QScrollBar* vbar = sa->verticalScrollBar()) {
-            vbar->setValue(0);
-        }
-        if (QScrollBar* hbar = sa->horizontalScrollBar()) {
-            hbar->setValue(0);
-        }
+    if (!widget || !m_view) {
+        return;
     }
 
-    if (!popOut) {
-        view->setCurrentWidget(widget, false, true, 300);
-    } else {
-        view->setCurrentWidget(widget, true, false, 200, QEasingCurve::InQuad);
+    // 重置滚动条
+    resetScrollBars(widget);
+
+    // 根据类型调用相应的方法
+    switch (m_animationType) {
+        case AnimationType::Opacity:
+            qobject_cast<OpacityAniStackedWidget*>(m_view)->setCurrentWidget(widget);
+            break;
+
+        case AnimationType::PopUp: {
+            auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
+            if (!popOut) {
+                popUpView->setCurrentWidget(widget, false, true,
+                                          duration > 0 ? duration : 300);
+            } else {
+                popUpView->setCurrentWidget(widget, true, false,
+                                          duration > 0 ? duration : 200,
+                                          QEasingCurve::InQuad);
+            }
+            break;
+        }
+
+        case AnimationType::EntranceTransition:
+        case AnimationType::DrillInTransition: {
+            auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
+            transitionView->setCurrentWidget(widget, duration, isBack);
+            break;
+        }
     }
 }
 
-void StackedWidget::setCurrentIndex(int index, bool popOut)
+void StackedWidget::setCurrentIndex(int index, bool popOut,
+                                    int duration, bool isBack)
 {
-    setCurrentWidget(view->widget(index), popOut);
+    QWidget *w = widget(index);
+    if (w) {
+        setCurrentWidget(w, popOut, duration, isBack);
+    }
 }
 
 int StackedWidget::currentIndex() const
 {
-    return view->currentIndex();
+    return m_view ? m_view->currentIndex() : -1;
 }
 
 QWidget* StackedWidget::currentWidget() const
 {
-    return view->currentWidget();
+    return m_view ? m_view->currentWidget() : nullptr;
 }
 
 int StackedWidget::indexOf(QWidget *widget) const
 {
-    return view->indexOf(widget);
+    return m_view ? m_view->indexOf(widget) : -1;
 }
 
 int StackedWidget::count() const
 {
-    return view->count();
+    return m_view ? m_view->count() : 0;
+}
+
+QStackedWidget* StackedWidget::createStackedWidget(AnimationType type)
+{
+    switch (type) {
+        case AnimationType::Opacity:
+            return new OpacityAniStackedWidget(this);
+
+        case AnimationType::PopUp:
+            return new PopUpAniStackedWidget(this);
+
+        case AnimationType::EntranceTransition:
+            return new EntranceTransitionStackedWidget(this);
+
+        case AnimationType::DrillInTransition:
+            return new DrillInTransitionStackedWidget(this);
+    }
+
+    // 默认返回弹出动画类型
+    return new PopUpAniStackedWidget(this);
+}
+
+void StackedWidget::connectSignals()
+{
+    if (!m_view) {
+        return;
+    }
+
+    // 连接 currentChanged 信号（所有类型都有）
+    connect(m_view, &QStackedWidget::currentChanged,
+            this, &StackedWidget::currentChanged);
+
+    // 根据类型连接动画相关信号
+    switch (m_animationType) {
+        case AnimationType::PopUp: {
+            auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
+            connect(popUpView, &PopUpAniStackedWidget::aniStart,
+                    this, &StackedWidget::aniStart);
+            connect(popUpView, &PopUpAniStackedWidget::aniFinished,
+                    this, &StackedWidget::aniFinished);
+            break;
+        }
+
+        case AnimationType::EntranceTransition:
+        case AnimationType::DrillInTransition: {
+            auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
+            connect(transitionView, &TransitionStackedWidget::aniStart,
+                    this, &StackedWidget::aniStart);
+            connect(transitionView, &TransitionStackedWidget::aniFinished,
+                    this, &StackedWidget::aniFinished);
+            break;
+        }
+
+        default:
+            break;
+    }
+}
+
+void StackedWidget::disconnectSignals()
+{
+    if (!m_view) {
+        return;
+    }
+
+    // 断开所有信号连接
+    disconnect(m_view, nullptr, this, nullptr);
+}
+
+void StackedWidget::resetScrollBars(QWidget *widget)
+{
+    if (!widget) {
+        return;
+    }
+
+    // 如果是滚动区域，自动滚动到顶部
+    if (auto scrollArea = qobject_cast<QAbstractScrollArea*>(widget)) {
+        if (QScrollBar *vbar = scrollArea->verticalScrollBar()) {
+            vbar->setValue(0);
+        }
+        if (QScrollBar *hbar = scrollArea->horizontalScrollBar()) {
+            hbar->setValue(0);
+        }
+    }
 }
