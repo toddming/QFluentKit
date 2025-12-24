@@ -1,157 +1,263 @@
 ﻿#include "FlowLayout.h"
+#include <QWidget>
 #include <QWidgetItem>
-#include <QRect>
-#include <QPoint>
-#include <QSize>
-#include <QVariant>
 #include <QTimer>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QEvent>
-#include <QWidget>
-#include <QVector>
-#include <QObject>
-
+#include <QVariant>
+#include <QtMath>
 
 QT_BEGIN_NAMESPACE
 
-FlowLayout::FlowLayout(QWidget *parent, bool needAni, bool isTight)
-    : QLayout(parent)
-    , _verticalSpacing(10)
-    , _horizontalSpacing(10)
-    , _duration(300)
-    , _ease(QEasingCurve::Linear)
-    , _needAni(needAni)
-    , _isTight(isTight)
-    , _wParent(nullptr)
-    , _isInstalledEventFilter(false)
-{
-    _debounceTimer = new QTimer(this);
-    _debounceTimer->setSingleShot(true);
-    // _debounceTimer->timeout.connect(this, [this]() {  });
+// 匿名命名空间，用于内部常量
+namespace {
+    constexpr int DEFAULT_VERTICAL_SPACING = 10;
+    constexpr int DEFAULT_HORIZONTAL_SPACING = 10;
+    constexpr int DEFAULT_ANIMATION_DURATION = 300;
+    constexpr int LAYOUT_DEBOUNCE_MS = 80;
+    const char *ANIMATION_PROPERTY_NAME = "flowLayoutAnimation";
+}
 
-    connect(_debounceTimer, &QTimer::timeout, this, [this](){
-        this->_doLayout(geometry(), true);
-    });
-    _aniGroup = new QParallelAnimationGroup(this);
+FlowLayout::FlowLayout(QWidget *parent, bool enableAnimation, bool tightMode)
+    : QLayout(parent)
+    , m_animationGroup(nullptr)
+    , m_verticalSpacing(DEFAULT_VERTICAL_SPACING)
+    , m_horizontalSpacing(DEFAULT_HORIZONTAL_SPACING)
+    , m_animationDuration(DEFAULT_ANIMATION_DURATION)
+    , m_easingCurve(QEasingCurve::Linear)
+    , m_animationEnabled(enableAnimation)
+    , m_tightMode(tightMode)
+    , m_eventFilterInstalled(false)
+    , m_layoutDebounceTimer(nullptr)
+    , m_parentWidget(nullptr)
+{
+    // 设置默认边距
     setContentsMargins(0, 0, 0, 0);
+
+    // 创建防抖定时器
+    m_layoutDebounceTimer = new QTimer(this);
+    m_layoutDebounceTimer->setSingleShot(true);
+    m_layoutDebounceTimer->setInterval(LAYOUT_DEBOUNCE_MS);
+
+    connect(m_layoutDebounceTimer, &QTimer::timeout, this, [this]() {
+        doLayout(geometry(), true);
+    });
+
+    // 仅在需要动画时创建动画组
+    if (m_animationEnabled) {
+        m_animationGroup = new QParallelAnimationGroup(this);
+    }
 }
 
 FlowLayout::~FlowLayout()
 {
-    qDeleteAll(_items);
-    qDeleteAll(_animations);
+    // 清理所有布局项
+    qDeleteAll(m_items);
+    m_items.clear();
+
+    // 清理所有动画（如果存在）
+    if (!m_animations.isEmpty()) {
+        qDeleteAll(m_animations);
+        m_animations.clear();
+    }
+
+    // 定时器和动画组会自动通过 QObject 父子关系删除
 }
 
 void FlowLayout::addItem(QLayoutItem *item)
 {
-    _items.append(item);
+    if (!item) {
+        return;
+    }
+
+    m_items.append(item);
+
+    // 如果是控件项，进行额外处理
+    if (QWidget *widget = item->widget()) {
+        onWidgetAdded(widget);
+    }
 }
 
 void FlowLayout::insertItem(int index, QLayoutItem *item)
 {
-    _items.insert(index, item);
+    if (!item) {
+        return;
+    }
+
+    // 确保索引有效
+    if (index < 0 || index > m_items.size()) {
+        index = m_items.size();
+    }
+
+    m_items.insert(index, item);
+
+    // 如果是控件项，进行额外处理
+    if (QWidget *widget = item->widget()) {
+        onWidgetAdded(widget, index);
+    }
 }
 
 void FlowLayout::addWidget(QWidget *widget)
 {
+    if (!widget) {
+        return;
+    }
+
     addItem(new QWidgetItem(widget));
-    _onWidgetAdded(widget);
 }
 
 void FlowLayout::insertWidget(int index, QWidget *widget)
 {
-    insertItem(index, new QWidgetItem(widget));
-    widget->setParent(parentWidget());
-    _onWidgetAdded(widget, index);
-}
-
-void FlowLayout::_onWidgetAdded(QWidget *widget, int index)
-{
-    if (!_isInstalledEventFilter) {
-        if (widget->parentWidget()) {
-            _wParent = widget->parentWidget();
-            _wParent->installEventFilter(this);
-        } else {
-            widget->installEventFilter(this);
-        }
-        _isInstalledEventFilter = true;
+    if (!widget) {
+        return;
     }
 
-    if (!_needAni)
-        return;
+    // 确保控件的父窗口正确
+    if (widget->parent() != parentWidget()) {
+        widget->setParent(parentWidget());
+    }
 
-    QPropertyAnimation *ani = new QPropertyAnimation(widget, "geometry");
-    ani->setEndValue(QRect(QPoint(0, 0), widget->size()));
-    ani->setDuration(_duration);
-    ani->setEasingCurve(QEasingCurve(_ease));
-    widget->setProperty("flowAni", QVariant::fromValue(ani));
-    _aniGroup->addAnimation(ani);
-
-    if (index == -1)
-        _animations.append(ani);
-    else
-        _animations.insert(index, ani);
+    insertItem(index, new QWidgetItem(widget));
 }
 
-void FlowLayout::setAnimation(int duration, QEasingCurve::Type ease)
+void FlowLayout::onWidgetAdded(QWidget *widget, int index)
 {
-    if (!_needAni)
+    if (!widget) {
         return;
+    }
 
-    _duration = duration;
-    _ease = ease;
+    // 安装事件过滤器（仅一次）
+    if (!m_eventFilterInstalled) {
+        if (QWidget *parent = widget->parentWidget()) {
+            m_parentWidget = parent;
+            m_parentWidget->installEventFilter(this);
+            m_eventFilterInstalled = true;
+        } else {
+            // 如果控件暂时没有父窗口，监听其父窗口变化
+            widget->installEventFilter(this);
+        }
+    }
 
-    for (QPropertyAnimation *ani : std::as_const(_animations)) {
-        if (ani) {
-            ani->setDuration(duration);
-            ani->setEasingCurve(QEasingCurve(ease));
+    // 仅在启用动画时创建动画对象
+    if (!m_animationEnabled) {
+        return;
+    }
+
+    // 创建位置动画
+    QPropertyAnimation *animation = new QPropertyAnimation(widget, "geometry", this);
+    animation->setEndValue(QRect(QPoint(0, 0), widget->size()));
+    animation->setDuration(m_animationDuration);
+    animation->setEasingCurve(QEasingCurve(m_easingCurve));
+
+    // 将动画关联到控件
+    widget->setProperty(ANIMATION_PROPERTY_NAME, QVariant::fromValue(animation));
+
+    // 添加到动画组
+    if (m_animationGroup) {
+        m_animationGroup->addAnimation(animation);
+    }
+
+    // 添加到动画列表
+    if (index == -1 || index >= m_animations.size()) {
+        m_animations.append(animation);
+    } else {
+        m_animations.insert(index, animation);
+    }
+}
+
+void FlowLayout::setAnimation(int duration, QEasingCurve::Type easing)
+{
+    if (!m_animationEnabled) {
+        return;
+    }
+
+    m_animationDuration = qMax(0, duration);
+    m_easingCurve = easing;
+
+    // 更新所有现有动画
+    for (QPropertyAnimation *animation : qAsConst(m_animations)) {
+        if (animation) {
+            animation->setDuration(m_animationDuration);
+            animation->setEasingCurve(QEasingCurve(easing));
         }
     }
 }
 
 int FlowLayout::count() const
 {
-    return _items.count();
+    return m_items.count();
 }
 
 QLayoutItem *FlowLayout::itemAt(int index) const
 {
-    if (index >= 0 && index < _items.size())
-        return _items.at(index);
+    if (index >= 0 && index < m_items.size()) {
+        return m_items.at(index);
+    }
     return nullptr;
 }
 
 QLayoutItem *FlowLayout::takeAt(int index)
 {
-    if (index < 0 || index >= _items.size())
+    if (index < 0 || index >= m_items.size()) {
         return nullptr;
-
-    QLayoutItem *item = _items.takeAt(index);
-    if (!item)
-        return nullptr;
-
-    QWidget *widget = item->widget();
-    if (widget) {
-        QVariant aniVar = widget->property("flowAni");
-        if (aniVar.isValid() && aniVar.canConvert<QPropertyAnimation *>()) {
-            QPropertyAnimation *ani = aniVar.value<QPropertyAnimation *>();
-            _animations.removeOne(ani);
-            _aniGroup->removeAnimation(ani);
-            ani->deleteLater();
-            widget->setProperty("flowAni", QVariant());
-        }
     }
 
-    delete item;
-    return nullptr;  // 符合 QLayout 规范，返回 nullptr 并删除 item
+    QLayoutItem *item = m_items.takeAt(index);
+    if (!item) {
+        return nullptr;
+    }
+
+    // 清理关联的动画
+    if (QWidget *widget = item->widget()) {
+        cleanupAnimation(widget);
+    }
+
+    // 返回布局项，调用者负责删除
+    return item;
+}
+
+void FlowLayout::cleanupAnimation(QWidget *widget)
+{
+    if (!widget || !m_animationEnabled) {
+        return;
+    }
+
+    QVariant animationVariant = widget->property(ANIMATION_PROPERTY_NAME);
+    if (!animationVariant.isValid() || !animationVariant.canConvert<QPropertyAnimation *>()) {
+        return;
+    }
+
+    QPropertyAnimation *animation = animationVariant.value<QPropertyAnimation *>();
+    if (!animation) {
+        return;
+    }
+
+    // 从列表和动画组中移除
+    m_animations.removeOne(animation);
+
+    if (m_animationGroup) {
+        m_animationGroup->removeAnimation(animation);
+    }
+
+    // 删除动画对象
+    animation->deleteLater();
+
+    // 清除控件属性
+    widget->setProperty(ANIMATION_PROPERTY_NAME, QVariant());
 }
 
 void FlowLayout::removeWidget(QWidget *widget)
 {
+    if (!widget) {
+        return;
+    }
+
     for (int i = 0; i < count(); ++i) {
-        if (itemAt(i)->widget() == widget) {
-            takeAt(i);
+        QLayoutItem *item = itemAt(i);
+        if (item && item->widget() == widget) {
+            QLayoutItem *taken = takeAt(i);
+            delete taken;
             break;
         }
     }
@@ -159,23 +265,28 @@ void FlowLayout::removeWidget(QWidget *widget)
 
 void FlowLayout::removeAllWidgets()
 {
-    while (!_items.isEmpty())
-        takeAt(0);
+    while (!m_items.isEmpty()) {
+        QLayoutItem *item = takeAt(0);
+        delete item;
+    }
 }
 
 void FlowLayout::takeAllWidgets()
 {
-    while (!_items.isEmpty()) {
-        QWidget *w = itemAt(0)->widget();
-        takeAt(0);
-        if (w)
-            w->deleteLater();
+    while (!m_items.isEmpty()) {
+        QLayoutItem *item = takeAt(0);
+        if (item) {
+            if (QWidget *widget = item->widget()) {
+                widget->deleteLater();
+            }
+            delete item;
+        }
     }
 }
 
 Qt::Orientations FlowLayout::expandingDirections() const
 {
-    return Qt::Orientation(0);
+    return Qt::Orientations();
 }
 
 bool FlowLayout::hasHeightForWidth() const
@@ -185,7 +296,7 @@ bool FlowLayout::hasHeightForWidth() const
 
 int FlowLayout::heightForWidth(int width) const
 {
-    return _calculateHeight(QRect(0, 0, width, 0));
+    return calculateHeight(QRect(0, 0, width, 0));
 }
 
 QSize FlowLayout::sizeHint() const
@@ -196,157 +307,184 @@ QSize FlowLayout::sizeHint() const
 QSize FlowLayout::minimumSize() const
 {
     QSize size;
-    for (QLayoutItem *item : std::as_const(_items)) {
-        size = size.expandedTo(item->minimumSize());
+
+    for (const QLayoutItem *item : qAsConst(m_items)) {
+        if (item) {
+            size = size.expandedTo(item->minimumSize());
+        }
     }
-    QMargins margins = contentsMargins();
-    size += QSize(margins.left() + margins.right(), margins.top() + margins.bottom());
+
+    const QMargins margins = contentsMargins();
+    size += QSize(margins.left() + margins.right(),
+                  margins.top() + margins.bottom());
+
     return size;
 }
 
 void FlowLayout::setVerticalSpacing(int spacing)
 {
-    _verticalSpacing = spacing;
+    m_verticalSpacing = qMax(0, spacing);
 }
 
 int FlowLayout::verticalSpacing() const
 {
-    return _verticalSpacing;
+    return m_verticalSpacing;
 }
 
 void FlowLayout::setHorizontalSpacing(int spacing)
 {
-    _horizontalSpacing = spacing;
+    m_horizontalSpacing = qMax(0, spacing);
 }
 
 int FlowLayout::horizontalSpacing() const
 {
-    return _horizontalSpacing;
+    return m_horizontalSpacing;
 }
 
 void FlowLayout::setGeometry(const QRect &rect)
 {
     QLayout::setGeometry(rect);
-    if (_needAni) {
-        _debounceTimer->start(80);
+
+    if (m_animationEnabled && m_layoutDebounceTimer) {
+        // 使用防抖机制避免频繁布局
+        m_layoutDebounceTimer->start();
     } else {
-        _doLayout(rect, true);
+        // 直接执行布局
+        doLayout(rect, true);
     }
 }
 
 bool FlowLayout::eventFilter(QObject *object, QEvent *event)
 {
+    if (!event) {
+        return QLayout::eventFilter(object, event);
+    }
+
     if (event->type() == QEvent::ParentChange) {
-        if (QWidget *widget = qobject_cast<QWidget *>(object)) {
-            // 检查 widget 是否在布局中（简化检查）
-            for (QLayoutItem *item : std::as_const(_items)) {
+        // 处理控件父窗口变化
+        QWidget *widget = qobject_cast<QWidget *>(object);
+        if (widget) {
+            // 检查该控件是否在布局中
+            for (const QLayoutItem *item : qAsConst(m_items)) {
                 if (item && item->widget() == widget) {
-                    _wParent = widget->parentWidget();
-                    if (_wParent)
-                        _wParent->installEventFilter(this);
-                    _isInstalledEventFilter = true;
+                    QWidget *newParent = widget->parentWidget();
+                    if (newParent && newParent != m_parentWidget) {
+                        m_parentWidget = newParent;
+                        m_parentWidget->installEventFilter(this);
+                        m_eventFilterInstalled = true;
+                    }
                     break;
                 }
             }
         }
-    } else if (event->type() == QEvent::Show && object == _wParent) {
-        _doLayout(geometry(), true);
-        _isInstalledEventFilter = true;
+    } else if (event->type() == QEvent::Show && object == m_parentWidget) {
+        // 父窗口显示时重新布局
+        doLayout(geometry(), true);
     }
+
     return QLayout::eventFilter(object, event);
 }
 
-// 新增：const 方法，仅计算高度（用于 heightForWidth）
-int FlowLayout::_calculateHeight(const QRect &rect) const
+int FlowLayout::calculateHeight(const QRect &rect) const
 {
-    QMargins margin = contentsMargins();
-    int x = rect.x() + margin.left();
-    int y = rect.y() + margin.top();
-    int rowHeight = 0;
-    int spaceX = _horizontalSpacing;
-    int spaceY = _verticalSpacing;
+    const QMargins margins = contentsMargins();
+    int x = rect.x() + margins.left();
+    int y = rect.y() + margins.top();
+    int lineHeight = 0;
+    const int maxWidth = rect.right() - margins.right();
 
-    for (int i = 0; i < _items.count(); ++i) {
-        QLayoutItem *item = _items.at(i);
-        if (!item)
+    for (const QLayoutItem *item : qAsConst(m_items)) {
+        if (!item) {
             continue;
-
-        QWidget *widget = item->widget();
-        if (widget && !widget->isVisible() && _isTight)
-            continue;
-
-        int nextX = x + item->sizeHint().width() + spaceX;
-        if (nextX - spaceX > rect.right() - margin.right() && rowHeight > 0) {
-            x = rect.x() + margin.left();
-            y += rowHeight + spaceY;
-            nextX = x + item->sizeHint().width() + spaceX;
-            rowHeight = 0;
         }
 
-        x = nextX;
-        rowHeight = qMax(rowHeight, item->sizeHint().height());
+        // 紧凑模式下跳过不可见的控件
+        const QWidget *widget = item->widget();
+        if (m_tightMode && widget && !widget->isVisible()) {
+            continue;
+        }
+
+        const QSize itemSize = item->sizeHint();
+        const int nextX = x + itemSize.width();
+
+        // 检查是否需要换行
+        if (nextX > maxWidth && lineHeight > 0) {
+            x = rect.x() + margins.left();
+            y += lineHeight + m_verticalSpacing;
+            lineHeight = 0;
+        }
+
+        x += itemSize.width() + m_horizontalSpacing;
+        lineHeight = qMax(lineHeight, itemSize.height());
     }
 
-    return y + rowHeight + margin.bottom() - rect.y();
+    return y + lineHeight + margins.bottom() - rect.y();
 }
 
-// 修正：非 const 方法，用于实际布局（调用 _calculateHeight 获取高度，但添加移动逻辑）
-int FlowLayout::_doLayout(const QRect &rect, bool move)
+int FlowLayout::doLayout(const QRect &rect, bool applyGeometry)
 {
-    bool aniRestart = false;
-    QMargins margin = contentsMargins();
-    int x = rect.x() + margin.left();
-    int y = rect.y() + margin.top();
-    int rowHeight = 0;
-    int spaceX = _horizontalSpacing;
-    int spaceY = _verticalSpacing;
+    const QMargins margins = contentsMargins();
+    int x = rect.x() + margins.left();
+    int y = rect.y() + margins.top();
+    int lineHeight = 0;
+    const int maxWidth = rect.right() - margins.right();
+    bool animationNeedsRestart = false;
 
-    // 临时存储位置，用于计算高度（复用 _calculateHeight 的逻辑，但这里需要为移动设置位置）
-    // 注意：由于 _calculateHeight 是 const，我们在非 const 中模拟相同循环，但添加 move 逻辑
-    for (int i = 0; i < _items.count(); ++i) {
-        QLayoutItem *item = _items.at(i);
-        if (!item)
+    for (int i = 0; i < m_items.count(); ++i) {
+        QLayoutItem *item = m_items.at(i);
+        if (!item) {
             continue;
-
-        QWidget *widget = item->widget();
-        if (widget && !widget->isVisible() && _isTight)
-            continue;
-
-        int nextX = x + item->sizeHint().width() + spaceX;
-        if (nextX - spaceX > rect.right() - margin.right() && rowHeight > 0) {
-            x = rect.x() + margin.left();
-            y += rowHeight + spaceY;
-            nextX = x + item->sizeHint().width() + spaceX;
-            rowHeight = 0;
         }
 
-        if (move) {
-            QRect target(x, y, item->sizeHint().width(), item->sizeHint().height());
-            if (!_needAni) {
-                item->setGeometry(target);
-            } else if (i < _animations.size()) {
-                QVariant endVar = _animations.at(i)->endValue();
-                if (endVar.isValid() && target != endVar.toRect()) {
-                    QPropertyAnimation *ani = _animations.at(i);
-                    if (ani) {
-                        ani->stop();
-                        ani->setEndValue(target);
-                        aniRestart = true;
-                    }
+        // 紧凑模式下跳过不可见的控件
+        QWidget *widget = item->widget();
+        if (m_tightMode && widget && !widget->isVisible()) {
+            continue;
+        }
+
+        const QSize itemSize = item->sizeHint();
+        const int nextX = x + itemSize.width();
+
+        // 检查是否需要换行
+        if (nextX > maxWidth && lineHeight > 0) {
+            x = rect.x() + margins.left();
+            y += lineHeight + m_verticalSpacing;
+            lineHeight = 0;
+        }
+
+        // 应用几何位置
+        if (applyGeometry) {
+            const QRect targetGeometry(x, y, itemSize.width(), itemSize.height());
+
+            if (!m_animationEnabled) {
+                // 直接设置位置
+                item->setGeometry(targetGeometry);
+            } else if (i < m_animations.size() && m_animations.at(i)) {
+                // 使用动画
+                QPropertyAnimation *animation = m_animations.at(i);
+                const QVariant currentEndValue = animation->endValue();
+
+                // 仅当目标位置改变时才重启动画
+                if (!currentEndValue.isValid() ||
+                    currentEndValue.toRect() != targetGeometry) {
+                    animation->stop();
+                    animation->setEndValue(targetGeometry);
+                    animationNeedsRestart = true;
                 }
             }
         }
 
-        x = nextX;
-        rowHeight = qMax(rowHeight, item->sizeHint().height());
+        x += itemSize.width() + m_horizontalSpacing;
+        lineHeight = qMax(lineHeight, itemSize.height());
     }
 
-    if (_needAni && aniRestart) {
-        _aniGroup->stop();
-        _aniGroup->start();
+    // 启动动画组
+    if (m_animationEnabled && animationNeedsRestart && m_animationGroup) {
+        m_animationGroup->stop();
+        m_animationGroup->start();
     }
 
-    return y + rowHeight + margin.bottom() - rect.y();  // 返回计算的高度
+    return y + lineHeight + margins.bottom() - rect.y();
 }
 
 QT_END_NAMESPACE
