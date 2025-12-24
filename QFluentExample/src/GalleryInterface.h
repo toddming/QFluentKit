@@ -1,5 +1,4 @@
-﻿#ifndef GALLERY_INTERFACE_H
-#define GALLERY_INTERFACE_H
+﻿#pragma once
 
 #include <QWidget>
 #include <QFrame>
@@ -104,5 +103,3 @@ private:
     ToolBar *toolBar;
     QVBoxLayout *vBoxLayout;
 };
-
-#endif // GALLERY_INTERFACE_H

@@ -1,5 +1,4 @@
-﻿#ifndef EXPANDLAYOUT_H
-#define EXPANDLAYOUT_H
+﻿#pragma once
 
 #include <QLayout>
 #include "FluentGlobal.h"
@@ -34,5 +33,3 @@ private:
     mutable QList<QLayoutItem*> m_items;
     mutable QList<QWidget*> m_widgets; // 用于快速访问和事件过滤
 };
-
-#endif // EXPANDLAYOUT_H

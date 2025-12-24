@@ -1,5 +1,4 @@
-﻿#ifndef SAMPLE_CARD_H
-#define SAMPLE_CARD_H
+﻿#pragma once
 
 #include <QWidget>
 #include <QFrame>
@@ -62,5 +61,3 @@ private:
     void initWidget();
     void createFlowLayout();
 };
-
-#endif // SAMPLE_CARD_H

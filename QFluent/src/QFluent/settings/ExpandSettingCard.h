@@ -1,5 +1,4 @@
-﻿#ifndef EXPAND_SETTING_CARD_H
-#define EXPAND_SETTING_CARD_H
+﻿#pragma once
 
 #include <QScrollArea>
 #include <QAbstractButton>
@@ -154,5 +153,3 @@ public:
 private:
     void adjustViewSize();
 };
-
-#endif // EXPAND_SETTING_CARD_H

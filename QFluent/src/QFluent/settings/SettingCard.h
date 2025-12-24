@@ -1,5 +1,4 @@
-﻿#ifndef SETTINGCARD_H
-#define SETTINGCARD_H
+﻿#pragma once
 
 #include <QFrame>
 #include <QPainter>
@@ -159,8 +158,3 @@ private slots:
 private:
     ComboBox *m_comboBox;
 };
-
-
-
-
-#endif // SETTINGCARD_H

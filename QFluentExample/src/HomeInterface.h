@@ -1,6 +1,4 @@
-﻿// home_interface.h
-#ifndef HOME_INTERFACE_H
-#define HOME_INTERFACE_H
+﻿#pragma once
 
 #include <QWidget>
 #include <QScrollArea>
@@ -51,5 +49,3 @@ private:
     void initWidget();
     void loadSamples();
 };
-
-#endif // HOME_INTERFACE_H

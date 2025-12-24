@@ -1,5 +1,4 @@
-#ifndef CONFIGMANAGER_H
-#define CONFIGMANAGER_H
+﻿#pragma once
 
 #include <QSettings>
 #include <QString>
@@ -108,5 +107,3 @@ inline ConfigManager& ConfigManager::instance()
     static ConfigManager instance;
     return instance;
 }
-
-#endif // CONFIGMANAGER_H

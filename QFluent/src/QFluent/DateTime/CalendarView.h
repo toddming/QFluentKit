@@ -1,5 +1,4 @@
-﻿#ifndef CALENDAR_VIEW_H
-#define CALENDAR_VIEW_H
+﻿#pragma once
 
 #include <QStyledItemDelegate>
 #include <QEasingCurve>
@@ -267,5 +266,3 @@ private:
     QParallelAnimationGroup* aniGroup;
     QGraphicsDropShadowEffect* shadowEffect;
 };
-
-#endif // CALENDAR_VIEW_H

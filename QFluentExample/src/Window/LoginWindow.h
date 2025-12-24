@@ -1,5 +1,5 @@
-﻿#ifndef LOGINWIDGET_H
-#define LOGINWIDGET_H
+﻿#pragma once
+
 
 #include <QObject>
 
@@ -32,5 +32,3 @@ private:
     void loading(bool load);
     void userLogin();
 };
-
-#endif // LOGINWIDGET_H

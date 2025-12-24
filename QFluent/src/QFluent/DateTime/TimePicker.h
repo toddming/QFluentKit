@@ -1,5 +1,4 @@
-﻿#ifndef TIME_PICKER_H
-#define TIME_PICKER_H
+﻿#pragma once
 
 #include "PickerBase.h"
 #include <QTime>
@@ -96,5 +95,3 @@ private:
     QString m_AM;
     QString m_PM;
 };
-
-#endif // TIME_PICKER_H

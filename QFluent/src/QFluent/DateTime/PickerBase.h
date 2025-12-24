@@ -1,5 +1,4 @@
-﻿#ifndef PICKER_BASE_H
-#define PICKER_BASE_H
+﻿#pragma once
 
 #include <QPushButton>
 #include <QWidget>
@@ -239,5 +238,3 @@ private:
     bool m_isExpanded;
     QGraphicsDropShadowEffect* m_shadowEffect;
 };
-
-#endif // PICKER_BASE_H

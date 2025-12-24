@@ -1,5 +1,4 @@
-﻿#ifndef FLOWLAYOUT_H
-#define FLOWLAYOUT_H
+﻿#pragma once
 
 #include <QTimer>
 #include <QLayout>
@@ -70,5 +69,3 @@ private:
 };
 
 QT_END_NAMESPACE
-
-#endif // FLOWLAYOUT_H

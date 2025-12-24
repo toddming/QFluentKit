@@ -1,5 +1,4 @@
-﻿#ifndef CYCLE_LIST_WIDGET_H
-#define CYCLE_LIST_WIDGET_H
+﻿#pragma once
 
 #include <QListWidget>
 #include <QToolButton>
@@ -75,5 +74,3 @@ private:
     bool m_isCycle;
 };
 
-
-#endif // CYCLE_LIST_WIDGET_H

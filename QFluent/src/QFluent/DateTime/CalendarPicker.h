@@ -1,5 +1,4 @@
-﻿#ifndef CALENDARPICKER_H
-#define CALENDARPICKER_H
+﻿#pragma once
 
 #include <QPushButton>
 
@@ -43,5 +42,3 @@ private:
     QString _dateFormat;
     bool _isResetEnabled;
 };
-
-#endif // CALENDARPICKER_H

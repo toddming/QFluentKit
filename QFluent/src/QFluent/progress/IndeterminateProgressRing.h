@@ -1,5 +1,4 @@
-﻿#ifndef INDETERMINATE_PROGRESS_RING_H
-#define INDETERMINATE_PROGRESS_RING_H
+﻿#pragma once
 
 #include <QProgressBar>
 
@@ -59,5 +58,3 @@ private:
     QParallelAnimationGroup *aniGroup;
 
 };
-
-#endif // INDETERMINATE_PROGRESS_RING_H

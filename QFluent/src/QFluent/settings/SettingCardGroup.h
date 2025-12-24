@@ -1,6 +1,4 @@
-#ifndef SETTINGCARDGROUP_H
-#define SETTINGCARDGROUP_H
-
+﻿#pragma once
 #include <QWidget>
 
 #include "FluentGlobal.h"
@@ -25,5 +23,3 @@ private:
     QVBoxLayout *vBoxLayout;
     ExpandLayout *cardLayout;
 };
-
-#endif // SETTINGCARDGROUP_H

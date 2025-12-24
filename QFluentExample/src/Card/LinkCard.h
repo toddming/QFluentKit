@@ -1,5 +1,4 @@
-﻿#ifndef LINK_CARD_H
-#define LINK_CARD_H
+﻿#pragma once
 
 #include <QFrame>
 #include <QWidget>
@@ -53,5 +52,3 @@ private:
 
     void initWidget();
 };
-
-#endif // LINK_CARD_H

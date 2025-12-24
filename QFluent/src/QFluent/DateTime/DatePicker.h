@@ -1,5 +1,4 @@
-﻿#ifndef DATE_PICKER_H
-#define DATE_PICKER_H
+﻿#pragma once
 
 #include "PickerBase.h"
 #include <QDate>
@@ -135,5 +134,3 @@ class QFLUENT_EXPORT ZhDatePicker : public DatePicker
 public:
     explicit ZhDatePicker(QWidget* parent = nullptr);
 };
-
-#endif // DATE_PICKER_H

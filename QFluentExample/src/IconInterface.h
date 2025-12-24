@@ -1,5 +1,4 @@
-﻿#ifndef ICON_INTERFACE_H
-#define ICON_INTERFACE_H
+﻿#pragma once
 
 #include <QWidget>
 #include <QFrame>
@@ -153,5 +152,3 @@ public:
 private:
     IconCardView* m_iconView;
 };
-
-#endif // ICON_INTERFACE_H

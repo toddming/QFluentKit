@@ -1,5 +1,4 @@
-﻿#ifndef INDETERMINATEPROGRESSBAR_H
-#define INDETERMINATEPROGRESSBAR_H
+﻿#pragma once
 
 #include <QProgressBar>
 #include "FluentGlobal.h"
@@ -61,5 +60,3 @@ private:
     QParallelAnimationGroup *m_aniGroup = nullptr;
     QSequentialAnimationGroup *m_longBarAniGroup = nullptr;
 };
-
-#endif // INDETERMINATEPROGRESSBAR_H

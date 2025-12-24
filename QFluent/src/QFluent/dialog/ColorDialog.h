@@ -1,5 +1,4 @@
-﻿#ifndef COLOR_DIALOG_H
-#define COLOR_DIALOG_H
+﻿#pragma once
 
 #include "FluentGlobal.h"
 #include "MaskDialogBase.h"
@@ -223,5 +222,3 @@ private:
 
     QVBoxLayout* m_vBoxLayout;
 };
-
-#endif // COLOR_DIALOG_H
