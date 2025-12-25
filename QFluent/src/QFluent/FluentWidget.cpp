@@ -50,7 +50,7 @@ FluentWidget::FluentWidget(QWidget *parent)
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     d->_windowAgent = agent;
 
-    d->setDarkTheme(Theme::instance()->isDarkTheme());
+    d->_windowBar->themeButton()->setChecked(Theme::instance()->isDarkTheme());
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
 
     connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {

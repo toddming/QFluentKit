@@ -172,6 +172,8 @@ public:
 
     int count() const { return m_items.size(); }
 
+    TabToolButton *addButton() const { return m_addButton; }
+
 signals:
     void currentChanged(int index);
     void tabBarClicked(int index);

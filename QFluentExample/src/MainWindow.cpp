@@ -1,6 +1,7 @@
 ﻿#include "MainWindow.h"
 
 #include "Router.h"
+#include "QFluent/FluentTitleBar.h"
 #include "QFluent/Dialog/MessageDialog.h"
 
 #include "FluentIcon.h"
@@ -41,6 +42,11 @@ MainWindow::MainWindow()
     layout->addWidget(m_navPanel, 0);
     layout->addWidget(m_stacked, 1);
     setCentralWidget(w);
+
+    auto title = titleBar();
+    connect(qrouter, &Router::emptyChanged, this, [title](bool empty){
+        title->backButton()->setEnabled(!empty);
+    });
 
     m_navPanel->setExpandWidth(240);
 

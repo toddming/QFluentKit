@@ -6,7 +6,6 @@
 #include <QFile>
 
 #include "Theme.h"
-#include "Router.h"
 #include "StyleSheet.h"
 #include "StackedWidget.h"
 #include "FluentTitleBar.h"
@@ -64,10 +63,9 @@ FluentWindow::FluentWindow(QWidget *parent)
     });
 
     connect(d->_windowBar, &FluentTitleBar::backRequested, this, &FluentWindow::backRequested);
-    connect(qrouter, &Router::emptyChanged, this, [d](bool empty){
-        d->_windowBar->backButton()->setEnabled(!empty);
-    });
+
     d->_windowBar->backButton()->setEnabled(false);
+    d->_windowBar->themeButton()->setChecked(Theme::instance()->isDarkTheme());
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
 }
