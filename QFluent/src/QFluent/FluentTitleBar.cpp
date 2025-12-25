@@ -27,7 +27,6 @@ static inline void emulateLeaveEvent(QWidget *widget) {
 #else
         const QScreen *screen = widget->windowHandle() ? widget->windowHandle()->screen() : nullptr;
 #endif
-        // 安全检查：screen 可能为空（例如 widget 尚未显示）
         if (!screen) {
             return;
         }
@@ -70,11 +69,20 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     setFixedHeight(48);
 
     QHBoxLayout *hBoxLayout = new QHBoxLayout(this);
-    hBoxLayout->setContentsMargins(5, 0, 0, 0);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
 
+    auto leftLayout = new QHBoxLayout();
+    auto rightLayout = new QHBoxLayout();
+    leftLayout->setContentsMargins(5, 0, 0, 0);
+
+    d->_centerWidget = new QWidget(this);
+
+    hBoxLayout->addLayout(leftLayout, 0);
+    hBoxLayout->addWidget(d->_centerWidget, 1);
+    hBoxLayout->addLayout(rightLayout, 0);
+
     d->_titleLabel  = new QLabel(this);
-    d->_iconLabel   = new QLabel(this);
     d->_backButton  = new QPushButton(this);
     d->_iconButton  = new QPushButton(this);
     d->_themeButton = new QPushButton(this);
@@ -84,7 +92,6 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     d->_maxButton->setCheckable(true);
     d->_themeButton->setCheckable(true);
     d->_backButton->hide();
-    d->_iconLabel->setScaledContents(true);
 
     d->_backButton->setFixedSize(40, 36);
     d->_iconButton->setFixedSize(40, 36);
@@ -107,18 +114,21 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     d->_closeButton->setObjectName("close-button");
     d->_titleLabel->setObjectName("win-title-label");
     d->_iconButton->setObjectName("icon-button");
+    d->_iconButton->setIconSize(QSize(18, 18));
+    d->_closeButton->setIconSize(QSize(12, 12));
+    d->_maxButton->setIconSize(QSize(12, 12));
+    d->_minButton->setIconSize(QSize(12, 12));
+    d->_themeButton->setIconSize(QSize(12, 12));
 
-    hBoxLayout->addWidget(d->_backButton);
-    hBoxLayout->addWidget(d->_iconLabel);
-    hBoxLayout->addWidget(d->_iconButton);
-    hBoxLayout->addWidget(d->_titleLabel);
-    hBoxLayout->addStretch();
-    hBoxLayout->addWidget(d->_themeButton, 0, Qt::AlignTop);
-    hBoxLayout->addWidget(d->_minButton, 0, Qt::AlignTop);
-    hBoxLayout->addWidget(d->_maxButton, 0, Qt::AlignTop);
-    hBoxLayout->addWidget(d->_closeButton, 0, Qt::AlignTop);
+    leftLayout->addWidget(d->_backButton, 0, Qt::AlignLeft | Qt::AlignHCenter);
+    leftLayout->addWidget(d->_iconButton, 0, Qt::AlignLeft | Qt::AlignHCenter);
+    leftLayout->addWidget(d->_titleLabel, 0, Qt::AlignLeft | Qt::AlignHCenter);
 
-    d->_iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    rightLayout->addWidget(d->_themeButton, 0, Qt::AlignRight | Qt::AlignTop);
+    rightLayout->addWidget(d->_minButton, 0, Qt::AlignRight | Qt::AlignTop);
+    rightLayout->addWidget(d->_maxButton, 0, Qt::AlignRight | Qt::AlignTop);
+    rightLayout->addWidget(d->_closeButton, 0, Qt::AlignRight | Qt::AlignTop);
+
     d->_titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     d->_backButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     d->_iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -158,11 +168,6 @@ FluentTitleBar::~FluentTitleBar()
 QLabel *FluentTitleBar::titleLabel() const {
     Q_D(const FluentTitleBar);
     return d->_titleLabel;
-}
-
-QLabel *FluentTitleBar::iconLabel() const {
-    Q_D(const FluentTitleBar);
-    return d->_iconLabel;
 }
 
 QAbstractButton *FluentTitleBar::iconButton() const {
@@ -287,7 +292,6 @@ void FluentTitleBar::setWindowButtonHints(Fluent::WindowButtonHints hints)
     {
         d->_backButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::RouteBack));
         d->_iconButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Icon));
-        d->_iconLabel->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::IconLabel));
         d->_titleLabel->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Title));
         d->_themeButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::ThemeToggle));
         d->_minButton->setVisible(d->_buttonFlags.testFlag(Fluent::WindowButtonHint::Minimize));
@@ -299,4 +303,10 @@ void FluentTitleBar::setWindowButtonHints(Fluent::WindowButtonHints hints)
 Fluent::WindowButtonHints FluentTitleBar::windowButtonHints() const
 {
     return d_ptr->_buttonFlags;
+}
+
+QWidget *FluentTitleBar::centerWidget() const
+{
+    Q_D(const FluentTitleBar);
+    return d->_centerWidget;
 }

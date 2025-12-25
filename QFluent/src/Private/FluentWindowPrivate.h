@@ -20,9 +20,5 @@ public:
 
     FluentTitleBar *_windowBar;
 
-    StackedWidget *_stacked;
-
-    NavigationPanel *_navPanel;
-
     Fluent::WindowEffect _windowDisplayMode;
 };

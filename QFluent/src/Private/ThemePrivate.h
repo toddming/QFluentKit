@@ -12,7 +12,7 @@ public:
     explicit ThemePrivate();
 
 private:
-    Fluent::ThemeMode _currentTheme{Fluent::ThemeMode::DARK};
+    Fluent::ThemeMode _currentTheme{Fluent::ThemeMode::LIGHT};
 
     QColor _themeColor{0x0066b4};
 

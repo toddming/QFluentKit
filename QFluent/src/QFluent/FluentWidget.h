@@ -4,6 +4,7 @@
 
 #include "FluentGlobal.h"
 
+class FluentTitleBar;
 class FluentWidgetPrivate;
 class QFLUENT_EXPORT FluentWidget : public QWidget
 {
@@ -21,12 +22,11 @@ public:
     void setWindowEffect(Fluent::WindowEffect effect);
     Fluent::WindowEffect windowEffect() const;
 
-    void setCustomWindowIcon(const QPixmap &pixmap, const QSize &size);
+    FluentTitleBar *titleBar() const;
+
+    void setHitTestVisible(QWidget *w, bool visible);
 
 protected:
     void resizeEvent(QResizeEvent *e) override;
-
-private:
     QScopedPointer<FluentWidgetPrivate> d_ptr;
-
 };

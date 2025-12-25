@@ -19,13 +19,13 @@ public:
     static Theme *instance();
 
     Fluent::ThemeMode theme() const;
-    void setTheme(Fluent::ThemeMode theme, bool save = false, bool lazy = false);
-    void toggleTheme(bool save = false, bool lazy = false);
+    void setTheme(Fluent::ThemeMode theme, bool lazy = false);
+    void toggleTheme(bool lazy = false);
 
     // 颜色管理
     QColor themeColor() const;
     QColor themeColor(Fluent::ThemeColor type) const;
-    void setThemeColor(const QColor& color, bool save = false, bool lazy = false);
+    void setThemeColor(const QColor& color, bool lazy = false);
 
     bool isDarkTheme() const;
 

@@ -24,7 +24,7 @@ public:
     QAbstractButton *maxButton() const;
     QAbstractButton *closeButton() const;
     QAbstractButton *backButton() const;
-    QLabel *iconLabel() const;
+    QWidget *centerWidget() const;
 
     QWidget *hostWidget() const;
     void setHostWidget(QWidget *w);

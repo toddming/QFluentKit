@@ -46,20 +46,21 @@ Fluent::ThemeMode Theme::theme() const {
     return d->_currentTheme;
 }
 
-void Theme::setTheme(Fluent::ThemeMode theme, bool save, bool lazy) {
+void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
     Q_D(Theme);
-    Q_UNUSED(save) // 在实际应用中，这里可以保存设置到配置文件
 
     if (d->_currentTheme != theme) {
         d->_currentTheme = theme;
-        StyleSheetManager::instance()->updateStyleSheet(lazy);
-        emit themeModeChanged(theme);
+        if (!lazy) {
+            StyleSheetManager::instance()->updateStyleSheet(lazy);
+            emit themeModeChanged(theme);
+        }
     }
 }
 
-void Theme::toggleTheme(bool save, bool lazy) {
+void Theme::toggleTheme(bool lazy) {
     Fluent::ThemeMode newTheme = isDarkTheme() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
-    setTheme(newTheme, save, lazy);
+    setTheme(newTheme, lazy);
 }
 
 QColor Theme::themeColor() const {
@@ -72,15 +73,15 @@ QColor Theme::themeColor(Fluent::ThemeColor type) const {
     return d->calculateThemeColor(type);
 }
 
-void Theme::setThemeColor(const QColor& color, bool save, bool lazy) {
+void Theme::setThemeColor(const QColor& color, bool lazy) {
     Q_D(Theme);
-    Q_UNUSED(save) // 在实际应用中，这里可以保存设置到配置文件
 
     if (d->_themeColor != color) {
         d->_themeColor = color;
-        StyleSheetManager::instance()->updateStyleSheet(lazy);
-        // 这里可以发射主题颜色改变信号
-        // emit themeColorChanged(color);
+        if (!lazy) {
+            StyleSheetManager::instance()->updateStyleSheet(lazy);
+            // emit themeColorChanged(color);
+        }
     }
 }
 

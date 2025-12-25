@@ -1,8 +1,6 @@
 ﻿#include "MainWindow.h"
 
 #include "Router.h"
-#include "QFluent/Navigation/NavigationPanel.h"
-#include "QFluent/Navigation/NavigationWidget.h"
 #include "QFluent/Dialog/MessageDialog.h"
 
 #include "FluentIcon.h"
@@ -34,12 +32,24 @@ MainWindow::MainWindow()
 
     setWindowButtonHints(windowButtonHints() | Fluent::WindowButtonHint::RouteBack);
 
-    int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
-    Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()));
-    Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+    QWidget *w = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(w);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    m_navPanel = new NavigationPanel(w);
+    m_stacked = new StackedWidget(w);
+    layout->addWidget(m_navPanel, 0);
+    layout->addWidget(m_stacked, 1);
+    setCentralWidget(w);
 
-    navigationInterface()->setExpandWidth(240);
-    auto userCard = navigationInterface()->addUserCard("userCard", ":/res/Shizuka.png", "Shizuka", "shizuka@gmail.com",
+    m_navPanel->setExpandWidth(240);
+
+    initWidget();
+}
+
+void MainWindow::initWidget()
+{
+    auto userCard = m_navPanel->addUserCard("userCard", ":/res/Shizuka.png", "Shizuka", "shizuka@gmail.com",
                                        nullptr, NIP::TOP, false);
     userCard->setTitleFontSize(12);
     userCard->setSubtitleFontSize(10);
@@ -47,7 +57,7 @@ MainWindow::MainWindow()
     QString iconPath = QString(":/res/icons/%1_{color}.svg");
     addSubInterface("1", FluentIcon(FIT::HOME), "主页", new HomeInterface(this), true, NIP::TOP);
     addSubInterface("2", FluentIcon(FIT::EMOJI_TAB_SYMBOLS), "图标", new IconInterface(this), true, NIP::TOP);
-    navigationInterface()->addSeparator();
+    m_navPanel->addSeparator();
     addSubInterface("3", FluentIcon(FIT::CHECKBOX), "基本输入", new BasicInputInterface(this), true, NIP::SCROLL);
     addSubInterface("4", FluentIcon(FIT::DATE_TIME), "日期和时间", new DateTimeInputInterface(this), true, NIP::SCROLL);
     addSubInterface("5", FluentIcon(FIT::MESSAGE), "对话框", new DialogInputInterface(this), true, NIP::SCROLL);
@@ -60,15 +70,15 @@ MainWindow::MainWindow()
     addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, NIP::SCROLL);
     addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NIP::SCROLL);
 
-    navigationInterface()->addSeparator(NIP::BOTTOM);
+    m_navPanel->addSeparator(NIP::BOTTOM);
     addSubInterface("14", FluentIcon(FIT::SETTING), "设置", new SettingInterface(this), true, NIP::BOTTOM);
 
-    qrouter->setDefaultRouteKey(stackedWidget(), "homeInterface");
-    navigationInterface()->setCurrentItem("1");
+    qrouter->setDefaultRouteKey(m_stacked, "homeInterface");
+    m_navPanel->setCurrentItem("1");
 
     connect(this, &MainWindow::backRequested, this, [=](){
         qrouter->pop();
-        navigationInterface()->setCurrentItem(QString::number(stackedWidget()->currentIndex() + 1));
+        m_navPanel->setCurrentItem(QString::number(m_stacked->currentIndex() + 1));
     });
     connect(userCard, &NavigationUserCard::clicked, this, [this](){
         showDialog();
@@ -77,8 +87,8 @@ MainWindow::MainWindow()
 
 void MainWindow::setCurrentInterface(const QString &routeKey, int index)
 {
-    qrouter->push(stackedWidget(), routeKey);
-    navigationInterface()->setCurrentItem(QString::number(index));
+    qrouter->push(m_stacked, routeKey);
+    m_navPanel->setCurrentItem(QString::number(index));
 }
 
 void MainWindow::showDialog()
@@ -88,4 +98,14 @@ void MainWindow::showDialog()
                                  this->window());
     box->setIsClosableOnMaskClicked(true);
     box->exec();
+}
+
+
+void MainWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
+                                   QWidget* widget, bool selectable,
+                                   Fluent::NavigationItemPosition position, const QString& tooltip,
+                                   const QString& parentRouteKey)
+{
+    m_navPanel->addItem(routeKey, icon, text, [=](){qrouter->push(m_stacked, widget->objectName());}, selectable, position, tooltip, parentRouteKey);
+    m_stacked->addWidget(widget);
 }

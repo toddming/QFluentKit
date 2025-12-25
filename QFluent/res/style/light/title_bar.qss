@@ -21,7 +21,6 @@ FluentTitleBar>QLabel#win-title-label {
 /* System buttons */
 
 FluentTitleBar>QAbstractButton[system-button=true] {
-    qproperty-iconSize: 12px 12px;
     min-width: 40px;
     border: none;
     padding: 0;
@@ -64,8 +63,6 @@ FluentTitleBar>QAbstractButton#close-button:pressed {
 /* Icon button */
 
 FluentTitleBar>QAbstractButton#icon-button {
-    qproperty-iconSize: 18px 18px;
-    min-width: 40px;
     border: none;
     padding: 0;
     background-color: transparent;

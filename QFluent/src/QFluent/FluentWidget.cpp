@@ -114,13 +114,6 @@ Fluent::WindowEffect FluentWidget::windowEffect() const
     return d->_windowDisplayMode;
 }
 
-void FluentWidget::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
-{
-    Q_D(FluentWidget);
-
-    d->_windowBar->iconLabel()->setPixmap(pixmap);
-    d->_windowBar->iconLabel()->setFixedSize(size);
-}
 
 void FluentWidget::resizeEvent(QResizeEvent *e)
 {
@@ -128,4 +121,17 @@ void FluentWidget::resizeEvent(QResizeEvent *e)
     d->_windowBar->setGeometry(0, 0, window()->width(), d->_windowBar->height());
     d->_windowBar->raise();
     QWidget::resizeEvent(e);
+}
+
+FluentTitleBar *FluentWidget::titleBar() const
+{
+    Q_D(const FluentWidget);
+    return d->_windowBar;
+}
+
+void FluentWidget::setHitTestVisible(QWidget *w, bool visible)
+{
+    Q_D(FluentWidget);
+    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->_windowAgent);
+    agent->setHitTestVisible(w, visible);
 }

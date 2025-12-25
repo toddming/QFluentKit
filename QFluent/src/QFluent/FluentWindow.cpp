@@ -25,7 +25,6 @@ FluentWindow::FluentWindow(QWidget *parent)
 
     setAttribute(Qt::WA_DontCreateNativeAncestors);
 
-
     QWK::WidgetWindowAgent *agent = new QWK::WidgetWindowAgent(this);
     agent->setup(this);
 
@@ -35,7 +34,6 @@ FluentWindow::FluentWindow(QWidget *parent)
     setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
                          Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
                          Fluent::WindowButtonHint::Close | Fluent::WindowButtonHint::ThemeToggle);
-
 
     agent->setTitleBar(d->_windowBar);
     agent->setHitTestVisible(d->_windowBar->themeButton(), true);
@@ -61,19 +59,6 @@ FluentWindow::FluentWindow(QWidget *parent)
     connect(d->_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     d->_windowAgent = agent;
 
-    QWidget *w = new QWidget(this);
-    QHBoxLayout *layout = new QHBoxLayout(w);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    d->_navPanel = new NavigationPanel(w);
-    d->_stacked = new StackedWidget(w);
-    layout->addWidget(d->_navPanel, 0);
-    layout->addWidget(d->_stacked, 1);
-    setCentralWidget(w);
-
-    d->setDarkTheme(Theme::instance()->isDarkTheme());
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
-
     connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
         agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
@@ -83,6 +68,8 @@ FluentWindow::FluentWindow(QWidget *parent)
         d->_windowBar->backButton()->setEnabled(!empty);
     });
     d->_windowBar->backButton()->setEnabled(false);
+
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::FLUENT_WINDOW);
 }
 
 FluentWindow::~FluentWindow()
@@ -171,32 +158,15 @@ Fluent::WindowEffect FluentWindow::windowEffect() const
     return d->_windowDisplayMode;
 }
 
-void FluentWindow::setCustomWindowIcon(const QPixmap &pixmap, const QSize &size)
-{
-    Q_D(FluentWindow);
-
-    d->_windowBar->iconLabel()->setPixmap(pixmap);
-    d->_windowBar->iconLabel()->setFixedSize(size);
-}
-
-NavigationPanel *FluentWindow::navigationInterface() const
+FluentTitleBar *FluentWindow::titleBar() const
 {
     Q_D(const FluentWindow);
-    return d->_navPanel;
+    return d->_windowBar;
 }
 
-void FluentWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
-                                   QWidget* widget, bool selectable,
-                                   Fluent::NavigationItemPosition position, const QString& tooltip,
-                                   const QString& parentRouteKey)
+void FluentWindow::setHitTestVisible(QWidget *w, bool visible)
 {
     Q_D(FluentWindow);
-    d->_navPanel->addItem(routeKey, icon, text, [d, widget](){qrouter->push(d->_stacked, widget->objectName());}, selectable, position, tooltip, parentRouteKey);
-    d->_stacked->addWidget(widget);
-}
-
-StackedWidget *FluentWindow::stackedWidget() const
-{
-    Q_D(const FluentWindow);
-    return d->_stacked;
+    QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(d->_windowAgent);
+    agent->setHitTestVisible(w, visible);
 }

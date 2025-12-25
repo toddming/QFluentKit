@@ -1,5 +1,8 @@
 ﻿#include <QApplication>
+
+#include "Theme.h"
 #include "MainWindow.h"
+#include "ConfigManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +24,10 @@ int main(int argc, char *argv[])
     font.setFamilies({"Microsoft YaHei", "PingFang SC", "Segoe UI"});
     font.setPixelSize(14);
     app.setFont(font);
+
+    int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
+    Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()), true);
+    Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT, true);
 
     MainWindow w;
     w.show();

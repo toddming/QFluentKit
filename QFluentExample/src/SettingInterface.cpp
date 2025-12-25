@@ -80,12 +80,6 @@ SettingInterface::SettingInterface(QWidget *parent)
         m_colorDialog->exec();
     });
 
-    connect(themeCard, &ComboBoxSettingCard::currentIndexChanged, this, [=]
-            (int index) {
-        Theme::instance()->setTheme(index == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
-        ConfigManager::instance().setValue("Window/theme", index);
-    });
-
     connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text) {
         auto main = qobject_cast<MainWindow*>(this->window());
@@ -108,5 +102,10 @@ SettingInterface::SettingInterface(QWidget *parent)
 
     connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode themeType){
         themeCard->setValue(themeType == Fluent::ThemeMode::DARK ? 0 : 1);
+    });
+    connect(themeCard, &ComboBoxSettingCard::currentIndexChanged, this, [=]
+            (int index) {
+        Theme::instance()->setTheme(index == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+        ConfigManager::instance().setValue("Window/theme", index);
     });
 }
