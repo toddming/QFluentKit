@@ -1,28 +1,44 @@
 ﻿#include "ScrollArea.h"
-#include "Scrollbar/ScrollBar.h"
-#include "Scrollbar/SmoothScroll.h"
+#include "ScrollBar.h"
+
 
 #include <QWheelEvent>
 #include <QKeyEvent>
+#include <QScrollBar>
+#include <QScroller>
+#include <QScrollerProperties>
+
+namespace {
+// 滚动器配置常量
+constexpr qreal DEFAULT_OVERSHOOT_DRAG_RESISTANCE = 0.35;
+constexpr qreal DEFAULT_OVERSHOOT_SCROLL_TIME = 0.5;
+
+/**
+     * @brief 安全地将QScrollBar转换为ScrollBar
+     * @param scrollBar 待转换的滚动条指针
+     * @return 转换成功返回ScrollBar指针，失败返回nullptr
+     */
+ScrollBar* safeScrollBarCast(QScrollBar* scrollBar)
+{
+    if (!scrollBar) {
+        return nullptr;
+    }
+    return qobject_cast<ScrollBar*>(scrollBar);
+}
+}
 
 // ===================== ScrollArea =====================
 ScrollArea::ScrollArea(QWidget *parent)
     : QScrollArea(parent)
 {
-    m_scrollDelegate = new SmoothScrollDelegate(this);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 
-    setWidgetResizable(true);
+    // 初始状态下隐藏滚动条（通过自定义样式控制显示）
+    QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     setViewportMargins(0, 0, 0, 20);
-}
-
-void ScrollArea::setSmoothMode(Fluent::SmoothMode smoothMode, Qt::Orientation orientation)
-{
-    if (orientation & Qt::Horizontal) {
-        m_scrollDelegate->horizontalSmoothScroll()->setSmoothMode(smoothMode);
-    }
-    if (orientation & Qt::Vertical) {
-        m_scrollDelegate->verticalSmoothScroll()->setSmoothMode(smoothMode);
-    }
 }
 
 void ScrollArea::enableTransparentBackground()
@@ -38,28 +54,142 @@ void ScrollArea::setViewportMargins(int left, int top, int right, int bottom)
     QScrollArea::setViewportMargins(left, top, right, bottom);
 }
 
+void ScrollArea::setGrabGestureEnabled(bool isEnable)
+{
+    if (isEnable)
+    {
+        QScroller::grabGesture(this->viewport(), QScroller::LeftMouseButtonGesture);
+        QScrollerProperties properties = QScroller::scroller(this->viewport())->scrollerProperties();
+        configureScrollerProperties(properties, 0.5);
+        QScroller::scroller(this->viewport())->setScrollerProperties(properties);
+    }
+    else
+    {
+        QScroller::ungrabGesture(this->viewport());
+    }
+}
+
+void ScrollArea::configureScrollerProperties(QScrollerProperties& properties, qreal gestureRecognitionTime)
+{
+    // 设置鼠标按下事件延迟（秒）
+    // 延迟时间越短，滚动响应越快，但可能误触
+    properties.setScrollMetric(
+        QScrollerProperties::MousePressEventDelay,
+        gestureRecognitionTime
+        );
+
+    // 设置过度滚动的阻力系数（0-1，越小阻力越小）
+    properties.setScrollMetric(
+        QScrollerProperties::OvershootDragResistanceFactor,
+        DEFAULT_OVERSHOOT_DRAG_RESISTANCE
+        );
+
+    // 设置过度滚动回弹时间（秒）
+    properties.setScrollMetric(
+        QScrollerProperties::OvershootScrollTime,
+        DEFAULT_OVERSHOOT_SCROLL_TIME
+        );
+
+    // 设置帧率为60fps，提供流畅的滚动体验
+    properties.setScrollMetric(
+        QScrollerProperties::FrameRate,
+        QScrollerProperties::Fps60
+        );
+}
+
+void ScrollArea::setOvershootEnabled(Qt::Orientation orientation, bool isEnable)
+{
+    QWidget* viewportWidget = viewport();
+    if (!viewportWidget) {
+        return;
+    }
+
+    QScroller* scroller = QScroller::scroller(viewportWidget);
+    if (!scroller) {
+        return;
+    }
+
+    // 根据方向选择对应的策略属性
+    const QScrollerProperties::ScrollMetric metric =
+        (orientation == Qt::Horizontal)
+            ? QScrollerProperties::HorizontalOvershootPolicy
+            : QScrollerProperties::VerticalOvershootPolicy;
+
+    // 设置过度滚动策略
+    const QScrollerProperties::OvershootPolicy policy =
+        isEnable
+            ? QScrollerProperties::OvershootAlwaysOn
+            : QScrollerProperties::OvershootAlwaysOff;
+
+    QScrollerProperties properties = scroller->scrollerProperties();
+    properties.setScrollMetric(metric, policy);
+    scroller->setScrollerProperties(properties);
+}
+
+bool ScrollArea::isOvershootEnabled(Qt::Orientation orientation) const
+{
+    QWidget* viewportWidget = viewport();
+    if (!viewportWidget) {
+        return false;
+    }
+
+    QScroller* scroller = QScroller::scroller(viewportWidget);
+    if (!scroller) {
+        return false;
+    }
+
+    // 根据方向选择对应的策略属性
+    const QScrollerProperties::ScrollMetric metric =
+        (orientation == Qt::Horizontal)
+            ? QScrollerProperties::HorizontalOvershootPolicy
+            : QScrollerProperties::VerticalOvershootPolicy;
+
+    QScrollerProperties properties = scroller->scrollerProperties();
+    QVariant value = properties.scrollMetric(metric);
+
+    // 检查策略是否为启用状态
+    return value.toInt() == QScrollerProperties::OvershootAlwaysOn;
+}
+
+void ScrollArea::setAnimationEnabled(Qt::Orientation orientation, bool isEnable)
+{
+    ScrollBar* scrollBar = getScrollBar(orientation);
+    if (scrollBar) {
+        scrollBar->setAnimationEnabled(isEnable);
+    }
+}
+
+bool ScrollArea::isAnimationEnabled(Qt::Orientation orientation) const
+{
+    ScrollBar* scrollBar = getScrollBar(orientation);
+    if (scrollBar) {
+        return scrollBar->isAnimationEnabled();
+    }
+    return false;
+}
+
+ScrollBar* ScrollArea::getScrollBar(Qt::Orientation orientation) const
+{
+    QScrollBar* scrollBar = (orientation == Qt::Horizontal)
+    ? horizontalScrollBar()
+    : verticalScrollBar();
+
+    return safeScrollBarCast(scrollBar);
+}
+
 // ===================== SingleDirectionScrollArea =====================
 SingleDirectionScrollArea::SingleDirectionScrollArea(QWidget *parent, Qt::Orientation orient)
     : QScrollArea(parent)
     , m_orient(orient)
 {
-    // 1. 创建独立方向的 SmoothScroll（负责滚轮事件平滑）
-    m_smoothScroll = new SmoothScroll(this, orient);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 
-    // 2. 创建两个自定义滚动条（但只用一个方向的）
-    m_vScrollBar = new SmoothScrollBar(Qt::Vertical, this);
-    m_hScrollBar = new SmoothScrollBar(Qt::Horizontal, this);
-
-    // 强制隐藏系统滚动条
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    // 初始状态下隐藏滚动条（通过自定义样式控制显示）
+    QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setWidgetResizable(true);
-}
-
-void SingleDirectionScrollArea::setSmoothMode(Fluent::SmoothMode mode)
-{
-    m_smoothScroll->setSmoothMode(mode);
 }
 
 void SingleDirectionScrollArea::enableTransparentBackground()
@@ -78,17 +208,11 @@ void SingleDirectionScrollArea::setViewportMargins(int left, int top, int right,
 void SingleDirectionScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy)
 {
     QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    if (m_orient == Qt::Vertical) {
-        m_vScrollBar->setForceHidden(policy == Qt::ScrollBarAlwaysOff);
-    }
 }
 
 void SingleDirectionScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy)
 {
     QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    if (m_orient == Qt::Horizontal) {
-        m_hScrollBar->setForceHidden(policy == Qt::ScrollBarAlwaysOff);
-    }
 }
 
 void SingleDirectionScrollArea::wheelEvent(QWheelEvent *e)
@@ -99,7 +223,7 @@ void SingleDirectionScrollArea::wheelEvent(QWheelEvent *e)
         return;
     }
 
-    m_smoothScroll->wheelEvent(e);
+    // m_smoothScroll->wheelEvent(e);
     e->accept();  // 阻止进一步传播
 }
 
@@ -113,29 +237,3 @@ void SingleDirectionScrollArea::keyPressEvent(QKeyEvent *e)
     QScrollArea::keyPressEvent(e);
 }
 
-// ===================== SmoothScrollArea =====================
-SmoothScrollArea::SmoothScrollArea(QWidget *parent)
-    : QScrollArea(parent)
-{
-    m_delegate = new SmoothScrollDelegate(this, true);
-    setWidgetResizable(true);
-}
-
-void SmoothScrollArea::setScrollAnimation(Qt::Orientation orient, int duration, QEasingCurve::Type easing)
-{
-    SmoothScrollBar *bar = (orient == Qt::Horizontal)
-        ? m_delegate->horizontalScrollBar()
-        : m_delegate->verticalScrollBar();
-
-    if (bar) {
-        bar->setScrollAnimation(duration, easing);
-    }
-}
-
-void SmoothScrollArea::enableTransparentBackground()
-{
-    setStyleSheet("QScrollArea{border: none; background: transparent}");
-    if (widget()) {
-        widget()->setStyleSheet("QWidget{background: transparent}");
-    }
-}

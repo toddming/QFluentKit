@@ -4,8 +4,9 @@
 #include "FluentIcon.h"
 #include "Theme.h"
 #include "StyleSheet.h"
-#include "Router.h"
 #include "MainWindow.h"
+
+#include "QFluent/ScrollBar.h"
 
 BannerWidget::BannerWidget(QWidget *parent)
     : QWidget(parent)
@@ -105,6 +106,9 @@ void BannerWidget::paintEvent(QPaintEvent *event)
 HomeInterface::HomeInterface(QWidget *parent)
     : ScrollArea(parent)
 {
+    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
+    floatVScrollBar->setAnimationEnabled(true);
+
     m_view = new QWidget(this);
     m_vBoxLayout = new QVBoxLayout(m_view);
     m_banner = new BannerWidget(this);

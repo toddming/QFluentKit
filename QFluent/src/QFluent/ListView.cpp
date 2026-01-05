@@ -6,7 +6,7 @@
 #include <QTableView>
 
 #include "Theme.h"
-#include "QFluent/Scrollbar/ScrollBar.h"
+#include "ScrollBar.h"
 
 // ==========================================
 // ListItemDelegate Implementation
@@ -46,8 +46,9 @@ void ListItemDelegate::drawIndicator(QPainter* painter, const QStyleOptionViewIt
 
 ListWidget::ListWidget(QWidget* parent) : ListBase<QListWidget>(parent)
 {
-    auto* scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
+
 }
 
 void ListWidget::setCurrentItem(QListWidgetItem* item, QItemSelectionModel::SelectionFlags command) {
@@ -71,6 +72,7 @@ void ListWidget::setCurrentRow(int row, QItemSelectionModel::SelectionFlags comm
 
 ListView::ListView(QWidget* parent) : ListBase<QListView>(parent)
 {
-    auto* scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
+
 }

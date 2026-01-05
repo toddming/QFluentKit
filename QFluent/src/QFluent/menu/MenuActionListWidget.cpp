@@ -5,7 +5,7 @@
 
 #include "Screen.h"
 #include "MenuItemDelegate.h"
-#include "QFluent/Scrollbar/ScrollBar.h"
+#include "QFluent/ScrollBar.h"
 
 MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     : QListWidget(parent) {
@@ -16,8 +16,8 @@ MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    auto scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 
     setItemDelegate(new ShortcutMenuItemDelegate(this));
 

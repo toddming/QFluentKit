@@ -5,7 +5,7 @@
 
 #include "Theme.h"
 #include "StyleSheet.h"
-#include "QFluent/Scrollbar/ScrollBar.h"
+#include "ScrollBar.h"
 
 // ============================================================
 // EditLayer
@@ -59,8 +59,8 @@ TextEdit::TextEdit(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    auto scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 }
 
 void TextEdit::contextMenuEvent(QContextMenuEvent *e)
@@ -77,8 +77,8 @@ PlainTextEdit::PlainTextEdit(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    auto scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 }
 
 void PlainTextEdit::contextMenuEvent(QContextMenuEvent *e)
@@ -97,8 +97,8 @@ TextBrowser::TextBrowser(QWidget *parent)
     layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
-    auto scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 }
 
 void TextBrowser::contextMenuEvent(QContextMenuEvent *e)

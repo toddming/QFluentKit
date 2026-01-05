@@ -4,7 +4,7 @@
 #include <QPropertyAnimation>
 
 #include "Theme.h"
-#include "QFluent/Scrollbar/ScrollBar.h"
+#include "QFluent/ScrollBar.h"
 
 // ScrollButton 实现
 ScrollButton::ScrollButton(const FluentIconBase &icon, QWidget* parent)
@@ -61,13 +61,15 @@ CycleListWidget::CycleListWidget(const QStringList& items, const QSize& itemSize
     m_upButton = new ScrollButton(FluentIcon(Fluent::IconType::CARE_UP_SOLID), this);
     m_downButton = new ScrollButton(FluentIcon(Fluent::IconType::CARE_DOWN_SOLID), this);
     
-    m_vScrollBar = new SmoothScrollBar(Qt::Vertical, this);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
+
     
     setItems(items);
     
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    m_vScrollBar->setScrollAnimation(m_scrollDuration);
-    m_vScrollBar->setForceHidden(true);
+    // m_vScrollBar->setScrollAnimation(m_scrollDuration);
+    // m_vScrollBar->setForceHidden(true);
     
     setViewportMargins(0, 0, 0, 0);
     setFixedSize(itemSize.width() + 8, itemSize.height() * m_visibleNumber);
@@ -157,7 +159,7 @@ void CycleListWidget::scrollToItem(QListWidgetItem* item, QAbstractItemView::Scr
 {
     int index = row(item);
     int y = item->sizeHint().height() * (index - m_visibleNumber / 2);
-    m_vScrollBar->scrollTo(y);
+    // m_vScrollBar->scrollTo(y);
     
     clearSelection();
     item->setSelected(false);

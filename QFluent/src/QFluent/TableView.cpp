@@ -9,9 +9,7 @@
 
 #include "Theme.h"
 #include "QFluent/LineEdit.h"
-#include "QFluent/Scrollbar/ScrollBar.h"
-
-// ==========================================
+#include "QFluent/ScrollBar.h"=============================
 // TableItemDelegate Implementation
 // ==========================================
 
@@ -249,9 +247,9 @@ int TableItemDelegate::pressedRow() const
 
 TableWidget::TableWidget(QWidget* parent) : TableBase<QTableWidget>(parent)
 {
-    // 确保 SmoothScrollDelegate 定义存在，或者如果它是 QObject 子类，它会自动管理内存
-    auto scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate); // 防止编译器警告 "未使用变量"
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
+
 }
 
 void TableWidget::setCurrentCell(int row, int column, QItemSelectionModel::SelectionFlags command) {
@@ -278,6 +276,6 @@ void TableWidget::setCurrentItem(QTableWidgetItem* item, QItemSelectionModel::Se
 
 TableView::TableView(QWidget* parent) : TableBase<QTableView>(parent)
 {
-    auto scrollDelegate = new SmoothScrollDelegate(this);
-    Q_UNUSED(scrollDelegate);
+    setHorizontalScrollBar(new ScrollBar(this));
+    setVerticalScrollBar(new ScrollBar(this));
 }
