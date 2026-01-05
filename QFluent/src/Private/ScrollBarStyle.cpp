@@ -7,6 +7,8 @@
 #include <QStyleOptionSlider>
 #include <QtMath>
 
+#include "Theme.h"
+
 namespace {
     /**
      * @brief 判断是否为深色主题
@@ -14,23 +16,21 @@ namespace {
      * @note 实际项目中应从系统或配置中获取主题信息
      */
     bool isDarkTheme() {
-        // TODO: 实现实际的主题检测逻辑
-        // 例如: return QPalette().color(QPalette::Window).lightness() < 128;
-        return true;
+        return Theme::instance()->isDarkTheme();
     }
 
     /**
      * @brief 获取背景颜色
      */
     QColor getBackgroundColor() {
-        return isDarkTheme() ? QColor(0x34, 0x34, 0x34) : QColor(0xFD, 0xFD, 0xFD);
+        return isDarkTheme() ? QColor(44, 44, 44, 245) : QColor(252, 252, 252, 217);
     }
 
     /**
      * @brief 获取前景颜色（滑块和指示器颜色）
      */
     QColor getForegroundColor() {
-        return isDarkTheme() ? QColor(0x9F, 0x9F, 0x9F) : QColor(0xA0, 0xA0, 0xA0);
+        return isDarkTheme() ? QColor(255, 255, 255, 139) : QColor(0, 0, 0, 114);
     }
 }
 

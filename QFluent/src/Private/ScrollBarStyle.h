@@ -117,9 +117,9 @@ private:
     // 常量配置
     static constexpr qreal SLIDER_MARGIN = 2.5;         // 滑块边距
     static constexpr int SCROLLBAR_EXTENT = 10;         // 滚动条宽度
-    static constexpr qreal COLLAPSED_SLIDER_EXTENT = 2.4; // 收起状态滑块宽度
-    static constexpr int ANIMATION_DURATION = 250;      // 动画时长（毫秒）
+    static constexpr qreal COLLAPSED_SLIDER_EXTENT = 2.5; // 收起状态滑块宽度
+    static constexpr int ANIMATION_DURATION = 240;      // 动画时长（毫秒）
     static constexpr int INDICATOR_SIZE = 8;            // 指示器大小
-    static constexpr qreal INDICATOR_ANGLE = 30.0;      // 指示器角度
+    static constexpr qreal INDICATOR_ANGLE = 15.0;      // 指示器角度
     static constexpr qreal BACKGROUND_RADIUS = 6.0;     // 背景圆角半径
 };
