@@ -249,7 +249,6 @@ TableWidget::TableWidget(QWidget* parent) : TableBase<QTableWidget>(parent)
 {
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
-
 }
 
 void TableWidget::setCurrentCell(int row, int column, QItemSelectionModel::SelectionFlags command) {

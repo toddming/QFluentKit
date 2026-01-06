@@ -11,7 +11,6 @@
 #include <QUrl>
 #include <QEvent>
 #include <QDesktopServices>
-#include <QScrollArea>
 
 #include "QFluent/ScrollArea.h"
 #include "QFluent/PushButton.h"

@@ -8,7 +8,6 @@
 #include <QMouseEvent>
 #include <QFont>
 #include <QVBoxLayout>
-#include <QScrollArea>
 #include <QMap>
 #include <QIcon>
 #include <QColor>
@@ -160,7 +159,7 @@ void NavigationBarPushButton::_drawText(QPainter& painter) {
 // NavigationBar 实现
 NavigationBar::NavigationBar(QWidget* parent)
     : QWidget(parent),
-      m_scrollArea(new QScrollArea(this)),
+      m_scrollArea(new ScrollArea(this)),
       m_scrollWidget(new QWidget()),
       m_vBoxLayout(new QVBoxLayout(this)),
       m_topLayout(new QVBoxLayout()),

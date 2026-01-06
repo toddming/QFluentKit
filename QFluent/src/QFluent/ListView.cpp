@@ -1,4 +1,4 @@
-#include "ListView.h"
+﻿#include "ListView.h"
 
 #include <QPainter>
 #include <QApplication>
@@ -48,7 +48,6 @@ ListWidget::ListWidget(QWidget* parent) : ListBase<QListWidget>(parent)
 {
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
-
 }
 
 void ListWidget::setCurrentItem(QListWidgetItem* item, QItemSelectionModel::SelectionFlags command) {
@@ -74,5 +73,4 @@ ListView::ListView(QWidget* parent) : ListBase<QListView>(parent)
 {
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
-
 }

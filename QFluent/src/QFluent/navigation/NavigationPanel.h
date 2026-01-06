@@ -11,8 +11,8 @@
 #include "FluentGlobal.h"
 
 // 前置声明
+class ScrollArea;
 class QVBoxLayout;
-class QScrollArea;
 class QPropertyAnimation;
 class NavigationWidget;
 class NavigationToolButton;
@@ -210,7 +210,7 @@ private:
     int m_expandWidth;
 
     // UI 组件(由 Qt 父子关系管理)
-    QScrollArea* m_scrollArea;
+    ScrollArea* m_scrollArea;
     QWidget* m_scrollWidget;
     NavigationToolButton* m_menuButton;
 

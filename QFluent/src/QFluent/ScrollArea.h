@@ -35,17 +35,14 @@ private:
 };
 
 // ===================== SingleDirectionScrollArea =====================
-class QFLUENT_EXPORT SingleDirectionScrollArea : public QScrollArea
+class QFLUENT_EXPORT SingleDirectionScrollArea : public ScrollArea
 {
     Q_OBJECT
 
 public:
     explicit SingleDirectionScrollArea(QWidget *parent = nullptr, Qt::Orientation orient = Qt::Vertical);
 
-    void enableTransparentBackground();
-    void setViewportMargins(int left, int top, int right, int bottom);
-
-    // 重写策略，强制另一方向永远不显示滚动条
+    // 重写策略，强制一个方向滚动
     void setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy);
     void setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy);
 

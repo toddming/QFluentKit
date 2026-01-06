@@ -5,7 +5,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QScrollArea>
 #include <QLineEdit>
 #include <QMap>
 #include <QVector>

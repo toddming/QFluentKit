@@ -15,8 +15,6 @@ MenuActionListWidget::MenuActionListWidget(QWidget* parent)
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
 
     setItemDelegate(new ShortcutMenuItemDelegate(this));

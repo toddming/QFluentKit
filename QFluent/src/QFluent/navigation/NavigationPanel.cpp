@@ -9,13 +9,13 @@
 #include <QPainterPath>
 #include <QPropertyAnimation>
 #include <QResizeEvent>
-#include <QScrollArea>
 #include <QStyle>
 
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "NavigationWidget.h"
 #include "QFluent/Flyout.h"
+#include "QFluent/ScrollArea.h"
 
 // 常量定义
 namespace {
@@ -70,7 +70,7 @@ void NavigationPanel::initWidget()
     }
 
     // 创建滚动区域
-    m_scrollArea = new QScrollArea(this);
+    m_scrollArea = new ScrollArea(this);
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setWidgetResizable(true);

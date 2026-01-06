@@ -112,7 +112,7 @@ private:
 
 private:
     QWidget* m_parent;
-    QScrollArea* m_scrollArea;
+    ScrollArea* m_scrollArea;
     QWidget* m_scrollWidget;
     QVBoxLayout* m_vBoxLayout;
     QVBoxLayout* m_topLayout;

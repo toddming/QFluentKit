@@ -74,27 +74,27 @@ void ScrollArea::configureScrollerProperties(QScrollerProperties& properties, qr
     // 设置鼠标按下事件延迟（秒）
     // 延迟时间越短，滚动响应越快，但可能误触
     properties.setScrollMetric(
-        QScrollerProperties::MousePressEventDelay,
-        gestureRecognitionTime
-        );
+                QScrollerProperties::MousePressEventDelay,
+                gestureRecognitionTime
+                );
 
     // 设置过度滚动的阻力系数（0-1，越小阻力越小）
     properties.setScrollMetric(
-        QScrollerProperties::OvershootDragResistanceFactor,
-        DEFAULT_OVERSHOOT_DRAG_RESISTANCE
-        );
+                QScrollerProperties::OvershootDragResistanceFactor,
+                DEFAULT_OVERSHOOT_DRAG_RESISTANCE
+                );
 
     // 设置过度滚动回弹时间（秒）
     properties.setScrollMetric(
-        QScrollerProperties::OvershootScrollTime,
-        DEFAULT_OVERSHOOT_SCROLL_TIME
-        );
+                QScrollerProperties::OvershootScrollTime,
+                DEFAULT_OVERSHOOT_SCROLL_TIME
+                );
 
     // 设置帧率为60fps，提供流畅的滚动体验
     properties.setScrollMetric(
-        QScrollerProperties::FrameRate,
-        QScrollerProperties::Fps60
-        );
+                QScrollerProperties::FrameRate,
+                QScrollerProperties::Fps60
+                );
 }
 
 void ScrollArea::setOvershootEnabled(Qt::Orientation orientation, bool isEnable)
@@ -111,13 +111,13 @@ void ScrollArea::setOvershootEnabled(Qt::Orientation orientation, bool isEnable)
 
     // 根据方向选择对应的策略属性
     const QScrollerProperties::ScrollMetric metric =
-        (orientation == Qt::Horizontal)
+            (orientation == Qt::Horizontal)
             ? QScrollerProperties::HorizontalOvershootPolicy
             : QScrollerProperties::VerticalOvershootPolicy;
 
     // 设置过度滚动策略
     const QScrollerProperties::OvershootPolicy policy =
-        isEnable
+            isEnable
             ? QScrollerProperties::OvershootAlwaysOn
             : QScrollerProperties::OvershootAlwaysOff;
 
@@ -140,7 +140,7 @@ bool ScrollArea::isOvershootEnabled(Qt::Orientation orientation) const
 
     // 根据方向选择对应的策略属性
     const QScrollerProperties::ScrollMetric metric =
-        (orientation == Qt::Horizontal)
+            (orientation == Qt::Horizontal)
             ? QScrollerProperties::HorizontalOvershootPolicy
             : QScrollerProperties::VerticalOvershootPolicy;
 
@@ -171,69 +171,98 @@ bool ScrollArea::isAnimationEnabled(Qt::Orientation orientation) const
 ScrollBar* ScrollArea::getScrollBar(Qt::Orientation orientation) const
 {
     QScrollBar* scrollBar = (orientation == Qt::Horizontal)
-    ? horizontalScrollBar()
-    : verticalScrollBar();
+            ? horizontalScrollBar()
+            : verticalScrollBar();
 
     return safeScrollBarCast(scrollBar);
 }
 
 // ===================== SingleDirectionScrollArea =====================
 SingleDirectionScrollArea::SingleDirectionScrollArea(QWidget *parent, Qt::Orientation orient)
-    : QScrollArea(parent)
+    : ScrollArea(parent)
     , m_orient(orient)
 {
-    setHorizontalScrollBar(new ScrollBar(this));
-    setVerticalScrollBar(new ScrollBar(this));
-
-    // 初始状态下隐藏滚动条（通过自定义样式控制显示）
-    QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
     setWidgetResizable(true);
-}
-
-void SingleDirectionScrollArea::enableTransparentBackground()
-{
-    setStyleSheet("QScrollArea{border: none; background: transparent}");
-    if (widget()) {
-        widget()->setStyleSheet("QWidget{background: transparent}");
-    }
-}
-
-void SingleDirectionScrollArea::setViewportMargins(int left, int top, int right, int bottom)
-{
-    QScrollArea::setViewportMargins(left, top, right, bottom);
 }
 
 void SingleDirectionScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy)
 {
-    QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    if (m_orient == Qt::Vertical) {
+        QScrollArea::setVerticalScrollBarPolicy(policy);
+    } else {
+        QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
 }
 
 void SingleDirectionScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy)
 {
-    QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    if (m_orient == Qt::Horizontal) {
+        QScrollArea::setHorizontalScrollBarPolicy(policy);
+    } else {
+        QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
 }
 
 void SingleDirectionScrollArea::wheelEvent(QWheelEvent *e)
 {
-    // 水平滚动时忽略垂直滚轮，垂直滚动时忽略水平滚轮
-    if ((m_orient == Qt::Vertical && e->angleDelta().x() != 0) ||
-        (m_orient == Qt::Horizontal && e->angleDelta().y() == 0)) {
-        return;
-    }
+    if (m_orient == Qt::Vertical) {
+        if (e->angleDelta().x() != 0) {
+            e->ignore();
+            return;
+        }
+        QScrollArea::wheelEvent(e);
+    } else { // Horizontal
+        if (e->angleDelta().x() != 0) {
+            QScrollArea::wheelEvent(e);
+            return;
+        } else if (e->angleDelta().y() != 0) {
+            QPoint angleDelta(-e->angleDelta().y(), 0);
 
-    // m_smoothScroll->wheelEvent(e);
-    e->accept();  // 阻止进一步传播
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QWheelEvent horizontalEvent(
+                        e->position(),
+                        e->globalPosition(),
+                        e->pixelDelta(),
+                        angleDelta,
+                        e->buttons(),
+                        e->modifiers(),
+                        e->phase(),
+                        e->inverted()
+                        );
+#else
+            QWheelEvent horizontalEvent(
+                        e->pos(),                // QPointF (Qt5 的 pos() 返回 QPoint,会自动转换)
+                        e->globalPos(),          // QPointF
+                        e->pixelDelta(),         // QPoint
+                        angleDelta,              // QPoint
+                        e->buttons(),            // Qt::MouseButtons
+                        e->modifiers(),          // Qt::KeyboardModifiers
+                        e->phase(),              // Qt::ScrollPhase
+                        e->inverted(),           // bool
+                        e->source()              // Qt::MouseEventSource (Qt5 特有,且在 inverted 之后)
+                        );
+#endif
+            QScrollArea::wheelEvent(&horizontalEvent);
+            e->accept();
+            return;
+        } else {
+            e->ignore();
+            return;
+        }
+    }
 }
 
 void SingleDirectionScrollArea::keyPressEvent(QKeyEvent *e)
 {
-    // 水平方向时屏蔽左右箭头键
-    if (m_orient == Qt::Horizontal &&
-        (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)) {
-        return;
+    if (m_orient == Qt::Vertical &&
+            (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)) {
+        return;  // 忽略水平键
     }
+    if (m_orient == Qt::Horizontal &&
+            (e->key() == Qt::Key_Up || e->key() == Qt::Key_Down)) {
+        return;  // 忽略垂直键
+    }
+
     QScrollArea::keyPressEvent(e);
 }
 

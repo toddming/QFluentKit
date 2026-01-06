@@ -5,7 +5,6 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QScrollArea>
 #include <QUrl>
 #include <QDesktopServices>
 #include <QMouseEvent>
