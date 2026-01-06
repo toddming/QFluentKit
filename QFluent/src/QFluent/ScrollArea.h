@@ -28,9 +28,9 @@ public:
 private:
     ScrollBar* getScrollBar(Qt::Orientation orientation) const;
     static void configureScrollerProperties(
-        QScrollerProperties& properties,
-        qreal gestureRecognitionTime = 0.5
-        );
+            QScrollerProperties& properties,
+            qreal gestureRecognitionTime = 0.5
+            );
 
 };
 
@@ -42,7 +42,6 @@ class QFLUENT_EXPORT SingleDirectionScrollArea : public ScrollArea
 public:
     explicit SingleDirectionScrollArea(QWidget *parent = nullptr, Qt::Orientation orient = Qt::Vertical);
 
-    // 重写策略，强制一个方向滚动
     void setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy);
     void setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy);
 

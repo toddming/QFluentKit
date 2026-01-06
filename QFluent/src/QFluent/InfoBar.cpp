@@ -468,7 +468,7 @@ void InfoBarManager::add(InfoBar* infoBar)
     // 连接关闭信号
     connect(infoBar, &InfoBar::closedSignal, this, [this, infoBar]() {
         this->remove(infoBar);
-    }, Qt::UniqueConnection);
+    });
 
     slideAnimation->start();
 }

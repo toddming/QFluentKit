@@ -156,8 +156,10 @@ bool ExampleCard::eventFilter(QObject *obj, QEvent *e)
 GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle, QWidget *parent)
     : ScrollArea(parent)
 {
-    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
-    floatVScrollBar->setAnimationEnabled(true);
+    auto overlayVerticalScrollBar = new ScrollBar(this->verticalScrollBar(), this);
+    overlayVerticalScrollBar->setAnimationEnabled(true);
+
+    setGrabGestureEnabled(true);
 
     view = new QWidget(this);
     toolBar = new ToolBar(title, subtitle.isEmpty() ? "遇到问题可以告诉我哦，看到就会及时处理。🐧1912229135" : subtitle, this);

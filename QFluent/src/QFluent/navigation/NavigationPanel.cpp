@@ -71,8 +71,6 @@ void NavigationPanel::initWidget()
 
     // 创建滚动区域
     m_scrollArea = new ScrollArea(this);
-    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setWidgetResizable(true);
 
     m_scrollWidget = new QWidget();

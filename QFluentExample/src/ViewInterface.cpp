@@ -9,6 +9,7 @@ ViewInterface::ViewInterface(QWidget *parent)
     setObjectName("ViewInterface");
 
     auto tableWidget = new TableWidget(this);
+    tableWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     tableWidget->setFixedSize(625, 440);
     tableWidget->verticalHeader()->hide();
     tableWidget->setBorderVisible(true);
@@ -48,6 +49,7 @@ ViewInterface::ViewInterface(QWidget *parent)
     addExampleCard("简单的表格组件", tableWidget);
 
     auto listWidget = new ListWidget(this);
+    listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     QStringList stands = {
         "安卓", "Android Auto", "Android TV", "内置 Google 的汽车",
         "谷歌浏览器", "Chromebook and ChromeOS", "联系人", "数字健康",

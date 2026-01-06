@@ -205,8 +205,8 @@ IconCardView::IconCardView(QWidget* parent)
     m_view = new QFrame(this);
     m_scrollArea = new ScrollArea(m_view);
 
-    ScrollBar* floatVScrollBar = new ScrollBar(m_scrollArea->verticalScrollBar(), m_scrollArea);
-    floatVScrollBar->setAnimationEnabled(true);
+    auto overlayVerticalScrollBar = new ScrollBar(m_scrollArea->verticalScrollBar(), m_scrollArea);
+    overlayVerticalScrollBar->setAnimationEnabled(true);
 
     m_scrollWidget = new QWidget(m_scrollArea);
     m_infoPanel = new IconInfoPanel(Fluent::IconType::UP, this);

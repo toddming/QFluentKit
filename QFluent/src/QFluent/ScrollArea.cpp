@@ -231,15 +231,15 @@ void SingleDirectionScrollArea::wheelEvent(QWheelEvent *e)
                         );
 #else
             QWheelEvent horizontalEvent(
-                        e->pos(),                // QPointF (Qt5 的 pos() 返回 QPoint,会自动转换)
-                        e->globalPos(),          // QPointF
-                        e->pixelDelta(),         // QPoint
-                        angleDelta,              // QPoint
-                        e->buttons(),            // Qt::MouseButtons
-                        e->modifiers(),          // Qt::KeyboardModifiers
-                        e->phase(),              // Qt::ScrollPhase
-                        e->inverted(),           // bool
-                        e->source()              // Qt::MouseEventSource (Qt5 特有,且在 inverted 之后)
+                        e->pos(),
+                        e->globalPos(),
+                        e->pixelDelta(),
+                        angleDelta,
+                        e->buttons(),
+                        e->modifiers(),
+                        e->phase(),
+                        e->inverted(),
+                        e->source()
                         );
 #endif
             QScrollArea::wheelEvent(&horizontalEvent);

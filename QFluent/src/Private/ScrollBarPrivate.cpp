@@ -42,7 +42,7 @@ void ScrollBarPrivate::onRangeChanged(int min, int max)
     if (q->isVisible() && m_isAnimationEnabled && max != 0)
     {
         QPropertyAnimation* rangeSmoothAnimation = new QPropertyAnimation(this, "targetMaximum", this);
-        rangeSmoothAnimation->setEasingCurve(QEasingCurve::OutSine);
+        rangeSmoothAnimation->setEasingCurve(QEasingCurve::OutCubic);
         rangeSmoothAnimation->setDuration(250);
         rangeSmoothAnimation->setStartValue(m_targetMaximum);
         rangeSmoothAnimation->setEndValue(max);

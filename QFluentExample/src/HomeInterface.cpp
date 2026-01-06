@@ -106,8 +106,8 @@ void BannerWidget::paintEvent(QPaintEvent *event)
 HomeInterface::HomeInterface(QWidget *parent)
     : ScrollArea(parent)
 {
-    ScrollBar* floatVScrollBar = new ScrollBar(this->verticalScrollBar(), this);
-    floatVScrollBar->setAnimationEnabled(true);
+    auto overlayVerticalScrollBar = new ScrollBar(this->verticalScrollBar(), this);
+    overlayVerticalScrollBar->setAnimationEnabled(true);
 
     m_view = new QWidget(this);
     m_vBoxLayout = new QVBoxLayout(m_view);
