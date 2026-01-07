@@ -74,6 +74,8 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
 
     auto leftLayout = new QHBoxLayout();
     auto rightLayout = new QHBoxLayout();
+    leftLayout->setSpacing(5);
+    rightLayout->setSpacing(0);
     leftLayout->setContentsMargins(5, 0, 0, 0);
 
     d->_centerWidget = new QWidget(this);
@@ -220,6 +222,26 @@ void FluentTitleBar::setHostWidget(QWidget *w) {
     }
 }
 
+bool FluentTitleBar::titleFollowWindow() const {
+    Q_D(const FluentTitleBar);
+    return d->_autoTitle;
+}
+
+void FluentTitleBar::setTitleFollowWindow(bool value) {
+    Q_D(FluentTitleBar);
+    d->_autoTitle = value;
+}
+
+bool FluentTitleBar::iconFollowWindow() const {
+    Q_D(const FluentTitleBar);
+    return d->_autoIcon;
+}
+
+void FluentTitleBar::setIconFollowWindow(bool value) {
+    Q_D(FluentTitleBar);
+    d->_autoIcon = value;
+}
+
 
 bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
     Q_D(const FluentTitleBar);
@@ -231,14 +253,14 @@ bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
         QAbstractButton *maxBtn = maxButton();
         switch (event->type()) {
         case QEvent::WindowIconChange: {
-            if (iconBtn) {
+            if (d->_autoIcon && iconBtn) {
                 iconBtn->setIcon(w->windowIcon());
                 iconChanged(w->windowIcon());
             }
             break;
         }
         case QEvent::WindowTitleChange: {
-            if (label) {
+            if (d->_autoTitle && label) {
                 label->setText(w->windowTitle());
                 titleChanged(w->windowTitle());
             }

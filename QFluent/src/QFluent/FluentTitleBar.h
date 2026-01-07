@@ -16,6 +16,13 @@ public:
     explicit FluentTitleBar(QWidget *parent = nullptr);
     ~FluentTitleBar();
 
+    bool titleFollowWindow() const;
+    void setTitleFollowWindow(bool value);
+
+    bool iconFollowWindow() const;
+    void setIconFollowWindow(bool value);
+
+
 public:
     QLabel *titleLabel() const;
     QAbstractButton *iconButton() const;

@@ -24,4 +24,6 @@ private:
     QPointer<QWidget> _hostWidget;
     QWidget *_centerWidget;
     Fluent::WindowButtonHints _buttonFlags;
+    bool _autoTitle = true;
+    bool _autoIcon = true;
 };
