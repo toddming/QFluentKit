@@ -1,4 +1,4 @@
-PivotItem {
+﻿PivotItem {
     padding: 10px 12px;
     color: black;
     background-color: transparent;
@@ -7,16 +7,12 @@ PivotItem {
     margin: 0;
 }
 
-PivotItem[isSelected=true]:hover {
+PivotItem:hover {
     color: rgba(0, 0, 0, 0.63);
 }
 
-PivotItem[isSelected=true]:pressed {
+PivotItem:pressed {
     color: rgba(0, 0, 0, 0.53);
-}
-
-PivotItem[isSelected=false]:pressed {
-    color: rgba(0, 0, 0, 0.75);
 }
 
 PivotItem[hasIcon=false] {

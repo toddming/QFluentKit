@@ -41,8 +41,8 @@ protected:
 private:
     void init();
 
-    bool m_isPressed;
-    bool m_isHover;
+    bool m_isPressed = false;
+    bool m_isHover = false;
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 

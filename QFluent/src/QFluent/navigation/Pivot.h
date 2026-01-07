@@ -23,10 +23,10 @@ signals:
     void isSelectedChanged(bool);  // 信号定义移到 Q_PROPERTY 之前
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
+    void drawIcon(QPainter* painter, const QRectF& rect) override;
 
 private:
-    bool _isSelected = false;
+    bool m_isSelected = false;
 };
 
 class QFLUENT_EXPORT Pivot : public QWidget {

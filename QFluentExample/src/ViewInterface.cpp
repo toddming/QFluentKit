@@ -105,7 +105,7 @@ Frame::Frame(QWidget *parent)
 
 void Frame::setupUI()
 {
-    hBoxLayout->setContentsMargins(0, 8, 0, 0);
+    hBoxLayout->setContentsMargins(0, 6, 0, 6);
     setObjectName("frame");
 }
 

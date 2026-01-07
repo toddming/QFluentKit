@@ -14,7 +14,7 @@
 #include "StyleSheet.h"
 
 PivotItem::PivotItem(const QString &text, QWidget *parent)
-    : PushButton(text, parent), _isSelected(false)
+    : PushButton(text, parent), m_isSelected(false)
 {
     setAttribute(Qt::WA_LayoutUsesWidgetRect);
     setProperty("isSelected", false);
@@ -26,20 +26,28 @@ PivotItem::PivotItem(const QString &text, QWidget *parent)
 }
 
 bool PivotItem::isSelected() const {
-    return _isSelected;
+    return m_isSelected;
 }
 
 void PivotItem::setSelected(bool isSelected) {
-    if (_isSelected == isSelected)
+    if (m_isSelected == isSelected)
         return;
-    _isSelected = isSelected;
+
+    m_isSelected = isSelected;
     setProperty("isSelected", isSelected);
     emit isSelectedChanged(isSelected);
     update();
 }
 
-void PivotItem::paintEvent(QPaintEvent *event) {
-    PushButton::paintEvent(event);
+void PivotItem::drawIcon(QPainter* painter, const QRectF& rect)
+{
+    if (isPressed()) {
+        painter->setOpacity(0.53);
+    } else if (isHover()) {
+        painter->setOpacity(0.63);
+    }
+
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO);
 }
 
 Pivot::Pivot(QWidget *parent)
