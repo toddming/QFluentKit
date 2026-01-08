@@ -224,6 +224,12 @@ void RoundMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniT
     }
 }
 
+QHBoxLayout* RoundMenu::hBoxLayout() const
+{
+    Q_D(const RoundMenu);
+    return d->layout;
+}
+
 void RoundMenu::adjustMenuSize()
 {
     Q_D(RoundMenu);
@@ -245,6 +251,12 @@ MenuActionListWidget *RoundMenu::view() const
 {
     Q_D(const RoundMenu);
     return d->view;
+}
+
+void RoundMenu::setView(MenuActionListWidget *view)
+{
+    Q_D(RoundMenu);
+    d->view = view;
 }
 
 void RoundMenu::closeEvent(QCloseEvent *event)

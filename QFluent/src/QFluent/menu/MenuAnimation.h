@@ -21,6 +21,8 @@ public:
 
     virtual void exec(const QPoint& pos) = 0;
 
+    virtual QPoint endPosition(const QPoint& pos) const;
+
     void updateMenuViewport();
 
     static void registerManager(Fluent::MenuAnimation type,
@@ -28,7 +30,6 @@ public:
     static MenuAnimationManager* make(RoundMenu* menu, Fluent::MenuAnimation aniType);
 
 protected:
-    virtual QPoint endPosition(const QPoint& pos) const;
     virtual std::pair<int, int> menuSize() const;
     virtual void onValueChanged();
 

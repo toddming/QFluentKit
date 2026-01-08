@@ -40,6 +40,8 @@ public:
     void setDefaultAction(QAction *action);
 
     MenuActionListWidget *view() const;
+    void setView(MenuActionListWidget *view);
+
     void adjustMenuSize();
     int itemHeight() const;
 
@@ -48,6 +50,8 @@ public:
     void hideMenu(bool isHideBySystem = false);
     void exec(const QPoint &pos, bool animate = true,
               Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN);
+
+    QHBoxLayout *hBoxLayout() const;
 
 signals:
     void closed();

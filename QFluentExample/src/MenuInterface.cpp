@@ -7,6 +7,7 @@
 #include "QFluent/Menu/RoundMenu.h"
 #include "QFluent/Menu/CheckableMenu.h"
 #include "QFluent/Menu/MenuActionListWidget.h"
+// #include "QFluent/Material/AcrylicMenu.h"
 
 MenuInterface::MenuInterface(QWidget *parent)
     : GalleryInterface("菜单", "", parent)
@@ -103,6 +104,7 @@ void MenuInterface::createCustomWidgetMenu(QPoint pos)
     auto card = new ProfileCard(":/res/Shizuka.png", "源静香", "shizuka@gmail.com", menu);
     menu->setItemHeight(36);
     menu->view()->setMaxVisibleItems(0);
+
     menu->addWidget(card);
     menu->addSeparator();
     menu->addAction(new Action(FluentIcon(Fluent::IconType::PEOPLE).qicon(), "管理账户和设置"));
