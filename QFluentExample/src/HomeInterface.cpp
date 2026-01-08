@@ -109,6 +109,8 @@ HomeInterface::HomeInterface(QWidget *parent)
     auto overlayVerticalScrollBar = new ScrollBar(this->verticalScrollBar(), this);
     overlayVerticalScrollBar->setAnimationEnabled(true);
 
+    setGrabGestureEnabled(true); // 支持触摸
+
     m_view = new QWidget(this);
     m_vBoxLayout = new QVBoxLayout(m_view);
     m_banner = new BannerWidget(this);
