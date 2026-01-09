@@ -7,7 +7,7 @@
 #include "QFluent/Menu/RoundMenu.h"
 #include "QFluent/Menu/CheckableMenu.h"
 #include "QFluent/Menu/MenuActionListWidget.h"
-// #include "QFluent/Material/AcrylicMenu.h"
+#include "QFluent/Material/AcrylicMenu.h"
 
 MenuInterface::MenuInterface(QWidget *parent)
     : GalleryInterface("菜单", "", parent)
@@ -51,7 +51,6 @@ MenuInterface::MenuInterface(QWidget *parent)
     });
 
     addExampleCard("自定义组件菜单", btn2);
-
 
     auto btn3 = new PushButton("显示菜单", this);
     connect(btn3, &PushButton::clicked, this, [=](){
@@ -100,7 +99,7 @@ void MenuInterface::createCheckableMenu(QPoint pos)
 
 void MenuInterface::createCustomWidgetMenu(QPoint pos)
 {
-    auto menu = new RoundMenu("menu", this);
+    auto menu = new AcrylicMenu("menu", this);
     auto card = new ProfileCard(":/res/Shizuka.png", "源静香", "shizuka@gmail.com", menu);
     menu->setItemHeight(36);
     menu->view()->setMaxVisibleItems(0);

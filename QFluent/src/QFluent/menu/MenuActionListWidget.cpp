@@ -167,3 +167,7 @@ QPoint MenuActionListWidget::availableViewSize(const QPoint &pos, Fluent::MenuAn
     return point;
 }
 
+void MenuActionListWidget::addItem(QListWidgetItem *item)
+{
+    insertItem(count(), item);
+}

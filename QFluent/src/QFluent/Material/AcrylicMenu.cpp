@@ -34,9 +34,11 @@ int AcrylicMenuActionListWidget::_bottomMargin() const {
 }
 
 void AcrylicMenuActionListWidget::setItemHeight(int height) {
-    if (height == _itemHeight) {
+    if (height == this->property("_itemHeight").toInt()) {
         return;
     }
+    this->setProperty("_itemHeight", height);
+
     for (int i = 1; i < count() - 1; ++i) {
         QListWidgetItem *item = this->item(i);
         if (!itemWidget(item)) {
@@ -45,7 +47,6 @@ void AcrylicMenuActionListWidget::setItemHeight(int height) {
             item->setSizeHint(size);
         }
     }
-    _itemHeight = height;
     adjustSize();
 }
 
@@ -82,6 +83,11 @@ AcrylicMenu::AcrylicMenu(const QString &title, QWidget *parent)
     setUpMenu(listWidget);
 }
 
+void AcrylicMenu::setItemHeight(int height)
+{
+    listWidget->setItemHeight(height);
+}
+
 void AcrylicMenu::setUpMenu(AcrylicMenuActionListWidget *newView) {
     if (view()) {
         hBoxLayout()->removeWidget(view());
@@ -90,12 +96,12 @@ void AcrylicMenu::setUpMenu(AcrylicMenuActionListWidget *newView) {
     setView(newView);
     hBoxLayout()->addWidget(newView);
     // setShadowEffect();  // 假设RoundMenu有setShadowEffect方法
-    // connect(newView, &AcrylicMenuActionListWidget::itemClicked, this, &AcrylicMenu::_onItemClicked);  // 假设_onItemClicked是RoundMenu的槽
-    // connect(newView, &AcrylicMenuActionListWidget::itemEntered, this, &AcrylicMenu::_onItemEntered);  // 同上
+    connect(newView, &AcrylicMenuActionListWidget::itemClicked, this, &AcrylicMenu::onItemClicked);
+    connect(newView, &AcrylicMenuActionListWidget::itemEntered, this, &AcrylicMenu::onItemEntered);
 }
 
 void AcrylicMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniType) {
     QPoint p = MenuAnimationManager::make(this, aniType)->endPosition(pos);  // 假设make返回对象，有endPosition方法
-    listWidget->acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));  // 假设acrylicBrush有grabImage方法
     RoundMenu::exec(pos, animate, aniType);
+    listWidget->acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));  // 假设acrylicBrush有grabImage方法
 }

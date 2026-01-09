@@ -39,8 +39,8 @@ RoundMenu::RoundMenu(const QString &title, QWidget *parent)
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::MENU);
 
-    connect(d->view, &QListWidget::itemClicked, d, &RoundMenuPrivate::onItemClicked);
-    connect(d->view, &QListWidget::itemEntered, d, &RoundMenuPrivate::onItemEntered);
+    connect(d->view, &QListWidget::itemClicked, this, &RoundMenu::onItemClicked);
+    connect(d->view, &QListWidget::itemEntered, this, &RoundMenu::onItemEntered);
 
     d->showTimer->setSingleShot(true);
     d->showTimer->setInterval(400);
@@ -413,4 +413,49 @@ void RoundMenu::setHideByClick(bool enabled)
 {
     Q_D(RoundMenu);
     d->isHideByClick = enabled;
+}
+
+void RoundMenu::onItemClicked(QListWidgetItem *item)
+{
+    Q_D(RoundMenu);
+
+    if (!item)
+        return;
+
+    QVariant data = item->data(Qt::UserRole);
+    if (data.canConvert<QAction *>()) {
+        QAction *action = data.value<QAction *>();
+        if (action && action->isEnabled()) {
+            action->trigger();
+
+            if (d->view) {
+                QRect itemRect = d->view->visualItemRect(item);
+                QPointF localPos = itemRect.center();
+                QPointF globalPos = d->view->mapToGlobal(localPos.toPoint());
+
+                QHoverEvent hoverLeave(QEvent::HoverLeave, localPos, globalPos, Qt::NoModifier);
+                QApplication::sendEvent(d->view->viewport(), &hoverLeave);
+                d->view->update();
+            }
+            if (d->isHideByClick) {
+                close();
+            }
+        }
+    }
+}
+
+void RoundMenu::onItemEntered(QListWidgetItem *item)
+{
+    Q_D(RoundMenu);
+
+    if (!item)
+        return;
+
+    d->lastHoverItem = item;
+
+    QVariant data = item->data(Qt::UserRole);
+    if (data.canConvert<RoundMenu *>()) {
+        d->lastHoverSubMenuItem = item;
+        d->showTimer->start();
+    }
 }

@@ -39,8 +39,6 @@ public:
     void showSubMenu(QListWidgetItem *item);
 
 public slots:
-    void onItemClicked(QListWidgetItem *item);
-    void onItemEntered(QListWidgetItem *item);
     void onActionChanged();
     void onShowMenuTimeout();
 

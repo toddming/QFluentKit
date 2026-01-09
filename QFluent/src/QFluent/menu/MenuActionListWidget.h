@@ -10,7 +10,7 @@ class QFLUENT_EXPORT MenuActionListWidget : public QListWidget {
 public:
     explicit MenuActionListWidget(QWidget* parent = nullptr);
 
-    virtual void setItemHeight(int height);
+    void setItemHeight(int height);
     void setMaxVisibleItems(int num);
     int maxVisibleItems() const;
     void adjustSize(const QPoint& pos = QPoint(), Fluent::MenuAnimation aniType = Fluent::MenuAnimation::NONE);
@@ -19,6 +19,8 @@ public:
 
     int heightForAnimation(const QPoint& pos, Fluent::MenuAnimation aniType = Fluent::MenuAnimation::NONE);
     QPoint availableViewSize(const QPoint& pos, Fluent::MenuAnimation aniType = Fluent::MenuAnimation::NONE);
+
+    virtual void addItem(QListWidgetItem *item);
 
 protected:
     void wheelEvent(QWheelEvent* e) override;

@@ -7,6 +7,8 @@
 #include <QtMath>
 #include <QRandomGenerator>
 
+#include "Screen.h"
+
 // ==================== GaussianBlur 实现 ====================
 
 QPixmap GaussianBlur::blur(const QPixmap &source, int radius, double brightFactor)
@@ -337,19 +339,19 @@ void AcrylicBrush::setLuminosityColor(const QColor &color)
 
 void AcrylicBrush::grabImage(const QRect &rect)
 {
-    QScreen *screen = QApplication::primaryScreen();
-    if (QWindow *window = m_device->windowHandle()) {
-        screen = window->screen();
+    QScreen *screen = Screen::getCurrentScreen();
+    if (!screen) {
+        screen = QApplication::primaryScreen();
     }
-    
+
     if (!screen) {
         return;
     }
-    
+
     QRect screenGeometry = screen->geometry();
     int x = rect.x() - screenGeometry.x();
     int y = rect.y() - screenGeometry.y();
-    
+
     QPixmap grabbed = screen->grabWindow(0, x, y, rect.width(), rect.height());
     setImage(grabbed);
 }
@@ -400,22 +402,21 @@ void AcrylicBrush::paint()
     if (!m_device) {
         return;
     }
-    
+
     QPainter painter(m_device);
     painter.setRenderHint(QPainter::Antialiasing);
-    
+
     if (!m_clipPath.isEmpty()) {
         painter.setClipPath(m_clipPath);
     }
-    
+
     // 绘制模糊图像
     if (!m_image.isNull()) {
-        QPixmap scaledImage = m_image.scaled(m_device->size(), 
-                                            Qt::KeepAspectRatioByExpanding, 
-                                            Qt::SmoothTransformation);
-        painter.drawPixmap(0, 0, scaledImage);
+        QPixmap imageToDraw = m_image;
+        imageToDraw.setDevicePixelRatio(1.0);
+        painter.drawPixmap(m_device->rect(), imageToDraw);
     }
-    
+
     // 绘制亚克力纹理
     painter.fillRect(m_device->rect(), QBrush(textureImage()));
 }

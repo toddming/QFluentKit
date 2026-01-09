@@ -59,34 +59,7 @@ int RoundMenuPrivate::longestShortcutWidth() const
     return maxWidth;
 }
 
-void RoundMenuPrivate::onItemClicked(QListWidgetItem *item)
-{
-    Q_Q(RoundMenu);
 
-    if (!item)
-        return;
-
-    QVariant data = item->data(Qt::UserRole);
-    if (data.canConvert<QAction *>()) {
-        QAction *action = data.value<QAction *>();
-        if (action && action->isEnabled()) {
-            action->trigger();
-
-            if (view) {
-                QRect itemRect = view->visualItemRect(item);
-                QPointF localPos = itemRect.center();
-                QPointF globalPos = view->mapToGlobal(localPos.toPoint());
-
-                QHoverEvent hoverLeave(QEvent::HoverLeave, localPos, globalPos, Qt::NoModifier);
-                QApplication::sendEvent(view->viewport(), &hoverLeave);
-                view->update();
-            }
-            if (isHideByClick) {
-                q->close();
-            }
-        }
-    }
-}
 
 QListWidgetItem *RoundMenuPrivate::createActionItem(QAction *action, QAction *before)
 {
@@ -219,20 +192,6 @@ void RoundMenuPrivate::onShowMenuTimeout()
     y = qMax(y, screenRect.top());
 
     subMenu->exec(QPoint(x, y));
-}
-
-void RoundMenuPrivate::onItemEntered(QListWidgetItem *item)
-{
-    if (!item)
-        return;
-
-    lastHoverItem = item;
-
-    QVariant data = item->data(Qt::UserRole);
-    if (data.canConvert<RoundMenu *>()) {
-        lastHoverSubMenuItem = item;
-        showTimer->start();
-    }
 }
 
 void RoundMenuPrivate::setShadowEffect(int blurRadius, const QPointF &offset, const QColor &color)

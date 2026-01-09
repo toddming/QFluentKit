@@ -24,7 +24,7 @@ class QFLUENT_EXPORT AcrylicMenuActionListWidget : public MenuActionListWidget {
 public:
     explicit AcrylicMenuActionListWidget(QWidget *parent = nullptr);
 
-    void setItemHeight(int height) override;
+    void setItemHeight(int height);
     void addItem(QListWidgetItem *item);
     QListWidgetItem* createPlaceholderItem(int height = 2);
     QPainterPath clipPath() const;
@@ -39,7 +39,6 @@ private:
     int _topMargin() const;
     int _bottomMargin() const;
 
-    int _itemHeight = 0;  // 假设MenuActionListWidget中有_itemHeight，如果没有，可调整
     bool m_transparent = false;
 
     bool isTransparent() const { return m_transparent; }
@@ -50,6 +49,8 @@ class QFLUENT_EXPORT AcrylicMenu : public RoundMenu {
     Q_OBJECT
 public:
     explicit AcrylicMenu(const QString &title = "", QWidget *parent = nullptr);
+
+    void setItemHeight(int height);
 
     void setUpMenu(AcrylicMenuActionListWidget *view);
     void exec(const QPoint &pos, bool animate = true,

@@ -53,6 +53,10 @@ public:
 
     QHBoxLayout *hBoxLayout() const;
 
+public slots:
+    void onItemClicked(QListWidgetItem *item);
+    void onItemEntered(QListWidgetItem *item);
+
 signals:
     void closed();
 
