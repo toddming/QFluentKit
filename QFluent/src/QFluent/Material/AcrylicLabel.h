@@ -2,12 +2,7 @@
 
 #include <QLabel>
 #include <QThread>
-#include <QPixmap>
-#include <QImage>
-#include <QColor>
 #include <QPainterPath>
-#include <QRect>
-#include <QSize>
 
 #include "FluentGlobal.h"
 

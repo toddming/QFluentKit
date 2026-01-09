@@ -6,6 +6,12 @@
 #include <QWindow>
 #include <QtMath>
 #include <QRandomGenerator>
+#include <QPixmap>
+#include <QImage>
+#include <QColor>
+#include <QPainterPath>
+#include <QRect>
+#include <QSize>
 
 #include "Screen.h"
 
@@ -182,18 +188,7 @@ void AcrylicTextureLabel::setTintColor(const QColor &color)
 
 QImage AcrylicTextureLabel::createNoiseImage()
 {
-    // 创建噪声纹理 (64x64)
-    QImage noise(64, 64, QImage::Format_ARGB32);
-    
-    QRandomGenerator *rng = QRandomGenerator::global();
-    for (int y = 0; y < 64; ++y) {
-        for (int x = 0; x < 64; ++x) {
-            int gray = rng->bounded(256);
-            noise.setPixel(x, y, qRgba(gray, gray, gray, 255));
-        }
-    }
-    
-    return noise;
+    return QImage(":/res/images/acrylic/noise.png");
 }
 
 void AcrylicTextureLabel::paintEvent(QPaintEvent *event)
@@ -296,17 +291,7 @@ AcrylicBrush::AcrylicBrush(QWidget *device,
 
 QImage AcrylicBrush::createNoiseImage()
 {
-    QImage noise(64, 64, QImage::Format_ARGB32);
-    
-    QRandomGenerator *rng = QRandomGenerator::global();
-    for (int y = 0; y < 64; ++y) {
-        for (int x = 0; x < 64; ++x) {
-            int gray = rng->bounded(256);
-            noise.setPixel(x, y, qRgba(gray, gray, gray, 255));
-        }
-    }
-    
-    return noise;
+    return QImage(":/res/images/acrylic/noise.png");
 }
 
 void AcrylicBrush::setBlurRadius(int radius)

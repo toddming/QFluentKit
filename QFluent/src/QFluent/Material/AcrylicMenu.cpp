@@ -1,6 +1,17 @@
 ﻿#include "AcrylicMenu.h"
 #include <QApplication>
 #include <QStyle>
+#include <QPainter>
+#include <QPainterPath>
+#include <QColor>
+#include <QRectF>
+#include <QPaintEvent>
+#include <QSize>
+#include <QMargins>
+#include <QHBoxLayout>
+
+#include "QFluent/Menu/MenuAnimation.h"
+#include "Theme.h"
 
 AcrylicMenuActionListWidget::AcrylicMenuActionListWidget(QWidget *parent)
     : MenuActionListWidget(parent),

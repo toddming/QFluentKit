@@ -1,22 +1,9 @@
-﻿#ifndef ACRYLICMENU_H
-#define ACRYLICMENU_H
-
-#include <QListWidget>
-#include <QPainter>
-#include <QPainterPath>
-#include <QColor>
-#include <QRectF>
-#include <QPaintEvent>
-#include <QSize>
-#include <QMargins>
-#include <QHBoxLayout>
+﻿#pragma once
 
 #include "QFluent/Menu/MenuActionListWidget.h"
-#include "AcrylicLabel.h"
 #include "QFluent/Menu/RoundMenu.h"
-#include "QFluent/Menu/MenuAnimation.h"
 #include "FluentGlobal.h"
-#include "Theme.h"
+#include "AcrylicLabel.h"
 
 class QFLUENT_EXPORT AcrylicMenuActionListWidget : public MenuActionListWidget {
     Q_OBJECT
@@ -53,5 +40,3 @@ public:
 private:
     AcrylicMenuActionListWidget *listWidget;
 };
-
-#endif // ACRYLICMENU_H
