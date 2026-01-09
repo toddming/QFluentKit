@@ -18,7 +18,7 @@ class GaussianBlur
 {
 public:
     static QPixmap blur(const QPixmap &source, int radius, double brightFactor = 1.0);
-    static QPixmap blur(const QString &imagePath, int radius, double brightFactor = 1.0, 
+    static QPixmap blur(const QString &imagePath, int radius, double brightFactor = 1.0,
                        const QSize &maxSize = QSize());
     
 private:
@@ -115,7 +115,7 @@ public:
                          int blurRadius,
                          const QColor &tintColor = QColor(242, 242, 242, 150),
                          const QColor &luminosityColor = QColor(255, 255, 255, 10),
-                         double noiseOpacity = 0.03);
+                         double noiseOpacity = 0.02);
     
     void setBlurRadius(int radius);
     void setTintColor(const QColor &color);

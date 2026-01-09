@@ -1,18 +1,17 @@
 ﻿#include "AcrylicMenu.h"
 #include <QApplication>
 #include <QStyle>
-#include <QDebug>  // 可选，用于调试
 
 AcrylicMenuActionListWidget::AcrylicMenuActionListWidget(QWidget *parent)
     : MenuActionListWidget(parent),
-      acrylicBrush(viewport(), 35, QColor(242, 242, 242, 150)) {  // 假设AcrylicBrush构造函数为(parent, opacity)
+      acrylicBrush(viewport(), 35) {
     setViewportMargins(0, 0, 0, 0);
     setProperty("transparent", true);
-    MenuActionListWidget::addItem(createPlaceholderItem(_topMargin()));
-    MenuActionListWidget::addItem(createPlaceholderItem(_bottomMargin()));
+    MenuActionListWidget::addItem(createPlaceholderItem(topMargin()));
+    MenuActionListWidget::addItem(createPlaceholderItem(bottomMargin()));
 }
 
-void AcrylicMenuActionListWidget::_updateAcrylicColor() {
+void AcrylicMenuActionListWidget::updateAcrylicColor() {
     QColor tintColor, luminosityColor;
     if (Theme::instance()->isDarkTheme()) {
         tintColor = QColor(32, 32, 32, 200);
@@ -21,15 +20,15 @@ void AcrylicMenuActionListWidget::_updateAcrylicColor() {
         tintColor = QColor(255, 255, 255, 160);
         luminosityColor = QColor(255, 255, 255, 50);
     }
-    acrylicBrush.setTintColor(tintColor);  // 假设AcrylicBrush有setTintColor和setLuminosityColor方法
+    acrylicBrush.setTintColor(tintColor);
     acrylicBrush.setLuminosityColor(luminosityColor);
 }
 
-int AcrylicMenuActionListWidget::_topMargin() const {
+int AcrylicMenuActionListWidget::topMargin() const {
     return 6;
 }
 
-int AcrylicMenuActionListWidget::_bottomMargin() const {
+int AcrylicMenuActionListWidget::bottomMargin() const {
     return 6;
 }
 
@@ -70,9 +69,9 @@ QPainterPath AcrylicMenuActionListWidget::clipPath() const {
 void AcrylicMenuActionListWidget::paintEvent(QPaintEvent *event) {
     QPainter painter(viewport());
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    acrylicBrush.setClipPath(clipPath());  // 假设AcrylicBrush有setClipPath方法
-    _updateAcrylicColor();
-    acrylicBrush.paint();  // 假设AcrylicBrush有paint方法
+    acrylicBrush.setClipPath(clipPath());
+    updateAcrylicColor();
+    acrylicBrush.paint();
     MenuActionListWidget::paintEvent(event);
 }
 
@@ -95,13 +94,13 @@ void AcrylicMenu::setUpMenu(AcrylicMenuActionListWidget *newView) {
     }
     setView(newView);
     hBoxLayout()->addWidget(newView);
-    // setShadowEffect();  // 假设RoundMenu有setShadowEffect方法
+
     connect(newView, &AcrylicMenuActionListWidget::itemClicked, this, &AcrylicMenu::onItemClicked);
     connect(newView, &AcrylicMenuActionListWidget::itemEntered, this, &AcrylicMenu::onItemEntered);
 }
 
 void AcrylicMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniType) {
-    QPoint p = MenuAnimationManager::make(this, aniType)->endPosition(pos);  // 假设make返回对象，有endPosition方法
+    QPoint p = MenuAnimationManager::make(this, aniType)->endPosition(pos);
     RoundMenu::exec(pos, animate, aniType);
-    listWidget->acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));  // 假设acrylicBrush有grabImage方法
+    listWidget->acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));
 }

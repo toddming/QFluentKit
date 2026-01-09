@@ -20,7 +20,6 @@
 
 class QFLUENT_EXPORT AcrylicMenuActionListWidget : public MenuActionListWidget {
     Q_OBJECT
-    Q_PROPERTY(bool transparent READ isTransparent WRITE setTransparent)
 public:
     explicit AcrylicMenuActionListWidget(QWidget *parent = nullptr);
 
@@ -35,14 +34,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    void _updateAcrylicColor();
-    int _topMargin() const;
-    int _bottomMargin() const;
-
-    bool m_transparent = false;
-
-    bool isTransparent() const { return m_transparent; }
-    void setTransparent(bool transparent) { m_transparent = transparent; }
+    void updateAcrylicColor();
+    int topMargin() const;
+    int bottomMargin() const;
 };
 
 class QFLUENT_EXPORT AcrylicMenu : public RoundMenu {
