@@ -48,7 +48,7 @@ public:
     void setHideByClick(bool enabled);
 
     void hideMenu(bool isHideBySystem = false);
-    void exec(const QPoint &pos, bool animate = true,
+    virtual void exec(const QPoint &pos, bool animate = true,
               Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN);
 
     QHBoxLayout *hBoxLayout() const;

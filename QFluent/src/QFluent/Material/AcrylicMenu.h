@@ -35,7 +35,7 @@ public:
 
     void setUpMenu(AcrylicMenuActionListWidget *view);
     void exec(const QPoint &pos, bool animate = true,
-              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN);
+              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN) override;
 
 private:
     AcrylicMenuActionListWidget *listWidget;

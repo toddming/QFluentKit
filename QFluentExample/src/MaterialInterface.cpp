@@ -1,17 +1,15 @@
-﻿#include "MenuInterface.h"
-
+﻿#include "MaterialInterface.h"
 #include <QWidget>
 #include <QActionGroup>
-#include "QFluent/PushButton.h"
-#include "QFluent/ProfileCard.h"
-#include "QFluent/Menu/RoundMenu.h"
-#include "QFluent/Menu/CheckableMenu.h"
-#include "QFluent/Menu/MenuActionListWidget.h"
 
-MenuInterface::MenuInterface(QWidget *parent)
-    : GalleryInterface("菜单", "", parent)
+#include "QFluent/ProfileCard.h"
+#include "QFluent/Material/AcrylicMenu.h"
+#include "QFluent/Material/AcrylicCheckableMenu.h"
+
+MaterialInterface::MaterialInterface(QWidget *parent)
+    : GalleryInterface("材料", "", parent)
 {
-    setObjectName("MenuInterface");
+    setObjectName("MaterialInterface");
 
     createTimeAction = new Action(FluentIcon(Fluent::IconType::CALENDAR).qicon(), "创建日期", this);
     shootTimeAction = new Action(FluentIcon(Fluent::IconType::CAMERA).qicon(), "拍摄日期", this);
@@ -37,35 +35,43 @@ MenuInterface::MenuInterface(QWidget *parent)
     actionGroup2->addAction(ascendAction);
     actionGroup2->addAction(descendAction);
 
-    auto btn1 = new PushButton("显示菜单", this);
-    connect(btn1, &PushButton::clicked, this, [=](){
-        createMenu(btn1->mapToGlobal(QPoint(btn1->width() + 5, -100)));
+    auto image1 = new MenuLabel(this);
+    image1->setImage(":/res/Image10.jpg");
+    image1->scaledToHeight(280);
+    image1->setBorderRadius(6, 6, 6, 6);
+    addExampleCard("亚克力效果的圆角菜单", image1);
+    connect(image1, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
+        createMenu(pos);
     });
 
-    addExampleCard("圆角菜单", btn1);
-
-    auto btn2 = new PushButton("显示菜单", this);
-    connect(btn2, &PushButton::clicked, this, [=](){
-        createCustomWidgetMenu(btn2->mapToGlobal(QPoint(btn2->width() + 5, -100)));
+    auto image2 = new MenuLabel(this);
+    image2->setImage(":/res/Image10.jpg");
+    image2->scaledToHeight(280);
+    image2->setBorderRadius(6, 6, 6, 6);
+    addExampleCard("亚克力效果的自定义组件菜单", image2);
+    connect(image2, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
+        createCustomWidgetMenu(pos);
     });
 
-    addExampleCard("自定义组件菜单", btn2);
 
-    auto btn3 = new PushButton("显示菜单", this);
-    connect(btn3, &PushButton::clicked, this, [=](){
-        createCheckableMenu(btn3->mapToGlobal(QPoint(btn3->width() + 5, -100)));
+    auto image3 = new MenuLabel(this);
+    image3->setImage(":/res/Image10.jpg");
+    image3->scaledToHeight(280);
+    image3->setBorderRadius(6, 6, 6, 6);
+    addExampleCard("亚克力效果的可选中菜单", image3);
+    connect(image3, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
+        createCheckableMenu(pos);
     });
 
-    addExampleCard("可选中菜单", btn3);
 }
 
-void MenuInterface::createMenu(QPoint pos)
+void MaterialInterface::createMenu(QPoint pos)
 {
-    RoundMenu *menu = new RoundMenu("menu", this);
+    auto menu = new AcrylicMenu("menu", this);
     menu->addAction(new Action(FluentIcon(Fluent::IconType::COPY).qicon(), "复制", this));
     menu->addAction(new Action(FluentIcon(Fluent::IconType::CUT).qicon(), "剪贴", this));
 
-    RoundMenu *submenu = new RoundMenu("添加到", this);
+    auto submenu = new AcrylicMenu("添加到", this);
     submenu->setIcon(FluentIcon(Fluent::IconType::ADD).qicon());
     submenu->addAction(new Action(FluentIcon(Fluent::IconType::VIDEO).qicon(), "视频"));
     submenu->addAction(new Action(FluentIcon(Fluent::IconType::MUSIC).qicon(), "音乐"));
@@ -82,9 +88,9 @@ void MenuInterface::createMenu(QPoint pos)
     menu->exec(pos);
 }
 
-void MenuInterface::createCheckableMenu(QPoint pos)
+void MaterialInterface::createCheckableMenu(QPoint pos)
 {
-    CheckableMenu *menu = new CheckableMenu("menu", this, Fluent::MenuIndicator::RADIO);
+    auto menu = new AcrylicCheckableMenu("menu", this, Fluent::MenuIndicator::RADIO);
     menu->addAction(createTimeAction);
     menu->addAction(shootTimeAction);
     menu->addAction(modifiedTimeAction);
@@ -96,9 +102,9 @@ void MenuInterface::createCheckableMenu(QPoint pos)
     menu->exec(pos);
 }
 
-void MenuInterface::createCustomWidgetMenu(QPoint pos)
+void MaterialInterface::createCustomWidgetMenu(QPoint pos)
 {
-    auto menu = new RoundMenu("menu", this);
+    auto menu = new AcrylicMenu("menu", this);
     auto card = new ProfileCard(":/res/Shizuka.png", "源静香", "shizuka@gmail.com", menu);
     menu->setItemHeight(36);
     menu->view()->setMaxVisibleItems(0);
@@ -111,5 +117,18 @@ void MenuInterface::createCustomWidgetMenu(QPoint pos)
     menu->addSeparator();
     menu->addAction(new Action(FluentIcon(Fluent::IconType::SETTING).qicon(), "设置"));
 
-    menu->exec(pos);
+    menu->exec(pos, true, Fluent::MenuAnimation::DROP_DOWN);
+}
+
+
+
+MenuLabel::MenuLabel(QWidget *parent)
+    : ImageLabel(parent)
+{
+
+}
+
+void MenuLabel::contextMenuEvent(QContextMenuEvent *event)
+{
+    emit mouseRightClicked(event->globalPos());
 }

@@ -14,7 +14,7 @@
 #include "LayoutInterface.h"
 #include "MenuInterface.h"
 #include "NavigationViewInterface.h"
-#include "ScrollInterface.h"
+#include "MaterialInterface.h"
 #include "StatusInfoInterface.h"
 #include "TextInterface.h"
 #include "ViewInterface.h"
@@ -71,7 +71,7 @@ void MainWindow::initWidget()
     addSubInterface("7", FluentIcon(iconPath.arg("Menu")), "菜单", new MenuInterface(this), true, NIP::SCROLL);
     addSubInterface("8", FluentIcon(FIT::MENU), "导航", new NavigationViewInterface(this), true, NIP::SCROLL);
     addSubInterface("9", FluentIcon(FIT::APPLICATION), "窗口", new WindowInterface(this), true, NIP::SCROLL);
-    addSubInterface("10", FluentIcon(FIT::SCROLL), "滚动", new ScrollInterface(this), true, NIP::SCROLL);
+    addSubInterface("10", FluentIcon(FIT::PALETTE), "材料", new MaterialInterface(this), true, NIP::SCROLL);
     addSubInterface("11", FluentIcon(FIT::CHAT), "状态", new StatusInfoInterface(this), true, NIP::SCROLL);
     addSubInterface("12", FluentIcon(iconPath.arg("Text")), "文本", new TextInterface(this), true, NIP::SCROLL);
     addSubInterface("13", FluentIcon(iconPath.arg("Grid")), "视图", new ViewInterface(this), true, NIP::SCROLL);

@@ -2,6 +2,7 @@
 
 #include "QFluent/ListView.h"
 #include "QFluent/TableView.h"
+#include "QFluent/PagiNation.h"
 
 ViewInterface::ViewInterface(QWidget *parent)
     : GalleryInterface("视图", "", parent)
@@ -92,6 +93,12 @@ ViewInterface::ViewInterface(QWidget *parent)
     listFrame->setFixedSize(300, 400);
 
     addExampleCard("简单的列表组件", listFrame);
+
+    auto pagiNation = new PagiNation(this);
+    pagiNation->setAlign(Fluent::Alignment::Align_Left);
+    pagiNation->setPageSize(10);
+    pagiNation->setTotal(500);
+    addExampleCard("页码组件", pagiNation);
 }
 
 Frame::Frame(QWidget *parent)
