@@ -117,7 +117,7 @@ void MaterialInterface::createCustomWidgetMenu(QPoint pos)
     menu->addSeparator();
     menu->addAction(new Action(FluentIcon(Fluent::IconType::SETTING).qicon(), "设置"));
 
-    menu->exec(pos, true, Fluent::MenuAnimation::DROP_DOWN);
+    menu->exec(pos);
 }
 
 

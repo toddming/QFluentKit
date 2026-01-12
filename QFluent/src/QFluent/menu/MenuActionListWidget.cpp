@@ -65,6 +65,7 @@ void MenuActionListWidget::adjustSize(const QPoint& pos, Fluent::MenuAnimation a
 
     QMargins m = viewportMargins();
     size += QSize(m.left()+m.right()+2, m.top()+m.bottom());
+
     size.setHeight(qMin(h, size.height()+3));
     size.setWidth(qMax(qMin(w, size.width()), minimumWidth()));
 
