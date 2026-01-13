@@ -8,6 +8,7 @@
 
 class RoundMenu;
 class QPropertyAnimation;
+class QParallelAnimationGroup;
 class QPoint;
 template<class Key, class T> class QMap;
 
@@ -70,4 +71,31 @@ public:
 
 protected:
     QPoint endPosition(const QPoint& pos) const override;
+};
+
+class FadeInDropDownMenuAnimationManager : public MenuAnimationManager
+{
+    Q_OBJECT
+public:
+    explicit FadeInDropDownMenuAnimationManager(RoundMenu* menu, QObject* parent = nullptr);
+    void exec(const QPoint& pos) override;
+
+private:
+    QPropertyAnimation* m_opacityAni;
+    QParallelAnimationGroup* m_aniGroup;
+};
+
+class FadeInPullUpMenuAnimationManager : public MenuAnimationManager
+{
+    Q_OBJECT
+public:
+    explicit FadeInPullUpMenuAnimationManager(RoundMenu* menu, QObject* parent = nullptr);
+    void exec(const QPoint& pos) override;
+
+protected:
+    QPoint endPosition(const QPoint& pos) const override;
+
+private:
+    QPropertyAnimation* m_opacityAni;
+    QParallelAnimationGroup* m_aniGroup;
 };

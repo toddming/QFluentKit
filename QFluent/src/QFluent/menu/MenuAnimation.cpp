@@ -2,6 +2,7 @@
 
 #include <QHoverEvent>
 #include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 #include <QApplication>
 #include <QDebug>
 #include <QLayout>
@@ -30,6 +31,12 @@ namespace {
 
             MenuAnimationManager::registerManager(Fluent::MenuAnimation::PULL_UP,
                 [](RoundMenu* menu) { return new PullUpMenuAnimationManager(menu, menu); });
+
+            MenuAnimationManager::registerManager(Fluent::MenuAnimation::FADE_IN_DROP_DOWN,
+                [](RoundMenu* menu) { return new FadeInDropDownMenuAnimationManager(menu, menu); });
+
+            MenuAnimationManager::registerManager(Fluent::MenuAnimation::FADE_IN_PULL_UP,
+                [](RoundMenu* menu) { return new FadeInPullUpMenuAnimationManager(menu, menu); });
         }
     };
 
@@ -65,6 +72,7 @@ MenuAnimationManager* MenuAnimationManager::make(RoundMenu* menu, Fluent::MenuAn
 {
     auto& map = getManagers();
     if (!map.contains(aniType)) {
+        qWarning() << "Unknown animation type:" << static_cast<int>(aniType);
         return nullptr;
     }
     return map[aniType](menu);
@@ -239,6 +247,101 @@ QPoint PullUpMenuAnimationManager::endPosition(const QPoint& pos) const
     int w = m->width() + 5;
     int h = m->height();
     int x = qMin(pos.x() - margins.left(), rect.right() - w);
-    int y = qMax(pos.y() - h + 13, rect.top() + 4);
+    int y = qMax(pos.y() - h + 15, rect.top() + 4);
+    return QPoint(x, y);
+}
+
+// ================================================================================
+// FadeInDropDownMenuAnimationManager 实现
+// ================================================================================
+
+FadeInDropDownMenuAnimationManager::FadeInDropDownMenuAnimationManager(RoundMenu* menu, QObject* parent)
+    : MenuAnimationManager(menu, parent)
+{
+    m_opacityAni = new QPropertyAnimation(menu, "windowOpacity", this);
+    m_aniGroup = new QParallelAnimationGroup(this);
+
+    m_aniGroup->addAnimation(animation());
+    m_aniGroup->addAnimation(m_opacityAni);
+}
+
+void FadeInDropDownMenuAnimationManager::exec(const QPoint& pos)
+{
+    if (!isMenuValid()) {
+        return;
+    }
+
+    QPoint endPos = endPosition(pos);
+
+    // 设置透明度动画
+    m_opacityAni->setStartValue(0.0);
+    m_opacityAni->setEndValue(1.0);
+    m_opacityAni->setDuration(150);
+    m_opacityAni->setEasingCurve(QEasingCurve::OutQuad);
+
+    // 设置位置动画
+    animation()->setStartValue(endPos - QPoint(0, 8));
+    animation()->setEndValue(endPos);
+    animation()->setDuration(150);
+    animation()->setEasingCurve(QEasingCurve::OutQuad);
+
+    m_aniGroup->start();
+}
+
+// ================================================================================
+// FadeInPullUpMenuAnimationManager 实现
+// ================================================================================
+
+FadeInPullUpMenuAnimationManager::FadeInPullUpMenuAnimationManager(RoundMenu* menu, QObject* parent)
+    : MenuAnimationManager(menu, parent)
+{
+    m_opacityAni = new QPropertyAnimation(menu, "windowOpacity", this);
+    m_aniGroup = new QParallelAnimationGroup(this);
+
+    m_aniGroup->addAnimation(animation());
+    m_aniGroup->addAnimation(m_opacityAni);
+}
+
+void FadeInPullUpMenuAnimationManager::exec(const QPoint& pos)
+{
+    if (!isMenuValid()) {
+        return;
+    }
+
+    QPoint endPos = endPosition(pos);
+
+    // 设置透明度动画
+    m_opacityAni->setStartValue(0.0);
+    m_opacityAni->setEndValue(1.0);
+    m_opacityAni->setDuration(150);
+    m_opacityAni->setEasingCurve(QEasingCurve::OutQuad);
+
+    // 设置位置动画
+    animation()->setStartValue(endPos + QPoint(0, 8));
+    animation()->setEndValue(endPos);
+    animation()->setDuration(200);
+    animation()->setEasingCurve(QEasingCurve::OutQuad);
+
+    m_aniGroup->start();
+}
+
+QPoint FadeInPullUpMenuAnimationManager::endPosition(const QPoint& pos) const
+{
+    if (!isMenuValid()) {
+        return pos;
+    }
+
+    RoundMenu *m = menu();
+
+    QMargins margins;
+    if (m->layout()) {
+        margins = m->layout()->contentsMargins();
+    }
+
+    QRect rect = Screen::getCurrentScreenGeometry();
+    int w = m->width() + 5;
+    int h = m->height();
+    int x = qMin(pos.x() - margins.left(), rect.right() - w);
+    int y = qMax(pos.y() - h + 15, rect.top() + 4);
     return QPoint(x, y);
 }
