@@ -24,7 +24,6 @@ MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     setMouseTracking(true);
     setIconSize(QSize(14, 14));
 
-    // setProperty("transparent", true);
     setAttribute(Qt::WA_Hover, true);
     installEventFilter(this);
 }
@@ -59,7 +58,7 @@ void MenuActionListWidget::adjustSize(const QPoint& pos, Fluent::MenuAnimation a
         size.setHeight(size.height() + itemSize.height());
     }
 
-    QPoint point = availableViewSize(pos, aniType);
+    QPoint point = availableViewSize(pos, Fluent::MenuAnimation::NONE);
     int w = point.x();
     int h = point.y();
 

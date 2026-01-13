@@ -209,7 +209,7 @@ void RoundMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniT
 {
     Q_D(RoundMenu);
 
-    d->view->adjustSize(pos, aniType);
+    d->view->adjustSize(pos);
 
     if (!animate)
         aniType = Fluent::MenuAnimation::NONE;

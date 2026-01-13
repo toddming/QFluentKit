@@ -101,7 +101,6 @@ void MenuInterface::createCustomWidgetMenu(QPoint pos)
     auto menu = new RoundMenu("menu", this);
     auto card = new ProfileCard(":/res/Shizuka.png", "源静香", "shizuka@gmail.com", menu);
     menu->setItemHeight(36);
-    menu->view()->setMaxVisibleItems(0);
 
     menu->addWidget(card);
     menu->addSeparator();

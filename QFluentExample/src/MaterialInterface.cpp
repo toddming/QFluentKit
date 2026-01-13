@@ -107,7 +107,6 @@ void MaterialInterface::createCustomWidgetMenu(QPoint pos)
     auto menu = new AcrylicMenu("menu", this);
     auto card = new ProfileCard(":/res/Shizuka.png", "源静香", "shizuka@gmail.com", menu);
     menu->setItemHeight(36);
-    menu->view()->setMaxVisibleItems(0);
 
     menu->addWidget(card);
     menu->addSeparator();
@@ -117,7 +116,7 @@ void MaterialInterface::createCustomWidgetMenu(QPoint pos)
     menu->addSeparator();
     menu->addAction(new Action(FluentIcon(Fluent::IconType::SETTING).qicon(), "设置"));
 
-    menu->exec(pos);
+    menu->exec(pos, true, Fluent::MenuAnimation::DROP_DOWN);
 }
 
 
