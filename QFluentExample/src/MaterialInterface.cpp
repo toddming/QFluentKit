@@ -38,7 +38,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
     actionGroup2->addAction(descendAction);
 
     menuAcrylicLabel = new MenuAcrylicLabel(this);
-    menuAcrylicLabel->setImage(":/res/Mountain.jpg");
+    menuAcrylicLabel->setImage(":/res/Mountain.png");
     menuAcrylicLabel->setFixedSize(717, 280);
 
     addExampleCard("亚克力标签(右键调整模糊半径)", menuAcrylicLabel);
@@ -48,7 +48,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
 
     auto image1 = new MenuLabel(this);
-    image1->setImage(":/res/Mountain.jpg");
+    image1->setImage(":/res/Mountain.png");
     image1->scaledToHeight(280);
     image1->setBorderRadius(6, 6, 6, 6);
     addExampleCard("亚克力效果的圆角菜单(右键弹出菜单)", image1);
@@ -57,7 +57,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
     });
 
     auto image2 = new MenuLabel(this);
-    image2->setImage(":/res/Mountain.jpg");
+    image2->setImage(":/res/Mountain.png");
     image2->scaledToHeight(280);
     image2->setBorderRadius(6, 6, 6, 6);
     addExampleCard("亚克力效果的自定义组件菜单(右键弹出菜单)", image2);
@@ -67,7 +67,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
 
     auto image3 = new MenuLabel(this);
-    image3->setImage(":/res/Mountain.jpg");
+    image3->setImage(":/res/Mountain.png");
     image3->scaledToHeight(280);
     image3->setBorderRadius(6, 6, 6, 6);
     addExampleCard("亚克力效果的可选中菜单(右键弹出菜单)", image3);
@@ -146,7 +146,7 @@ void MaterialInterface::createSliderMenu(QPoint pos)
     layout->addWidget(slider, 1);
     connect(slider, &Slider::valueChanged, this, [=](int value){
         menuAcrylicLabel->setBlurRadius(value);
-        menuAcrylicLabel->setImage(":/res/Mountain.jpg");
+        menuAcrylicLabel->setImage(":/res/Mountain.png");
     });
 
     menu->addWidget(widget);
