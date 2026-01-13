@@ -21,6 +21,7 @@ MenuInterface::MenuInterface(QWidget *parent)
     shootTimeAction->setCheckable(true);
     modifiedTimeAction->setCheckable(true);
     nameAction->setCheckable(true);
+    createTimeAction->setChecked(true);
 
     auto actionGroup1 = new QActionGroup(this);
     actionGroup1->addAction(createTimeAction);
@@ -32,6 +33,7 @@ MenuInterface::MenuInterface(QWidget *parent)
     descendAction = new Action(FluentIcon(Fluent::IconType::DOWN).qicon(), "降序", this);
     ascendAction->setCheckable(true);
     descendAction->setCheckable(true);
+    ascendAction->setChecked(true);
 
     auto actionGroup2 = new QActionGroup(this);
     actionGroup2->addAction(ascendAction);

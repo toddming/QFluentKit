@@ -337,8 +337,8 @@ void RoundMenu::mouseMoveEvent(QMouseEvent *event)
     itemRect.translate(margins.left(), margins.top() + 2);
 
     if (d->parentMenu->geometry().contains(globalPos) &&
-        !itemRect.contains(globalPos) &&
-        !geometry().contains(globalPos)) {
+            !itemRect.contains(globalPos) &&
+            !geometry().contains(globalPos)) {
         parentView->clearSelection();
         hideMenu(false);
     }
@@ -360,6 +360,10 @@ void RoundMenu::addWidget(QWidget *widget, bool selectable)
 
     if (!widget)
         return;
+
+    if (!widget->parent()) {
+        widget->setParent(d->view);
+    }
 
     QAction *action = new QAction(this);
     action->setSeparator(selectable);

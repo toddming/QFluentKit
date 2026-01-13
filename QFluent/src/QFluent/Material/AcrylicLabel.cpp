@@ -255,6 +255,11 @@ void AcrylicLabel::setTintColor(const QColor &color)
     m_acrylicTextureLabel->setTintColor(color);
 }
 
+void AcrylicLabel::setBlurRadius(int value)
+{
+    m_blurRadius = value;
+}
+
 void AcrylicLabel::onBlurFinished(const QPixmap &blurPixmap)
 {
     m_blurPixmap = blurPixmap;

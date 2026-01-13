@@ -1,7 +1,7 @@
 ﻿#include "MaterialInterface.h"
 #include <QWidget>
 #include <QActionGroup>
-
+#include "QFluent/Slider.h"
 #include "QFluent/ProfileCard.h"
 #include "QFluent/Material/AcrylicMenu.h"
 #include "QFluent/Material/AcrylicCheckableMenu.h"
@@ -19,6 +19,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
     shootTimeAction->setCheckable(true);
     modifiedTimeAction->setCheckable(true);
     nameAction->setCheckable(true);
+    createTimeAction->setChecked(true);
 
     auto actionGroup1 = new QActionGroup(this);
     actionGroup1->addAction(createTimeAction);
@@ -30,10 +31,24 @@ MaterialInterface::MaterialInterface(QWidget *parent)
     descendAction = new Action(FluentIcon(Fluent::IconType::DOWN).qicon(), "降序", this);
     ascendAction->setCheckable(true);
     descendAction->setCheckable(true);
+    ascendAction->setChecked(true);
 
     auto actionGroup2 = new QActionGroup(this);
     actionGroup2->addAction(ascendAction);
     actionGroup2->addAction(descendAction);
+
+    menuAcrylicLabel = new MenuAcrylicLabel(this);
+    menuAcrylicLabel->setImage(":/res/Image10.jpg");
+    // menuAcrylicLabel->setFixedSize(717, 280);
+
+    menuAcrylicLabel->setMaximumSize(717, 280);
+    menuAcrylicLabel->setMinimumSize(717, 280);
+
+    addExampleCard("亚克力标签", menuAcrylicLabel, "", 1);
+    connect(menuAcrylicLabel, &MenuAcrylicLabel::mouseRightClicked, this, [=](const QPoint &pos){
+        createSliderMenu(pos);
+    });
+
 
     auto image1 = new MenuLabel(this);
     image1->setImage(":/res/Image10.jpg");
@@ -119,6 +134,28 @@ void MaterialInterface::createCustomWidgetMenu(QPoint pos)
     menu->exec(pos);
 }
 
+void MaterialInterface::createSliderMenu(QPoint pos)
+{
+    auto menu = new RoundMenu("menu", this);
+
+    auto widget = new QWidget(menu);
+    auto layout = new QHBoxLayout(widget);
+    layout->setContentsMargins(0, 0, 28, 0);
+    widget->setFixedSize(200, 45);
+
+    auto slider = new Slider(Qt::Horizontal, widget);
+    slider->setRange(0, 40);
+    slider->setValue(20);
+    layout->addWidget(slider, 1);
+    connect(slider, &Slider::valueChanged, this, [=](int value){
+        menuAcrylicLabel->setBlurRadius(value);
+        menuAcrylicLabel->setImage(":/res/Image10.jpg");
+    });
+
+    menu->addWidget(widget);
+
+    menu->exec(pos);
+}
 
 
 MenuLabel::MenuLabel(QWidget *parent)
@@ -128,6 +165,21 @@ MenuLabel::MenuLabel(QWidget *parent)
 }
 
 void MenuLabel::contextMenuEvent(QContextMenuEvent *event)
+{
+    emit mouseRightClicked(event->globalPos());
+}
+
+MenuAcrylicLabel::MenuAcrylicLabel(QWidget *parent)
+    : AcrylicLabel(20,
+                   QColor(105, 114, 168, 102),
+                   QColor(255, 255, 255, 0),
+                   QSize(),
+                   parent)
+{
+
+}
+
+void MenuAcrylicLabel::contextMenuEvent(QContextMenuEvent *event)
 {
     emit mouseRightClicked(event->globalPos());
 }

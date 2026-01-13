@@ -86,6 +86,8 @@ public:
     
     void setImage(const QString &imagePath);
     void setTintColor(const QColor &color);
+
+    void setBlurRadius(int value);
     
 protected:
     void resizeEvent(QResizeEvent *event) override;
