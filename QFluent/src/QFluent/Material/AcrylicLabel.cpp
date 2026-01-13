@@ -168,9 +168,9 @@ void BlurCoverThread::run()
 // ==================== AcrylicTextureLabel 实现 ====================
 
 AcrylicTextureLabel::AcrylicTextureLabel(const QColor &tintColor,
-                                       const QColor &luminosityColor,
-                                       double noiseOpacity,
-                                       QWidget *parent)
+                                         const QColor &luminosityColor,
+                                         double noiseOpacity,
+                                         QWidget *parent)
     : QLabel(parent)
     , m_tintColor(tintColor)
     , m_luminosityColor(luminosityColor)
@@ -221,10 +221,10 @@ void AcrylicTextureLabel::paintEvent(QPaintEvent *event)
 // ==================== AcrylicLabel 实现 ====================
 
 AcrylicLabel::AcrylicLabel(int blurRadius,
-                         const QColor &tintColor,
-                         const QColor &luminosityColor,
-                         const QSize &maxBlurSize,
-                         QWidget *parent)
+                           const QColor &tintColor,
+                           const QColor &luminosityColor,
+                           const QSize &maxBlurSize,
+                           QWidget *parent)
     : QLabel(parent)
     , m_blurRadius(blurRadius)
     , m_maxBlurSize(maxBlurSize)
@@ -260,11 +260,13 @@ void AcrylicLabel::setBlurRadius(int value)
     m_blurRadius = value;
 }
 
-void AcrylicLabel::onBlurFinished(const QPixmap &blurPixmap)
-{
+void AcrylicLabel::onBlurFinished(const QPixmap &blurPixmap) {
     m_blurPixmap = blurPixmap;
-    setPixmap(m_blurPixmap);
-    adjustSize();
+    if (!m_maxBlurSize.isNull()) {
+        this->setPixmap(m_blurPixmap);
+        this->adjustSize();
+    }
+    this->update();
 }
 
 void AcrylicLabel::resizeEvent(QResizeEvent *event)
@@ -272,19 +274,18 @@ void AcrylicLabel::resizeEvent(QResizeEvent *event)
     QLabel::resizeEvent(event);
     m_acrylicTextureLabel->resize(size());
     
-    if (!m_blurPixmap.isNull() && m_blurPixmap.size() != size()) {
-        setPixmap(m_blurPixmap.scaled(size(), Qt::KeepAspectRatioByExpanding, 
-                                     Qt::SmoothTransformation));
+    if (!m_blurPixmap.isNull() && size().width() > 0 && size().height() > 0) {
+        setPixmap(m_blurPixmap.scaled(size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     }
 }
 
 // ==================== AcrylicBrush 实现 ====================
 
 AcrylicBrush::AcrylicBrush(QWidget *device,
-                         int blurRadius,
-                         const QColor &tintColor,
-                         const QColor &luminosityColor,
-                         double noiseOpacity)
+                           int blurRadius,
+                           const QColor &tintColor,
+                           const QColor &luminosityColor,
+                           double noiseOpacity)
     : m_device(device)
     , m_blurRadius(blurRadius)
     , m_tintColor(tintColor)

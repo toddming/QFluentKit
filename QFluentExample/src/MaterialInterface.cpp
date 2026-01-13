@@ -39,12 +39,9 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
     menuAcrylicLabel = new MenuAcrylicLabel(this);
     menuAcrylicLabel->setImage(":/res/Image10.jpg");
-    // menuAcrylicLabel->setFixedSize(717, 280);
+    menuAcrylicLabel->setFixedSize(717, 280);
 
-    menuAcrylicLabel->setMaximumSize(717, 280);
-    menuAcrylicLabel->setMinimumSize(717, 280);
-
-    addExampleCard("亚克力标签", menuAcrylicLabel, "", 1);
+    addExampleCard("亚克力标签", menuAcrylicLabel);
     connect(menuAcrylicLabel, &MenuAcrylicLabel::mouseRightClicked, this, [=](const QPoint &pos){
         createSliderMenu(pos);
     });
@@ -173,7 +170,7 @@ MenuAcrylicLabel::MenuAcrylicLabel(QWidget *parent)
     : AcrylicLabel(20,
                    QColor(105, 114, 168, 102),
                    QColor(255, 255, 255, 0),
-                   QSize(),
+                   QSize(717, 280),
                    parent)
 {
 
