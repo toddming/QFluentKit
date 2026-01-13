@@ -1,4 +1,10 @@
-﻿#include "AcrylicLabel.h"
+﻿// ==================== GaussianBlur 优化实现 ====================
+// 主要改进：
+// 1. 修正 radius 到 sigma 的映射关系
+// 2. 提供更精确的高斯模糊近似
+// 3. 优化边界处理
+
+#include "AcrylicLabel.h"
 #include <QPainter>
 #include <QBrush>
 #include <QScreen>
@@ -22,116 +28,282 @@ QPixmap GaussianBlur::blur(const QPixmap &source, int radius, double brightFacto
     if (source.isNull() || radius <= 0) {
         return source;
     }
-    
+
     QImage image = source.toImage();
     image = gaussianBlurImage(image, radius);
-    
-    // 应用亮度因子
+
+    // 优化: 快速亮度调整
     if (brightFactor != 1.0) {
-        for (int y = 0; y < image.height(); ++y) {
-            for (int x = 0; x < image.width(); ++x) {
-                QRgb pixel = image.pixel(x, y);
-                int r = qMin(255, int(qRed(pixel) * brightFactor));
-                int g = qMin(255, int(qGreen(pixel) * brightFactor));
-                int b = qMin(255, int(qBlue(pixel) * brightFactor));
-                image.setPixel(x, y, qRgba(r, g, b, qAlpha(pixel)));
-            }
-        }
+        adjustBrightness(image, brightFactor);
     }
-    
+
     return QPixmap::fromImage(image);
 }
 
 QPixmap GaussianBlur::blur(const QString &imagePath, int radius, double brightFactor, const QSize &maxSize)
 {
     QPixmap pixmap(imagePath);
-    
+
     if (!maxSize.isNull() && !pixmap.isNull()) {
-        pixmap = pixmap.scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pixmap = pixmap.scaled(maxSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
-    
+
     return blur(pixmap, radius, brightFactor);
 }
 
 QImage GaussianBlur::gaussianBlurImage(const QImage &source, int radius)
 {
     QImage result = source.convertToFormat(QImage::Format_ARGB32);
-    
-    // 使用快速盒式模糊近似高斯模糊 (3次盒式模糊)
-    for (int i = 0; i < 3; ++i) {
-        boxBlur(result, radius / 3);
+
+    // 【关键修复】将 radius 转换为 sigma
+    // 标准映射关系：sigma = radius / 3.0
+    // 这样 radius=6 时，sigma=2，产生适中的模糊效果
+    // 你可以调整这个系数：
+    // - 除以 2.0：模糊效果稍强
+    // - 除以 3.0：标准效果（推荐）
+    // - 除以 4.0：模糊效果更弱
+    double sigma = radius / 3.0;
+
+    // 确保 sigma 至少为 0.5，避免过小的值导致无效果
+    if (sigma < 0.5) {
+        sigma = 0.5;
     }
-    
+
+    // 使用精确计算的盒式模糊半径
+    std::vector<int> boxes = boxesForGauss(sigma, 3);
+
+    for (int i = 0; i < 3; ++i) {
+        boxBlur(result, boxes[i]);
+    }
+
     return result;
+}
+
+// 根据高斯分布计算最优盒式模糊半径
+// 参考论文: "Fast Almost-Gaussian Filtering" by Peter Kovesi
+// 注意：这里的 sigma 是真正的高斯标准差，不是用户输入的 radius
+std::vector<int> GaussianBlur::boxesForGauss(double sigma, int n)
+{
+    // 计算理想的盒宽
+    double wIdeal = std::sqrt((12.0 * sigma * sigma / n) + 1.0);
+    int wl = std::floor(wIdeal);
+    if (wl % 2 == 0) wl--;  // 确保是奇数
+    int wu = wl + 2;
+
+    double mIdeal = (12.0 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) /
+                    (-4.0 * wl - 4);
+    int m = std::round(mIdeal);
+
+    std::vector<int> sizes(n);
+    for (int i = 0; i < n; i++) {
+        // 返回半径值（(width - 1) / 2）
+        sizes[i] = ((i < m ? wl : wu) - 1) / 2;
+    }
+
+    return sizes;
+}
+
+// 优化: 快速亮度调整，直接操作内存
+void GaussianBlur::adjustBrightness(QImage &image, double factor)
+{
+    if (image.format() != QImage::Format_ARGB32 &&
+        image.format() != QImage::Format_ARGB32_Premultiplied) {
+        image = image.convertToFormat(QImage::Format_ARGB32);
+    }
+
+    uint32_t* pixels = reinterpret_cast<uint32_t*>(image.bits());
+    int totalPixels = image.width() * image.height();
+
+    // 使用查找表优化 (对于常见的亮度因子)
+    if (factor > 0.5 && factor < 2.0) {
+        uint8_t lut[256];
+        for (int i = 0; i < 256; i++) {
+            lut[i] = std::min(255, static_cast<int>(i * factor));
+        }
+
+        for (int i = 0; i < totalPixels; ++i) {
+            uint32_t pixel = pixels[i];
+            uint8_t r = lut[qRed(pixel)];
+            uint8_t g = lut[qGreen(pixel)];
+            uint8_t b = lut[qBlue(pixel)];
+            pixels[i] = qRgba(r, g, b, qAlpha(pixel));
+        }
+    } else {
+        // 直接计算
+        for (int i = 0; i < totalPixels; ++i) {
+            uint32_t pixel = pixels[i];
+            int r = std::min(255, static_cast<int>(qRed(pixel) * factor));
+            int g = std::min(255, static_cast<int>(qGreen(pixel) * factor));
+            int b = std::min(255, static_cast<int>(qBlue(pixel) * factor));
+            pixels[i] = qRgba(r, g, b, qAlpha(pixel));
+        }
+    }
 }
 
 void GaussianBlur::boxBlur(QImage &image, int radius)
 {
     if (radius <= 0) return;
-    
-    boxBlurHorizontal(image, radius);
-    boxBlurVertical(image, radius);
+
+    int w = image.width();
+    int h = image.height();
+    int size = w * h;
+
+    if (image.format() != QImage::Format_ARGB32 &&
+        image.format() != QImage::Format_ARGB32_Premultiplied) {
+        image = image.convertToFormat(QImage::Format_ARGB32);
+    }
+
+    uint32_t* pixels = reinterpret_cast<uint32_t*>(image.bits());
+    std::vector<uint32_t> buffer(size);
+
+    boxBlurHorizontal(pixels, buffer.data(), w, h, radius);
+    boxBlurVertical(buffer.data(), pixels, w, h, radius);
 }
 
-void GaussianBlur::boxBlurHorizontal(QImage &image, int radius)
+// 优化: 使用整数运算代替浮点运算
+void GaussianBlur::boxBlurHorizontal(uint32_t* src, uint32_t* dest, int w, int h, int r)
 {
-    int width = image.width();
-    int height = image.height();
-    
-    for (int y = 0; y < height; ++y) {
-        QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(y));
-        QVector<QRgb> temp(width);
-        
-        for (int x = 0; x < width; ++x) {
-            int r = 0, g = 0, b = 0, a = 0;
-            int count = 0;
-            
-            for (int i = -radius; i <= radius; ++i) {
-                int xi = qBound(0, x + i, width - 1);
-                QRgb pixel = line[xi];
-                r += qRed(pixel);
-                g += qGreen(pixel);
-                b += qBlue(pixel);
-                a += qAlpha(pixel);
-                count++;
-            }
-            
-            temp[x] = qRgba(r / count, g / count, b / count, a / count);
+    // 使用定点数代替浮点数 (缩放 2^16)
+    const int SCALE = 65536;
+    int iarr = SCALE / (r + r + 1);
+
+    for (int i = 0; i < h; i++) {
+        int ti = i * w;
+        int li = ti;
+        int ri = ti + r;
+
+        uint32_t fv = src[ti];
+        uint32_t lv = src[ti + w - 1];
+
+        // 使用 64 位整数避免溢出
+        uint64_t val_r = qRed(fv) * (r + 1);
+        uint64_t val_g = qGreen(fv) * (r + 1);
+        uint64_t val_b = qBlue(fv) * (r + 1);
+        uint64_t val_a = qAlpha(fv) * (r + 1);
+
+        for (int j = 0; j < r; j++) {
+            val_r += qRed(src[ti + j]);
+            val_g += qGreen(src[ti + j]);
+            val_b += qBlue(src[ti + j]);
+            val_a += qAlpha(src[ti + j]);
         }
-        
-        for (int x = 0; x < width; ++x) {
-            line[x] = temp[x];
+
+        for (int j = 0; j <= r; j++) {
+            val_r += qRed(src[ri]) - qRed(fv);
+            val_g += qGreen(src[ri]) - qGreen(fv);
+            val_b += qBlue(src[ri]) - qBlue(fv);
+            val_a += qAlpha(src[ri]) - qAlpha(fv);
+
+            // 定点数除法
+            dest[ti++] = qRgba(
+                (val_r * iarr) >> 16,
+                (val_g * iarr) >> 16,
+                (val_b * iarr) >> 16,
+                (val_a * iarr) >> 16
+            );
+            ri++;
+        }
+
+        for (int j = r + 1; j < w - r; j++) {
+            val_r += qRed(src[ri]) - qRed(src[li]);
+            val_g += qGreen(src[ri]) - qGreen(src[li]);
+            val_b += qBlue(src[ri]) - qBlue(src[li]);
+            val_a += qAlpha(src[ri]) - qAlpha(src[li]);
+
+            dest[ti++] = qRgba(
+                (val_r * iarr) >> 16,
+                (val_g * iarr) >> 16,
+                (val_b * iarr) >> 16,
+                (val_a * iarr) >> 16
+            );
+            ri++; li++;
+        }
+
+        for (int j = w - r; j < w; j++) {
+            val_r += qRed(lv) - qRed(src[li]);
+            val_g += qGreen(lv) - qGreen(src[li]);
+            val_b += qBlue(lv) - qBlue(src[li]);
+            val_a += qAlpha(lv) - qAlpha(src[li]);
+
+            dest[ti++] = qRgba(
+                (val_r * iarr) >> 16,
+                (val_g * iarr) >> 16,
+                (val_b * iarr) >> 16,
+                (val_a * iarr) >> 16
+            );
+            li++;
         }
     }
 }
 
-void GaussianBlur::boxBlurVertical(QImage &image, int radius)
+void GaussianBlur::boxBlurVertical(uint32_t* src, uint32_t* dest, int w, int h, int r)
 {
-    int width = image.width();
-    int height = image.height();
-    
-    for (int x = 0; x < width; ++x) {
-        QVector<QRgb> temp(height);
-        
-        for (int y = 0; y < height; ++y) {
-            int r = 0, g = 0, b = 0, a = 0;
-            int count = 0;
-            
-            for (int i = -radius; i <= radius; ++i) {
-                int yi = qBound(0, y + i, height - 1);
-                QRgb pixel = image.pixel(x, yi);
-                r += qRed(pixel);
-                g += qGreen(pixel);
-                b += qBlue(pixel);
-                a += qAlpha(pixel);
-                count++;
-            }
-            
-            temp[y] = qRgba(r / count, g / count, b / count, a / count);
+    const int SCALE = 65536;
+    int iarr = SCALE / (r + r + 1);
+
+    for (int i = 0; i < w; i++) {
+        int ti = i;
+        int li = ti;
+        int ri = ti + r * w;
+
+        uint32_t fv = src[ti];
+        uint32_t lv = src[ti + w * (h - 1)];
+
+        uint64_t val_r = qRed(fv) * (r + 1);
+        uint64_t val_g = qGreen(fv) * (r + 1);
+        uint64_t val_b = qBlue(fv) * (r + 1);
+        uint64_t val_a = qAlpha(fv) * (r + 1);
+
+        for (int j = 0; j < r; j++) {
+            val_r += qRed(src[ti + j * w]);
+            val_g += qGreen(src[ti + j * w]);
+            val_b += qBlue(src[ti + j * w]);
+            val_a += qAlpha(src[ti + j * w]);
         }
-        
-        for (int y = 0; y < height; ++y) {
-            image.setPixel(x, y, temp[y]);
+
+        for (int j = 0; j <= r; j++) {
+            val_r += qRed(src[ri]) - qRed(fv);
+            val_g += qGreen(src[ri]) - qGreen(fv);
+            val_b += qBlue(src[ri]) - qBlue(fv);
+            val_a += qAlpha(src[ri]) - qAlpha(fv);
+
+            dest[ti] = qRgba(
+                (val_r * iarr) >> 16,
+                (val_g * iarr) >> 16,
+                (val_b * iarr) >> 16,
+                (val_a * iarr) >> 16
+            );
+            ri += w; ti += w;
+        }
+
+        for (int j = r + 1; j < h - r; j++) {
+            val_r += qRed(src[ri]) - qRed(src[li]);
+            val_g += qGreen(src[ri]) - qGreen(src[li]);
+            val_b += qBlue(src[ri]) - qBlue(src[li]);
+            val_a += qAlpha(src[ri]) - qAlpha(src[li]);
+
+            dest[ti] = qRgba(
+                (val_r * iarr) >> 16,
+                (val_g * iarr) >> 16,
+                (val_b * iarr) >> 16,
+                (val_a * iarr) >> 16
+            );
+            li += w; ri += w; ti += w;
+        }
+
+        for (int j = h - r; j < h; j++) {
+            val_r += qRed(lv) - qRed(src[li]);
+            val_g += qGreen(lv) - qGreen(src[li]);
+            val_b += qBlue(lv) - qBlue(src[li]);
+            val_a += qAlpha(lv) - qAlpha(src[li]);
+
+            dest[ti] = qRgba(
+                (val_r * iarr) >> 16,
+                (val_g * iarr) >> 16,
+                (val_b * iarr) >> 16,
+                (val_a * iarr) >> 16
+            );
+            li += w; ti += w;
         }
     }
 }
@@ -160,7 +332,7 @@ void BlurCoverThread::run()
     if (m_imagePath.isEmpty()) {
         return;
     }
-    
+
     QPixmap pixmap = GaussianBlur::blur(m_imagePath, m_blurRadius, 0.85, m_maxSize);
     emit blurFinished(pixmap);
 }
@@ -194,24 +366,24 @@ QImage AcrylicTextureLabel::createNoiseImage()
 void AcrylicTextureLabel::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    
+
     // 创建亚克力纹理
     QImage acrylicTexture(64, 64, QImage::Format_ARGB32_Premultiplied);
-    
+
     // 填充亮度层
     acrylicTexture.fill(m_luminosityColor);
-    
+
     QPainter painter(&acrylicTexture);
-    
+
     // 绘制色调层
     painter.fillRect(acrylicTexture.rect(), m_tintColor);
-    
+
     // 绘制噪声层
     painter.setOpacity(m_noiseOpacity);
     painter.drawImage(acrylicTexture.rect(), m_noiseImage);
-    
+
     painter.end();
-    
+
     // 使用纹理画刷填充控件
     QBrush acrylicBrush(acrylicTexture);
     QPainter widgetPainter(this);
@@ -231,7 +403,7 @@ AcrylicLabel::AcrylicLabel(int blurRadius,
 {
     m_acrylicTextureLabel = new AcrylicTextureLabel(tintColor, luminosityColor, 0.03, this);
     m_blurThread = new BlurCoverThread(this);
-    
+
     connect(m_blurThread, &BlurCoverThread::blurFinished,
             this, &AcrylicLabel::onBlurFinished);
 }
@@ -260,20 +432,33 @@ void AcrylicLabel::setBlurRadius(int value)
     m_blurRadius = value;
 }
 
+int AcrylicLabel::blurRadius() const
+{
+    return m_blurRadius;
+}
+
 void AcrylicLabel::onBlurFinished(const QPixmap &blurPixmap) {
     m_blurPixmap = blurPixmap;
-    if (!m_maxBlurSize.isNull()) {
-        this->setPixmap(m_blurPixmap);
-        this->adjustSize();
+
+    if (!m_blurPixmap.isNull()) {
+        if (width() > 0 && height() > 0) {
+            setPixmap(m_blurPixmap.scaled(
+                size(),
+                Qt::KeepAspectRatioByExpanding,
+                Qt::SmoothTransformation));
+        } else {
+            setPixmap(m_blurPixmap);
+        }
     }
-    this->update();
+
+    update();
 }
 
 void AcrylicLabel::resizeEvent(QResizeEvent *event)
 {
     QLabel::resizeEvent(event);
     m_acrylicTextureLabel->resize(size());
-    
+
     if (!m_blurPixmap.isNull() && size().width() > 0 && size().height() > 0) {
         setPixmap(m_blurPixmap.scaled(size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     }
@@ -305,7 +490,7 @@ void AcrylicBrush::setBlurRadius(int radius)
     if (radius == m_blurRadius) {
         return;
     }
-    
+
     m_blurRadius = radius;
     if (!m_originalImage.isNull()) {
         setImage(m_originalImage);
@@ -350,11 +535,11 @@ void AcrylicBrush::grabImage(const QRect &rect)
 void AcrylicBrush::setImage(const QPixmap &image)
 {
     m_originalImage = image;
-    
+
     if (!image.isNull()) {
         m_image = GaussianBlur::blur(image, m_blurRadius);
     }
-    
+
     if (m_device) {
         m_device->update();
     }
@@ -378,13 +563,13 @@ QImage AcrylicBrush::textureImage()
 {
     QImage texture(64, 64, QImage::Format_ARGB32_Premultiplied);
     texture.fill(m_luminosityColor);
-    
+
     QPainter painter(&texture);
     painter.fillRect(texture.rect(), m_tintColor);
-    
+
     painter.setOpacity(m_noiseOpacity);
     painter.drawImage(texture.rect(), m_noiseImage);
-    
+
     return texture;
 }
 

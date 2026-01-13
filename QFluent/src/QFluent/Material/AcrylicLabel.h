@@ -15,30 +15,36 @@ public:
     static QPixmap blur(const QPixmap &source, int radius, double brightFactor = 1.0);
     static QPixmap blur(const QString &imagePath, int radius, double brightFactor = 1.0,
                        const QSize &maxSize = QSize());
-    
+
 private:
     static QImage gaussianBlurImage(const QImage &source, int radius);
     static void boxBlur(QImage &image, int radius);
-    static void boxBlurHorizontal(QImage &image, int radius);
-    static void boxBlurVertical(QImage &image, int radius);
+    static void boxBlurHorizontal(uint32_t* src, uint32_t* dest, int w, int h, int r);
+    static void boxBlurVertical(uint32_t* src, uint32_t* dest, int w, int h, int r);
+
+    // 修正: 参数改为 double 类型，因为 sigma 是浮点数
+    static std::vector<int> boxesForGauss(double sigma, int n);
+
+    // 快速亮度调整
+    static void adjustBrightness(QImage &image, double factor);
 };
 
 // 模糊线程类
 class BlurCoverThread : public QThread
 {
     Q_OBJECT
-    
+
 public:
     explicit BlurCoverThread(QObject *parent = nullptr);
-    
+
     void blur(const QString &imagePath, int blurRadius = 6, const QSize &maxSize = QSize(450, 450));
-    
+
 signals:
     void blurFinished(const QPixmap &pixmap);
-    
+
 protected:
     void run() override;
-    
+
 private:
     QString m_imagePath;
     int m_blurRadius;
@@ -49,24 +55,24 @@ private:
 class QFLUENT_EXPORT AcrylicTextureLabel : public QLabel
 {
     Q_OBJECT
-    
+
 public:
-    explicit AcrylicTextureLabel(const QColor &tintColor, 
+    explicit AcrylicTextureLabel(const QColor &tintColor,
                                 const QColor &luminosityColor,
                                 double noiseOpacity = 0.03,
                                 QWidget *parent = nullptr);
-    
+
     void setTintColor(const QColor &color);
-    
+
 protected:
     void paintEvent(QPaintEvent *event) override;
-    
+
 private:
     QColor m_tintColor;
     QColor m_luminosityColor;
     double m_noiseOpacity;
     QImage m_noiseImage;
-    
+
     QImage createNoiseImage();
 };
 
@@ -74,27 +80,28 @@ private:
 class QFLUENT_EXPORT AcrylicLabel : public QLabel
 {
     Q_OBJECT
-    
+
 public:
-    explicit AcrylicLabel(int blurRadius, 
+    explicit AcrylicLabel(int blurRadius,
                          const QColor &tintColor,
                          const QColor &luminosityColor = QColor(255, 255, 255, 0),
                          const QSize &maxBlurSize = QSize(),
                          QWidget *parent = nullptr);
-    
+
     ~AcrylicLabel();
-    
+
     void setImage(const QString &imagePath);
     void setTintColor(const QColor &color);
 
     void setBlurRadius(int value);
-    
+    int blurRadius() const;
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
-    
+
 private slots:
     void onBlurFinished(const QPixmap &blurPixmap);
-    
+
 private:
     QString m_imagePath;
     QPixmap m_blurPixmap;
@@ -108,24 +115,24 @@ private:
 class QFLUENT_EXPORT AcrylicBrush
 {
 public:
-    explicit AcrylicBrush(QWidget *device, 
+    explicit AcrylicBrush(QWidget *device,
                          int blurRadius,
                          const QColor &tintColor = QColor(242, 242, 242, 150),
                          const QColor &luminosityColor = QColor(255, 255, 255, 10),
                          double noiseOpacity = 0.02);
-    
+
     void setBlurRadius(int radius);
     void setTintColor(const QColor &color);
     void setLuminosityColor(const QColor &color);
-    
+
     void grabImage(const QRect &rect);
     void setImage(const QPixmap &image);
     void setImage(const QString &imagePath);
     void setClipPath(const QPainterPath &path);
-    
+
     void paint();
     QImage textureImage();
-    
+
 private:
     QWidget *m_device;
     int m_blurRadius;
@@ -136,6 +143,6 @@ private:
     QPixmap m_originalImage;
     QPixmap m_image;
     QPainterPath m_clipPath;
-    
+
     QImage createNoiseImage();
 };

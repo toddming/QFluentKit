@@ -38,39 +38,39 @@ MaterialInterface::MaterialInterface(QWidget *parent)
     actionGroup2->addAction(descendAction);
 
     menuAcrylicLabel = new MenuAcrylicLabel(this);
-    menuAcrylicLabel->setImage(":/res/Image10.jpg");
+    menuAcrylicLabel->setImage(":/res/Mountain.jpg");
     menuAcrylicLabel->setFixedSize(717, 280);
 
-    addExampleCard("亚克力标签", menuAcrylicLabel);
+    addExampleCard("亚克力标签(右键调整模糊半径)", menuAcrylicLabel);
     connect(menuAcrylicLabel, &MenuAcrylicLabel::mouseRightClicked, this, [=](const QPoint &pos){
         createSliderMenu(pos);
     });
 
 
     auto image1 = new MenuLabel(this);
-    image1->setImage(":/res/Image10.jpg");
+    image1->setImage(":/res/Mountain.jpg");
     image1->scaledToHeight(280);
     image1->setBorderRadius(6, 6, 6, 6);
-    addExampleCard("亚克力效果的圆角菜单", image1);
+    addExampleCard("亚克力效果的圆角菜单(右键弹出菜单)", image1);
     connect(image1, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
         createMenu(pos);
     });
 
     auto image2 = new MenuLabel(this);
-    image2->setImage(":/res/Image10.jpg");
+    image2->setImage(":/res/Mountain.jpg");
     image2->scaledToHeight(280);
     image2->setBorderRadius(6, 6, 6, 6);
-    addExampleCard("亚克力效果的自定义组件菜单", image2);
+    addExampleCard("亚克力效果的自定义组件菜单(右键弹出菜单)", image2);
     connect(image2, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
         createCustomWidgetMenu(pos);
     });
 
 
     auto image3 = new MenuLabel(this);
-    image3->setImage(":/res/Image10.jpg");
+    image3->setImage(":/res/Mountain.jpg");
     image3->scaledToHeight(280);
     image3->setBorderRadius(6, 6, 6, 6);
-    addExampleCard("亚克力效果的可选中菜单", image3);
+    addExampleCard("亚克力效果的可选中菜单(右键弹出菜单)", image3);
     connect(image3, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
         createCheckableMenu(pos);
     });
@@ -142,11 +142,11 @@ void MaterialInterface::createSliderMenu(QPoint pos)
 
     auto slider = new Slider(Qt::Horizontal, widget);
     slider->setRange(0, 40);
-    slider->setValue(20);
+    slider->setValue(menuAcrylicLabel->blurRadius());
     layout->addWidget(slider, 1);
     connect(slider, &Slider::valueChanged, this, [=](int value){
         menuAcrylicLabel->setBlurRadius(value);
-        menuAcrylicLabel->setImage(":/res/Image10.jpg");
+        menuAcrylicLabel->setImage(":/res/Mountain.jpg");
     });
 
     menu->addWidget(widget);

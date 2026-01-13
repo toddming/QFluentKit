@@ -79,7 +79,7 @@ void DialogInputInterface::showSimpleFlyout(QWidget* target)
 void DialogInputInterface::showComplexFlyout(QWidget* target)
 {
     auto view = new FlyoutView("iPhone", "iPhone 17 Pro 及 iPhone 17 Pro Max 新登場，由內而外\n精心設計，創出空前最強 iPhone 型號。熱鍛鋁金屬一體式\n機身為嶄新設計核心，將效能表現、電池容量以及耐用度極級提升。",
-                               QIcon(), QPixmap(":/res/SBR.jpg"));
+                               QIcon(), QPixmap(":/res/iPhone.jpg"));
 
     auto button = new PushButton("Action");
     button->setFixedWidth(120);
@@ -101,7 +101,7 @@ void DialogInputInterface::showBottomTeachingTip(QWidget* target)
 void DialogInputInterface::showLeftBottomTeachingTip(QWidget* target)
 {
     auto view = new TeachingTipView("iPhone", "iPhone 17 Pro 及 iPhone 17 Pro Max 新登場，由內而外精心設計，創出空前最強 iPhone 型號。熱鍛鋁金屬一體式機身為嶄新設計核心，將效能表現、電池容量以及耐用度極級提升。",
-                                    QIcon(), QPixmap(":/res/SBR.jpg"), true, TeachingTipTailPosition::LEFT_BOTTOM);
+                                    QIcon(), QPixmap(":/res/iPhone.jpg"), true, TeachingTipTailPosition::LEFT_BOTTOM);
 
     auto button = new PushButton("Action");
     button->setFixedWidth(120);
