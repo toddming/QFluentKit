@@ -39,7 +39,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
     menuAcrylicLabel = new MenuAcrylicLabel(this);
     menuAcrylicLabel->setImage(":/res/Mountain.png");
-    menuAcrylicLabel->setFixedSize(717, 280);
+    menuAcrylicLabel->setFixedSize(535, 300);
 
     addExampleCard("亚克力标签(右键调整模糊半径)", menuAcrylicLabel);
     connect(menuAcrylicLabel, &MenuAcrylicLabel::mouseRightClicked, this, [=](const QPoint &pos){
@@ -49,7 +49,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
     auto image1 = new MenuLabel(this);
     image1->setImage(":/res/Mountain.png");
-    image1->scaledToHeight(280);
+    image1->scaledToHeight(300);
     image1->setBorderRadius(6, 6, 6, 6);
     addExampleCard("亚克力效果的圆角菜单(右键弹出菜单)", image1);
     connect(image1, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
@@ -58,7 +58,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
     auto image2 = new MenuLabel(this);
     image2->setImage(":/res/Mountain.png");
-    image2->scaledToHeight(280);
+    image2->scaledToHeight(300);
     image2->setBorderRadius(6, 6, 6, 6);
     addExampleCard("亚克力效果的自定义组件菜单(右键弹出菜单)", image2);
     connect(image2, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
@@ -68,7 +68,7 @@ MaterialInterface::MaterialInterface(QWidget *parent)
 
     auto image3 = new MenuLabel(this);
     image3->setImage(":/res/Mountain.png");
-    image3->scaledToHeight(280);
+    image3->scaledToHeight(300);
     image3->setBorderRadius(6, 6, 6, 6);
     addExampleCard("亚克力效果的可选中菜单(右键弹出菜单)", image3);
     connect(image3, &MenuLabel::mouseRightClicked, this, [=](const QPoint &pos){
@@ -138,7 +138,7 @@ void MaterialInterface::createSliderMenu(QPoint pos)
     auto widget = new QWidget(menu);
     auto layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0, 0, 28, 0);
-    widget->setFixedSize(200, 45);
+    widget->setFixedSize(200, 55);
 
     auto slider = new Slider(Qt::Horizontal, widget);
     slider->setRange(0, 40);
@@ -170,7 +170,7 @@ MenuAcrylicLabel::MenuAcrylicLabel(QWidget *parent)
     : AcrylicLabel(20,
                    QColor(105, 114, 168, 102),
                    QColor(255, 255, 255, 0),
-                   QSize(717, 280),
+                   QSize(535, 300),
                    parent)
 {
 

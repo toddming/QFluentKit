@@ -42,7 +42,7 @@ function(qm_add_translation _target)
 
     # Get linguist tools
     if(NOT TARGET Qt${QT_VERSION_MAJOR}::lupdate OR NOT TARGET Qt${QT_VERSION_MAJOR}::lrelease)
-        message(FATAL_ERROR "qm_add_translation: linguist tools not defined. Add find_package(Qt\${QT_VERSION_MAJOR} COMPONENTS LinguistTools) to CMake to enable.")
+        message(FATAL_ERROR "qm_add_translation: linguist tools not defined. Add find_package(Qt5 COMPONENTS LinguistTools) to CMake to enable.")
     endif()
 
     set(_src_files)
@@ -64,12 +64,7 @@ function(qm_add_translation _target)
 
             set(_tmp_files)
             get_target_property(_tmp_files ${_item} SOURCES)
-            set(_qml_files)
-            get_target_property(_qml_files ${_item} QT_QML_MODULE_QML_FILES)
-            if (NOT _qml_files STREQUAL ${_item}-NOTFOUND)
-                list(APPEND _tmp_files ${_qml_files})
-            endif()
-            list(FILTER _tmp_files INCLUDE REGEX ".+\\.(h|hh|hpp|hxx|c|cc|cpp|cxx|m|mm|qml|js|mjs)$")
+            list(FILTER _tmp_files INCLUDE REGEX ".+\\.(h|hh|hpp|hxx|c|cc|cpp|cxx|m|mm)$")
             list(FILTER _tmp_files EXCLUDE REGEX "^(qasc|moc)_.+")
 
             # Need to convert to absolute path
