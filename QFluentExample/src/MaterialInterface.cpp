@@ -138,12 +138,12 @@ void MaterialInterface::createSliderMenu(QPoint pos)
     auto widget = new QWidget(menu);
     auto layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0, 0, 28, 0);
-    widget->setFixedSize(200, 55);
+    widget->setFixedWidth(200);
 
     auto slider = new Slider(Qt::Horizontal, widget);
     slider->setRange(0, 40);
     slider->setValue(menuAcrylicLabel->blurRadius());
-    layout->addWidget(slider, 1);
+    layout->addWidget(slider);
     connect(slider, &Slider::valueChanged, this, [=](int value){
         menuAcrylicLabel->setBlurRadius(value);
         menuAcrylicLabel->setImage(":/res/Mountain.png");
