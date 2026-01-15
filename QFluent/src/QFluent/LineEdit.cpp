@@ -17,8 +17,8 @@
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 
-#include "menu/MenuItemDelegate.h"
-#include "menu/MenuActionListWidget.h"
+#include "Menu/MenuItemDelegate.h"
+#include "Menu/MenuActionListWidget.h"
 
 LineEditButton::LineEditButton(const QIcon& icon, QWidget* parent)
     : QToolButton(parent), m_icon(icon) {

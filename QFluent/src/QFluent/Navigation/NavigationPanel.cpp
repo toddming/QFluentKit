@@ -14,6 +14,7 @@
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "NavigationWidget.h"
+#include "NavigationToolTip.h"
 #include "QFluent/Flyout.h"
 #include "QFluent/ScrollArea.h"
 
@@ -318,6 +319,7 @@ void NavigationPanel::registerWidget(
 
     if (!tooltip.isEmpty()) {
         widget->setToolTip(tooltip);
+        widget->installEventFilter(new NavigationToolTipFilter(widget, 1000));
     }
 
     m_items[routeKey] = NavigationItem(routeKey, parentRouteKey, widget);

@@ -1,5 +1,4 @@
-﻿// slider.cpp
-#include "slider.h"
+﻿#include "Slider.h"
 #include <QPropertyAnimation>
 #include <QPainter>
 #include <QPainterPath>
@@ -53,11 +52,17 @@ void SliderHandle::setHandleColor(const QColor &light, const QColor &dark)
     update();
 }
 
-void SliderHandle::enterEvent(QEnterEvent *event)
-{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void SliderHandle::enterEvent(QEnterEvent *event) {
     Q_UNUSED(event);
     startAnimation(6.5);
 }
+#else
+void SliderHandle::enterEvent(QEvent *event) {
+    Q_UNUSED(event);
+    startAnimation(6.5);
+}
+#endif
 
 void SliderHandle::leaveEvent(QEvent *event)
 {
@@ -381,8 +386,8 @@ void HollowHandleStyle::initConfig(const QMap<QString, QVariant> &customConfig)
 
     // 计算手柄大小
     int width = m_config["handle.margin"].toInt() +
-                m_config["handle.ring-width"].toInt() +
-                m_config["handle.hollow-radius"].toInt();
+            m_config["handle.ring-width"].toInt() +
+            m_config["handle.hollow-radius"].toInt();
     m_config["handle.size"] = QSize(2 * width, 2 * width);
 }
 
@@ -407,7 +412,7 @@ QRect HollowHandleStyle::subControlRect(ComplexControl control, const QStyleOpti
     } else if (subControl == SC_SliderHandle) {
         QSize size = m_config["handle.size"].toSize();
         int x = QStyle::sliderPositionFromValue(sliderOption->minimum, sliderOption->maximum,
-                                                 sliderOption->sliderPosition, rect.width());
+                                                sliderOption->sliderPosition, rect.width());
 
         // 防止手柄超出滑块范围
         x = x * (rect.width() - size.width()) / rect.width();
@@ -419,7 +424,7 @@ QRect HollowHandleStyle::subControlRect(ComplexControl control, const QStyleOpti
 }
 
 void HollowHandleStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,
-                                          QPainter *painter, const QWidget *widget) const
+                                           QPainter *painter, const QWidget *widget) const
 {
     if (control != CC_Slider || !option || !painter) {
         QProxyStyle::drawComplexControl(control, option, painter, widget);

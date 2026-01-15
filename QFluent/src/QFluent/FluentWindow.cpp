@@ -9,7 +9,7 @@
 #include "StyleSheet.h"
 #include "StackedWidget.h"
 #include "FluentTitleBar.h"
-#include "navigation/NavigationPanel.h"
+#include "Navigation/NavigationPanel.h"
 #include "Private/FluentWindowPrivate.h"
 #include "QWKWidgets/widgetwindowagent.h"
 

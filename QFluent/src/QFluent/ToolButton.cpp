@@ -12,8 +12,8 @@
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "Animation.h"
-#include "menu/RoundMenu.h"
-#include "menu/MenuActionListWidget.h"
+#include "Menu/RoundMenu.h"
+#include "Menu/MenuActionListWidget.h"
 
 // ToolButton
 ToolButton::ToolButton(QWidget* parent)

@@ -129,5 +129,7 @@
         <file>header.png</file>
         <file>Slices.png</file>
 		<file>Shizuka.png</file>
+		<file>iPhone.jpg</file>
+		<file>Mountain.png</file>
     </qresource>
 </RCC>
