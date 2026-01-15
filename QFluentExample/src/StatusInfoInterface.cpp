@@ -4,6 +4,7 @@
 #include "QFluent/Label.h"
 #include "QFluent/SpinBox.h"
 #include "QFluent/InfoBar.h"
+#include "QFluent/ToolTip.h"
 #include "QFluent/PushButton.h"
 #include "QFluent/Progress/ProgressBar.h"
 #include "QFluent/Progress/ProgressRing.h"
@@ -54,7 +55,25 @@ StatusInfoInterface::StatusInfoInterface(QWidget *parent)
 
     addExampleCard("不同弹出位置的消息条", w);
 
-    QColor color = Theme::instance()->themeColor();
+    auto t = new QWidget(this);
+    auto tipLayout = new QHBoxLayout(t);
+    auto btn7 = new PushButton("立即弹出", t);
+    auto btn8 = new PushButton("延时弹出", t);
+    auto btn9 = new PushButton("自动消失", t);
+    btn7->setToolTip("你看 我有几分像从前?");
+    btn8->setToolTip("你看 我有几分像从前?");
+    btn9->setToolTip("你看 我有几分像从前?");
+    btn7->installEventFilter(new ToolTipFilter(btn7, 0, ToolTipPosition::Top));
+    btn8->installEventFilter(new ToolTipFilter(btn8, 300, ToolTipPosition::Top));
+    btn9->installEventFilter(new ToolTipFilter(btn9, 0, ToolTipPosition::Top));
+    btn9->setToolTipDuration(1000);
+    tipLayout->addWidget(btn7);
+    tipLayout->addWidget(btn8);
+    tipLayout->addWidget(btn9);
+    tipLayout->setContentsMargins(0, 0, 0, 0);
+
+    addExampleCard("带工具提示的按钮", t);
+
     auto indeterminateProgressBar = new IndeterminateProgressBar(this);
     indeterminateProgressBar->setFixedWidth(200);
     addExampleCard("不确定进度条", indeterminateProgressBar);
