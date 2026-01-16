@@ -24,4 +24,5 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent* e) override;
+    void hideEvent(QHideEvent *event) override;
 };

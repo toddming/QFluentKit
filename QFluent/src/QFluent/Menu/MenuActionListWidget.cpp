@@ -1,7 +1,7 @@
 ﻿#include "MenuActionListWidget.h"
 
 #include <QWheelEvent>
-#include <QScrollBar>
+#include <QApplication>
 
 #include "Screen.h"
 #include "MenuItemDelegate.h"
@@ -170,4 +170,15 @@ QPoint MenuActionListWidget::availableViewSize(const QPoint &pos, Fluent::MenuAn
 void MenuActionListWidget::addItem(QListWidgetItem *item)
 {
     insertItem(count(), item);
+}
+
+void MenuActionListWidget::hideEvent(QHideEvent *event)
+{
+    setCurrentRow(-1);
+
+    QEvent leave(QEvent::Leave);
+    QApplication::sendEvent(viewport(), &leave);
+    viewport()->update();
+
+    QListView::hideEvent(event);
 }
