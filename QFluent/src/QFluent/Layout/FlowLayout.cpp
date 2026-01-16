@@ -176,7 +176,7 @@ void FlowLayout::setAnimation(int duration, QEasingCurve::Type easing)
     m_easingCurve = easing;
 
     // 更新所有现有动画
-    for (QPropertyAnimation *animation : qAsConst(m_animations)) {
+    for (QPropertyAnimation *animation : std::as_const(m_animations)) {
         if (animation) {
             animation->setDuration(m_animationDuration);
             animation->setEasingCurve(QEasingCurve(easing));
@@ -308,7 +308,7 @@ QSize FlowLayout::minimumSize() const
 {
     QSize size;
 
-    for (const QLayoutItem *item : qAsConst(m_items)) {
+    for (const QLayoutItem *item : std::as_const(m_items)) {
         if (item) {
             size = size.expandedTo(item->minimumSize());
         }
@@ -392,7 +392,7 @@ int FlowLayout::calculateHeight(const QRect &rect) const
     int lineHeight = 0;
     const int maxWidth = rect.right() - margins.right();
 
-    for (QLayoutItem *item : m_items) {  // ← 不再使用 const，也不需要 qAsConst
+    for (QLayoutItem *item : m_items) {
         if (!item) {
             continue;
         }

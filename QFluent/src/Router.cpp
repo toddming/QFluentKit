@@ -138,7 +138,7 @@ void Router::remove(const QString& routeKey)
     // 全局历史：保留最早出现的那条
     QList<RouteItem> newGlobal;
     bool first = true;
-    for (const auto& item : qAsConst(m_globalHistory)) {
+    for (const auto& item : std::as_const(m_globalHistory)) {
         if (item.routeKey != routeKey || first) {
             newGlobal.append(item);
             if (item.routeKey == routeKey) first = false;

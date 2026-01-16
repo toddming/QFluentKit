@@ -112,7 +112,7 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
         }
     }
 
-    for (int index : qAsConst(targetIndexes)) {
+    for (int index : std::as_const(targetIndexes)) {
         if (index >= 0 && index < pathNodes.length()) {
             QDomElement element = pathNodes.at(index).toElement();
             if (!element.isNull()) {

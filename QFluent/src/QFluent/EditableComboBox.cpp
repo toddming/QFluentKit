@@ -27,7 +27,7 @@ EditableComboBox::EditableComboBox(QWidget *parent)
 
     connect(d->dropButton, &LineEditButton::clicked, d, &EditableComboBoxPrivate::toggleComboMenu);
     connect(this, &LineEdit::textChanged, d, &EditableComboBoxPrivate::onComboTextChanged);
-    getClearButton()->disconnect();
+    disconnect(getClearButton(), &LineEditButton::clicked, nullptr, nullptr);
     connect(getClearButton(), &LineEditButton::clicked, d, &EditableComboBoxPrivate::onClearButtonClicked);
     connect(this, &EditableComboBox::returnPressed, d, &EditableComboBoxPrivate::onReturnPressed);
 }
