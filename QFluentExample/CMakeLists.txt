@@ -62,7 +62,9 @@ target_link_libraries(QFluentExample
         Qt${QT_VERSION_MAJOR}::Svg
         Qt${QT_VERSION_MAJOR}::Xml
 )
-
+if(WIN32 AND NOT BUILD_QWINDOWKIT)
+    target_link_libraries(QFluentExample PRIVATE dwmapi)
+endif()
 
 if (BUILD_QWINDOWKIT)
     add_subdirectory(libs/qwindowkit)

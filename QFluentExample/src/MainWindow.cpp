@@ -22,6 +22,12 @@
 
 #include "ConfigManager.h"
 
+#ifdef _WIN32
+#if !USE_QWINDOWKIT
+#include <dwmapi.h>
+#endif
+#endif
+
 using FIT = Fluent::IconType;
 using NIP = Fluent::NavigationItemPosition;
 

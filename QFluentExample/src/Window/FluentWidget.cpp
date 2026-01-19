@@ -1,13 +1,17 @@
 ﻿#include "FluentWidget.h"
+#include <QStyle>
 
 #include "Theme.h"
 #include "StyleSheet.h"
 
 #if USE_QWINDOWKIT
 #include <QEvent>
-#include <QStyle>
 #include <QLabel>
 #include "QWKWidgets/widgetwindowagent.h"
+#else
+#ifdef _WIN32
+#include <dwmapi.h>
+#endif
 #endif
 
 FluentWidget::FluentWidget(QWidget *parent)
@@ -52,9 +56,12 @@ FluentWidget::FluentWidget(QWidget *parent)
         agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
 #endif
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode theme) {
+        setWindowEffect(windowEffect());
+    });
+
     auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/fluent_window.qss");
     StyleSheetManager::instance()->registerWidget(styleSource, this);
-
 }
 
 
@@ -83,6 +90,8 @@ WindowButtonHints FluentWidget::windowButtonHints() const
 
 void FluentWidget::setWindowEffect(WindowEffect effect)
 {
+    _windowDisplayMode = effect;
+
 #if USE_QWINDOWKIT
     QWK::WidgetWindowAgent *agent = qobject_cast<QWK::WidgetWindowAgent *>(_windowAgent);
     if (agent == nullptr) {
@@ -105,16 +114,87 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
         setProperty("custom-style", true);
     }
     style()->polish(this);
+#else
+#ifdef _WIN32
+    QStringList names = {"none", "dwm-blur", "acrylic-material", "mica", "mica-alt"};
+    const QString data = names.at(static_cast<int>(effect) % names.size());
+    if (data == QStringLiteral("none") || data == QStringLiteral("acrylic-material")) {
+        setProperty("custom-style", false);
+    } else if (!data.isEmpty()) {
+        setProperty("custom-style", true);
+    }
+    style()->polish(this);
+
+    int themeMode = Theme::instance()->isDarkTheme() ? 1 : 0;
+
+    HWND hwnd = reinterpret_cast<HWND>(this->winId());
+
+    int useImmersiveDarkMode = themeMode; // 0 for light theme, 1 for dark theme
+    DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &useImmersiveDarkMode, sizeof(useImmersiveDarkMode));
+
+    switch (effect) {
+    case WindowEffect::Normal:
+    {
+        int backdropType = 0; // DWMSBT_DISABLE 或 1 (DWMSBT_AUTO)
+        DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
+
+        // 设置主题颜色: 0 - 浅色, 1 - 深色
+
+
+        // 取消边框扩展,恢复正常客户区
+        MARGINS margins = {0, 0, 0, 0};
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
+        return;
+    }
+    case WindowEffect::Acrylic:
+    {
+        DWM_SYSTEMBACKDROP_TYPE backdropType = DWMSBT_NONE;  // 设置为NONE禁用效果
+
+        // 取消边框扩展,恢复正常客户区
+        MARGINS margins = {0, 0, 0, 0};
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
+
+        DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+        return;
+
+    }
+
+    case WindowEffect::DWMBlur:
+    {
+        int backdropType = 3;
+        DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
+        break;
+    }
+
+    case WindowEffect::Mica:
+    {
+        int backdropType = 2;
+        DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
+        break;
+    }
+
+    case WindowEffect::MicaAlt:
+    {
+        int backdropType = 4;
+        DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
+        break;
+    }
+
+    default:
+        return;
+    }
+
+    // 对于其他效果,启用边框扩展
+    MARGINS margins = {-1};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
+
+#endif
 #endif
 }
 
 WindowEffect FluentWidget::windowEffect() const
 {
-#if USE_QWINDOWKIT
     return _windowDisplayMode;
-#else
-    return WindowEffect::Normal;
-#endif
 }
 
 FluentTitleBar *FluentWidget::titleBar() const
