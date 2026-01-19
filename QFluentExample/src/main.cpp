@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
     Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()), true);
-    Theme::instance()->setTheme(theme == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT, true);
+    Theme::instance()->setTheme(static_cast<Fluent::ThemeMode>(theme), true);
 
     MainWindow w;
     w.show();

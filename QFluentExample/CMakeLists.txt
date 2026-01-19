@@ -45,7 +45,6 @@ if(${QT_VERSION_MAJOR} EQUAL 6)
         FILES ${AUTO_RESOURCE_FILES}
     )
 else()
-    # 对于Qt5，需要生成RCC源文件
     add_executable(QFluentExample
         WIN32 MACOSX_BUNDLE
         ${CPP_SOURCES}

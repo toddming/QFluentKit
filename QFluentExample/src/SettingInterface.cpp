@@ -37,7 +37,7 @@ SettingInterface::SettingInterface(QWidget *parent)
     SettingCardGroup *aboutGroup = new SettingCardGroup("关于", m_scrollWidget);
 
 
-    ComboBoxSettingCard *themeCard = new ComboBoxSettingCard({"深色", "浅色"},
+    ComboBoxSettingCard *themeCard = new ComboBoxSettingCard({"自动", "浅色", "深色"},
                                                                 FluentIcon(Fluent::IconType::BRUSH).qicon(),
                                                                 "应用主题",
                                                                 "调整你的应用的外观",
@@ -100,12 +100,9 @@ SettingInterface::SettingInterface(QWidget *parent)
         main->setWindowEffect(static_cast<WindowEffect>(var));
     }
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode themeType){
-        themeCard->setValue(themeType == Fluent::ThemeMode::DARK ? 0 : 1);
-    });
     connect(themeCard, &ComboBoxSettingCard::currentIndexChanged, this, [=]
             (int index) {
-        Theme::instance()->setTheme(index == 0 ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+        Theme::instance()->setTheme(static_cast<Fluent::ThemeMode>(index));
         ConfigManager::instance().setValue("Window/theme", index);
     });
 }

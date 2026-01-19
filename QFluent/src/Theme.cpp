@@ -21,11 +21,14 @@ Theme::Theme(QObject* parent) : QObject(parent)
     d->_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
     QStyleHints *styleHints = QApplication::styleHints();
-    connect(styleHints, &QStyleHints::colorSchemeChanged, [d](Qt::ColorScheme scheme) {
+    connect(styleHints, &QStyleHints::colorSchemeChanged, [d, this](Qt::ColorScheme scheme) {
         if (scheme == Qt::ColorScheme::Dark) {
             d->_sysIsDarkMode = true;
         } else if (scheme == Qt::ColorScheme::Light) {
             d->_sysIsDarkMode = false;
+        }
+        if (d->_autoTheme) {
+            setTheme(Fluent::ThemeMode::AUTO);
         }
     });
 #endif
@@ -48,6 +51,13 @@ Fluent::ThemeMode Theme::theme() const {
 
 void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
     Q_D(Theme);
+
+    if(theme == Fluent::ThemeMode::AUTO) {
+        d->_autoTheme = true;
+        theme = (d->_sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+    } else {
+        d->_autoTheme = false;
+    }
 
     if (d->_currentTheme != theme) {
         d->_currentTheme = theme;

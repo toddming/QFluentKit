@@ -18,5 +18,7 @@ private:
 
     bool _sysIsDarkMode;
 
+    bool _autoTheme{true};
+
     QColor calculateThemeColor(Fluent::ThemeColor type) const;
 };
