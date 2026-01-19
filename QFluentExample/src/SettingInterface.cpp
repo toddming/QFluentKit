@@ -83,7 +83,7 @@ SettingInterface::SettingInterface(QWidget *parent)
     connect(effectCard, &OptionsSettingCard::optionChanged, this, [=]
             (int index, const QString& text) {
         auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowEffect(static_cast<Fluent::WindowEffect>(index));
+        main->setWindowEffect(static_cast<WindowEffect>(index));
         ConfigManager::instance().setValue("Window/effect", text);
     });
 
@@ -97,7 +97,7 @@ SettingInterface::SettingInterface(QWidget *parent)
     int var = modes.indexOf(effect);
     if (var >= 0) {
         auto main = qobject_cast<MainWindow*>(this->window());
-        main->setWindowEffect(static_cast<Fluent::WindowEffect>(var));
+        main->setWindowEffect(static_cast<WindowEffect>(var));
     }
 
     connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode themeType){

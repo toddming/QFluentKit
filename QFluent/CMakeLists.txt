@@ -118,9 +118,6 @@ target_link_libraries(QFluent
         Qt${QT_VERSION_MAJOR}::Xml
 )
 
-add_subdirectory(libs/qwindowkit)
-target_link_libraries(QFluent PRIVATE QWindowKit::Widgets)
-
 # ============================================
 # 安装配置
 # ============================================

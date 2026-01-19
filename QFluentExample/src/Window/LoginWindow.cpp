@@ -12,8 +12,8 @@
 
 LoginWidget::LoginWidget(bool autoLogin)
 {
-    Fluent::WindowButtonHints hints = Fluent::WindowButtonHint::Minimize |
-            Fluent::WindowButtonHint::Close;
+    WindowButtonHints hints = WindowButtonHint::Minimize |
+            WindowButtonHint::Close;
     setWindowButtonHints(hints);
 
     setContentsMargins(0, 0, 0, 0);

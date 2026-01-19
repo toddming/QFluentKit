@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "QFluent/FluentWidget.h"
+#include "FluentWidget.h"
 #include "QFluent/StackedWidget.h"
 #include "QFluent/Navigation/NavigationPanel.h"
 #include "QFluent/Navigation/NavigationWidget.h"

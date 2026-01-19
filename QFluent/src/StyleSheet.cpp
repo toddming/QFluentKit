@@ -260,7 +260,6 @@ const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
         typeMap.insert(Fluent::ThemeStyle::MEDIA_PLAYER, "media_player");
         typeMap.insert(Fluent::ThemeStyle::SETTING_CARD, "setting_card");
         typeMap.insert(Fluent::ThemeStyle::TEACHING_TIP, "teaching_tip");
-        typeMap.insert(Fluent::ThemeStyle::FLUENT_WINDOW, "fluent_window");
         typeMap.insert(Fluent::ThemeStyle::SWITCH_BUTTON, "switch_button");
         typeMap.insert(Fluent::ThemeStyle::MESSAGE_DIALOG, "message_dialog");
         typeMap.insert(Fluent::ThemeStyle::STATE_TOOL_TIP, "state_tool_tip");
@@ -269,7 +268,6 @@ const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
         typeMap.insert(Fluent::ThemeStyle::SETTING_CARD_GROUP, "setting_card_group");
         typeMap.insert(Fluent::ThemeStyle::EXPAND_SETTING_CARD, "expand_setting_card");
         typeMap.insert(Fluent::ThemeStyle::NAVIGATION_INTERFACE, "navigation_interface");
-        typeMap.insert(Fluent::ThemeStyle::TITLE_BAR, "title_bar");
 
         initialized = true;
     }

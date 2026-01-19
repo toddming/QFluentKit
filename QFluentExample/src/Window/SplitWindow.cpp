@@ -13,11 +13,11 @@ using NIP = Fluent::NavigationItemPosition;
 SplitWidget::SplitWidget()
 {
 
-    setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
-                         Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
-                         Fluent::WindowButtonHint::Close | Fluent::WindowButtonHint::RouteBack);
+    setWindowButtonHints(WindowButtonHint::Icon | WindowButtonHint::Title |
+                         WindowButtonHint::Minimize | WindowButtonHint::Maximize |
+                         WindowButtonHint::Close | WindowButtonHint::RouteBack);
 
-    setWindowEffect(Fluent::WindowEffect::Normal);
+    setWindowEffect(WindowEffect::Normal);
 
     setContentsMargins(0, 0, 0, 0);
 

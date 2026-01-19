@@ -56,7 +56,6 @@ enum class ThemeStyle {
     MEDIA_PLAYER,
     SETTING_CARD,
     TEACHING_TIP,
-    FLUENT_WINDOW,
     SWITCH_BUTTON,
     MESSAGE_DIALOG,
     STATE_TOOL_TIP,
@@ -65,7 +64,6 @@ enum class ThemeStyle {
     SETTING_CARD_GROUP,
     EXPAND_SETTING_CARD,
     NAVIGATION_INTERFACE,
-    TITLE_BAR,
     CUSTOM_STYLE_SHEET
 };
 Q_ENUM_NS(ThemeStyle)
@@ -281,31 +279,7 @@ enum class MenuIndicator {
 };
 Q_ENUM_NS(MenuIndicator)
 
-// ========== 窗口相关 ==========
-enum class WindowEffect {
-    Normal = 0x0000,
-    DWMBlur = 0x0001,
-    Acrylic,
-    Mica,
-    MicaAlt
-};
-Q_ENUM_NS(WindowEffect)
 
-// ========== AppBar 按钮类型 ==========
-enum WindowButtonHint {
-    None               = 0x0000,
-    RouteBack          = 0x0001,
-    Icon               = 0x0002,
-    IconLabel          = 0x0004,
-    StayOnTop          = 0x0008,
-    ThemeToggle        = 0x0010,
-    Minimize           = 0x0020,
-    Maximize           = 0x0040,
-    Close              = 0x0080,
-    Title              = 0x0100
-};
-Q_ENUM_NS(WindowButtonHint)
-Q_DECLARE_FLAGS(WindowButtonHints, WindowButtonHint)
 
 // ========== 信息栏相关 ==========
 enum class MessageType {
@@ -368,4 +342,3 @@ Q_ENUM_NS(ScrollBarHandleDisplayMode)
 
 } // namespace Fluent
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Fluent::WindowButtonHints)

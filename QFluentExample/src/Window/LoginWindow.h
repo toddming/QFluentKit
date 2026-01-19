@@ -7,7 +7,7 @@
 #include "QFluent/LineEdit.h"
 #include "QFluent/CheckBox.h"
 #include "QFluent/PushButton.h"
-#include "QFluent/FluentWidget.h"
+#include "FluentWidget.h"
 
 class LoginWidget : public FluentWidget
 {

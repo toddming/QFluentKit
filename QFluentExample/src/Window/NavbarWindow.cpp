@@ -9,9 +9,9 @@
 
 NavbarWidget::NavbarWidget()
 {
-    setWindowButtonHints(Fluent::WindowButtonHint::Icon | Fluent::WindowButtonHint::Title |
-                         Fluent::WindowButtonHint::Minimize | Fluent::WindowButtonHint::Maximize |
-                         Fluent::WindowButtonHint::Close);
+    setWindowButtonHints(WindowButtonHint::Icon | WindowButtonHint::Title |
+                         WindowButtonHint::Minimize | WindowButtonHint::Maximize |
+                         WindowButtonHint::Close);
 
     setContentsMargins(0, 0, 0, 0);
 
@@ -36,9 +36,6 @@ void NavbarWidget::initUI()
     stacked->addWidget(createWidget("信息框", stacked));
     stacked->addWidget(createWidget("设置", stacked));
 
-    StyleSheetManager::instance()->registerWidget(stacked, Fluent::ThemeStyle::FLUENT_WINDOW);
-
-
     auto *navigationBar = new NavigationBar(this);
     navigationBar->addItem("1", FluentIcon(Fluent::IconType::HOME), "主页", [stacked](){stacked->setCurrentIndex(0, false);}, true, Fluent::NavigationItemPosition::TOP);
     navigationBar->addSeparator();
@@ -48,7 +45,6 @@ void NavbarWidget::initUI()
     navigationBar->addSeparator(Fluent::NavigationItemPosition::BOTTOM);
     navigationBar->addItem("5", FluentIcon(Fluent::IconType::SETTING), "设置", [stacked](){stacked->setCurrentIndex(4, false);}, true, Fluent::NavigationItemPosition::BOTTOM);
     navigationBar->setCurrentItem("1");
-
 
     hBoxLayout->addWidget(navigationBar, 0);
     hBoxLayout->addWidget(stacked, 1);

@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "QFluent/FluentWidget.h"
+#include "FluentWidget.h"
 
 class NavbarWidget : public FluentWidget
 {

@@ -9,6 +9,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+set(BUILD_QWINDOWKIT OFF)
+
 file(GLOB_RECURSE SOURCES
     CONFIGURE_DEPENDS
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -61,6 +63,16 @@ target_link_libraries(QFluentExample
         Qt${QT_VERSION_MAJOR}::Svg
         Qt${QT_VERSION_MAJOR}::Xml
 )
+
+
+if (BUILD_QWINDOWKIT)
+    add_subdirectory(libs/qwindowkit)
+    target_link_libraries(QFluentExample PRIVATE QWindowKit::Widgets)
+    target_compile_definitions(QFluentExample PRIVATE USE_QWINDOWKIT=1)
+else()
+    target_compile_definitions(QFluentExample PRIVATE USE_QWINDOWKIT=0)
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS QFluentExample
     BUNDLE DESTINATION .

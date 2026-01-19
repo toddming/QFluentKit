@@ -1,12 +1,12 @@
 ﻿#pragma once
 
-#include "QFluent/FluentWindow.h"
+#include "Window/FluentWidget.h"
 #include "QFluent/StackedWidget.h"
 #include "QFluent/Navigation/NavigationPanel.h"
 #include "QFluent/Navigation/NavigationWidget.h"
 
 
-class MainWindow : public FluentWindow {
+class MainWindow : public FluentWidget {
     Q_OBJECT
 public:
     explicit MainWindow();

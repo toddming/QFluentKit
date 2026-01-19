@@ -1,7 +1,7 @@
 ﻿#include "MainWindow.h"
 
 #include "Router.h"
-#include "QFluent/FluentTitleBar.h"
+#include "Window/FluentTitleBar.h"
 #include "QFluent/Dialog/MessageDialog.h"
 
 #include "FluentIcon.h"
@@ -31,22 +31,30 @@ MainWindow::MainWindow()
     setWindowIcon(QPixmap(":/res/example.png"));
     resize(1024, 768);
 
-    setWindowButtonHints(windowButtonHints() | Fluent::WindowButtonHint::RouteBack);
+    setWindowButtonHints(WindowButtonHint::Icon | WindowButtonHint::Title |
+                         WindowButtonHint::Minimize | WindowButtonHint::Maximize |
+                         WindowButtonHint::Close | WindowButtonHint::ThemeToggle |
+                         WindowButtonHint::RouteBack);
 
-    QWidget *w = new QWidget(this);
-    QHBoxLayout *layout = new QHBoxLayout(w);
+    QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    m_navPanel = new NavigationPanel(w);
-    m_stacked = new StackedWidget(w);
+    m_navPanel = new NavigationPanel(this);
+    m_stacked = new StackedWidget(this);
     layout->addWidget(m_navPanel, 0);
     layout->addWidget(m_stacked, 1);
-    setCentralWidget(w);
+
+
+#if USE_QWINDOWKIT
+    setContentsMargins(0, 48, 0, 0);
 
     auto title = titleBar();
     connect(qrouter, &Router::emptyChanged, this, [title](bool empty){
         title->backButton()->setEnabled(!empty);
     });
+#else
+    setContentsMargins(0, 5, 0, 0);
+#endif
 
     m_navPanel->setExpandWidth(240);
 
@@ -82,10 +90,10 @@ void MainWindow::initWidget()
     qrouter->setDefaultRouteKey(m_stacked, "homeInterface");
     m_navPanel->setCurrentItem("1");
 
-    connect(this, &MainWindow::backRequested, this, [=](){
-        qrouter->pop();
-        m_navPanel->setCurrentItem(QString::number(m_stacked->currentIndex() + 1));
-    });
+    // connect(this, &MainWindow::backRequested, this, [=](){
+    //     qrouter->pop();
+    //     m_navPanel->setCurrentItem(QString::number(m_stacked->currentIndex() + 1));
+    // });
     connect(userCard, &NavigationUserCard::clicked, this, [this](){
         showDialog();
     });
