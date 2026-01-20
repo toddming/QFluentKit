@@ -55,6 +55,8 @@
             <maxversiontested Id="10.0.22631.0"/>
             <!-- Windows 11 Version 24H2 -->
             <maxversiontested Id="10.0.26100.0"/>
+            <!-- Windows 11 Version 25H2 -->
+            <maxversiontested Id="10.0.26200.0"/>
             <!-- Windows Vista and Windows Server 2008 -->
             <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
             <!-- Windows 7 and Windows Server 2008 R2 -->

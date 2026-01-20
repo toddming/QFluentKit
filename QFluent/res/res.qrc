@@ -418,9 +418,7 @@
         <file>style/dark/dialog.qss</file>
         <file>style/dark/expand_setting_card.qss</file>
         <file>style/dark/flip_view.qss</file>
-        <file>style/dark/fluent_window.qss</file>
         <file>style/dark/folder_list_dialog.qss</file>
-        <file>style/dark/gallery_interface.qss</file>
         <file>style/dark/info_badge.qss</file>
         <file>style/dark/info_bar.qss</file>
         <file>style/dark/label.qss</file>
@@ -442,7 +440,6 @@
         <file>style/dark/table_view.qss</file>
         <file>style/dark/teaching_tip.qss</file>
         <file>style/dark/time_picker.qss</file>
-        <file>style/dark/title_bar.qss</file>
         <file>style/dark/tool_tip.qss</file>
         <file>style/dark/tree_view.qss</file>
         <file>style/light/button.qss</file>
@@ -454,9 +451,7 @@
         <file>style/light/dialog.qss</file>
         <file>style/light/expand_setting_card.qss</file>
         <file>style/light/flip_view.qss</file>
-        <file>style/light/fluent_window.qss</file>
         <file>style/light/folder_list_dialog.qss</file>
-        <file>style/light/gallery_interface.qss</file>
         <file>style/light/info_badge.qss</file>
         <file>style/light/info_bar.qss</file>
         <file>style/light/label.qss</file>
@@ -478,7 +473,6 @@
         <file>style/light/table_view.qss</file>
         <file>style/light/teaching_tip.qss</file>
         <file>style/light/time_picker.qss</file>
-        <file>style/light/title_bar.qss</file>
         <file>style/light/tool_tip.qss</file>
         <file>style/light/tree_view.qss</file>
         <file>font/PhotosIcons.ttf</file>

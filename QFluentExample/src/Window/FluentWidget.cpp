@@ -1,5 +1,6 @@
 ﻿#include "FluentWidget.h"
 #include <QStyle>
+#include <QVariant>
 
 #include "Theme.h"
 #include "StyleSheet.h"
@@ -130,16 +131,13 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     HWND hwnd = reinterpret_cast<HWND>(this->winId());
 
     int useImmersiveDarkMode = themeMode; // 0 for light theme, 1 for dark theme
-    DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &useImmersiveDarkMode, sizeof(useImmersiveDarkMode));
+    DwmSetWindowAttribute(hwnd, 20, &useImmersiveDarkMode, sizeof(useImmersiveDarkMode));
 
     switch (effect) {
     case WindowEffect::Normal:
     {
         int backdropType = 0; // DWMSBT_DISABLE 或 1 (DWMSBT_AUTO)
         DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
-
-        // 设置主题颜色: 0 - 浅色, 1 - 深色
-
 
         // 取消边框扩展,恢复正常客户区
         MARGINS margins = {0, 0, 0, 0};
@@ -148,13 +146,13 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     }
     case WindowEffect::Acrylic:
     {
-        DWM_SYSTEMBACKDROP_TYPE backdropType = DWMSBT_NONE;  // 设置为NONE禁用效果
+        int backdropType = 1;
 
         // 取消边框扩展,恢复正常客户区
         MARGINS margins = {0, 0, 0, 0};
         DwmExtendFrameIntoClientArea(hwnd, &margins);
 
-        DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+        DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
         return;
 
     }

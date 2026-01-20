@@ -14,15 +14,6 @@
 
 #include "FluentGlobal.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QtCore/qhashfunctions.h>
-inline uint qHash(Fluent::IconType key, uint seed = 0) noexcept
-{
-    return ::qHash(static_cast<std::underlying_type_t<Fluent::IconType>>(key), seed);
-}
-#endif
-
-// Forward declarations
 class FluentIconBase;
 class ColoredFluentIcon;
 class Icon;

@@ -37,7 +37,7 @@ MainWindow::MainWindow()
     setWindowIcon(QPixmap(":/res/example.png"));
     resize(1024, 768);
 
-    setWindowButtonHints(WindowButtonHint::Icon | WindowButtonHint::Title |
+    setWindowButtonHints(WindowButtonHint::WindowIcon | WindowButtonHint::Title |
                          WindowButtonHint::Minimize | WindowButtonHint::Maximize |
                          WindowButtonHint::Close | WindowButtonHint::ThemeToggle |
                          WindowButtonHint::RouteBack);

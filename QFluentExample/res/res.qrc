@@ -116,6 +116,8 @@
         <file>style/dark/sample_card.qss</file>
         <file>style/dark/setting_interface.qss</file>
         <file>style/dark/view_interface.qss</file>
+		<file>style/dark/fluent_window.qss</file>
+		<file>style/dark/title_bar.qss</file>
         <file>style/light/gallery_interface.qss</file>
         <file>style/light/home_interface.qss</file>
         <file>style/light/icon_interface.qss</file>
@@ -124,6 +126,8 @@
         <file>style/light/sample_card.qss</file>
         <file>style/light/setting_interface.qss</file>
         <file>style/light/view_interface.qss</file>
+		<file>style/light/fluent_window.qss</file>
+		<file>style/light/title_bar.qss</file>
         <file>avatar.png</file>
         <file>example.png</file>
         <file>header.png</file>

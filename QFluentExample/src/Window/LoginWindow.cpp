@@ -33,7 +33,11 @@ void LoginWidget::initUI()
     hLayout->addStretch();
     hLayout->addWidget(c);
     hLayout->addStretch();
+#if USE_QWINDOWKIT
     hLayout->setContentsMargins(0, 45, 0, 0);
+#else
+    hLayout->setContentsMargins(0, 30, 0, 0);
+#endif
     auto vLayout = new QVBoxLayout(c);
     vLayout->setContentsMargins(0, 0, 0, 0);
     vLayout->setSpacing(8);

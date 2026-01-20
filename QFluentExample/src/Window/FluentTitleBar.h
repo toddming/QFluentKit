@@ -7,7 +7,7 @@
 enum WindowButtonHint {
     None               = 0x0000,
     RouteBack          = 0x0001,
-    Icon               = 0x0002,
+    WindowIcon         = 0x0002,
     StayOnTop          = 0x0004,
     ThemeToggle        = 0x0008,
     Minimize           = 0x0010,

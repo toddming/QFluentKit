@@ -375,8 +375,12 @@ void DropShadowAnimation::_onAniFinished() {
 }
 
 // ==================== FluentAnimationProperObject ====================
-QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>>
-    FluentAnimationProperObjectObjects;
+// 使用函数包装静态 QMap，确保在首次使用时初始化（解决静态初始化顺序问题）
+static QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>>&
+getFluentAnimationProperObjectObjects() {
+    static QMap<FluentAnimationProperty, std::function<FluentAnimationProperObject*(QObject*)>> objects;
+    return objects;
+}
 
 FluentAnimationProperObject::FluentAnimationProperObject(QObject *parent) : QObject(parent) {}
 
@@ -384,17 +388,19 @@ FluentAnimationProperObject::~FluentAnimationProperObject() {}
 
 void FluentAnimationProperObject::registerObject(FluentAnimationProperty name,
                                                  std::function<FluentAnimationProperObject*(QObject*)> creator) {
-    if (!FluentAnimationProperObjectObjects.contains(name)) {
-        FluentAnimationProperObjectObjects[name] = creator;
+    auto& objects = getFluentAnimationProperObjectObjects();
+    if (!objects.contains(name)) {
+        objects[name] = creator;
     }
 }
 
 FluentAnimationProperObject *FluentAnimationProperObject::create(FluentAnimationProperty propertyType,
                                                                  QObject *parent) {
-    if (!FluentAnimationProperObjectObjects.contains(propertyType)) {
+    auto& objects = getFluentAnimationProperObjectObjects();
+    if (!objects.contains(propertyType)) {
         return nullptr;
     }
-    return FluentAnimationProperObjectObjects[propertyType](parent);
+    return objects[propertyType](parent);
 }
 
 // ==================== Property Objects ====================
@@ -452,7 +458,12 @@ void OpacityObject::setValue(const QVariant &opacity) {
 }
 
 // ==================== FluentAnimation ====================
-QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> FluentAnimationAnimations;
+// 使用函数包装静态 QMap，确保在首次使用时初始化（解决静态初始化顺序问题）
+static QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>>&
+getFluentAnimationAnimations() {
+    static QMap<FluentAnimationType, std::function<FluentAnimation*(QObject*)>> animations;
+    return animations;
+}
 
 FluentAnimation::FluentAnimation(QObject *parent)
     : QPropertyAnimation(parent)
@@ -512,8 +523,9 @@ void FluentAnimation::setValue(const QVariant &value) {
 
 void FluentAnimation::registerAnimation(FluentAnimationType name,
                                        std::function<FluentAnimation*(QObject*)> creator) {
-    if (!FluentAnimationAnimations.contains(name)) {
-        FluentAnimationAnimations[name] = creator;
+    auto& animations = getFluentAnimationAnimations();
+    if (!animations.contains(name)) {
+        animations[name] = creator;
     }
 }
 
@@ -522,14 +534,15 @@ FluentAnimation *FluentAnimation::create(FluentAnimationType aniType,
                                         FluentAnimationSpeed speed,
                                         const QVariant &value,
                                         QObject *parent) {
-    if (!FluentAnimationAnimations.contains(aniType)) {
+    auto& animations = getFluentAnimationAnimations();
+    if (!animations.contains(aniType)) {
         return nullptr;
     }
     FluentAnimationProperObject *obj = FluentAnimationProperObject::create(propertyType, parent);
     if (!obj) {
         return nullptr;
     }
-    FluentAnimation *ani = FluentAnimationAnimations[aniType](parent);
+    FluentAnimation *ani = animations[aniType](parent);
     ani->setSpeed(speed);
     ani->setTargetObject(obj);
     ani->setPropertyName(QByteArray(propertyType == FluentAnimationProperty::POSITION ? "position" :

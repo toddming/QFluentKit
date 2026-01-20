@@ -340,5 +340,40 @@ enum class ScrollBarHandleDisplayMode {
 };
 Q_ENUM_NS(ScrollBarHandleDisplayMode)
 
+
+#ifndef FLUENT_QHASH_FUNCTIONS_DEFINED
+#define FLUENT_QHASH_FUNCTIONS_DEFINED
+
+#include <QtCore/qhashfunctions.h>
+#include <type_traits>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    using FluentQHashReturnType = size_t;
+#else
+    using FluentQHashReturnType = uint;
+#endif
+
+inline FluentQHashReturnType qHash(const Fluent::IconType key, FluentQHashReturnType seed = 0) noexcept
+{
+    return ::qHash(static_cast<std::underlying_type_t<Fluent::IconType>>(key), seed);
+}
+
+inline FluentQHashReturnType qHash(const Fluent::ThemeMode key, FluentQHashReturnType seed = 0) noexcept
+{
+    return ::qHash(static_cast<std::underlying_type_t<Fluent::ThemeMode>>(key), seed);
+}
+
+inline FluentQHashReturnType qHash(const Fluent::ThemeColor key, FluentQHashReturnType seed = 0) noexcept
+{
+    return ::qHash(static_cast<std::underlying_type_t<Fluent::ThemeColor>>(key), seed);
+}
+
+inline FluentQHashReturnType qHash(const Fluent::ThemeStyle key, FluentQHashReturnType seed = 0) noexcept
+{
+    return ::qHash(static_cast<std::underlying_type_t<Fluent::ThemeStyle>>(key), seed);
+}
+
+#endif // FLUENT_QHASH_FUNCTIONS_DEFINED
+
 } // namespace Fluent
 

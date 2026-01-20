@@ -44,7 +44,6 @@ public:
                              bool registerWidget = true);
 
 private:
-    // 缓存主题颜色映射以提高性能
     static QHash<QString, QString> getThemeColorMap();
 };
 

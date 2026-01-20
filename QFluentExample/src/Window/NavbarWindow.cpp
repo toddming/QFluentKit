@@ -9,7 +9,7 @@
 
 NavbarWidget::NavbarWidget()
 {
-    setWindowButtonHints(WindowButtonHint::Icon | WindowButtonHint::Title |
+    setWindowButtonHints(WindowButtonHint::WindowIcon | WindowButtonHint::Title |
                          WindowButtonHint::Minimize | WindowButtonHint::Maximize |
                          WindowButtonHint::Close);
 
@@ -27,7 +27,12 @@ void NavbarWidget::initUI()
 
     auto hBoxLayout = new QHBoxLayout(this);
     hBoxLayout->setSpacing(0);
+
+#if USE_QWINDOWKIT
     hBoxLayout->setContentsMargins(0, 45, 0, 0);
+#else
+    hBoxLayout->setContentsMargins(0, 5, 0, 0);
+#endif
 
     auto stacked = new StackedWidget(this);
     stacked->addWidget(createWidget("主页", stacked));

@@ -10,6 +10,7 @@
 #include <QFont>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <cmath>
 
 #include "Theme.h"
 

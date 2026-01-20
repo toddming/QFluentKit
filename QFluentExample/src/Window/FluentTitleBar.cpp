@@ -296,7 +296,7 @@ void FluentTitleBar::setWindowButtonHints(WindowButtonHints hints)
     else
     {
         _backButton->setVisible(_buttonFlags.testFlag(WindowButtonHint::RouteBack));
-        _iconButton->setVisible(_buttonFlags.testFlag(WindowButtonHint::Icon));
+        _iconButton->setVisible(_buttonFlags.testFlag(WindowButtonHint::WindowIcon));
         _titleLabel->setVisible(_buttonFlags.testFlag(WindowButtonHint::Title));
         _themeButton->setVisible(_buttonFlags.testFlag(WindowButtonHint::ThemeToggle));
         _minButton->setVisible(_buttonFlags.testFlag(WindowButtonHint::Minimize));
