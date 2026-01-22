@@ -118,6 +118,11 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     style()->polish(this);
 #else
 #ifdef _WIN32
+    auto current = QOperatingSystemVersion::current();
+    bool isWin11 = (current >= QOperatingSystemVersion(QOperatingSystemVersion::Windows, 10, 0, 22000));
+    if (!isWin11) {
+        effect = WindowEffect::Normal;
+    }
     QStringList names = {"none", "dwm-blur", "acrylic-material", "mica", "mica-alt"};
     const QString data = names.at(static_cast<int>(effect) % names.size());
     if (data == QStringLiteral("none")) { //  || data == QStringLiteral("acrylic-material")
@@ -134,24 +139,11 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
         return;
     }
 
-    // Windows 版本检测
-    auto current = QOperatingSystemVersion::current();
-    bool isWin11 = (current >= QOperatingSystemVersion(QOperatingSystemVersion::Windows, 10, 0, 22000));
-    bool isWin10_1809 = (current.microVersion() >= 17763);
-    bool isWin10 = (current >= QOperatingSystemVersion::Windows10);
-
-    if (!isWin10) {
-        qWarning("Windows 10 or later is required");
-        return;
-    }
-
-    // 设置暗色模式 (Windows 10 1809+, 属性 20: DWMWA_USE_IMMERSIVE_DARK_MODE)
-    if (isWin10_1809 || isWin11) {
-        BOOL darkMode = Theme::instance()->isDarkTheme() ? TRUE : FALSE;
-        HRESULT hr = DwmSetWindowAttribute(hwnd, 20, &darkMode, sizeof(darkMode));
-        if (FAILED(hr)) {
-            qDebug("Failed to set dark mode: 0x%08X", hr);
-        }
+    // 设置暗色模式 (Windows 11, 属性 20: DWMWA_USE_IMMERSIVE_DARK_MODE)
+    BOOL darkMode = Theme::instance()->isDarkTheme() ? TRUE : FALSE;
+    HRESULT hr = DwmSetWindowAttribute(hwnd, 20, &darkMode, sizeof(darkMode));
+    if (FAILED(hr)) {
+        qDebug("Failed to set dark mode: 0x%08X", hr);
     }
 
     bool needExtendFrame = true;
@@ -160,11 +152,6 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     switch (effect) {
     case WindowEffect::Acrylic:
     {
-        if (!isWin11) {
-            qWarning("Acrylic requires Windows 11, fallback to DWMBlur");
-            goto APPLY_DWMBLUR;
-        }
-
         // Windows 11: Type 3 = 真正的Acrylic效果
         int backdropType = 3; // DWMSBT_TRANSIENTWINDOW
         HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
@@ -177,30 +164,12 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     }
 
     case WindowEffect::DWMBlur:
-    APPLY_DWMBLUR:
     {
-        if (isWin11) {
-            // Windows 11: 没有单独的"纯模糊"选项
-            // 只能使用 Acrylic (type 3) 或 Mica (type 2)
-            // 这里选择 Acrylic，因为它最接近模糊效果
-            int backdropType = 3; // DWMSBT_TRANSIENTWINDOW
-            HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
-            if (FAILED(hr)) {
-                qWarning("Failed to set blur: 0x%08X", hr);
-            }
-        } else {
-            // Windows 10: 使用旧的模糊 API (纯高斯模糊)
-            DWM_BLURBEHIND bb = {0};
-            bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-            bb.fEnable = TRUE;
-            bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);
-            HRESULT hr = DwmEnableBlurBehindWindow(hwnd, &bb);
-            if (bb.hRgnBlur) {
-                DeleteObject(bb.hRgnBlur);
-            }
-            if (FAILED(hr)) {
-                qWarning("Failed to enable blur: 0x%08X", hr);
-            }
+        // Windows 11: 使用 Acrylic (type 3)，因为它最接近模糊效果
+        int backdropType = 3; // DWMSBT_TRANSIENTWINDOW
+        HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
+        if (FAILED(hr)) {
+            qWarning("Failed to set blur: 0x%08X", hr);
         }
         needExtendFrame = true;
         needResetColor = true;
@@ -209,11 +178,6 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
 
     case WindowEffect::Mica:
     {
-        if (!isWin11) {
-            qWarning("Mica requires Windows 11");
-            return;
-        }
-
         // 背景类型 2 = Mica (DWMSBT_MAINWINDOW)
         int backdropType = 2;
         HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
@@ -227,17 +191,12 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
 
     case WindowEffect::MicaAlt:
     {
-        if (!isWin11) {
-            qWarning("Mica Alt requires Windows 11");
-            return;
-        }
-
         // 背景类型 4 = Mica Alt (DWMSBT_TABBEDWINDOW)
         int backdropType = 4;
         HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
         if (FAILED(hr)) {
             qWarning("Failed to set Mica Alt: 0x%08X", hr);
-            }
+        }
         needExtendFrame = true;
         needResetColor = true;
         break;
@@ -245,43 +204,28 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
 
     case WindowEffect::Normal:
     {
-        if (isWin11) {
-            // 背景类型 1 = None (DWMSBT_NONE - 禁用效果)
-            int backdropType = 1;
-            HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
-            if (FAILED(hr)) {
-                qWarning("Failed to reset backdrop: 0x%08X", hr);
-            }
-
-            // 重置边框
-            MARGINS margins = {0, 0, 0, 0};
-            DwmExtendFrameIntoClientArea(hwnd, &margins);
-
-            // 设置标题栏颜色 (属性 35: DWMWA_CAPTION_COLOR)
-            BOOL isDark = Theme::instance()->isDarkTheme();
-            QColor color(isDark ? "#202020" : "#F0F4F9");
-            COLORREF captionColor = RGB(color.red(), color.green(), color.blue());
-            hr = DwmSetWindowAttribute(hwnd, 35, &captionColor, sizeof(captionColor));
-            if (FAILED(hr)) {
-                qDebug("Failed to set caption color: 0x%08X", hr);
-            }
-
-            needExtendFrame = false;
-            needResetColor = false;
-        } else {
-            // Windows 10: 禁用模糊
-            DWM_BLURBEHIND bb = {0};
-            bb.dwFlags = DWM_BB_ENABLE;
-            bb.fEnable = FALSE;
-            DwmEnableBlurBehindWindow(hwnd, &bb);
-
-            // 重置边框
-            MARGINS margins = {0, 0, 0, 0};
-            DwmExtendFrameIntoClientArea(hwnd, &margins);
-
-            needExtendFrame = false;
-            needResetColor = false;
+        // 背景类型 1 = None (DWMSBT_NONE - 禁用效果)
+        int backdropType = 1;
+        HRESULT hr = DwmSetWindowAttribute(hwnd, 38, &backdropType, sizeof(backdropType));
+        if (FAILED(hr)) {
+            qWarning("Failed to reset backdrop: 0x%08X", hr);
         }
+
+        // 重置边框
+        MARGINS margins = {0, 0, 0, 0};
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
+
+        // 设置标题栏颜色 (属性 35: DWMWA_CAPTION_COLOR)
+        BOOL isDark = Theme::instance()->isDarkTheme();
+        QColor color(isDark ? "#202020" : "#F0F4F9");
+        COLORREF captionColor = RGB(color.red(), color.green(), color.blue());
+        hr = DwmSetWindowAttribute(hwnd, 35, &captionColor, sizeof(captionColor));
+        if (FAILED(hr)) {
+            qDebug("Failed to set caption color: 0x%08X", hr);
+        }
+
+        needExtendFrame = false;
+        needResetColor = false;
         break;
     }
 
@@ -289,8 +233,8 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
         return;
     }
 
-    // 重置标题栏颜色为默认值 (仅 Windows 11, 属性 35: DWMWA_CAPTION_COLOR)
-    if (needResetColor && isWin11) {
+    // 重置标题栏颜色为默认值 (属性 35: DWMWA_CAPTION_COLOR)
+    if (needResetColor) {
         COLORREF defaultColor = 0xFFFFFFFF;  // 使用系统默认颜色
         HRESULT hr = DwmSetWindowAttribute(hwnd, 35, &defaultColor, sizeof(defaultColor));
         if (FAILED(hr)) {
