@@ -305,10 +305,6 @@ Flyout::Flyout(FlyoutViewBase* view,
 
 Flyout::~Flyout()
 {
-    // m_view, m_hBoxLayout 由 Qt 父子关系自动管理
-    // m_aniManager 由 Qt 父子关系自动管理 (parent 是 this)
-    // m_shadowEffect 由 Qt 自动管理
-    // m_fadeOutAni 由 Qt 父子关系自动管理 (parent 是 this)
 }
 
 bool Flyout::eventFilter(QObject* watched, QEvent* event)
@@ -320,7 +316,15 @@ bool Flyout::eventFilter(QObject* watched, QEvent* event)
 
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        if (!this->geometry().contains(mouseEvent->globalPosition().toPoint())) {
+
+        QPoint globalPos;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        globalPos = mouseEvent->globalPosition().toPoint();
+#else
+        globalPos = mouseEvent->globalPos();
+#endif
+
+        if (!this->geometry().contains(globalPos)) {
             close();
         }
     }
@@ -329,7 +333,7 @@ bool Flyout::eventFilter(QObject* watched, QEvent* event)
     Q_UNUSED(event);
 #endif
 
-    return QWidget::eventFilter(watched, event);
+return QWidget::eventFilter(watched, event);
 }
 
 void Flyout::closeEvent(QCloseEvent* event)
