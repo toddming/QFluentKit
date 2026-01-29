@@ -35,6 +35,7 @@ MaskDialogBase::MaskDialogBase(QWidget* parent)
 
     d->_centerWidget = new QFrame(this);
     d->_centerWidget->setObjectName("centerWidget");
+    d->_centerWidget->setStyleSheet("QFrame#centerWidget { background: transparent; }");
     d->_hBoxLayout->addWidget(d->_centerWidget, 1, Qt::AlignCenter);
 
     d->_windowMask->resize(size());

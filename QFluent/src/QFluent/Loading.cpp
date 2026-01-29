@@ -18,7 +18,7 @@ Loading::Loading(const QString &content, QWidget *parent)
     QVBoxLayout *lay = new QVBoxLayout(w);
     lay->setSpacing(12);
 
-    auto progressRing = new IndeterminateProgressRing(w);
+    progressRing = new IndeterminateProgressRing(w);
     progressRing->setFixedSize(45, 45);
     progressRing->setStrokeWidth(4);
     progressRing->setCustomBarColor(Qt::white, Qt::white);
@@ -35,3 +35,18 @@ Loading::Loading(const QString &content, QWidget *parent)
     setShadowEffect(60, QPoint(0, 10), QColor(0, 0, 0, 50));
 }
 
+void Loading::showEvent(QShowEvent *event)
+{
+    if (progressRing) {
+        progressRing->start();
+    }
+    MaskDialogBase::showEvent(event);
+}
+
+void Loading::hideEvent(QHideEvent *event)
+{
+    if (progressRing) {
+        progressRing->stop();
+    }
+    MaskDialogBase::hideEvent(event);
+}
