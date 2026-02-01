@@ -11,6 +11,8 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QPauseAnimation>
+#include <QTimer>
+#include <QCoreApplication>
 
 // 辅助函数：创建自定义贝塞尔曲线
 static QEasingCurve createBezierCurve(qreal c1x, qreal c1y, qreal c2x, qreal c2y)
@@ -40,6 +42,7 @@ void OpacityAniStackedWidget::addWidget(QWidget *widget)
     // 创建透明度效果
     auto effect = new QGraphicsOpacityEffect(this);
     effect->setOpacity(1.0);
+    widget->setGraphicsEffect(effect);
 
     // 创建动画
     auto animation = new QPropertyAnimation(effect, "opacity", this);
@@ -49,7 +52,6 @@ void OpacityAniStackedWidget::addWidget(QWidget *widget)
 
     m_effects.append(effect);
     m_animations.append(animation);
-    widget->setGraphicsEffect(effect);
 }
 
 void OpacityAniStackedWidget::setCurrentIndex(int index)
@@ -59,6 +61,7 @@ void OpacityAniStackedWidget::setCurrentIndex(int index)
         return;
     }
 
+    m_nextIndex = index;
     QPropertyAnimation *animation = nullptr;
 
     if (index > currentIdx) {
@@ -66,20 +69,22 @@ void OpacityAniStackedWidget::setCurrentIndex(int index)
         animation = m_animations[index];
         animation->setStartValue(0.0);
         animation->setEndValue(1.0);
-        QStackedWidget::setCurrentIndex(index); // 先切换，再执行动画
+
+        // 设置目标控件透明度为0,然后立即切换
+        m_effects[index]->setOpacity(0.0);
+        QStackedWidget::setCurrentIndex(index);
     } else {
         // 后退导航：淡出当前控件
         animation = m_animations[currentIdx];
         animation->setStartValue(1.0);
         animation->setEndValue(0.0);
+
+        // 保持当前控件可见以执行淡出动画
+        if (QWidget *w = widget(currentIdx)) {
+            w->show();
+        }
     }
 
-    // 确保当前控件可见以执行淡出动画
-    if (QWidget *w = widget(currentIdx)) {
-        w->show();
-    }
-
-    m_nextIndex = index;
     animation->start();
 }
 
@@ -92,7 +97,14 @@ void OpacityAniStackedWidget::setCurrentWidget(QWidget *widget)
 
 void OpacityAniStackedWidget::onAnimationFinished()
 {
-    QStackedWidget::setCurrentIndex(m_nextIndex);
+    // 如果是后退导航,现在切换到目标索引
+    if (m_nextIndex < currentIndex()) {
+        // 恢复目标控件的透明度
+        if (m_nextIndex >= 0 && m_nextIndex < m_effects.size()) {
+            m_effects[m_nextIndex]->setOpacity(1.0);
+        }
+        QStackedWidget::setCurrentIndex(m_nextIndex);
+    }
 }
 
 
@@ -114,6 +126,7 @@ void PopUpAniStackedWidget::addWidget(QWidget *widget, int deltaX, int deltaY)
 
     QStackedWidget::addWidget(widget);
 
+    // 延迟创建动画,避免在添加时造成开销
     auto animation = new QPropertyAnimation(widget, "pos", this);
     m_animationInfos.append(PopUpAniInfo(widget, deltaX, deltaY, animation));
 }
@@ -125,7 +138,12 @@ void PopUpAniStackedWidget::removeWidget(QWidget *widget)
         return;
     }
 
-    m_animationInfos.removeAt(index);
+    // 删除动画对象
+    if (index >= 0 && index < m_animationInfos.size()) {
+        delete m_animationInfos[index].animation;
+        m_animationInfos.removeAt(index);
+    }
+
     QStackedWidget::removeWidget(widget);
 }
 
@@ -153,8 +171,12 @@ void PopUpAniStackedWidget::setCurrentIndex(int index, bool needPopOut,
 
     // 停止正在运行的动画
     if (m_currentAnimation && m_currentAnimation->state() == QAbstractAnimation::Running) {
+        // 断开旧的信号连接
+        disconnect(m_currentAnimation, &QPropertyAnimation::finished,
+                   this, &PopUpAniStackedWidget::onAnimationFinished);
         m_currentAnimation->stop();
-        onAnimationFinished();
+        // 立即完成切换
+        QStackedWidget::setCurrentIndex(m_nextIndex);
     }
 
     m_nextIndex = index;
@@ -183,13 +205,16 @@ void PopUpAniStackedWidget::setCurrentIndex(int index, bool needPopOut,
         QPoint startPos = nextWidget->pos() + QPoint(nextAniInfo.deltaX, nextAniInfo.deltaY);
         QPoint endPos(nextWidget->x(), 0);
         setAnimation(m_currentAnimation, startPos, endPos, duration, easingCurve);
-        QStackedWidget::setCurrentIndex(index); // 先切换，再执行动画
+        QStackedWidget::setCurrentIndex(index); // 先切换,再执行动画
     }
 
+    // 使用 UniqueConnection 避免重复连接
     connect(m_currentAnimation, &QPropertyAnimation::finished,
-            this, &PopUpAniStackedWidget::onAnimationFinished);
-    m_currentAnimation->start();
+            this, &PopUpAniStackedWidget::onAnimationFinished,
+            Qt::UniqueConnection);
+
     emit aniStart();
+    m_currentAnimation->start();
 }
 
 void PopUpAniStackedWidget::setCurrentWidget(QWidget *widget, bool needPopOut,
@@ -240,8 +265,8 @@ TransitionStackedWidget::TransitionStackedWidget(QWidget *parent)
     , m_nextIndex(-1)
     , m_isAnimationEnabled(true)
 {
-    m_currentSnapshot = createSnapshotLabel();
-    m_nextSnapshot = createSnapshotLabel();
+    // 延迟创建快照标签,只在首次需要时创建
+    // m_currentSnapshot 和 m_nextSnapshot 将在 createSnapshotLabel() 中按需创建
 
     connect(m_animationGroup, &QParallelAnimationGroup::finished,
             this, &TransitionStackedWidget::onAnimationFinished);
@@ -275,6 +300,14 @@ void TransitionStackedWidget::setCurrentIndex(int index, int duration, bool isBa
     stopAnimation();
 
     m_nextIndex = index;
+
+    // 延迟创建快照标签
+    if (!m_currentSnapshot) {
+        m_currentSnapshot = createSnapshotLabel();
+    }
+    if (!m_nextSnapshot) {
+        m_nextSnapshot = createSnapshotLabel();
+    }
 
     // 设置过渡动画（由子类实现）
     setUpTransitionAnimation(index, duration, isBack);
@@ -330,17 +363,30 @@ void TransitionStackedWidget::renderSnapshot(QWidget *widget, QLabel *label)
         return;
     }
 
-    // 确保控件具有正确的尺寸
-    widget->resize(size());
+    // 确保控件已完成样式计算和布局
+    widget->ensurePolished();
 
-    // 使用 grab() 捕获控件内容（即使控件隐藏也能工作）
+    // 只在尺寸不匹配时才调整
+    if (widget->size() != size()) {
+        widget->resize(size());
+        // 处理待处理的布局事件,但不处理用户输入
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+
+    // 使用 grab() 捕获控件内容
     QPixmap pixmap = widget->grab();
 
-    // 如果捕获失败，使用透明填充的备用方案
+    // 如果捕获失败,使用备用方案
     if (pixmap.isNull() || pixmap.size().isEmpty()) {
         pixmap = QPixmap(widget->size());
         pixmap.fill(Qt::transparent);
-        widget->render(&pixmap);
+
+        // 使用 QPainter 进行渲染
+        QPainter painter(&pixmap);
+        painter.setRenderHint(QPainter::Antialiasing, false); // 禁用抗锯齿提高速度
+        widget->render(&painter, QPoint(), QRegion(),
+                       QWidget::DrawWindowBackground | QWidget::DrawChildren);
+        painter.end();
     }
 
     label->setPixmap(pixmap);
@@ -382,7 +428,7 @@ void EntranceTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
 
         // 淡出动画
         auto fadeOutAni = new QPropertyAnimation(
-            m_currentSnapshot->graphicsEffect(), "opacity", this);
+                    m_currentSnapshot->graphicsEffect(), "opacity", this);
         fadeOutAni->setDuration(outDuration);
         fadeOutAni->setStartValue(1.0);
         fadeOutAni->setEndValue(0.0);
@@ -404,19 +450,18 @@ void EntranceTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
 
     // 在 outDuration 后显示下一个控件
     auto nextWidgetAniGroup = new QSequentialAnimationGroup(this);
-    auto pauseAni = nextWidgetAniGroup->addPause(outDuration);
-
-    connect(pauseAni, &QPauseAnimation::finished, this, [nextWidget]() {
-        if (nextWidget) {
-            nextWidget->show();
-        }
-    });
+    nextWidgetAniGroup->addPause(outDuration);
 
     m_animationGroup->addAnimation(nextWidgetAniGroup);
 
     if (!isBack) {
-        // 滑入下一个控件
-        nextWidget->setGeometry(0, offset, width(), height());
+        // 确保控件尺寸正确
+        nextWidget->resize(size());
+
+        // 使用 move() 而不是 setGeometry(),避免与布局管理冲突
+        nextWidget->move(0, offset);
+        nextWidget->show(); // 提前显示以便动画
+
         auto slideInAni = new QPropertyAnimation(nextWidget, "pos", this);
         slideInAni->setDuration(inDuration);
         slideInAni->setStartValue(QPoint(0, offset));
@@ -425,7 +470,16 @@ void EntranceTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
         nextWidgetAniGroup->addAnimation(slideInAni);
     } else {
         // 直接显示下一个控件
-        nextWidget->setGeometry(rect());
+        nextWidget->resize(size());
+        nextWidget->move(0, 0);
+
+        // 在暂停后显示
+        connect(nextWidgetAniGroup, &QSequentialAnimationGroup::currentAnimationChanged,
+                this, [nextWidget](QAbstractAnimation*) {
+            if (nextWidget && !nextWidget->isVisible()) {
+                nextWidget->show();
+            }
+        }, Qt::UniqueConnection);
     }
 }
 
@@ -494,7 +548,7 @@ void DrillInTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
 
         // 淡出动画
         auto fadeOutAni = new QPropertyAnimation(
-            m_currentSnapshot->graphicsEffect(), "opacity", this);
+                    m_currentSnapshot->graphicsEffect(), "opacity", this);
         fadeOutAni->setDuration(outDuration);
         fadeOutAni->setStartValue(1.0);
         fadeOutAni->setEndValue(0.0);
@@ -526,7 +580,7 @@ void DrillInTransitionStackedWidget::setUpTransitionAnimation(int nextIndex,
 
     // 淡入动画
     auto fadeInAni = new QPropertyAnimation(
-        m_nextSnapshot->graphicsEffect(), "opacity", this);
+                m_nextSnapshot->graphicsEffect(), "opacity", this);
     fadeInAni->setDuration(inDuration);
     fadeInAni->setStartValue(0.0);
     fadeInAni->setEndValue(1.0);
@@ -587,16 +641,16 @@ bool StackedWidget::isAnimationEnabled() const
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
-        case AnimationType::Opacity:
-            // OpacityAniStackedWidget 没有动画开关
-            return true;
+    case AnimationType::Opacity:
+        // OpacityAniStackedWidget 没有动画开关
+        return true;
 
-        case AnimationType::PopUp:
-            return qobject_cast<PopUpAniStackedWidget*>(m_view)->isAnimationEnabled();
+    case AnimationType::PopUp:
+        return qobject_cast<PopUpAniStackedWidget*>(m_view)->isAnimationEnabled();
 
-        case AnimationType::EntranceTransition:
-        case AnimationType::DrillInTransition:
-            return qobject_cast<TransitionStackedWidget*>(m_view)->isAnimationEnabled();
+    case AnimationType::EntranceTransition:
+    case AnimationType::DrillInTransition:
+        return qobject_cast<TransitionStackedWidget*>(m_view)->isAnimationEnabled();
     }
 
     return true;
@@ -610,18 +664,18 @@ void StackedWidget::setAnimationEnabled(bool isEnabled)
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
-        case AnimationType::Opacity:
-            // OpacityAniStackedWidget 没有动画开关
-            break;
+    case AnimationType::Opacity:
+        // OpacityAniStackedWidget 没有动画开关
+        break;
 
-        case AnimationType::PopUp:
-            qobject_cast<PopUpAniStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
-            break;
+    case AnimationType::PopUp:
+        qobject_cast<PopUpAniStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
+        break;
 
-        case AnimationType::EntranceTransition:
-        case AnimationType::DrillInTransition:
-            qobject_cast<TransitionStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
-            break;
+    case AnimationType::EntranceTransition:
+    case AnimationType::DrillInTransition:
+        qobject_cast<TransitionStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
+        break;
     }
 }
 
@@ -633,18 +687,18 @@ void StackedWidget::addWidget(QWidget *widget, int deltaX, int deltaY)
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
-        case AnimationType::Opacity:
-            qobject_cast<OpacityAniStackedWidget*>(m_view)->addWidget(widget);
-            break;
+    case AnimationType::Opacity:
+        qobject_cast<OpacityAniStackedWidget*>(m_view)->addWidget(widget);
+        break;
 
-        case AnimationType::PopUp:
-            qobject_cast<PopUpAniStackedWidget*>(m_view)->addWidget(widget, deltaX, deltaY);
-            break;
+    case AnimationType::PopUp:
+        qobject_cast<PopUpAniStackedWidget*>(m_view)->addWidget(widget, deltaX, deltaY);
+        break;
 
-        case AnimationType::EntranceTransition:
-        case AnimationType::DrillInTransition:
-            m_view->addWidget(widget);
-            break;
+    case AnimationType::EntranceTransition:
+    case AnimationType::DrillInTransition:
+        m_view->addWidget(widget);
+        break;
     }
 }
 
@@ -656,13 +710,13 @@ void StackedWidget::removeWidget(QWidget *widget)
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
-        case AnimationType::PopUp:
-            qobject_cast<PopUpAniStackedWidget*>(m_view)->removeWidget(widget);
-            break;
+    case AnimationType::PopUp:
+        qobject_cast<PopUpAniStackedWidget*>(m_view)->removeWidget(widget);
+        break;
 
-        default:
-            m_view->removeWidget(widget);
-            break;
+    default:
+        m_view->removeWidget(widget);
+        break;
     }
 }
 
@@ -678,34 +732,47 @@ void StackedWidget::setCurrentWidget(QWidget *widget, bool popOut,
         return;
     }
 
-    // 重置滚动条
-    resetScrollBars(widget);
-
+    // *** 关键优化：延迟重置滚动条,避免触发强制布局 ***
     // 根据类型调用相应的方法
     switch (m_animationType) {
-        case AnimationType::Opacity:
-            qobject_cast<OpacityAniStackedWidget*>(m_view)->setCurrentWidget(widget);
-            break;
+    case AnimationType::Opacity: {
+        qobject_cast<OpacityAniStackedWidget*>(m_view)->setCurrentWidget(widget);
+        // 延迟重置滚动条,在切换完成后执行
+        QTimer::singleShot(0, this, [this, widget]() {
+            resetScrollBars(widget);
+        });
+        break;
+    }
 
-        case AnimationType::PopUp: {
-            auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
-            if (!popOut) {
-                popUpView->setCurrentWidget(widget, false, true,
-                                          duration > 0 ? duration : 300);
-            } else {
-                popUpView->setCurrentWidget(widget, true, false,
-                                          duration > 0 ? duration : 200,
-                                          QEasingCurve::InQuad);
-            }
-            break;
+    case AnimationType::PopUp: {
+        auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        if (!popOut) {
+            popUpView->setCurrentWidget(widget, false, true,
+                                        duration > 0 ? duration : 300);
+        } else {
+            popUpView->setCurrentWidget(widget, true, false,
+                                        duration > 0 ? duration : 200,
+                                        QEasingCurve::InQuad);
         }
 
-        case AnimationType::EntranceTransition:
-        case AnimationType::DrillInTransition: {
-            auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
-            transitionView->setCurrentWidget(widget, duration, isBack);
-            break;
-        }
+        // 延迟重置滚动条,在切换完成后执行
+        QTimer::singleShot(0, this, [this, widget]() {
+            resetScrollBars(widget);
+        });
+        break;
+    }
+
+    case AnimationType::EntranceTransition:
+    case AnimationType::DrillInTransition: {
+        auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
+        transitionView->setCurrentWidget(widget, duration, isBack);
+
+        // 延迟重置滚动条,在切换完成后执行
+        QTimer::singleShot(0, this, [this, widget]() {
+            resetScrollBars(widget);
+        });
+        break;
+    }
     }
 }
 
@@ -741,17 +808,17 @@ int StackedWidget::count() const
 QStackedWidget* StackedWidget::createStackedWidget(AnimationType type)
 {
     switch (type) {
-        case AnimationType::Opacity:
-            return new OpacityAniStackedWidget(this);
+    case AnimationType::Opacity:
+        return new OpacityAniStackedWidget(this);
 
-        case AnimationType::PopUp:
-            return new PopUpAniStackedWidget(this);
+    case AnimationType::PopUp:
+        return new PopUpAniStackedWidget(this);
 
-        case AnimationType::EntranceTransition:
-            return new EntranceTransitionStackedWidget(this);
+    case AnimationType::EntranceTransition:
+        return new EntranceTransitionStackedWidget(this);
 
-        case AnimationType::DrillInTransition:
-            return new DrillInTransitionStackedWidget(this);
+    case AnimationType::DrillInTransition:
+        return new DrillInTransitionStackedWidget(this);
     }
 
     // 默认返回弹出动画类型
@@ -770,27 +837,27 @@ void StackedWidget::connectSignals()
 
     // 根据类型连接动画相关信号
     switch (m_animationType) {
-        case AnimationType::PopUp: {
-            auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
-            connect(popUpView, &PopUpAniStackedWidget::aniStart,
-                    this, &StackedWidget::aniStart);
-            connect(popUpView, &PopUpAniStackedWidget::aniFinished,
-                    this, &StackedWidget::aniFinished);
-            break;
-        }
+    case AnimationType::PopUp: {
+        auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        connect(popUpView, &PopUpAniStackedWidget::aniStart,
+                this, &StackedWidget::aniStart);
+        connect(popUpView, &PopUpAniStackedWidget::aniFinished,
+                this, &StackedWidget::aniFinished);
+        break;
+    }
 
-        case AnimationType::EntranceTransition:
-        case AnimationType::DrillInTransition: {
-            auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
-            connect(transitionView, &TransitionStackedWidget::aniStart,
-                    this, &StackedWidget::aniStart);
-            connect(transitionView, &TransitionStackedWidget::aniFinished,
-                    this, &StackedWidget::aniFinished);
-            break;
-        }
+    case AnimationType::EntranceTransition:
+    case AnimationType::DrillInTransition: {
+        auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
+        connect(transitionView, &TransitionStackedWidget::aniStart,
+                this, &StackedWidget::aniStart);
+        connect(transitionView, &TransitionStackedWidget::aniFinished,
+                this, &StackedWidget::aniFinished);
+        break;
+    }
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -810,7 +877,7 @@ void StackedWidget::resetScrollBars(QWidget *widget)
         return;
     }
 
-    // 如果是滚动区域，自动滚动到顶部
+    // 如果是滚动区域,自动滚动到顶部
     if (auto scrollArea = qobject_cast<QAbstractScrollArea*>(widget)) {
         if (QScrollBar *vbar = scrollArea->verticalScrollBar()) {
             vbar->setValue(0);

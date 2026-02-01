@@ -1,176 +1,259 @@
 ﻿#include "Router.h"
-#include <QWidget>
 
 #include "QFluent/StackedWidget.h"
 
-Router* Router::s_instance = nullptr;
 
-Router* Router::instance()
+// ============================
+// StackedHistory Implementation
+// ============================
+StackedHistory::StackedHistory(StackedWidget* stackedWidget, QObject* parent)
+    : QObject(parent)
+    , m_stackedWidget(stackedWidget)
+    , m_defaultRouteKey(QString())
 {
-    if (!s_instance) {
-        s_instance = new Router;
-    }
-    return s_instance;
+    Q_ASSERT(stackedWidget != nullptr);
+    m_history.append(m_defaultRouteKey);
 }
 
-void Router::destroyInstance()
+bool StackedHistory::isEmpty() const
 {
-    delete s_instance;
-    s_instance = nullptr;
+    return depth() <= 1;
 }
 
-Router::Router(QObject* parent) : QObject(parent)
+int StackedHistory::depth() const
 {
-    emit emptyChanged(true);
-}
-
-/* ====================== StackedHistory ====================== */
-StackedHistory::StackedHistory(StackedWidget* stacked, QObject* parent)
-    : QObject(parent), m_stacked(stacked)
-{
-    m_history << QString();
-}
-
-void StackedHistory::setDefaultRouteKey(const QString& routeKey)
-{
-    m_defaultRouteKey = routeKey;
-    m_history[0] = routeKey;
+    return m_history.size();
 }
 
 bool StackedHistory::push(const QString& routeKey)
 {
-    if (m_history.constLast() == routeKey)
+    if (m_history.isEmpty() || m_history.last() == routeKey) {
         return false;
+    }
+
     m_history.append(routeKey);
+    goToTop();
     return true;
 }
 
 void StackedHistory::pop()
 {
-    if (m_history.size() <= 1) return;
+    if (isEmpty()) {
+        return;
+    }
+
     m_history.removeLast();
     goToTop();
 }
 
 void StackedHistory::remove(const QString& routeKey)
 {
-    if (!m_history.contains(routeKey)) return;
-    m_history.removeAll(routeKey);
-
-    QStringList newList;
-    newList << m_history.constFirst();
-    for (int i = 1; i < m_history.size(); ++i) {
-        if (m_history.at(i) != newList.constLast())
-            newList << m_history.at(i);
+    if (!m_history.contains(routeKey)) {
+        return;
     }
-    m_history = std::move(newList);
+
+    // 保留第一个元素（默认路由）
+    QVector<QString> newHistory;
+    newHistory.append(m_history.first());
+
+    // 过滤掉要移除的路由
+    for (int i = 1; i < m_history.size(); ++i) {
+        if (m_history.at(i) != routeKey) {
+            newHistory.append(m_history.at(i));
+        }
+    }
+
+    m_history = newHistory;
+    removeConsecutiveDuplicates();
     goToTop();
 }
 
-QString StackedHistory::top() const { return m_history.constLast(); }
-bool StackedHistory::isEmpty() const { return m_history.size() <= 1; }
+QString StackedHistory::top() const
+{
+    return m_history.isEmpty() ? QString() : m_history.last();
+}
+
+QString StackedHistory::defaultRouteKey() const
+{
+    return m_defaultRouteKey;
+}
+
+void StackedHistory::setDefaultRouteKey(const QString& routeKey)
+{
+    m_defaultRouteKey = routeKey;
+    if (!m_history.isEmpty()) {
+        m_history[0] = routeKey;
+    }
+    goToTop();
+}
 
 void StackedHistory::goToTop()
 {
-    if (!m_stacked) return;  // 判空
+    if (top().isEmpty() || !m_stackedWidget) {
+        return;
+    }
 
-    const QString key = top();
-    if (QWidget* w = m_stacked->findChild<QWidget*>(key)) {
-        m_stacked->setCurrentWidget(w, false);
-    } else if (!key.isEmpty() && key != m_defaultRouteKey) {
-        if (QWidget* w = m_stacked->findChild<QWidget*>(m_defaultRouteKey))
-            m_stacked->setCurrentWidget(w, false);
+
+    QWidget* widget = m_stackedWidget->findChild<QWidget*>(top());
+    if (widget) {
+        if (StackedWidget* stacked = qobject_cast<StackedWidget*>(m_stackedWidget)) {
+            stacked->setCurrentWidget(widget, false);
+        } else {
+            QList<QWidget*> children = m_stackedWidget->findChildren<QWidget*>();
+            for (QWidget* child : children) {
+                child->setVisible(child->objectName() == top());
+            }
+        }
     }
 }
 
-/* ====================== Router ====================== */
-void Router::setDefaultRouteKey(StackedWidget* stacked, const QString& routeKey)
+void StackedHistory::removeConsecutiveDuplicates()
 {
-    if (!stacked) return;
-
-    if (!m_stackHistories.contains(stacked)) {
-        auto* h = new StackedHistory(stacked, this);
-        m_stackHistories[stacked] = h;
-        connect(stacked, &QObject::destroyed, this, [this, stacked]() {
-            cleanupStackedHistory(stacked);
-        });
+    if (m_history.size() <= 1) {
+        return;
     }
-    m_stackHistories[stacked]->setDefaultRouteKey(routeKey);
+
+    QVector<QString> deduplicated;
+    deduplicated.append(m_history.first());
+
+    for (int i = 1; i < m_history.size(); ++i) {
+        if (m_history.at(i) != deduplicated.last()) {
+            deduplicated.append(m_history.at(i));
+        }
+    }
+
+    m_history = deduplicated;
 }
 
-void Router::push(StackedWidget* stacked, const QString& routeKey)
+// ============================
+// Router Implementation
+// ============================
+Router* Router::s_instance = nullptr;
+
+Router::Router(QObject* parent)
+    : QObject(parent)
 {
-    if (!stacked || routeKey.isEmpty()) return;
+}
 
-    if (!m_stackHistories.contains(stacked)) {
-        auto* h = new StackedHistory(stacked, this);
-        m_stackHistories[stacked] = h;
-        connect(stacked, &QObject::destroyed, this, [this, stacked]() {
-            cleanupStackedHistory(stacked);
-        });
+Router::~Router()
+{
+    // 清理所有 StackedHistory 对象
+    qDeleteAll(m_stackedHistories);
+    m_stackedHistories.clear();
+}
+
+bool Router::isEmpty() const
+{
+    return m_history.isEmpty();
+}
+
+void Router::setDefaultRouteKey(StackedWidget* stackedWidget, const QString& routeKey)
+{
+    if (!stackedWidget) {
+        return;
     }
 
-    auto* sh = m_stackHistories[stacked];
-    if (sh->push(routeKey)) {
-        m_globalHistory.append(RouteItem(stacked, routeKey));
-        emit emptyChanged(false);
+    StackedHistory* history = getOrCreateHistory(stackedWidget);
+    history->setDefaultRouteKey(routeKey);
+}
+
+void Router::push(StackedWidget* stackedWidget, const QString& routeKey)
+{
+    if (!stackedWidget) {
+        return;
     }
-    sh->goToTop();
+
+    if (routeKey.isEmpty()) {
+        return;
+    }
+
+    RouteItem item(stackedWidget, routeKey);
+
+    StackedHistory* history = getOrCreateHistory(stackedWidget);
+    if (history->push(routeKey)) {
+        m_history.append(item);
+        emit emptyChanged(m_history.isEmpty());
+    }
 }
 
 void Router::pop()
 {
-    if (m_globalHistory.isEmpty()) return;
-
-    RouteItem item = m_globalHistory.takeLast();
-    emit emptyChanged(m_globalHistory.isEmpty());
-
-    // 防止 stacked 已经被销毁
-    if (item.stacked && m_stackHistories.contains(item.stacked)) {
-        m_stackHistories[item.stacked]->pop();
+    if (m_history.isEmpty()) {
+        return;
     }
+
+    RouteItem lastItem = m_history.takeLast();
+    StackedHistory* history = m_stackedHistories.value(lastItem.stackedWidget);
+    if (history) {
+        history->pop();
+    }
+
+    emit emptyChanged(m_history.isEmpty());
 }
 
 void Router::remove(const QString& routeKey)
 {
-    if (routeKey.isEmpty()) return;
+    if (routeKey.isEmpty()) {
+        return;
+    }
 
-    // 全局历史：保留最早出现的那条
-    QList<RouteItem> newGlobal;
-    bool first = true;
-    for (const auto& item : std::as_const(m_globalHistory)) {
-        if (item.routeKey != routeKey || first) {
-            newGlobal.append(item);
-            if (item.routeKey == routeKey) first = false;
+    // 从全局历史记录中移除
+    QVector<RouteItem> newHistory;
+    for (const RouteItem& item : m_history) {
+        if (item.key != routeKey) {
+            newHistory.append(item);
         }
     }
-    m_globalHistory = std::move(newGlobal);
-    emit emptyChanged(m_globalHistory.isEmpty());
+    m_history = newHistory;
 
-    // 找到并清理
-    for (auto it = m_stackHistories.constBegin(); it != m_stackHistories.constEnd(); ++it) {
-        StackedWidget* stacked = it.key();
-        if (stacked && stacked->findChild<QWidget*>(routeKey)) {
-            it.value()->remove(routeKey);
-            break;
+    // 移除连续重复项
+    removeConsecutiveDuplicates();
+
+    emit emptyChanged(m_history.isEmpty());
+
+    // 从每个堆叠窗口的历史记录中移除
+    for (StackedHistory* history : m_stackedHistories) {
+        // 检查是否有对应路由键的部件
+        QWidget* widget = history->parent()->findChild<QWidget*>(routeKey);
+        if (widget) {
+            history->remove(routeKey);
+            break; // 找到了部件，无需继续检查
         }
     }
 }
 
-void Router::cleanupStackedHistory(StackedWidget* stacked)
+Router* Router::instance()
 {
-    if (StackedHistory* sh = m_stackHistories.take(stacked)) {
-        sh->deleteLater();
+    if (!s_instance) {
+        s_instance = new Router();
     }
-
-    // 手动删除全局历史中对应的条目
-    for (int i = 0; i < m_globalHistory.size(); ) {
-        if (m_globalHistory.at(i).stacked == stacked) {
-            m_globalHistory.removeAt(i);
-        } else {
-            ++i;
-        }
-    }
+    return s_instance;
 }
 
-#include "Router.moc"
+void Router::removeConsecutiveDuplicates()
+{
+    if (m_history.size() <= 1) {
+        return;
+    }
+
+    QVector<RouteItem> deduplicated;
+    deduplicated.append(m_history.first());
+
+    for (int i = 1; i < m_history.size(); ++i) {
+        if (m_history.at(i).key != deduplicated.last().key) {
+            deduplicated.append(m_history.at(i));
+        }
+    }
+
+    m_history = deduplicated;
+}
+
+StackedHistory* Router::getOrCreateHistory(StackedWidget* stackedWidget)
+{
+    StackedHistory* history = m_stackedHistories.value(stackedWidget);
+    if (!history) {
+        history = new StackedHistory(stackedWidget, this);
+        m_stackedHistories.insert(stackedWidget, history);
+    }
+    return history;
+}

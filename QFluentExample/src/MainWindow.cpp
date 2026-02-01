@@ -47,6 +47,7 @@ MainWindow::MainWindow()
     layout->setSpacing(0);
     m_navPanel = new NavigationPanel(this);
     m_stacked = new StackedWidget(this);
+
     layout->addWidget(m_navPanel, 0);
     layout->addWidget(m_stacked, 1);
 
@@ -55,8 +56,13 @@ MainWindow::MainWindow()
     setContentsMargins(0, 48, 0, 0);
 
     auto title = titleBar();
-    connect(qrouter, &Router::emptyChanged, this, [title](bool empty){
+    title->backButton()->setEnabled(false);
+    connect(Router::instance(), &Router::emptyChanged, this, [title](bool empty){
         title->backButton()->setEnabled(!empty);
+    });
+    connect(title->backButton(), &QAbstractButton::clicked, this, [=](){
+        Router::instance()->pop();
+        m_navPanel->setCurrentItem(QString::number(m_stacked->currentIndex() + 1));
     });
 #else
     setContentsMargins(0, 5, 0, 0);
@@ -93,13 +99,10 @@ void MainWindow::initWidget()
     m_navPanel->addSeparator(NIP::BOTTOM);
     addSubInterface("14", FluentIcon(FIT::SETTING), "设置", new SettingInterface(this), true, NIP::BOTTOM, "设置");
 
-    qrouter->setDefaultRouteKey(m_stacked, "homeInterface");
+    Router::instance()->setDefaultRouteKey(m_stacked, "homeInterface");
+
     m_navPanel->setCurrentItem("1");
 
-    // connect(this, &MainWindow::backRequested, this, [=](){
-    //     qrouter->pop();
-    //     m_navPanel->setCurrentItem(QString::number(m_stacked->currentIndex() + 1));
-    // });
     connect(userCard, &NavigationUserCard::clicked, this, [this](){
         showDialog();
     });
@@ -107,7 +110,7 @@ void MainWindow::initWidget()
 
 void MainWindow::setCurrentInterface(const QString &routeKey, int index)
 {
-    qrouter->push(m_stacked, routeKey);
+    Router::instance()->push(m_stacked, routeKey);
     m_navPanel->setCurrentItem(QString::number(index));
 }
 
@@ -126,6 +129,6 @@ void MainWindow::addSubInterface(const QString& routeKey, const FluentIconBase& 
                                    Fluent::NavigationItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)
 {
-    m_navPanel->addItem(routeKey, icon, text, [=](){qrouter->push(m_stacked, widget->objectName());}, selectable, position, tooltip, parentRouteKey);
+    m_navPanel->addItem(routeKey, icon, text, [=](){Router::instance()->push(m_stacked, widget->objectName());}, selectable, position, tooltip, parentRouteKey);
     m_stacked->addWidget(widget);
 }
