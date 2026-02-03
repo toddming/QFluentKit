@@ -88,6 +88,7 @@ StatusInfoInterface::StatusInfoInterface(QWidget *parent)
     addExampleCard("不确定进度环", indeterminateProgressRing);
 
     auto progressRing = new ProgressRing(this);
+    progressRing->setTextVisible(true);
     progressRing->setValue(50);
     progressRing->setFixedSize(70, 70);
     addExampleCard("确定的进度环", createProgressWidget(progressRing));

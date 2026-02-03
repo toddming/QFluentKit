@@ -60,6 +60,6 @@ void ProgressRing::paintEvent(QPaintEvent *event)
 
     // 绘制文本
     if (isTextVisible()) {
-        _drawText(painter, QString::number(static_cast<int>(getVal())));
+        _drawText(painter, QString::number(static_cast<int>(getVal())) + "%");
     }
 }

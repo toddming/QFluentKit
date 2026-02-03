@@ -20,7 +20,7 @@ public:
     ~MaskDialogBase();
 
     QHBoxLayout* hBoxLayout();
-    // 获取中心 widget，用于添加内容
+    // 获取中心 widget,用于添加内容
     QWidget* centerWidget() const;
 
     // 设置遮罩颜色
@@ -45,9 +45,20 @@ public:
 protected:
     explicit MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent = nullptr);
     void onDone(int code);
-    // 事件过滤器：处理父窗口 resize 和遮罩点击
+    // 事件过滤器:处理父窗口 resize 和遮罩点击
     bool eventFilter(QObject* obj, QEvent* event) override;
 
+    // 同步几何尺寸的方法
+    void syncGeometryWithParent();
+
+    // 获取实际要覆盖的目标窗口(可能是parent或window)
+    QWidget* getTargetWidget() const;
+
+private:
+    // 初始化事件过滤器
+    void setupEventFilters();
+
+protected:
     QScopedPointer<MaskDialogBasePrivate> d_ptr;
 
 };

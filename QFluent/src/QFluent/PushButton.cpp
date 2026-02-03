@@ -187,7 +187,7 @@ DropDownButtonBase::DropDownButtonBase(QWidget *parent) :
 }
 
 DropDownButtonBase::DropDownButtonBase(const QString &text, QWidget* parent) :
-    PushButton(parent)
+    PushButton(text, parent)
   , m_menu(nullptr)
   , m_arrowAni(new TranslateYAnimation(this))
 {
