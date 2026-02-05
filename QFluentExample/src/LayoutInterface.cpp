@@ -1,7 +1,8 @@
 ﻿#include "LayoutInterface.h"
 
 #include <QWidget>
-
+#include "QFluent/Label.h"
+#include "QFluent/Splitter.h"
 #include "QFluent/PushButton.h"
 #include "QFluent/Layout/FlowLayout.h"
 
@@ -12,6 +13,8 @@ LayoutInterface::LayoutInterface(QWidget *parent)
 
     addExampleCard("不带动画效果的流式布局", createWidget(false), "", 1);
     addExampleCard("带动画效果的流式布局", createWidget(true), "", 1);
+
+    addExampleCard("拆分式布局", createSplitterWidget(), "", 1);
 }
 
 
@@ -39,5 +42,22 @@ QWidget *LayoutInterface::createWidget(bool animation)
     foreach (const QString &text, texts) {
         layout->addWidget(new PushButton(text, widget));
     }
+    return widget;
+}
+
+QWidget *LayoutInterface::createSplitterWidget()
+{
+    auto widget = new QWidget();
+    widget->setFixedHeight(200);
+    auto layout = new QHBoxLayout(widget);
+    auto splitter = new Splitter(Qt::Horizontal, widget);
+    layout->addWidget(splitter);
+
+    for (int i=0; i < 4; i++) {
+        auto label = new BodyLabel(QString("页面%1").arg(i+1), widget);
+        label->setAlignment(Qt::AlignCenter);
+        splitter->addWidget(label);
+    }
+    splitter->setLineWidth(8);
     return widget;
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "GalleryInterface.h"
 
@@ -11,4 +11,5 @@ public:
 private:
     QWidget *createWidget(bool animation = false);
 
+    QWidget *createSplitterWidget();
 };
