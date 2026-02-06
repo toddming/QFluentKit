@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "PickerBase.h"
 #include <QTime>
@@ -32,24 +32,24 @@ public:
     QString encode(const QVariant& value) override;
 
 private:
-    QString m_AM;
-    QString m_PM;
+    QString m_amLabel;
+    QString m_pmLabel;
 };
 
 class QFLUENT_EXPORT TimePickerBase : public PickerBase
 {
     Q_OBJECT
-    Q_PROPERTY(QTime time READ getTime WRITE setTime)
+    Q_PROPERTY(QTime time READ time WRITE setTime)
     Q_PROPERTY(bool secondVisible READ isSecondVisible WRITE setSecondVisible)
 
 public:
     explicit TimePickerBase(QWidget* parent = nullptr, bool showSeconds = false);
 
-    QTime getTime() const { return m_time; }
+    QTime time() const { return m_time; }
     virtual void setTime(const QTime& time) = 0;
     
     bool isSecondVisible() const { return m_isSecondVisible; }
-    virtual void setSecondVisible(bool isVisible) = 0;
+    virtual void setSecondVisible(bool visible) = 0;
 
 public slots:
     void reset() override;
@@ -70,11 +70,16 @@ public:
     explicit TimePicker(QWidget* parent = nullptr, bool showSeconds = false);
 
     void setTime(const QTime& time) override;
-    void setSecondVisible(bool isVisible) override;
+    void setSecondVisible(bool visible) override;
 
 protected:
     QStringList panelInitialValue() override;
     void onConfirmed(const QStringList& value) override;
+    
+private:
+    static const int HOUR_INDEX = 0;
+    static const int MINUTE_INDEX = 1;
+    static const int SECOND_INDEX = 2;
 };
 
 class QFLUENT_EXPORT AMTimePicker : public TimePickerBase
@@ -85,13 +90,18 @@ public:
     explicit AMTimePicker(QWidget* parent = nullptr, bool showSeconds = false);
 
     void setTime(const QTime& time) override;
-    void setSecondVisible(bool isVisible) override;
+    void setSecondVisible(bool visible) override;
 
 protected:
     QStringList panelInitialValue() override;
     void onConfirmed(const QStringList& value) override;
 
 private:
-    QString m_AM;
-    QString m_PM;
+    static const int HOUR_INDEX = 0;
+    static const int MINUTE_INDEX = 1;
+    static const int SECOND_INDEX = 2;
+    static const int AMPM_INDEX = 3;
+    
+    QString m_amLabel;
+    QString m_pmLabel;
 };

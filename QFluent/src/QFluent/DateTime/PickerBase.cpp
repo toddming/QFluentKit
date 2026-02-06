@@ -1,4 +1,4 @@
-﻿#include "PickerBase.h"
+#include "PickerBase.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPainter>
@@ -40,7 +40,7 @@ QVariant DigitFormatter::decode(const QString& value)
 PickerColumnButton::PickerColumnButton(const QString& name, const QList<QVariant>& items,
                                      int width, Qt::Alignment align,
                                      PickerColumnFormatter* formatter, QWidget* parent)
-    : QPushButton(name, parent), m_name(name), m_align(align)
+    : QPushButton(name, parent), m_name(name), m_formatter(nullptr), m_align(align)
 {
     setItems(items);
     setFormatter(formatter);
@@ -164,7 +164,7 @@ void ItemMaskWidget::paintEvent(QPaintEvent* e)
     int w = 0;
     int h = height();
 
-    PickerPanel *panel = qobject_cast<PickerPanel*> (this->parent());
+    PickerPanel *panel = qobject_cast<PickerPanel*>(this->parent());
     m_listWidgets = panel->listWidgets();
 
     for (CycleListWidget* p : m_listWidgets) {
@@ -229,7 +229,7 @@ PickerBase::PickerBase(QWidget* parent)
     m_hBoxLayout->setSizeConstraint(QHBoxLayout::SetFixedSize);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
     
-    connect(this, &QPushButton::clicked, this, &PickerBase::showPanel);
+    connect(this, &QPushButton::clicked, this, &PickerBase::onShowPanel);
 }
 
 void PickerBase::setSelectedBackgroundColor(const QColor& light, const QColor& dark)
@@ -288,9 +288,9 @@ void PickerBase::setColumnVisible(int index, bool isVisible)
 QStringList PickerBase::value() const
 {
     QStringList result;
-    for (PickerColumnButton* c : m_columns) {
-        if (c->isVisible()) {
-            result << c->value();
+    for (PickerColumnButton* column : m_columns) {
+        if (column->isVisible()) {
+            result << column->value();
         }
     }
     return result;
@@ -347,6 +347,11 @@ void PickerBase::clearColumns()
     }
 }
 
+void PickerBase::setResetEnabled(bool isEnabled)
+{
+    m_isResetEnabled = isEnabled;
+}
+
 void PickerBase::reset()
 {
     for (int i = 0; i < m_columns.size(); ++i) {
@@ -354,24 +359,15 @@ void PickerBase::reset()
     }
 }
 
-void PickerBase::setResetEnabled(bool isEnabled)
-{
-    m_isResetEnabled = isEnabled;
-}
-
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void PickerBase::enterEvent(QEnterEvent* e)
-{
-    setButtonProperty("enter", true);
-    QPushButton::enterEvent(e);
-}
+void PickerBase::enterEvent(QEnterEvent *e)
 #else
-void PickerBase::enterEvent(QEvent* e)
+void PickerBase::enterEvent(QEvent *e)
+#endif
 {
     setButtonProperty("enter", true);
     QPushButton::enterEvent(e);
 }
-#endif
 
 void PickerBase::leaveEvent(QEvent* e)
 {
@@ -405,9 +401,10 @@ QStringList PickerBase::panelInitialValue()
     return value();
 }
 
-void PickerBase::showPanel()
+void PickerBase::onShowPanel()
 {
     PickerPanel* panel = new PickerPanel(this);
+    panel->setAttribute(Qt::WA_DeleteOnClose);  // 修复内存泄漏：窗口关闭时自动删除
     
     for (PickerColumnButton* column : m_columns) {
         if (column->isVisible()) {
@@ -443,7 +440,7 @@ void PickerBase::onColumnValueChanged(PickerPanel* panel, int index, const QStri
 
 // PickerPanel 实现
 PickerPanel::PickerPanel(QWidget* parent)
-    : QWidget(parent), m_itemHeight(37), m_isExpanded(false)
+    : QWidget(parent), m_itemHeight(37), m_ani(nullptr), m_isExpanded(false)
 {
     initWidget();
 }
@@ -492,13 +489,13 @@ void PickerPanel::initWidget()
     m_resetButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_cancelButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
-    connect(m_yesButton, &QPushButton::clicked, this, &PickerPanel::fadeOut);
+    connect(m_yesButton, &QPushButton::clicked, this, &PickerPanel::onFadeOut);
     connect(m_yesButton, &QPushButton::clicked, [this]() {
         emit confirmed(value());
     });
-    connect(m_cancelButton, &QPushButton::clicked, this, &PickerPanel::fadeOut);
+    connect(m_cancelButton, &QPushButton::clicked, this, &PickerPanel::onFadeOut);
     connect(m_resetButton, &QPushButton::clicked, this, &PickerPanel::resetted);
-    connect(m_resetButton, &QPushButton::clicked, this, &PickerPanel::fadeOut);
+    connect(m_resetButton, &QPushButton::clicked, this, &PickerPanel::onFadeOut);
     
     setResetEnabled(false);
     
@@ -620,6 +617,13 @@ void PickerPanel::exec(const QPoint& pos, bool ani)
         return;
     }
     
+    // 删除旧动画对象以防内存泄漏
+    if (m_ani) {
+        m_ani->stop();
+        delete m_ani;
+        m_ani = nullptr;
+    }
+    
     m_isExpanded = false;
     m_ani = new QPropertyAnimation(m_view, "windowOpacity", this);
     connect(m_ani, &QPropertyAnimation::valueChanged, this, &PickerPanel::onAniValueChanged);
@@ -651,8 +655,15 @@ void PickerPanel::onAniValueChanged(const QVariant& value)
     }
 }
 
-void PickerPanel::fadeOut()
+void PickerPanel::onFadeOut()
 {
+    // 删除旧动画对象以防内存泄漏
+    if (m_ani) {
+        m_ani->stop();
+        delete m_ani;
+        m_ani = nullptr;
+    }
+    
     m_isExpanded = true;
     m_ani = new QPropertyAnimation(this, "windowOpacity", this);
     connect(m_ani, &QPropertyAnimation::valueChanged, this, &PickerPanel::onAniValueChanged);
@@ -663,4 +674,3 @@ void PickerPanel::fadeOut()
     m_ani->setEasingCurve(QEasingCurve::OutQuad);
     m_ani->start();
 }
-

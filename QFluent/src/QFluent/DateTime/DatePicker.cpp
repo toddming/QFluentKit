@@ -1,4 +1,4 @@
-﻿#include "DatePicker.h"
+#include "DatePicker.h"
 #include "CycleListWidget.h"
 
 // MonthFormatter 实现
@@ -31,9 +31,28 @@ QVariant MonthFormatter::decode(const QString& value)
 
 // DatePickerBase 实现
 DatePickerBase::DatePickerBase(QWidget* parent)
-    : PickerBase(parent), m_yearFormatter(nullptr), 
-      m_monthFormatter(nullptr), m_dayFormatter(nullptr)
+    : PickerBase(parent)
+    , m_yearFormatter(nullptr)
+    , m_monthFormatter(nullptr)
+    , m_dayFormatter(nullptr)
+    , m_defaultYearFormatter(nullptr)
+    , m_defaultMonthFormatter(nullptr)
+    , m_defaultDayFormatter(nullptr)
 {
+}
+
+DatePickerBase::~DatePickerBase()
+{
+    // 清理默认 formatter（如果它们没有父对象）
+    if (m_defaultYearFormatter && !m_defaultYearFormatter->parent()) {
+        delete m_defaultYearFormatter;
+    }
+    if (m_defaultMonthFormatter && !m_defaultMonthFormatter->parent()) {
+        delete m_defaultMonthFormatter;
+    }
+    if (m_defaultDayFormatter && !m_defaultDayFormatter->parent()) {
+        delete m_defaultDayFormatter;
+    }
 }
 
 void DatePickerBase::setYearFormatter(PickerColumnFormatter* formatter)
@@ -56,7 +75,12 @@ PickerColumnFormatter* DatePickerBase::yearFormatter() const
     if (m_yearFormatter) {
         return m_yearFormatter;
     }
-    return new DigitFormatter();
+    
+    // 懒加载：只在第一次需要时创建默认 formatter
+    if (!m_defaultYearFormatter) {
+        m_defaultYearFormatter = new DigitFormatter();
+    }
+    return m_defaultYearFormatter;
 }
 
 PickerColumnFormatter* DatePickerBase::monthFormatter() const
@@ -64,7 +88,12 @@ PickerColumnFormatter* DatePickerBase::monthFormatter() const
     if (m_monthFormatter) {
         return m_monthFormatter;
     }
-    return new MonthFormatter();
+    
+    // 懒加载：只在第一次需要时创建默认 formatter
+    if (!m_defaultMonthFormatter) {
+        m_defaultMonthFormatter = new MonthFormatter();
+    }
+    return m_defaultMonthFormatter;
 }
 
 PickerColumnFormatter* DatePickerBase::dayFormatter() const
@@ -72,7 +101,12 @@ PickerColumnFormatter* DatePickerBase::dayFormatter() const
     if (m_dayFormatter) {
         return m_dayFormatter;
     }
-    return new DigitFormatter();
+    
+    // 懒加载：只在第一次需要时创建默认 formatter
+    if (!m_defaultDayFormatter) {
+        m_defaultDayFormatter = new DigitFormatter();
+    }
+    return m_defaultDayFormatter;
 }
 
 void DatePickerBase::reset()
@@ -82,12 +116,17 @@ void DatePickerBase::reset()
 }
 
 // DatePicker 实现
-DatePicker::DatePicker(QWidget* parent, DateFormat format, bool isMonthTight)
-    : DatePickerBase(parent), m_isMonthTight(isMonthTight)
+DatePicker::DatePicker(QWidget* parent, DateFormat format, bool tight)
+    : DatePickerBase(parent)
+    , m_isMonthTight(tight)
+    , m_dateFormat(format)
+    , m_monthIndex(0)
+    , m_dayIndex(0)
+    , m_yearIndex(0)
 {
-    m_MONTH = tr("月");
-    m_YEAR = tr("年");
-    m_DAY = tr("日");
+    m_monthLabel = tr("月");
+    m_yearLabel = tr("年");
+    m_dayLabel = tr("日");
     
     setDateFormat(format);
 }
@@ -95,18 +134,18 @@ DatePicker::DatePicker(QWidget* parent, DateFormat format, bool isMonthTight)
 void DatePicker::setDateFormat(DateFormat format)
 {
     clearColumns();
-    int y = QDate::currentDate().year();
+    int currentYear = QDate::currentDate().year();
     m_dateFormat = format;
     
     QList<QVariant> years, months, days;
-    for (int i = y - 100; i <= y + 100; ++i) {
-        years << i;
+    for (int year = currentYear - 100; year <= currentYear + 100; ++year) {
+        years << year;
     }
-    for (int i = 1; i <= 12; ++i) {
-        months << i;
+    for (int month = 1; month <= 12; ++month) {
+        months << month;
     }
-    for (int i = 1; i <= 31; ++i) {
-        days << i;
+    for (int day = 1; day <= 31; ++day) {
+        days << day;
     }
     
     if (format == MM_DD_YYYY) {
@@ -114,17 +153,17 @@ void DatePicker::setDateFormat(DateFormat format)
         m_dayIndex = 1;
         m_yearIndex = 2;
         
-        addColumn(m_MONTH, months, 80, Qt::AlignLeft, monthFormatter());
-        addColumn(m_DAY, days, 80, Qt::AlignCenter, dayFormatter());
-        addColumn(m_YEAR, years, 80, Qt::AlignCenter, yearFormatter());
+        addColumn(m_monthLabel, months, 80, Qt::AlignLeft, monthFormatter());
+        addColumn(m_dayLabel, days, 80, Qt::AlignCenter, dayFormatter());
+        addColumn(m_yearLabel, years, 80, Qt::AlignCenter, yearFormatter());
     } else {
         m_yearIndex = 0;
         m_monthIndex = 1;
         m_dayIndex = 2;
         
-        addColumn(m_YEAR, years, 80, Qt::AlignCenter, yearFormatter());
-        addColumn(m_MONTH, months, 80, Qt::AlignCenter, monthFormatter());
-        addColumn(m_DAY, days, 80, Qt::AlignCenter, dayFormatter());
+        addColumn(m_yearLabel, years, 80, Qt::AlignCenter, yearFormatter());
+        addColumn(m_monthLabel, months, 80, Qt::AlignCenter, monthFormatter());
+        addColumn(m_dayLabel, days, 80, Qt::AlignCenter, dayFormatter());
     }
     
     setColumnWidth(m_monthIndex, monthColumnWidth());
@@ -145,40 +184,40 @@ QStringList DatePicker::panelInitialValue()
         return val;
     }
     
-    QDate date = QDate::currentDate();
-    QString y = encodeValue(m_yearIndex, date.year());
-    QString m = encodeValue(m_monthIndex, date.month());
-    QString d = encodeValue(m_dayIndex, date.day());
+    QDate currentDate = QDate::currentDate();
+    QString yearValue = encodeValue(m_yearIndex, currentDate.year());
+    QString monthValue = encodeValue(m_monthIndex, currentDate.month());
+    QString dayValue = encodeValue(m_dayIndex, currentDate.day());
     
     if (m_dateFormat == YYYY_MM_DD) {
-        return QStringList() << y << m << d;
+        return QStringList() << yearValue << monthValue << dayValue;
     } else {
-        return QStringList() << m << d << y;
+        return QStringList() << monthValue << dayValue << yearValue;
     }
 }
 
-void DatePicker::setMonthTight(bool isTight)
+void DatePicker::setMonthTight(bool tight)
 {
-    if (m_isMonthTight == isTight) {
+    if (m_isMonthTight == tight) {
         return;
     }
     
-    m_isMonthTight = isTight;
+    m_isMonthTight = tight;
     setColumnWidth(m_monthIndex, monthColumnWidth());
 }
 
 int DatePicker::monthColumnWidth()
 {
-    QFontMetrics fm = fontMetrics();
+    QFontMetrics fontMetrics = this->fontMetrics();
     int maxWidth = 0;
     
     QStringList items = m_columns[m_monthIndex]->items();
     for (const QString& item : items) {
-        maxWidth = qMax(maxWidth, fm.horizontalAdvance(item));
+        maxWidth = qMax(maxWidth, fontMetrics.horizontalAdvance(item));
     }
     maxWidth += 20;
     
-    if (m_MONTH == "month") {
+    if (m_monthLabel == "month") {
         return maxWidth + 49;
     }
     
@@ -193,19 +232,19 @@ void DatePicker::onColumnValueChanged(PickerPanel* panel, int index, const QStri
     
     int month = decodeValue(m_monthIndex, panel->columnValue(m_monthIndex)).toInt();
     int year = decodeValue(m_yearIndex, panel->columnValue(m_yearIndex)).toInt();
-    int days = m_calendar.daysInMonth(month, year);
+    int daysInMonth = m_calendar.daysInMonth(month, year);
     
-    CycleListWidget* c = panel->column(m_dayIndex);
-    QString day = c->currentItem()->text();
+    CycleListWidget* dayColumn = panel->column(m_dayIndex);
+    QString currentDay = dayColumn->currentItem()->text();
     
     QList<QVariant> dayList;
-    for (int i = 1; i <= days; ++i) {
-        dayList << i;
+    for (int day = 1; day <= daysInMonth; ++day) {
+        dayList << day;
     }
     setColumnItems(m_dayIndex, dayList);
     
-    c->setItems(m_columns[m_dayIndex]->items());
-    c->setSelectedItem(day);
+    dayColumn->setItems(m_columns[m_dayIndex]->items());
+    dayColumn->setSelectedItem(currentDay);
 }
 
 void DatePicker::onConfirmed(const QStringList& value)
@@ -214,12 +253,12 @@ void DatePicker::onConfirmed(const QStringList& value)
     int month = decodeValue(m_monthIndex, value[m_monthIndex]).toInt();
     int day = decodeValue(m_dayIndex, value[m_dayIndex]).toInt();
     
-    QDate date(year, month, day);
+    QDate newDate(year, month, day);
     QDate oldDate = m_date;
-    setDate(date);
+    setDate(newDate);
     
-    if (oldDate != date) {
-        emit dateChanged(date);
+    if (oldDate != newDate) {
+        emit dateChanged(newDate);
     }
 }
 
@@ -235,8 +274,8 @@ void DatePicker::setDate(const QDate& date)
     setColumnValue(m_yearIndex, date.year());
     
     QList<QVariant> dayList;
-    for (int i = 1; i <= date.daysInMonth(); ++i) {
-        dayList << i;
+    for (int day = 1; day <= date.daysInMonth(); ++day) {
+        dayList << day;
     }
     setColumnItems(m_dayIndex, dayList);
 }

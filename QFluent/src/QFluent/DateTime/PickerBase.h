@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <QPushButton>
 #include <QWidget>
@@ -14,6 +14,7 @@ class CycleListWidget;
 class QListWidgetItem;
 class QPropertyAnimation;
 class QGraphicsDropShadowEffect;
+
 class PickerColumnFormatter : public QObject
 {
     Q_OBJECT
@@ -163,7 +164,7 @@ protected:
     virtual void onColumnValueChanged(PickerPanel* panel, int index, const QString& value);
 
 private slots:
-    void showPanel();
+    void onShowPanel();
 
 private:
     void setButtonProperty(const QString& name, const QVariant& value);
@@ -214,7 +215,7 @@ protected:
     void resizeEvent(QResizeEvent* e) override;
 
 private slots:
-    void fadeOut();
+    void onFadeOut();
     void onAniValueChanged(const QVariant& value);
 
 private:

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "PickerBase.h"
 #include <QDate>
@@ -23,12 +23,13 @@ private:
 class QFLUENT_EXPORT DatePickerBase : public PickerBase
 {
     Q_OBJECT
-    Q_PROPERTY(QDate date READ getDate WRITE setDate)
+    Q_PROPERTY(QDate date READ date WRITE setDate)
 
 public:
     explicit DatePickerBase(QWidget* parent = nullptr);
+    ~DatePickerBase() override;
 
-    QDate getDate() const { return m_date; }
+    QDate date() const { return m_date; }
     virtual void setDate(const QDate& date) = 0;
     
     void setYearFormatter(PickerColumnFormatter* formatter);
@@ -51,6 +52,11 @@ protected:
     PickerColumnFormatter* m_yearFormatter;
     PickerColumnFormatter* m_monthFormatter;
     PickerColumnFormatter* m_dayFormatter;
+    
+    // 默认 formatter，用于懒加载
+    mutable PickerColumnFormatter* m_defaultYearFormatter;
+    mutable PickerColumnFormatter* m_defaultMonthFormatter;
+    mutable PickerColumnFormatter* m_defaultDayFormatter;
 };
 
 class QFLUENT_EXPORT DatePicker : public DatePickerBase
@@ -63,11 +69,11 @@ public:
         YYYY_MM_DD = 1
     };
 
-    explicit DatePicker(QWidget* parent = nullptr, DateFormat format = MM_DD_YYYY, bool isMonthTight = true);
+    explicit DatePicker(QWidget* parent = nullptr, DateFormat format = MM_DD_YYYY, bool tight = true);
 
     void setDateFormat(DateFormat format);
     void setDate(const QDate& date) override;
-    void setMonthTight(bool isTight);
+    void setMonthTight(bool tight);
 
 protected:
     QStringList panelInitialValue() override;
@@ -82,9 +88,9 @@ private:
     int m_monthIndex;
     int m_dayIndex;
     int m_yearIndex;
-    QString m_MONTH;
-    QString m_YEAR;
-    QString m_DAY;
+    QString m_monthLabel;
+    QString m_yearLabel;
+    QString m_dayLabel;
 };
 
 class ZhFormatter : public PickerColumnFormatter

@@ -1,4 +1,4 @@
-﻿#include "TimePicker.h"
+#include "TimePicker.h"
 
 // MinuteFormatter 实现
 QString MinuteFormatter::encode(const QVariant& value)
@@ -20,19 +20,19 @@ QString AMHourFormatter::encode(const QVariant& value)
 AMPMFormatter::AMPMFormatter(QObject* parent)
     : PickerColumnFormatter(parent)
 {
-    m_AM = tr("上午");
-    m_PM = tr("下午");
+    m_amLabel = tr("上午");
+    m_pmLabel = tr("下午");
 }
 
 QString AMPMFormatter::encode(const QVariant& value)
 {
-    bool ok = false;
-    int hour = value.toInt(&ok);
+    bool isValid = false;
+    int hour = value.toInt(&isValid);
 
-    if (!ok) {
+    if (!isValid) {
         return value.toString();
     }
-    return hour < 12 ? m_AM : m_PM;
+    return hour < 12 ? m_amLabel : m_pmLabel;
 }
 
 // TimePickerBase 实现
@@ -51,22 +51,22 @@ void TimePickerBase::reset()
 TimePicker::TimePicker(QWidget* parent, bool showSeconds)
     : TimePickerBase(parent, showSeconds)
 {
-    int w = showSeconds ? 80 : 120;
+    int columnWidth = showSeconds ? 80 : 120;
     
     QList<QVariant> hours, minutes, seconds;
-    for (int i = 0; i < 24; ++i) {
-        hours << i;
+    for (int hour = 0; hour < 24; ++hour) {
+        hours << hour;
     }
-    for (int i = 0; i < 60; ++i) {
-        minutes << i;
-        seconds << i;
+    for (int minute = 0; minute < 60; ++minute) {
+        minutes << minute;
+        seconds << minute;
     }
     
-    addColumn(tr("时"), hours, w, Qt::AlignCenter, new DigitFormatter(this));
-    addColumn(tr("分"), minutes, w, Qt::AlignCenter, new MinuteFormatter(this));
-    addColumn(tr("秒"), seconds, w, Qt::AlignCenter, new MinuteFormatter(this));
+    addColumn(tr("时"), hours, columnWidth, Qt::AlignCenter, new DigitFormatter(this));
+    addColumn(tr("分"), minutes, columnWidth, Qt::AlignCenter, new MinuteFormatter(this));
+    addColumn(tr("秒"), seconds, columnWidth, Qt::AlignCenter, new MinuteFormatter(this));
     
-    setColumnVisible(2, showSeconds);
+    setColumnVisible(SECOND_INDEX, showSeconds);
 }
 
 void TimePicker::setTime(const QTime& time)
@@ -76,19 +76,24 @@ void TimePicker::setTime(const QTime& time)
     }
     
     m_time = time;
-    setColumnValue(0, time.hour());
-    setColumnValue(1, time.minute());
-    setColumnValue(2, time.second());
+    setColumnValue(HOUR_INDEX, time.hour());
+    setColumnValue(MINUTE_INDEX, time.minute());
+    setColumnValue(SECOND_INDEX, time.second());
 }
 
-void TimePicker::setSecondVisible(bool isVisible)
+void TimePicker::setSecondVisible(bool visible)
 {
-    m_isSecondVisible = isVisible;
-    setColumnVisible(2, isVisible);
+    if (m_isSecondVisible == visible) {
+        return;
+    }
     
-    int w = isVisible ? 80 : 120;
+    m_isSecondVisible = visible;
+    setColumnVisible(SECOND_INDEX, visible);
+    
+    // 根据秒列的可见性调整列宽
+    int columnWidth = visible ? 80 : 120;
     for (PickerColumnButton* button : std::as_const(m_columns)) {
-        button->setFixedWidth(w);
+        button->setFixedWidth(columnWidth);
     }
 }
 
@@ -96,16 +101,16 @@ void TimePicker::onConfirmed(const QStringList& value)
 {
     PickerBase::onConfirmed(value);
     
-    int h = decodeValue(0, value[0]).toInt();
-    int m = decodeValue(1, value[1]).toInt();
-    int s = (value.size() == 2) ? 0 : decodeValue(2, value[2]).toInt();
+    int hour = decodeValue(HOUR_INDEX, value[HOUR_INDEX]).toInt();
+    int minute = decodeValue(MINUTE_INDEX, value[MINUTE_INDEX]).toInt();
+    int second = (value.size() == 2) ? 0 : decodeValue(SECOND_INDEX, value[SECOND_INDEX]).toInt();
     
-    QTime time(h, m, s);
+    QTime newTime(hour, minute, second);
     QTime oldTime = m_time;
-    setTime(time);
+    setTime(newTime);
     
-    if (oldTime != time) {
-        emit timeChanged(time);
+    if (oldTime != newTime) {
+        emit timeChanged(newTime);
     }
 }
 
@@ -124,43 +129,44 @@ QStringList TimePicker::panelInitialValue()
         return val;
     }
     
-    QTime time = QTime::currentTime();
-    QString h = encodeValue(0, time.hour());
-    QString m = encodeValue(1, time.minute());
-    QString s = encodeValue(2, time.second());
+    QTime currentTime = QTime::currentTime();
+    QString hourValue = encodeValue(HOUR_INDEX, currentTime.hour());
+    QString minuteValue = encodeValue(MINUTE_INDEX, currentTime.minute());
+    QString secondValue = encodeValue(SECOND_INDEX, currentTime.second());
     
-    return isSecondVisible() ? QStringList{h, m, s} : QStringList{h, m};
+    return isSecondVisible() ? QStringList{hourValue, minuteValue, secondValue} 
+                             : QStringList{hourValue, minuteValue};
 }
 
 // AMTimePicker 实现
 AMTimePicker::AMTimePicker(QWidget* parent, bool showSeconds)
     : TimePickerBase(parent, showSeconds)
 {
-    m_AM = tr("上午");
-    m_PM = tr("下午");
+    m_amLabel = tr("上午");
+    m_pmLabel = tr("下午");
     
-    QList<QVariant> hours, minutes, seconds, ampm;
-    for (int i = 1; i <= 12; ++i) {
-        hours << i;
+    QList<QVariant> hours, minutes, seconds, ampmValues;
+    for (int hour = 1; hour <= 12; ++hour) {
+        hours << hour;
     }
-    for (int i = 0; i < 60; ++i) {
-        minutes << i;
-        seconds << i;
+    for (int minute = 0; minute < 60; ++minute) {
+        minutes << minute;
+        seconds << minute;
     }
-    ampm << m_AM << m_PM;
+    ampmValues << m_amLabel << m_pmLabel;
     
     addColumn(tr("时"), hours, 80, Qt::AlignCenter, new AMHourFormatter(this));
     addColumn(tr("分"), minutes, 80, Qt::AlignCenter, new MinuteFormatter(this));
     addColumn(tr("秒"), seconds, 80, Qt::AlignCenter, new MinuteFormatter(this));
-    setColumnVisible(2, showSeconds);
+    setColumnVisible(SECOND_INDEX, showSeconds);
     
-    addColumn(m_AM, ampm, 80, Qt::AlignCenter, new AMPMFormatter(this));
+    addColumn(m_amLabel, ampmValues, 80, Qt::AlignCenter, new AMPMFormatter(this));
 }
 
-void AMTimePicker::setSecondVisible(bool isVisible)
+void AMTimePicker::setSecondVisible(bool visible)
 {
-    m_isSecondVisible = isVisible;
-    setColumnVisible(2, isVisible);
+    m_isSecondVisible = visible;
+    setColumnVisible(SECOND_INDEX, visible);
 }
 
 void AMTimePicker::setTime(const QTime& time)
@@ -170,43 +176,44 @@ void AMTimePicker::setTime(const QTime& time)
     }
     
     m_time = time;
-    setColumnValue(0, time.hour());
-    setColumnValue(1, time.minute());
-    setColumnValue(2, time.second());
-    setColumnValue(3, time.hour());
+    setColumnValue(HOUR_INDEX, time.hour());
+    setColumnValue(MINUTE_INDEX, time.minute());
+    setColumnValue(SECOND_INDEX, time.second());
+    setColumnValue(AMPM_INDEX, time.hour());
 }
 
 void AMTimePicker::onConfirmed(const QStringList& value)
 {
     PickerBase::onConfirmed(value);
     
-    int h, m, s;
-    QString p;
+    int hour, minute, second;
+    QString ampmValue;
     
     if (value.size() == 3) {
-        h = decodeValue(0, value[0]).toInt();
-        m = decodeValue(1, value[1]).toInt();
-        p = value[2];
-        s = 0;
+        hour = decodeValue(HOUR_INDEX, value[HOUR_INDEX]).toInt();
+        minute = decodeValue(MINUTE_INDEX, value[MINUTE_INDEX]).toInt();
+        ampmValue = value[2];
+        second = 0;
     } else {
-        h = decodeValue(0, value[0]).toInt();
-        m = decodeValue(1, value[1]).toInt();
-        s = decodeValue(2, value[2]).toInt();
-        p = value[3];
+        hour = decodeValue(HOUR_INDEX, value[HOUR_INDEX]).toInt();
+        minute = decodeValue(MINUTE_INDEX, value[MINUTE_INDEX]).toInt();
+        second = decodeValue(SECOND_INDEX, value[SECOND_INDEX]).toInt();
+        ampmValue = value[3];
     }
     
-    if (p == m_AM) {
-        h = (h == 12) ? 0 : h;
-    } else if (p == m_PM) {
-        h = (h == 12) ? h : h + 12;
+    // 转换 12 小时制到 24 小时制
+    if (ampmValue == m_amLabel) {
+        hour = (hour == 12) ? 0 : hour;
+    } else if (ampmValue == m_pmLabel) {
+        hour = (hour == 12) ? hour : hour + 12;
     }
     
-    QTime time(h, m, s);
+    QTime newTime(hour, minute, second);
     QTime oldTime = m_time;
-    setTime(time);
+    setTime(newTime);
     
-    if (oldTime != time) {
-        emit timeChanged(time);
+    if (oldTime != newTime) {
+        emit timeChanged(newTime);
     }
 }
 
@@ -225,11 +232,12 @@ QStringList AMTimePicker::panelInitialValue()
         return val;
     }
     
-    QTime time = QTime::currentTime();
-    QString h = encodeValue(0, time.hour());
-    QString m = encodeValue(1, time.minute());
-    QString s = encodeValue(2, time.second());
-    QString p = encodeValue(3, time.hour());
+    QTime currentTime = QTime::currentTime();
+    QString hourValue = encodeValue(HOUR_INDEX, currentTime.hour());
+    QString minuteValue = encodeValue(MINUTE_INDEX, currentTime.minute());
+    QString secondValue = encodeValue(SECOND_INDEX, currentTime.second());
+    QString ampmValue = encodeValue(AMPM_INDEX, currentTime.hour());
     
-    return isSecondVisible() ? QStringList{h, m, s, p} : QStringList{h, m, p};
+    return isSecondVisible() ? QStringList{hourValue, minuteValue, secondValue, ampmValue} 
+                             : QStringList{hourValue, minuteValue, ampmValue};
 }
