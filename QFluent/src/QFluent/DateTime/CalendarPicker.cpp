@@ -4,10 +4,6 @@
 #include <QApplication>
 #include <QPoint>
 #include <QDate>
-#include <QPainter>
-#include <QStyle>
-#include <QApplication>
-#include <QPoint>
 #include <QVariant>
 
 #include "Theme.h"
@@ -17,29 +13,29 @@
 
 CalendarPicker::CalendarPicker(QWidget* parent)
     : QPushButton(parent),
-      _date(),
-      _dateFormat(QLocale::system().dateFormat(QLocale::ShortFormat)),
-      _isResetEnabled(false)
+      m_date(),
+      m_dateFormat(QLocale::system().dateFormat(QLocale::ShortFormat)),
+      m_isResetEnabled(false)
 {
     setText("选择日期");
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
-    connect(this, &QPushButton::clicked, this, &CalendarPicker::_showCalendarView);
+    connect(this, &QPushButton::clicked, this, &CalendarPicker::onShowCalendarView);
 }
 
 QDate CalendarPicker::getDate() const
 {
-    return _date;
+    return m_date;
 }
 
 void CalendarPicker::setDate(const QDate& date)
 {
-    _onDateChanged(date);
+    onDateChanged(date);
 }
 
 void CalendarPicker::reset()
 {
-    _date = QDate();
+    m_date = QDate();
     setText("选择日期");
     setProperty("hasDate", false);
     setStyle(QApplication::style());
@@ -48,37 +44,38 @@ void CalendarPicker::reset()
 
 QString CalendarPicker::getDateFormat() const
 {
-    return _dateFormat;
+    return m_dateFormat;
 }
 
-void CalendarPicker::setDateFormat(QString format)
+void CalendarPicker::setDateFormat(const QString& format)
 {
-    _dateFormat = format;
-    if (_date.isValid()) {
-        setText(_date.toString(_dateFormat));
+    m_dateFormat = format;
+    if (m_date.isValid()) {
+        setText(m_date.toString(m_dateFormat));
     }
 }
 
 bool CalendarPicker::isResetEnabled() const
 {
-    return _isResetEnabled;
+    return m_isResetEnabled;
 }
 
 void CalendarPicker::setResetEnabled(bool isEnabled)
 {
-    _isResetEnabled = isEnabled;
+    m_isResetEnabled = isEnabled;
 }
 
-void CalendarPicker::_showCalendarView()
+void CalendarPicker::onShowCalendarView()
 {
     CalendarView* view = new CalendarView(window());
+    view->setAttribute(Qt::WA_DeleteOnClose);  // 修复内存泄漏：窗口关闭时自动删除
     view->setResetEnabled(isResetEnabled());
 
     connect(view, &CalendarView::resetted, this, &CalendarPicker::reset);
-    connect(view, &CalendarView::dateChanged, this, &CalendarPicker::_onDateChanged);
+    connect(view, &CalendarView::dateChanged, this, &CalendarPicker::onDateChanged);
 
-    if (_date.isValid()) {
-        view->setDate(_date);
+    if (m_date.isValid()) {
+        view->setDate(m_date);
     }
 
     int x = this->width() / 2 - view->sizeHint().width() / 2;
@@ -86,10 +83,10 @@ void CalendarPicker::_showCalendarView()
     view->exec(mapToGlobal(QPoint(x, y)));
 }
 
-void CalendarPicker::_onDateChanged(const QDate& date)
+void CalendarPicker::onDateChanged(const QDate& date)
 {
-    _date = QDate(date);
-    setText(date.toString(_dateFormat));
+    m_date = QDate(date);
+    setText(date.toString(m_dateFormat));
     setProperty("hasDate", true);
     setStyle(QApplication::style());
     update();

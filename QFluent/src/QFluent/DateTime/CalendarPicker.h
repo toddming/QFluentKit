@@ -23,7 +23,7 @@ public:
 
     void reset();
     QString getDateFormat() const;
-    void setDateFormat(QString format);
+    void setDateFormat(const QString& format);
     bool isResetEnabled() const;
     void setResetEnabled(bool isEnabled);
 
@@ -34,11 +34,11 @@ protected:
     void paintEvent(QPaintEvent* e) override;
 
 private slots:
-    void _showCalendarView();
-    void _onDateChanged(const QDate& date);
+    void onShowCalendarView();
+    void onDateChanged(const QDate& date);
 
 private:
-    QDate _date;
-    QString _dateFormat;
-    bool _isResetEnabled;
+    QDate m_date;
+    QString m_dateFormat;
+    bool m_isResetEnabled;
 };

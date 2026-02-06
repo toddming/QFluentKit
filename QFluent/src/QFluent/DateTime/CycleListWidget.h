@@ -2,6 +2,7 @@
 
 #include <QListWidget>
 #include <QToolButton>
+#include <memory>
 #include "FluentIcon.h"
 
 class ScrollButton : public QToolButton
@@ -20,19 +21,21 @@ private:
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
-class SmoothScrollBar;
+
+class ScrollBar;
+
 class CycleListWidget : public QListWidget
 {
     Q_OBJECT
 
 public:
-    explicit CycleListWidget(const QStringList& items, const QSize& itemSize, 
+    explicit CycleListWidget(const QStringList& items, const QSize& itemSize,
                            Qt::Alignment align = Qt::AlignCenter, QWidget* parent = nullptr);
 
     void setItems(const QStringList& items);
     void setSelectedItem(const QString& text);
     void scrollToItem(QListWidgetItem* item, QAbstractItemView::ScrollHint hint = QAbstractItemView::PositionAtCenter);
-    
+
     QListWidgetItem* currentItem();
     int currentIndex() const { return m_currentIndex; }
     void setCurrentIndex(int index);
@@ -66,11 +69,8 @@ private:
     Qt::Alignment m_align;
     ScrollButton* m_upButton;
     ScrollButton* m_downButton;
-    int m_scrollDuration;
     QStringList m_originItems;
-    SmoothScrollBar* m_vScrollBar;
     int m_visibleNumber;
     int m_currentIndex;
     bool m_isCycle;
 };
-
