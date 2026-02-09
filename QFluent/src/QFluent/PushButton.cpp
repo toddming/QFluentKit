@@ -10,6 +10,7 @@
 #include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "Animation.h"
+#include "ToolButton.h"
 #include "Menu/RoundMenu.h"
 #include "Menu/MenuActionListWidget.h"
 
@@ -129,6 +130,15 @@ void PushButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
     FluentIconUtils::drawIcon(*m_fluentIcon, painter, rect);
 }
+
+
+// PrimaryPushButton
+void PrimaryPushButton::drawIcon(QPainter* painter, const QRectF& rect)
+{
+    Fluent::ThemeMode _theme = Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
+}
+
 
 
 // HyperlinkButton
@@ -378,4 +388,169 @@ void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 }
 
 
+// SplitButtonBase
+SplitButtonBase::SplitButtonBase(QWidget* parent) : QWidget(parent) {
+    m_hBoxLayout = new QHBoxLayout(this);
+    m_hBoxLayout->setSpacing(0);
+    m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 
+    m_dropButton = new SplitDropButton(this);
+    m_hBoxLayout->addWidget(m_dropButton);
+
+    connect(m_dropButton, &ToolButton::clicked, this, &SplitButtonBase::dropDownClicked);
+    connect(m_dropButton, &ToolButton::clicked, this, &SplitButtonBase::showFlyout);
+
+    setAttribute(Qt::WA_TranslucentBackground);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+}
+
+SplitButtonBase::~SplitButtonBase() {
+}
+
+void SplitButtonBase::setWidget(QWidget* widget) {
+    // 插入到索引 0，拉伸因子 1，左对齐
+    m_hBoxLayout->insertWidget(0, widget, 1, Qt::AlignLeft);
+}
+
+void SplitButtonBase::setDropButton(ToolButton* button) {
+    m_hBoxLayout->removeWidget(m_dropButton);
+    m_dropButton->deleteLater();
+
+    m_dropButton = button;
+    // 重新连接信号
+    connect(m_dropButton, &QAbstractButton::clicked, this, &SplitButtonBase::dropDownClicked);
+    connect(m_dropButton, &QAbstractButton::clicked, this, &SplitButtonBase::showFlyout);
+
+    m_hBoxLayout->addWidget(button);
+}
+
+void SplitButtonBase::setDropIconSize(const QSize& size) {
+    m_dropButton->setIconSize(size);
+}
+
+void SplitButtonBase::setFlyout(QWidget* flyout) {
+    m_flyout = flyout;
+}
+
+void SplitButtonBase::showFlyout() {
+    if (!m_flyout) return;
+
+    QWidget* w = m_flyout;
+
+    auto* menu = qobject_cast<RoundMenu*>(w);
+    int dx = 0;
+    if (menu) {
+        menu->view()->setMinimumWidth(width());
+        menu->adjustSize();
+        dx = menu->layout()->contentsMargins().left();
+    }
+
+    // 计算位置
+    // x = -w.width()/2 + dx + self.width()/2
+    int x_offset = -w->width() / 2 + dx + width() / 2;
+    int y_offset = height();
+
+    QPoint globalPos = mapToGlobal(QPoint(x_offset, y_offset));
+
+    // 调用 exec 或 show
+    if (menu) {
+        menu->exec(globalPos);
+    } else {
+        w->move(globalPos);
+        w->show();
+    }
+}
+
+
+// SplitPushButton
+SplitPushButton::SplitPushButton(QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+}
+
+SplitPushButton::SplitPushButton(const QString &text, QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+    m_button->setText(text);
+}
+
+SplitPushButton::SplitPushButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+    m_button->setText(text);
+    m_button->setFluentIcon(icon);
+}
+
+void SplitPushButton::init()
+{
+    m_button = new PushButton(this);
+    m_button->setObjectName("splitPushButton");
+    connect(m_button, &PushButton::clicked, this, &SplitPushButton::clicked);
+    setWidget(m_button);
+}
+
+QString SplitPushButton::text() const
+{
+    return m_button->text();
+}
+
+void SplitPushButton::setText(const QString &text)
+{
+    m_button->setText(text);
+}
+
+void SplitPushButton::setIconSize(const QSize &size)
+{
+    m_button->setIconSize(size);
+}
+
+
+// PrimarySplitPushButton
+PrimarySplitPushButton::PrimarySplitPushButton(QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+}
+
+PrimarySplitPushButton::PrimarySplitPushButton(const QString &text, QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+    m_button->setText(text);
+}
+
+PrimarySplitPushButton::PrimarySplitPushButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+    m_button->setText(text);
+    m_button->setFluentIcon(icon);
+}
+
+void PrimarySplitPushButton::init()
+{
+    setDropButton(new PrimarySplitDropButton(this));
+
+    m_button = new PrimaryPushButton(this);
+    m_button->setObjectName("primarySplitPushButton");
+    connect(m_button, &PrimaryPushButton::clicked, this, &PrimarySplitPushButton::clicked);
+    setWidget(m_button);
+}
+
+QString PrimarySplitPushButton::text() const
+{
+    return m_button->text();
+}
+
+void PrimarySplitPushButton::setText(const QString &text)
+{
+    m_button->setText(text);
+}
+
+void PrimarySplitPushButton::setIconSize(const QSize &size)
+{
+    m_button->setIconSize(size);
+}

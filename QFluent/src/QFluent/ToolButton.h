@@ -199,12 +199,12 @@ private:
 };
 
 
-// SplitWidgetBase
-class QFLUENT_EXPORT SplitWidgetBase : public QWidget {
+// SplitToolBase
+class QFLUENT_EXPORT SplitToolBase : public QWidget {
     Q_OBJECT
 public:
-    explicit SplitWidgetBase(QWidget* parent = nullptr);
-    virtual ~SplitWidgetBase();
+    explicit SplitToolBase(QWidget* parent = nullptr);
+    virtual ~SplitToolBase();
 
     // 设置左侧的主控件
     void setWidget(QWidget* widget);
@@ -231,7 +231,7 @@ protected:
 
 
 // SplitToolButton
-class QFLUENT_EXPORT SplitToolButton : public SplitWidgetBase {
+class QFLUENT_EXPORT SplitToolButton : public SplitToolBase {
     Q_OBJECT
 
 public:
@@ -251,7 +251,7 @@ private:
 };
 
 // PrimarySplitToolButton
-class QFLUENT_EXPORT PrimarySplitToolButton : public SplitWidgetBase {
+class QFLUENT_EXPORT PrimarySplitToolButton : public SplitToolBase {
     Q_OBJECT
 
 public:

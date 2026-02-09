@@ -122,4 +122,8 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     auto primarySplitToolButton = new PrimarySplitToolButton(FluentIcon(Fluent::IconType::BASKETBALL), this);
     primarySplitToolButton->setFlyout(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的主题色拆分工具按钮", primarySplitToolButton);
+
+    addExampleCard("带下拉菜单的拆分按钮", new SplitPushButton("拆分按钮", FluentIcon(Fluent::IconType::BASKETBALL), this));
+    addExampleCard("带下拉菜单的主题色拆分按钮", new PrimarySplitPushButton("拆分按钮", FluentIcon(Fluent::IconType::BASKETBALL), this));
+
 }

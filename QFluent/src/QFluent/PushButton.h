@@ -10,6 +10,8 @@
 // PushButton
 class RoundMenu;
 class QEnterEvent;
+class QHBoxLayout;
+class ToolButton;
 class TranslateYAnimation;
 class QFLUENT_EXPORT PushButton : public QPushButton
 {
@@ -54,6 +56,10 @@ class QFLUENT_EXPORT PrimaryPushButton : public PushButton
 
 public:
     using PushButton::PushButton;
+
+protected:
+    void drawIcon(QPainter* painter, const QRectF& rect) override;
+
 };
 
 // TransparentPushButton
@@ -185,4 +191,84 @@ protected:
     void drawIcon(QPainter* painter, const QRectF& rect) override;
 };
 
+
+// SplitButtonBase
+class QFLUENT_EXPORT SplitButtonBase : public QWidget {
+    Q_OBJECT
+public:
+    explicit SplitButtonBase(QWidget* parent = nullptr);
+    virtual ~SplitButtonBase();
+
+    // 设置左侧的主控件
+    void setWidget(QWidget* widget);
+
+    // 替换下拉按钮
+    void setDropButton(ToolButton* button);
+
+    void setDropIconSize(const QSize& size);
+
+    // 设置弹出菜单/窗口
+    void setFlyout(QWidget* flyout);
+
+signals:
+    void dropDownClicked();
+
+public slots:
+    void showFlyout();
+
+protected:
+    QHBoxLayout* m_hBoxLayout;
+    ToolButton* m_dropButton;
+    QPointer<QWidget> m_flyout;
+};
+
+
+// SplitPushButton
+class QFLUENT_EXPORT SplitPushButton : public SplitButtonBase {
+    Q_OBJECT
+
+public:
+    explicit SplitPushButton(QWidget *parent = nullptr);
+    explicit SplitPushButton(const QString &text, QWidget* parent = nullptr);
+    explicit SplitPushButton(const QString &text, const FluentIconBase &icon, QWidget* parent = nullptr);
+
+    QString text() const;
+
+    void setText(const QString &text);
+
+    void setIconSize(const QSize& size);
+
+signals:
+    void clicked();
+
+private:
+    PushButton* m_button;
+
+    void init();
+};
+
+// PrimarySplitPushButton
+class QFLUENT_EXPORT PrimarySplitPushButton : public SplitButtonBase {
+    Q_OBJECT
+
+public:
+    explicit PrimarySplitPushButton(QWidget *parent = nullptr);
+    explicit PrimarySplitPushButton(const QString &text, QWidget* parent = nullptr);
+    explicit PrimarySplitPushButton(const QString &text, const FluentIconBase &icon, QWidget* parent = nullptr);
+
+    QString text() const;
+
+    void setText(const QString &text);
+
+    void setIconSize(const QSize& size);
+
+signals:
+    void clicked();
+
+private:
+    PrimaryPushButton* m_button;
+
+    void init();
+
+};
 

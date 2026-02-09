@@ -68,7 +68,7 @@ void CalendarPicker::setResetEnabled(bool isEnabled)
 void CalendarPicker::onShowCalendarView()
 {
     CalendarView* view = new CalendarView(window());
-    view->setAttribute(Qt::WA_DeleteOnClose);  // 修复内存泄漏：窗口关闭时自动删除
+    view->setAttribute(Qt::WA_DeleteOnClose);
     view->setResetEnabled(isResetEnabled());
 
     connect(view, &CalendarView::resetted, this, &CalendarPicker::reset);

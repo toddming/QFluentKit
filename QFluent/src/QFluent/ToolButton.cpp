@@ -403,8 +403,8 @@ void PrimarySplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Flu
 }
 
 
-// SplitWidgetBase
-SplitWidgetBase::SplitWidgetBase(QWidget* parent) : QWidget(parent) {
+// SplitToolBase
+SplitToolBase::SplitToolBase(QWidget* parent) : QWidget(parent) {
     m_hBoxLayout = new QHBoxLayout(this);
     m_hBoxLayout->setSpacing(0);
     m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
@@ -412,42 +412,42 @@ SplitWidgetBase::SplitWidgetBase(QWidget* parent) : QWidget(parent) {
     m_dropButton = new SplitDropButton(this);
     m_hBoxLayout->addWidget(m_dropButton);
 
-    connect(m_dropButton, &ToolButton::clicked, this, &SplitWidgetBase::dropDownClicked);
-    connect(m_dropButton, &ToolButton::clicked, this, &SplitWidgetBase::showFlyout);
+    connect(m_dropButton, &ToolButton::clicked, this, &SplitToolBase::dropDownClicked);
+    connect(m_dropButton, &ToolButton::clicked, this, &SplitToolBase::showFlyout);
 
     setAttribute(Qt::WA_TranslucentBackground);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-SplitWidgetBase::~SplitWidgetBase() {
+SplitToolBase::~SplitToolBase() {
 }
 
-void SplitWidgetBase::setWidget(QWidget* widget) {
+void SplitToolBase::setWidget(QWidget* widget) {
     // 插入到索引 0，拉伸因子 1，左对齐
     m_hBoxLayout->insertWidget(0, widget, 1, Qt::AlignLeft);
 }
 
-void SplitWidgetBase::setDropButton(ToolButton* button) {
+void SplitToolBase::setDropButton(ToolButton* button) {
     m_hBoxLayout->removeWidget(m_dropButton);
     m_dropButton->deleteLater();
 
     m_dropButton = button;
     // 重新连接信号
-    connect(m_dropButton, &QAbstractButton::clicked, this, &SplitWidgetBase::dropDownClicked);
-    connect(m_dropButton, &QAbstractButton::clicked, this, &SplitWidgetBase::showFlyout);
+    connect(m_dropButton, &QAbstractButton::clicked, this, &SplitToolBase::dropDownClicked);
+    connect(m_dropButton, &QAbstractButton::clicked, this, &SplitToolBase::showFlyout);
 
     m_hBoxLayout->addWidget(button);
 }
 
-void SplitWidgetBase::setDropIconSize(const QSize& size) {
+void SplitToolBase::setDropIconSize(const QSize& size) {
     m_dropButton->setIconSize(size);
 }
 
-void SplitWidgetBase::setFlyout(QWidget* flyout) {
+void SplitToolBase::setFlyout(QWidget* flyout) {
     m_flyout = flyout;
 }
 
-void SplitWidgetBase::showFlyout() {
+void SplitToolBase::showFlyout() {
     if (!m_flyout) return;
 
     QWidget* w = m_flyout;
@@ -479,20 +479,20 @@ void SplitWidgetBase::showFlyout() {
 
 // SplitToolButton
 SplitToolButton::SplitToolButton(QWidget* parent)
-    : SplitWidgetBase(parent)
+    : SplitToolBase(parent)
 {
     init();
 }
 
 SplitToolButton::SplitToolButton(const QIcon& icon, QWidget* parent)
-    : SplitWidgetBase(parent)
+    : SplitToolBase(parent)
 {
     init();
     m_button->setIcon(icon);
 }
 
 SplitToolButton::SplitToolButton(const FluentIconBase& icon, QWidget* parent)
-    : SplitWidgetBase(parent)
+    : SplitToolBase(parent)
 {
     init();
     m_button->setFluentIcon(icon);
@@ -512,20 +512,20 @@ void SplitToolButton::setIconSize(const QSize& size) {
 
 // PrimarySplitToolButton
 PrimarySplitToolButton::PrimarySplitToolButton(QWidget* parent)
-    : SplitWidgetBase(parent)
+    : SplitToolBase(parent)
 {
     init();
 }
 
 PrimarySplitToolButton::PrimarySplitToolButton(const QIcon& icon, QWidget* parent)
-    : SplitWidgetBase(parent)
+    : SplitToolBase(parent)
 {
     init();
     m_button->setIcon(icon);
 }
 
 PrimarySplitToolButton::PrimarySplitToolButton(const FluentIconBase& icon, QWidget* parent)
-    : SplitWidgetBase(parent)
+    : SplitToolBase(parent)
 {
     init();
     m_button->setFluentIcon(icon);
