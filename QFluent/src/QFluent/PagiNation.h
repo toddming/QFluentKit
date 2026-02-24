@@ -7,8 +7,14 @@
 
 using namespace std;
 
+// 页码项类型枚举
+enum class PaginationItemType {
+    Button = 1,
+    Ellipsis = 2
+};
+
 struct __PagiNation_DATA {
-    int type; // 1: 按钮  2: 点
+    PaginationItemType type;  // 1: 按钮  2: 点
     int labelNum;
     bool choosed;
 };
@@ -35,14 +41,20 @@ public:
     PagiNation (QPoint point, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
     PagiNation (QSize size, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
     PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
+    ~PagiNation();
 
 private:
+    static constexpr int DEFAULT_PAGE_SIZE = 10;
+    static constexpr int DEFAULT_HEIGHT = 30;
+    static constexpr int MIN_BUTTON_COUNT = 5;
+    static constexpr int DEFAULT_BUTTON_COUNT = 7;
+
     Fluent::Alignment _align;
     int _buttonCount;
     int _height;
     QHBoxLayout *BJ, *BJ_main;
     QSpacerItem *TH_left, *TH_right;
-    int _pageNow = 1, _total = 0, _pageSize = 10;
+    int _pageNow = 1, _total = 0, _pageSize = DEFAULT_PAGE_SIZE;
     TransparentToolButton *prevBtn, *nextBtn, *prevFBtn, *nextFBtn;
     QFrame *mainBox;
 
@@ -70,8 +82,9 @@ public:
 private:
     void init ();
     void computePage ();
-    void renderBtn (QList<__PagiNation_DATA> list, bool allDisabled = false); // 增加禁用参数
+    void renderBtn (QList<__PagiNation_DATA> list, bool allDisabled = false);
     void setWidgetAlign ();
+    void validateButtonCount();
 
 private slots:
     void handleClick (Button *self);
