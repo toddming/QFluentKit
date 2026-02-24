@@ -59,12 +59,8 @@ PagiNation::PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align, in
     init();
 }
 
-/** 析构函数 - 释放资源 */
-PagiNation::~PagiNation() {
-    // QHBoxLayout 会自动删除其中的widget，但spacer需要手动删除
-    if (TH_left) delete TH_left;
-    if (TH_right) delete TH_right;
-}
+// ✅ 删除析构函数 - QLayout会自动管理QSpacerItem
+// PagiNation::~PagiNation() { ... } 已删除
 
 /** 验证按钮数量 */
 void PagiNation::validateButtonCount() {
@@ -80,8 +76,8 @@ void PagiNation::init () {
     BJ->setSpacing(0);
     BJ->setContentsMargins(0, 0, 0, 0);
 
-    TH_left = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    TH_right = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    // ✅ 不再在init中创建TH_left和TH_right
+    // 改为在setWidgetAlign()中创建临时对象
 
     prevFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Begin")), this);
     prevFBtn->setFocusPolicy(Qt::NoFocus);
@@ -117,14 +113,6 @@ void PagiNation::init () {
     nextFBtn->setIconSize(QSize(10, 10));
     nextFBtn->setFixedSize(_height, _height);
     connect(nextFBtn, SIGNAL(clicked()), this, SLOT(toNext5()));
-
-    BJ->addWidget(prevFBtn);
-    BJ->addSpacing(2);
-    BJ->addWidget(prevBtn);
-    BJ->addWidget(mainBox);
-    BJ->addWidget(nextBtn);
-    BJ->addSpacing(2);
-    BJ->addWidget(nextFBtn);
 
     setWidgetAlign();
     computePage();
@@ -177,7 +165,7 @@ void PagiNation::computePage () {
             position = "left";
             midLabel = midIndex + 1;
         } else if (totalNum > _buttonCount && _pageNow > totalNum - midIndex) {
-            // 修复：添加边界检查
+            // ✅ 修复：添加边界检查
             position = "right";
             midLabel = totalNum - midIndex;
         }
@@ -271,15 +259,37 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
 
 /** 设置控件对齐 */
 void PagiNation::setWidgetAlign () {
-    BJ->removeItem(TH_left);
-    BJ->removeItem(TH_right);
+    // ✅ 清除布局中的所有项
+    // QLayout 会自动删除 spacer（QLayoutItem 是 QSpacerItem 的基类）
+    while (BJ->count() > 0) {
+        QLayoutItem *item = BJ->takeAt(0);
+        if (item != nullptr) {
+            // takeAt 只是移除，如果是widget会保留
+            // 但spacer会被自动删除（由QLayout管理）
+            delete item;
+        }
+    }
+
+    // 重新添加所有widgets
+    BJ->setSpacing(0);
+    BJ->setContentsMargins(0, 0, 0, 0);
+
+    BJ->addWidget(prevFBtn);
+    BJ->addSpacing(2);
+    BJ->addWidget(prevBtn);
+    BJ->addWidget(mainBox);
+    BJ->addWidget(nextBtn);
+    BJ->addSpacing(2);
+    BJ->addWidget(nextFBtn);
+
+    // ✅ 添加spacer，让QLayout管理它们（不保存指针）
     if (_align == Fluent::Alignment::Align_Left) {
-        BJ->addItem(TH_right);
+        BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     } else if (_align == Fluent::Alignment::Align_Right) {
-        BJ->insertItem(0, TH_left);
+        BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     } else {
-        BJ->insertItem(0, TH_left);
-        BJ->addItem(TH_right);
+        BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     }
 }
 
@@ -299,9 +309,8 @@ void PagiNation::toPrev5 () {
 }
 
 void PagiNation::toNext1 () {
-    int totalNum = ceil(double(_total) / double(_pageSize));
     if (_pageSize <= 0) _pageSize = DEFAULT_PAGE_SIZE;
-    totalNum = ceil(double(_total) / double(_pageSize));
+    int totalNum = ceil(double(_total) / double(_pageSize));
     if (_pageNow < totalNum) setPage(++_pageNow, true);
 }
 

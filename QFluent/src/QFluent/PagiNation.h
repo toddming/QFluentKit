@@ -7,7 +7,6 @@
 
 using namespace std;
 
-// 页码项类型枚举
 enum class PaginationItemType {
     Button = 1,
     Ellipsis = 2
@@ -32,8 +31,8 @@ private slots:
 };
 
 class QHBoxLayout;
-class QSpacerItem;
 class TransparentToolButton;
+
 class QFLUENT_EXPORT PagiNation: public QFrame {
     Q_OBJECT
 public:
@@ -41,7 +40,7 @@ public:
     PagiNation (QPoint point, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
     PagiNation (QSize size, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
     PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align = Fluent::Alignment::Align_Right, int buttonCount = 7);
-    ~PagiNation();
+    // ✅ 删除析构函数声明 - QLayout会自动管理spacer
 
 private:
     static constexpr int DEFAULT_PAGE_SIZE = 10;
@@ -53,7 +52,7 @@ private:
     int _buttonCount;
     int _height;
     QHBoxLayout *BJ, *BJ_main;
-    QSpacerItem *TH_left, *TH_right;
+    // ✅ 删除spacer指针 - 让QLayout管理它们
     int _pageNow = 1, _total = 0, _pageSize = DEFAULT_PAGE_SIZE;
     TransparentToolButton *prevBtn, *nextBtn, *prevFBtn, *nextFBtn;
     QFrame *mainBox;
