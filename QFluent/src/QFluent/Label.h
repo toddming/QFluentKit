@@ -1,6 +1,8 @@
 ﻿#pragma once
 
+#include <QUrl>
 #include <QLabel>
+#include <QPushButton>
 
 #include "FluentGlobal.h"
 
@@ -73,4 +75,33 @@ class QFLUENT_EXPORT DisplayLabel : public FluentLabelBase {
 public:
     explicit DisplayLabel(QWidget* parent = nullptr);
     explicit DisplayLabel(const QString& text, QWidget* parent = nullptr);
+};
+
+
+class QFLUENT_EXPORT HyperlinkLabel : public QPushButton
+{
+    Q_OBJECT
+    Q_PROPERTY(QUrl url READ getUrl WRITE setUrl)
+    Q_PROPERTY(bool underlineVisible READ isUnderlineVisible WRITE setUnderlineVisible)
+
+public:
+    explicit HyperlinkLabel(QWidget *parent = nullptr);
+    explicit HyperlinkLabel(const QString &text, QWidget *parent = nullptr);
+    HyperlinkLabel(const QUrl &url, const QString &text, QWidget *parent = nullptr);
+
+    QUrl getUrl() const;
+    void setUrl(const QUrl &url);
+
+    bool isUnderlineVisible() const;
+    void setUnderlineVisible(bool isVisible);
+
+private slots:
+    void onClicked();
+
+private:
+    void init();
+
+private:
+    QUrl m_url;
+    bool m_isUnderlineVisible;
 };

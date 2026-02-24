@@ -34,7 +34,24 @@ private:
     QColor hoverBackgroundColor() const override;
     QColor pressedBackgroundColor() const override;
 
-    bool _isClickEnabled;
-    int _borderRadius;
+    bool m_isClickEnabled;
+    int m_borderRadius;
 };
 
+
+class QFLUENT_EXPORT SimpleCardWidget : public CardWidget
+{
+    Q_OBJECT
+
+public:
+    using CardWidget::CardWidget;
+
+protected:
+    void paintEvent(QPaintEvent *e) override;
+
+private:
+    QColor normalBackgroundColor() const override;
+    QColor hoverBackgroundColor() const override;
+    QColor pressedBackgroundColor() const override;
+
+};

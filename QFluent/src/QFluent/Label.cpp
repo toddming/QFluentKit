@@ -1,7 +1,10 @@
 ﻿#include "Label.h"
+
 #include <QApplication>
 #include <QPalette>
 #include <QMetaObject>
+#include <QDesktopServices>
+
 #include "Theme.h"
 #include "StyleSheet.h"
 
@@ -94,3 +97,62 @@ LargeTitleLabel::LargeTitleLabel(const QString& text, QWidget* parent) : FluentL
 DisplayLabel::DisplayLabel(QWidget* parent) : FluentLabelBase(68, QFont::DemiBold, parent) {}
 DisplayLabel::DisplayLabel(const QString& text, QWidget* parent) : FluentLabelBase(text, 68, QFont::DemiBold, parent) {}
 
+
+HyperlinkLabel::HyperlinkLabel(QWidget *parent)
+    : QPushButton(parent), m_url(QUrl())
+{
+    init();
+}
+
+HyperlinkLabel::HyperlinkLabel(const QString &text, QWidget *parent)
+    : QPushButton(parent), m_url(QUrl())
+{
+    init();
+    setText(text);
+}
+
+HyperlinkLabel::HyperlinkLabel(const QUrl &url, const QString &text, QWidget *parent)
+    : QPushButton(parent), m_url(url)
+{
+    init();
+    setText(text);
+}
+
+void HyperlinkLabel::init()
+{
+    Theme::instance()->setFont(this, 14);
+    setUnderlineVisible(false);
+    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
+
+    setCursor(Qt::PointingHandCursor);
+    connect(this, &HyperlinkLabel::clicked, this, &HyperlinkLabel::onClicked);
+}
+
+QUrl HyperlinkLabel::getUrl() const
+{
+    return m_url;
+}
+
+void HyperlinkLabel::setUrl(const QUrl &url)
+{
+    m_url = QUrl(url);
+}
+
+bool HyperlinkLabel::isUnderlineVisible() const
+{
+    return m_isUnderlineVisible;
+}
+
+void HyperlinkLabel::setUnderlineVisible(bool isVisible)
+{
+    m_isUnderlineVisible = isVisible;
+    setProperty("underline", isVisible);
+    setStyle(QApplication::style());
+}
+
+void HyperlinkLabel::onClicked()
+{
+    if (getUrl().isValid()) {
+        QDesktopServices::openUrl(getUrl());
+    }
+}

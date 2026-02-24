@@ -7,8 +7,8 @@
 
 CardWidget::CardWidget(QWidget *parent)
     : BackgroundAnimationWidget(parent)
-    , _isClickEnabled(false)
-    , _borderRadius(5)
+    , m_isClickEnabled(false)
+    , m_borderRadius(5)
 {
     setBackgroundColor(normalBackgroundColor());
     connect(Theme::instance(), &Theme::themeModeChanged, this, [this](){
@@ -19,20 +19,20 @@ CardWidget::CardWidget(QWidget *parent)
 void CardWidget::mouseReleaseEvent(QMouseEvent *e)
 {
     BackgroundAnimationWidget::mouseReleaseEvent(e);
-    if (_isClickEnabled) {
+    if (m_isClickEnabled) {
         emit clicked();
     }
 }
 
 void CardWidget::setClickEnabled(bool isEnabled)
 {
-    _isClickEnabled = isEnabled;
+    m_isClickEnabled = isEnabled;
     update();
 }
 
 bool CardWidget::isClickEnabled() const
 {
-    return _isClickEnabled;
+    return m_isClickEnabled;
 }
 
 QColor CardWidget::normalBackgroundColor() const
@@ -52,12 +52,12 @@ QColor CardWidget::pressedBackgroundColor() const
 
 int CardWidget::getBorderRadius() const
 {
-    return _borderRadius;
+    return m_borderRadius;
 }
 
 void CardWidget::setBorderRadius(int radius)
 {
-    _borderRadius = radius;
+    m_borderRadius = radius;
     update();
 }
 
@@ -68,7 +68,7 @@ void CardWidget::paintEvent(QPaintEvent *e)
 
     int w = width();
     int h = height();
-    int r = _borderRadius;
+    int r = m_borderRadius;
     int d = 2 * r;
 
     bool isDark = Theme::instance()->isDarkTheme();
@@ -117,4 +117,36 @@ void CardWidget::paintEvent(QPaintEvent *e)
 
     painter.setBrush(this->backgroundColor());
     painter.drawRoundedRect(rect, r, r);
+}
+
+
+void SimpleCardWidget::paintEvent(QPaintEvent *e)
+{
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::Antialiasing);
+
+    painter.setBrush(this->backgroundColor());
+
+    if (Theme::instance()->isDarkTheme())
+        painter.setPen(QColor(0, 0, 0, 48));
+    else
+        painter.setPen(QColor(0, 0, 0, 12));
+
+    int r = this->getBorderRadius();
+    painter.drawRoundedRect(this->rect().adjusted(1, 1, -1, -1), r, r);
+}
+
+QColor SimpleCardWidget::normalBackgroundColor() const
+{
+    return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 13 : 170);
+}
+
+QColor SimpleCardWidget::hoverBackgroundColor() const
+{
+    return this->normalBackgroundColor();
+}
+
+QColor SimpleCardWidget::pressedBackgroundColor() const
+{
+    return this->normalBackgroundColor();
 }
