@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <cmath>
+#include <memory>
 
 #include "Theme.h"
 
@@ -25,7 +26,7 @@ QString FluentIconUtils::iconColor(Fluent::ThemeMode theme, bool reverse)
     if (theme == Fluent::ThemeMode::AUTO) {
         return Theme::instance()->isDarkTheme() ? darkColor : lightColor;
     }
-    return (theme == Fluent::ThemeMode::DARK) ? "black" : "white";
+    return (theme == Fluent::ThemeMode::DARK) ? darkColor : lightColor;
 }
 
 void FluentIconUtils::drawSvgIcon(const QByteArray& iconData, QPainter* painter, const QRectF& rect)
@@ -68,13 +69,20 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
 
     // Generate cache key
     QString cacheKey = iconPath;
-    QHashIterator<QString, QString> attrIt(attributes);
-    while (attrIt.hasNext()) {
-        attrIt.next();
-        cacheKey += QLatin1Char('_') + attrIt.key() + attrIt.value();
+    // Estimate additional space needed
+    cacheKey.reserve(cacheKey.size() + attributes.size() * 32 + indexes.size() * 8);
+
+    // Append attributes
+    for (auto it = attributes.constBegin(); it != attributes.constEnd(); ++it) {
+        cacheKey += QLatin1Char('_');
+        cacheKey += it.key();
+        cacheKey += it.value();
     }
+
+    // Append indexes
     for (int index : indexes) {
-        cacheKey += QLatin1Char('_') + QString::number(index);
+        cacheKey += QLatin1Char('_');
+        cacheKey += QString::number(index);
     }
 
     // Check cache
@@ -104,23 +112,31 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
 
     // Modify SVG paths
     const QDomNodeList pathNodes = dom.elementsByTagName(QStringLiteral("path"));
-    QList<int> targetIndexes = indexes;
 
-    if (targetIndexes.isEmpty()) {
-        targetIndexes.reserve(pathNodes.length());
+    // Determine which indices to process
+    if (indexes.isEmpty()) {
+        // Process all indices
         for (int i = 0; i < pathNodes.length(); ++i) {
-            targetIndexes.append(i);
-        }
-    }
-
-    for (int index : std::as_const(targetIndexes)) {
-        if (index >= 0 && index < pathNodes.length()) {
-            QDomElement element = pathNodes.at(index).toElement();
+            QDomElement element = pathNodes.at(i).toElement();
             if (!element.isNull()) {
                 QHashIterator<QString, QString> it(attributes);
                 while (it.hasNext()) {
                     it.next();
                     element.setAttribute(it.key(), it.value());
+                }
+            }
+        }
+    } else {
+        // Process specified indices
+        for (int index : indexes) {
+            if (index >= 0 && index < pathNodes.length()) {
+                QDomElement element = pathNodes.at(index).toElement();
+                if (!element.isNull()) {
+                    QHashIterator<QString, QString> it(attributes);
+                    while (it.hasNext()) {
+                        it.next();
+                        element.setAttribute(it.key(), it.value());
+                    }
                 }
             }
         }
@@ -404,19 +420,20 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect,
 
 QIconEngine* FluentIconEngine::clone() const
 {
-    FluentIconEngine* engine = nullptr;
+    // Use std::unique_ptr for exception safety
+    std::unique_ptr<FluentIconEngine> engine;
 
     if (m_iconType == Fluent::IconType::CUSTOM_PATH) {
-        engine = new FluentIconEngine(m_templatePath, m_isThemeReversed);
+        engine.reset(new FluentIconEngine(m_templatePath, m_isThemeReversed));
     } else {
-        engine = new FluentIconEngine(m_iconType, m_isThemeReversed);
+        engine.reset(new FluentIconEngine(m_iconType, m_isThemeReversed));
     }
 
     if (m_iconBase && engine) {
         engine->m_iconBase = QSharedPointer<FluentIconBase>(m_iconBase->clone());
     }
 
-    return engine;
+    return engine.release();
 }
 
 QPixmap FluentIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state)
@@ -440,6 +457,21 @@ QPixmap FluentIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::Sta
 SvgIconEngine::SvgIconEngine(const QByteArray& svgData)
     : m_svgData(svgData)
 {
+}
+
+SvgIconEngine::SvgIconEngine(SvgIconEngine&& other) noexcept
+    : QIconEngine()  // QIconEngine is abstract base class, use default constructor
+    , m_svgData(std::move(other.m_svgData))
+{
+}
+
+SvgIconEngine& SvgIconEngine::operator=(SvgIconEngine&& other) noexcept
+{
+    if (this != &other) {
+        // QIconEngine doesn't have assignment operator, skip base class assignment
+        m_svgData = std::move(other.m_svgData);
+    }
+    return *this;
 }
 
 void SvgIconEngine::paint(QPainter* painter, const QRect& rect,
@@ -481,6 +513,27 @@ FontIconEngine::FontIconEngine(const QString& fontFamily, QChar character,
     , m_color(color)
     , m_isBold(isBold)
 {
+}
+
+FontIconEngine::FontIconEngine(FontIconEngine&& other) noexcept
+    : QIconEngine()  // QIconEngine is abstract base class, use default constructor
+    , m_fontFamily(std::move(other.m_fontFamily))
+    , m_character(other.m_character)
+    , m_color(other.m_color)
+    , m_isBold(other.m_isBold)
+{
+}
+
+FontIconEngine& FontIconEngine::operator=(FontIconEngine&& other) noexcept
+{
+    if (this != &other) {
+        // QIconEngine doesn't have assignment operator, skip base class assignment
+        m_fontFamily = std::move(other.m_fontFamily);
+        m_character = other.m_character;
+        m_color = other.m_color;
+        m_isBold = other.m_isBold;
+    }
+    return *this;
 }
 
 void FontIconEngine::paint(QPainter* painter, const QRect& rect,
@@ -953,3 +1006,19 @@ void Action::setFluentIcon(const FluentIconBase& icon)
     m_fluentIcon = QSharedPointer<FluentIconBase>(icon.clone());
     QAction::setIcon(m_fluentIcon->icon());
 }
+
+// ====================== 析构函数实现 ======================
+
+FluentIconBase::~FluentIconBase() = default;
+
+SvgIconEngine::~SvgIconEngine() = default;
+
+FontIconEngine::~FontIconEngine() = default;
+
+FluentFontIconBase::~FluentFontIconBase() = default;
+
+ColoredFluentIcon::~ColoredFluentIcon() = default;
+
+FluentIcon::~FluentIcon() = default;
+
+Action::~Action() = default;

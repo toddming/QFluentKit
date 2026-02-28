@@ -114,7 +114,9 @@ class SvgIconEngine : public QIconEngine
 {
 public:
     explicit SvgIconEngine(const QByteArray& svgData);
-    ~SvgIconEngine() override = default;
+    SvgIconEngine(SvgIconEngine&& other) noexcept;
+    SvgIconEngine& operator=(SvgIconEngine&& other) noexcept;
+    ~SvgIconEngine() override;
 
     void paint(QPainter* painter, const QRect& rect,
               QIcon::Mode mode, QIcon::State state) override;
@@ -134,7 +136,9 @@ class FontIconEngine : public QIconEngine
 public:
     FontIconEngine(const QString& fontFamily, QChar character,
                   const QColor& color, bool isBold);
-    ~FontIconEngine() override = default;
+    FontIconEngine(FontIconEngine&& other) noexcept;
+    FontIconEngine& operator=(FontIconEngine&& other) noexcept;
+    ~FontIconEngine() override;
 
     void paint(QPainter* painter, const QRect& rect,
               QIcon::Mode mode, QIcon::State state) override;
@@ -155,7 +159,7 @@ private:
 class QFLUENT_EXPORT FluentIconBase
 {
 public:
-    virtual ~FluentIconBase() = default;
+    virtual ~FluentIconBase();
 
     /**
      * @brief Get icon file path based on theme
@@ -196,7 +200,7 @@ class QFLUENT_EXPORT FluentFontIconBase : public FluentIconBase
 {
 public:
     explicit FluentFontIconBase(QChar character = QChar());
-    ~FluentFontIconBase() override = default;
+    ~FluentFontIconBase() override;
 
     static FluentFontIconBase fromName(const QString& name);
     FluentFontIconBase& bold();
@@ -242,7 +246,7 @@ public:
     explicit ColoredFluentIcon(const QString& templatePath,
                               const QColor& lightColor,
                               const QColor& darkColor);
-    ~ColoredFluentIcon() override = default;
+    ~ColoredFluentIcon() override;
 
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     void render(QPainter* painter, const QRectF& rect,
@@ -272,7 +276,7 @@ class QFLUENT_EXPORT FluentIcon : public FluentIconBase
 public:
     explicit FluentIcon(Fluent::IconType iconEnum);
     explicit FluentIcon(const QString& templatePath);
-    ~FluentIcon() override = default;
+    ~FluentIcon() override;
 
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     Fluent::IconType value() const { return m_iconEnum; }
@@ -318,7 +322,7 @@ public:
     explicit Action(const QString& text, QObject* parent = nullptr);
     explicit Action(const QIcon& icon, const QString& text, QObject* parent = nullptr);
     explicit Action(const FluentIconBase& icon, const QString& text, QObject* parent = nullptr);
-    ~Action() override = default;
+    ~Action() override;
 
     QIcon icon() const;
     void setIcon(const QIcon& icon);
