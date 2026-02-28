@@ -9,7 +9,6 @@
 
 #include "FluentGlobal.h"
 
-// 前向声明
 class QWidget;
 class StyleSheetBase;
 class StyleSheetManager;
@@ -20,7 +19,7 @@ public:
     static QString applyThemeColor(const QString& qss);
     static QString getStyleSheetFromFile(const QString& filePath);
 
-    // 样式表应用 - 返回const引用避免不必要的拷贝
+    // 样式表应用 - 获取样式表内容
     static QString getStyleSheet(const std::shared_ptr<StyleSheetBase>& source,
                                 Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
     static QString getStyleSheet(const QString& source,
@@ -43,6 +42,9 @@ public:
                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
 
+    // 主题色缓存管理
+    static void clearThemeColorCache();
+
 private:
     static QHash<QString, QString> getThemeColorMap();
 };
@@ -52,33 +54,46 @@ public:
     virtual ~StyleSheetBase() = default;
     virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
     virtual QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+
+    // 应用样式表到控件 - 使用clone()避免切片问题
     virtual void apply(QWidget* widget, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+
+    // 克隆接口 - 修复切片问题
+    virtual std::shared_ptr<StyleSheetBase> clone() const = 0;
 };
 
 class QFLUENT_EXPORT StyleSheetFile : public StyleSheetBase {
 private:
     QString m_lightPath;
     QString m_darkPath;
-    QString m_filePath;
-    bool m_isMultiPath;
 
 public:
+    // 单路径构造函数 - 用于亮色和暗色使用同一文件的情况
     explicit StyleSheetFile(const QString& path);
+
+    // 双路径构造函数 - 分别指定亮色和暗色样式文件
     StyleSheetFile(const QString& lightPath, const QString& darkPath);
 
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
-    inline bool isMultiPath() const { return m_isMultiPath; }
+    inline bool hasSeparatePaths() const { return !m_lightPath.isEmpty() && !m_darkPath.isEmpty() && m_lightPath != m_darkPath; }
+
+    const QString& lightPath() const { return m_lightPath; }
+    const QString& darkPath() const { return m_darkPath; }
+
+    std::shared_ptr<StyleSheetBase> clone() const override;
 };
 
 class QFLUENT_EXPORT TemplateStyleSheetFile : public StyleSheetBase {
 private:
     QString m_templatePath;
-    mutable QString m_cachedLightPath;
-    mutable QString m_cachedDarkPath;
+    QString m_cachedLightPath;
+    QString m_cachedDarkPath;
 
 public:
     explicit TemplateStyleSheetFile(const QString& templatePath);
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+
+    std::shared_ptr<StyleSheetBase> clone() const override;
 };
 
 class QFLUENT_EXPORT FluentStyleSheet : public StyleSheetBase {
@@ -92,6 +107,8 @@ public:
     explicit FluentStyleSheet(Fluent::ThemeStyle type);
     QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
     static QString typeToString(Fluent::ThemeStyle type);
+
+    std::shared_ptr<StyleSheetBase> clone() const override;
 };
 
 class QFLUENT_EXPORT CustomStyleSheet : public StyleSheetBase {
@@ -112,6 +129,9 @@ public:
 
     static const char* DARK_QSS_KEY;
     static const char* LIGHT_QSS_KEY;
+
+    std::shared_ptr<StyleSheetBase> clone() const override;
+    void apply(QWidget* widget, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
 };
 
 class QFLUENT_EXPORT StyleSheetCompose : public StyleSheetBase {
@@ -132,6 +152,8 @@ public:
     // 预留空间以减少重新分配
     void reserve(size_t capacity);
     size_t size() const { return m_sources.size(); }
+
+    std::shared_ptr<StyleSheetBase> clone() const override;
 };
 
 class QFLUENT_EXPORT CustomStyleSheetWatcher : public QObject {
@@ -139,22 +161,28 @@ class QFLUENT_EXPORT CustomStyleSheetWatcher : public QObject {
 
 private:
     QWidget* m_watchedWidget;
+    bool m_isDirty;
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
 
 public:
     explicit CustomStyleSheetWatcher(QWidget* parent = nullptr);
+
+    void markDirty() { m_isDirty = true; }
+    bool isDirty() const { return m_isDirty; }
+    void clearDirty() { m_isDirty = false; }
+
+    void applyStyleSheetIfNeeded();
 };
 
 class QFLUENT_EXPORT StyleSheetManager : public QObject {
     Q_OBJECT
 
 private:
-    // 使用QHash代替QMap以获得更好的查找性能
     QHash<QWidget*, std::shared_ptr<StyleSheetCompose>> m_widgets;
     static StyleSheetManager* m_instance;
-    static QMutex m_mutex; // 线程安全
+    static QMutex m_mutex;
 
     StyleSheetManager();
 

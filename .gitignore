@@ -54,3 +54,7 @@ compile_commands.json
 *_qmlcache.qrc
 
 /build
+
+/.claude
+
+CLAUDE.md

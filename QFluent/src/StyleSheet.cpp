@@ -17,27 +17,44 @@
 #include "Theme.h"
 
 QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
-    static QHash<QString, QString> colorMap;
+    // 真正的静态缓存，只在第一次调用时初始化
+    static QHash<QString, QString> s_colorMap;
+
+    // 检查缓存是否需要更新
+    static QColor s_cachedPrimaryColor;
+    static int s_cachedVersion = 0;
+    static std::atomic<int> s_cacheVersion{0};
 
     Theme* theme = Theme::instance();
-    colorMap.reserve(7);
+    const QColor currentPrimaryColor = theme->themeColor(Fluent::ThemeColor::PRIMARY);
+    const int currentVersion = s_cacheVersion.load(std::memory_order_relaxed);
 
-    colorMap.insert("--ThemeColorPrimary",
-                    theme->themeColor(Fluent::ThemeColor::PRIMARY).name());
-    colorMap.insert("--ThemeColorDark1",
-                    theme->themeColor(Fluent::ThemeColor::DARK_1).name());
-    colorMap.insert("--ThemeColorDark2",
-                    theme->themeColor(Fluent::ThemeColor::DARK_2).name());
-    colorMap.insert("--ThemeColorDark3",
-                    theme->themeColor(Fluent::ThemeColor::DARK_3).name());
-    colorMap.insert("--ThemeColorLight1",
-                    theme->themeColor(Fluent::ThemeColor::LIGHT_1).name());
-    colorMap.insert("--ThemeColorLight2",
-                    theme->themeColor(Fluent::ThemeColor::LIGHT_2).name());
-    colorMap.insert("--ThemeColorLight3",
-                    theme->themeColor(Fluent::ThemeColor::LIGHT_3).name());
+    // 如果主题色改变或版本号变化，更新缓存
+    if (s_colorMap.isEmpty() || s_cachedPrimaryColor != currentPrimaryColor || s_cachedVersion != currentVersion) {
+        s_colorMap.clear();
+        s_colorMap.reserve(7);
 
-    return colorMap;
+        s_colorMap.insert("--ThemeColorPrimary", currentPrimaryColor.name());
+        s_colorMap.insert("--ThemeColorDark1", theme->themeColor(Fluent::ThemeColor::DARK_1).name());
+        s_colorMap.insert("--ThemeColorDark2", theme->themeColor(Fluent::ThemeColor::DARK_2).name());
+        s_colorMap.insert("--ThemeColorDark3", theme->themeColor(Fluent::ThemeColor::DARK_3).name());
+        s_colorMap.insert("--ThemeColorLight1", theme->themeColor(Fluent::ThemeColor::LIGHT_1).name());
+        s_colorMap.insert("--ThemeColorLight2", theme->themeColor(Fluent::ThemeColor::LIGHT_2).name());
+        s_colorMap.insert("--ThemeColorLight3", theme->themeColor(Fluent::ThemeColor::LIGHT_3).name());
+
+        s_cachedPrimaryColor = currentPrimaryColor;
+        s_cachedVersion = currentVersion;
+    }
+
+    return s_colorMap;
+}
+
+// 清除主题色缓存（在主题色改变时调用）
+void StyleSheetHelper::clearThemeColorCache()
+{
+    // 递增版本号以强制缓存更新
+    static std::atomic<int> s_cacheVersion{0};
+    s_cacheVersion.fetch_add(1, std::memory_order_relaxed);
 }
 
 QString StyleSheetHelper::applyThemeColor(const QString& qss) {
@@ -45,17 +62,50 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
         return qss;
     }
 
-    QString result = qss;
     const QHash<QString, QString>& colorMap = getThemeColorMap();
+    if (colorMap.isEmpty()) {
+        return qss;
+    }
 
+    // 使用正则表达式一次性查找所有颜色变量
+    static QRegularExpression colorVarRegex(
+        "--ThemeColor(?:Primary|Dark[1-3]|Light[1-3])"
+    );
+
+    QString result = qss;
     // 预估结果大小以减少重新分配
     result.reserve(qss.size() + colorMap.size() * 10);
 
-    // 使用QHash的迭代器进行高效查找和替换
-    for (auto it = colorMap.constBegin(); it != colorMap.constEnd(); ++it) {
-        if (result.contains(it.key())) {
-            result.replace(it.key(), it.value());
+    // 查找所有匹配
+    QRegularExpressionMatchIterator it = colorVarRegex.globalMatch(result);
+    if (!it.hasNext()) {
+        return result; // 没有颜色变量，直接返回
+    }
+
+    // 收集所有匹配和替换
+    struct Replacement {
+        int pos;
+        int length;
+        QString replacement;
+    };
+    QVector<Replacement> replacements;
+
+    while (it.hasNext()) {
+        QRegularExpressionMatch match = it.next();
+        QString varName = match.captured();
+        if (colorMap.contains(varName)) {
+            replacements.append({
+                static_cast<int>(match.capturedStart()),
+                static_cast<int>(match.capturedLength()),
+                colorMap.value(varName)
+            });
         }
+    }
+
+    // 从后向前替换，避免位置变化
+    for (int i = replacements.size() - 1; i >= 0; --i) {
+        const auto& repl = replacements[i];
+        result.replace(repl.pos, repl.length, repl.replacement);
     }
 
     return result;
@@ -63,9 +113,13 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
 
 QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
     static QHash<QString, QString> s_cache;
+    static QMutex s_cacheMutex;
 
-    if (s_cache.contains(filePath)) {
-        return s_cache[filePath];
+    {
+        QMutexLocker locker(&s_cacheMutex);
+        if (s_cache.contains(filePath)) {
+            return s_cache[filePath];
+        }
     }
 
     QFile file(filePath);
@@ -77,7 +131,10 @@ QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
     QString content = file.readAll();
     file.close();
 
-    s_cache[filePath] = content;
+    {
+        QMutexLocker locker(&s_cacheMutex);
+        s_cache[filePath] = content;
+    }
     return content;
 }
 
@@ -101,10 +158,12 @@ void StyleSheetHelper::setStyleSheet(QWidget* widget,
     }
 
     if (registerWidget) {
+        // 注册到管理器，管理器会负责设置样式表
         StyleSheetManager::instance()->registerWidget(source, widget);
+    } else {
+        // 直接设置样式表，不注册
+        widget->setStyleSheet(getStyleSheet(source, theme));
     }
-
-    widget->setStyleSheet(getStyleSheet(source, theme));
 }
 
 void StyleSheetHelper::setStyleSheet(QWidget* widget, const QString& source,
@@ -157,28 +216,35 @@ QString StyleSheetBase::content(Fluent::ThemeMode theme) {
 }
 
 void StyleSheetBase::apply(QWidget* widget, Fluent::ThemeMode theme) {
-    StyleSheetManager::setStyleSheet(widget, std::make_shared<StyleSheetBase>(*this), theme);
+    StyleSheetHelper::setStyleSheet(widget, clone(), theme);
 }
+
 
 // ==================== StyleSheetFile 实现 ====================
 
 StyleSheetFile::StyleSheetFile(const QString& path)
-    : m_lightPath(path), m_darkPath(path), m_filePath(path), m_isMultiPath(false) {}
+    : m_lightPath(path), m_darkPath(path) {}
 
 StyleSheetFile::StyleSheetFile(const QString& lightPath, const QString& darkPath)
-    : m_lightPath(lightPath), m_darkPath(darkPath), m_isMultiPath(lightPath != darkPath) {}
+    : m_lightPath(lightPath), m_darkPath(darkPath) {}
 
 QString StyleSheetFile::path(Fluent::ThemeMode theme) {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
-    if (m_isMultiPath) {
+    // 如果有分别的亮色和暗色路径，根据主题返回对应路径
+    if (hasSeparatePaths()) {
         return (actualTheme == Fluent::ThemeMode::LIGHT) ? m_lightPath : m_darkPath;
     }
 
-    // 向后兼容：使用单一路径
-    return m_filePath.isEmpty() ? m_lightPath : m_filePath;
+    // 否则使用亮色路径（两者相同）
+    return m_lightPath;
 }
+
+std::shared_ptr<StyleSheetBase> StyleSheetFile::clone() const {
+    return std::make_shared<StyleSheetFile>(*this);
+}
+
 
 // ==================== TemplateStyleSheetFile 实现 ====================
 
@@ -189,7 +255,6 @@ QString TemplateStyleSheetFile::path(Fluent::ThemeMode theme) {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
-    // 使用缓存避免重复字符串操作
     if (actualTheme == Fluent::ThemeMode::LIGHT) {
         if (m_cachedLightPath.isEmpty()) {
             m_cachedLightPath = m_templatePath;
@@ -204,6 +269,11 @@ QString TemplateStyleSheetFile::path(Fluent::ThemeMode theme) {
         return m_cachedDarkPath;
     }
 }
+
+std::shared_ptr<StyleSheetBase> TemplateStyleSheetFile::clone() const {
+    return std::make_shared<TemplateStyleSheetFile>(*this);
+}
+
 
 // ==================== FluentStyleSheet 实现 ====================
 
@@ -271,6 +341,11 @@ QString FluentStyleSheet::typeToString(Fluent::ThemeStyle type) {
     return getTypeMap().value(type, "unknown");
 }
 
+std::shared_ptr<StyleSheetBase> FluentStyleSheet::clone() const {
+    return std::make_shared<FluentStyleSheet>(*this);
+}
+
+
 // ==================== CustomStyleSheet 实现 ====================
 
 const char* CustomStyleSheet::DARK_QSS_KEY = "darkCustomQss";
@@ -320,6 +395,28 @@ QString CustomStyleSheet::darkStyleSheet() const {
     return m_widget ? m_widget->property(DARK_QSS_KEY).toString() : QString();
 }
 
+std::shared_ptr<StyleSheetBase> CustomStyleSheet::clone() const {
+    return std::make_shared<CustomStyleSheet>(*this);
+}
+
+void CustomStyleSheet::apply(QWidget* widget, Fluent::ThemeMode theme) {
+    if (!widget) {
+        return;
+    }
+
+    // 如果目标widget不是当前widget，复制自定义样式表属性
+    if (widget != m_widget) {
+        if (m_widget) {
+            // 复制当前的自定义样式表到目标widget
+            widget->setProperty(LIGHT_QSS_KEY, lightStyleSheet());
+            widget->setProperty(DARK_QSS_KEY, darkStyleSheet());
+        }
+    }
+
+    // 创建新的CustomStyleSheet实例并应用
+    StyleSheetHelper::setStyleSheet(widget, std::make_shared<CustomStyleSheet>(widget), theme);
+}
+
 // ==================== StyleSheetCompose 实现 ====================
 
 StyleSheetCompose::StyleSheetCompose() {
@@ -356,7 +453,6 @@ void StyleSheetCompose::add(const std::shared_ptr<StyleSheetBase>& source) {
         return;
     }
 
-    // 使用std::find_if代替手动循环
     auto it = std::find_if(m_sources.begin(), m_sources.end(),
                            [source](const std::shared_ptr<StyleSheetBase>& existing) {
         return existing.get() == source.get();
@@ -379,13 +475,29 @@ void StyleSheetCompose::reserve(size_t capacity) {
     m_sources.reserve(capacity);
 }
 
+std::shared_ptr<StyleSheetBase> StyleSheetCompose::clone() const {
+    auto clone = std::make_shared<StyleSheetCompose>();
+    clone->m_sources.reserve(m_sources.size());
+    for (const auto& source : m_sources) {
+        if (source) {
+            clone->m_sources.push_back(source->clone());
+        }
+    }
+    return clone;
+}
+
+
 // ==================== CustomStyleSheetWatcher 实现 ====================
 
 CustomStyleSheetWatcher::CustomStyleSheetWatcher(QWidget* parent)
-    : QObject(parent), m_watchedWidget(parent) {}
+    : QObject(parent), m_watchedWidget(parent), m_isDirty(false) {}
 
 bool CustomStyleSheetWatcher::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() != QEvent::DynamicPropertyChange) {
+        // 处理显示事件，用于 lazy 模式下的样式表更新
+        if (event->type() == QEvent::Show) {
+            applyStyleSheetIfNeeded();
+        }
         return QObject::eventFilter(obj, event);
     }
 
@@ -396,12 +508,30 @@ bool CustomStyleSheetWatcher::eventFilter(QObject* obj, QEvent* event) {
             propName == CustomStyleSheet::DARK_QSS_KEY) {
         QWidget* widget = qobject_cast<QWidget*>(obj);
         if (widget) {
-            StyleSheetHelper::addStyleSheet(widget,
-                                            std::make_shared<CustomStyleSheet>(widget));
+            // 标记为脏，触发样式表更新
+            // CustomStyleSheet 已经存在于组合中，会读取新的属性值
+            markDirty();
+            applyStyleSheetIfNeeded();
         }
     }
 
     return QObject::eventFilter(obj, event);
+}
+
+void CustomStyleSheetWatcher::applyStyleSheetIfNeeded()
+{
+    if (!m_isDirty || !m_watchedWidget) {
+        return;
+    }
+
+    auto* widget = m_watchedWidget;
+    auto compose = StyleSheetManager::instance()->source(widget);
+    if (compose && compose->size() > 0) {
+        const QString qss = StyleSheetHelper::getStyleSheet(compose, Theme::instance()->theme());
+        widget->setStyleSheet(qss);
+    }
+
+    clearDirty();
 }
 
 // ==================== StyleSheetManager 实现 ====================
@@ -429,12 +559,15 @@ void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& so
         return;
     }
 
+    QMutexLocker locker(&m_mutex);
+
     if (!m_widgets.contains(widget)) {
         connect(widget, &QWidget::destroyed, this, [this, widget]() {
             deregisterWidget(widget);
         });
 
-        widget->installEventFilter(new CustomStyleSheetWatcher(widget));
+        auto watcher = new CustomStyleSheetWatcher(widget);
+        widget->installEventFilter(watcher);
 
         auto compose = std::make_shared<StyleSheetCompose>();
         compose->reserve(2);
@@ -459,6 +592,19 @@ void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& so
 }
 
 void StyleSheetManager::deregisterWidget(QWidget* widget) {
+    if (!widget) {
+        return;
+    }
+
+    QMutexLocker locker(&m_mutex);
+
+    // 移除所有 CustomStyleSheetWatcher 事件过滤器
+    QList<CustomStyleSheetWatcher*> watchers = widget->findChildren<CustomStyleSheetWatcher*>();
+    for (auto* watcher : watchers) {
+        widget->removeEventFilter(watcher);
+        watcher->deleteLater();
+    }
+
     m_widgets.remove(widget);
 }
 
@@ -467,6 +613,7 @@ void StyleSheetManager::registerWidget(QWidget* widget, Fluent::ThemeStyle type,
 }
 
 std::shared_ptr<StyleSheetCompose> StyleSheetManager::source(QWidget* widget) const {
+    QMutexLocker locker(&m_mutex);
     auto it = m_widgets.constFind(widget);
     if (it != m_widgets.constEnd()) {
         return it.value();
@@ -475,10 +622,12 @@ std::shared_ptr<StyleSheetCompose> StyleSheetManager::source(QWidget* widget) co
 }
 
 QList<QWidget*> StyleSheetManager::widgets() const {
+    QMutexLocker locker(&m_mutex);
     return m_widgets.keys();
 }
 
 bool StyleSheetManager::isRegistered(QWidget* widget) const {
+    QMutexLocker locker(&m_mutex);
     return m_widgets.contains(widget);
 }
 
@@ -486,22 +635,37 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
     QList<QWidget*> widgetsToRemove;
     widgetsToRemove.reserve(10);
 
-    for (auto it = m_widgets.constBegin(); it != m_widgets.constEnd(); ++it) {
-        QWidget* widget = it.key();
+    // 复制数据以避免持有锁时进行复杂操作
+    QList<QWidget*> widgetKeys;
+    QList<std::shared_ptr<StyleSheetCompose>> widgetValues;
+
+    {
+        QMutexLocker locker(&m_mutex);
+        widgetKeys = m_widgets.keys();
+        widgetValues.reserve(widgetKeys.size());
+        for (const auto& widget : widgetKeys) {
+            widgetValues.append(m_widgets.value(widget));
+        }
+    }
+
+    for (int i = 0; i < widgetKeys.size(); ++i) {
+        QWidget* widget = widgetKeys[i];
+        const auto& source = widgetValues[i];
+
         if (!widget) {
             widgetsToRemove.append(widget);
             continue;
         }
 
-        try {
-            if (!lazy || widget->isVisible()) {
-                const auto& source = it.value();
-                setStyleSheet(widget, source, Theme::instance()->theme(), false);
-            } else {
-                widget->setProperty("dirty-qss", true);
+        if (!lazy || widget->isVisible()) {
+            // 可见或非懒加载模式：立即更新样式表
+            setStyleSheet(widget, source, Theme::instance()->theme(), false);
+        } else {
+            // 修复：懒加载模式 - 设置 dirty 标记，等待 widget 变为可见时更新
+            // 通过 CustomStyleSheetWatcher 的 eventFilter 在 showEvent 时触发更新
+            if (auto* watcher = widget->findChild<CustomStyleSheetWatcher*>()) {
+                watcher->markDirty();
             }
-        } catch (...) {
-            widgetsToRemove.append(widget);
         }
     }
 
