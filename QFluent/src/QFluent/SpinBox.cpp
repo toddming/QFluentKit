@@ -8,6 +8,7 @@
 #include <QContextMenuEvent>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QPainter>
 
 #include "Theme.h"
 #include "FluentIcon.h"

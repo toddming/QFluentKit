@@ -3,7 +3,6 @@
 #include <QMenu>
 #include <QLayout>
 #include <QIcon>
-#include <QPainter>
 #include <QStyleOption>
 
 #include "FluentGlobal.h"

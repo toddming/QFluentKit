@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Animation.h"
-#include <QPainter>
 #include <QPainterPath>
 #include <QMouseEvent>
 #include <QColor>

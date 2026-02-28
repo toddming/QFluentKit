@@ -10,6 +10,7 @@
 #include <QFont>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPainter>
 #include <cmath>
 #include <memory>
 

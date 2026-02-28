@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QContextMenuEvent>
 #include <QStyle>
+#include <QPainter>
 
 #include "Theme.h"
 #include "StyleSheet.h"

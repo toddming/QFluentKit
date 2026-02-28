@@ -1,10 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include <QTextEdit>
 #include <QPlainTextEdit>
 #include <QTextBrowser>
 #include <QWidget>
-#include <QPainter>
 #include <QPainterPath>
 #include <QEvent>
 

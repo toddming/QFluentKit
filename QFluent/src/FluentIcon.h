@@ -5,7 +5,6 @@
 #include <QString>
 #include <QRect>
 #include <QRectF>
-#include <QPainter>
 #include <QAction>
 #include <QObject>
 #include <QHash>
@@ -17,6 +16,7 @@
 class FluentIconBase;
 class ColoredFluentIcon;
 class Icon;
+class QPainter;
 
 /**
  * @brief Utility class for Fluent icon operations
