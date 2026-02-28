@@ -2,74 +2,80 @@
 
 <div align="center">
 
-一款美观的现代 Qt Fluent Design 组件库，提供 90+ 开箱即用的高质量组件
+A beautiful and modern Qt Fluent Design component library with 90+ high-quality out-of-the-box components
 
-[English](#) · **简体中文**
+<p align="center">
+<a href="README.md">English</a> | <a href="README_ZH.md">简体中文</a>
+</p>
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-5.12%2B-green.svg)](https://www.qt.io/)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/Zhenyi-Zhou/QFluentKit)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/toddming/QFluentKit)
 
 </div>
 
 ---
 
-## 简介
+## Introduction
 
-**QFluentKit** 是一个基于 Qt 的 Fluent Design 风格组件库，提供完整的现代化 UI 组件集合。项目采用 C++17 标准，支持 Qt5/Qt6 双版本，兼容 Windows、Linux 和 macOS 平台。
+**QFluentKit** is a Qt-based Fluent Design style component library that provides a complete collection of modern UI components. The project adopts the C++17 standard, supports both Qt5/Qt6 versions, and is compatible with Windows, Linux, and macOS platforms.
 
-### 核心特性
+<img width=866 height=670 src="images/light.png">
 
-- 🎨 **Fluent Design 设计风格** - 现代化的 Microsoft Fluent Design UI 规范
-- 🌓 **深色/浅色主题** - 自动主题切换，支持自定义主题色
-- 🧩 **90+ 高级组件** - 涵盖输入、显示、布局、对话框等完整场景
-- 🦦 **Qt5/Qt6 双支持** - 一套代码，两个版本完全兼容
-- 🖥️ **跨平台** - 支持 Windows、Linux、macOS
-- 📦 **易于集成** - 动态库形式，CMake 集成简单
-- 🎭 **丰富的动画效果** - 内置多种流畅动画系统
-- 🎭 **Acrylic 材质效果** - 支持 Windows 亚克力毛玻璃效果
+<img width=866 height=670 src="images/dark.png">
 
----
+### Key Features
 
-## 系统支持
-
-| 平台 | 支持状态 | 备注 |
-|------|---------|------|
-| Windows 10/11 | ✅ 完全支持 | 推荐，最佳体验 |
-| Linux | ✅ 支持 | Qt5/Qt6 均可 |
-| macOS | ✅ 支持 | Qt5/Qt6 均可 |
+- 🎨 **Fluent Design Style** - Modern Microsoft Fluent Design UI specifications
+- 🌓 **Dark/Light Theme** - Automatic theme switching with custom theme color support
+- 🧩 **90+ Advanced Components** - Covering input, display, layout, dialogs, and complete scenarios
+- 🦦 **Qt5/Qt6 Dual Support** - One codebase, fully compatible with both versions
+- 🖥️ **Cross-Platform** - Windows, Linux, macOS support
+- 📦 **Easy Integration** - Dynamic library format with simple CMake integration
+- 🎭 **Rich Animation Effects** - Multiple built-in smooth animation systems
+- 🎭 **Acrylic Material Effect** - Support for Windows acrylic frosted glass effect
 
 ---
 
-## 环境要求
+## System Support
 
-### Qt 版本
-- **Qt 5.12** 或更高版本
-- **Qt 6.x** 完全支持
+| Platform | Support Status | Remarks |
+|----------|----------------|---------|
+| Windows 10/11 | ✅ Full Support | Recommended, best experience |
+| Linux | ✅ Supported | Qt5/Qt6 both available |
+| macOS | ✅ Supported | Qt5/Qt6 both available |
 
-### 编译器
-| 平台 | 推荐编译器 |
-|------|-----------|
-| Windows | MinGW 8.0+ 或 MSVC 2017+ |
-| Linux | GCC 7+ 或 Clang 5+ |
+---
+
+## Requirements
+
+### Qt Version
+- **Qt 5.12** or higher
+- **Qt 6.x** fully supported
+
+### Compiler
+| Platform | Recommended Compiler |
+|----------|---------------------|
+| Windows | MinGW 8.0+ or MSVC 2017+ |
+| Linux | GCC 7+ or Clang 5+ |
 | macOS | Clang (Xcode 10+) |
 
-### 依赖工具
+### Dependencies
 - **CMake** 3.15+
 - **Qt Modules**: Core, Widgets, Svg, Xml
 
 ---
 
-## 快速开始
+## Quick Start
 
-### 1. 克隆项目
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Zhenyi-Zhou/QFluentKit.git
+git clone https://github.com/toddming/QFluentKit.git
 cd QFluentKit
 ```
 
-### 2. 构建项目
+### 2. Build the Project
 
 #### Windows (MinGW)
 
@@ -95,7 +101,7 @@ cmake ..
 make -j$(nproc)
 ```
 
-运行示例程序：
+Run the example program:
 
 ```bash
 cd build/QFluentExample
@@ -105,175 +111,191 @@ QFluentExample.exe  # Windows
 
 ---
 
-## 集成到你的项目
+## Integration into Your Project
 
-### CMake 方式
+### CMake Method
 
-在你的 `CMakeLists.txt` 中添加：
+Add to your `CMakeLists.txt`:
 
 ```cmake
-# 设置 QFluentKit 路径
-set(QFluentKit_DIR "path/to/QFluentKit")
+# Minimum CMake version
+cmake_minimum_required(VERSION 3.15)
 
-# 查找 QFluentKit 包
-find_package(QFluentKit REQUIRED)
+# Add QFluentKit subdirectory
+add_subdirectory(QFluentKit)
 
-# 链接库
-add_executable(MyApp main.cpp)
-target_link_libraries(MyApp PRIVATE QFluentKit)
+# Link QFluentKit
+target_link_libraries(MyApp PRIVATE QFluent)
+
 ```
 
-### 手动方式
+### Manual Method
 
-1. 编译生成 `QFluentKit.dll` / `libQFluentKit.so`
-2. 在你的项目中包含头文件目录
-3. 链接生成的库文件
+1. Build QFluentKit to generate `QFluentKit.dll` (Windows) or `libQFluentKit.so` (Linux/macOS)
+2. Include the header directory in your project: `QFluentKit/QFluent/src/`
+3. Link the generated library file
+
+### Optional: Enable QWindowKit Integration
+
+QWindowKit provides advanced window management features (frameless windows, frosted glass effect, etc.):
+
+```cmake
+# Enable when building the example program
+set(BUILD_QWINDOWKIT ON CACHE BOOL "Build with QWindowKit support" FORCE)
+
+# Or enable via CMake parameter
+cmake -DBUILD_QWINDOWKIT=ON ..
+```
+
+Once enabled, the `USE_QWINDOWKIT` macro will be defined, allowing access to enhanced window features.
 
 ---
 
-## 基本用法
+## Basic Usage
 
 ### Hello World
 
 ```cpp
+#include <QWidget>
 #include <QApplication>
-#include <Fluent/Window/FluentWidget>
-#include <Fluent/Widgets/Button>
-#include <Fluent/Widgets/LineEdit>
+
+#include "QFluent/LineEdit.h"
+#include "QFluent/PushButton.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    // 创建 Fluent 窗口
-    Fluent::FluentWidget window;
-    window.setWindowTitle("QFluentKit 示例");
+    // Create a Fluent window
+    QWidget window;
+    window.setWindowTitle("QFluentKit Example");
     window.resize(800, 600);
 
-    // 创建按钮
-    auto *button = new Fluent::PrimaryButton(&window);
-    button->setText("点击我");
+    // Create a button
+    auto *button = new PrimaryPushButton(&window);
+    button->setText("Click Me");
     button->move(350, 280);
 
-    // 创建输入框
-    auto *lineEdit = new Fluent::LineEdit(&window);
-    lineEdit->setPlaceholderText("请输入内容...");
+    // Create a line edit
+    auto *lineEdit = new LineEdit(&window);
+    lineEdit->setPlaceholderText("Please enter content...");
     lineEdit->move(350, 340);
 
     window.show();
     return app.exec();
 }
-```
 
-### 主题切换
-
-```cpp
-#include <Fluent/Core/Theme>
-
-// 设置深色主题
-Fluent::Theme::instance()->setTheme(Fluent::ThemeMode::DARK);
-
-// 设置自动主题（跟随系统）
-Fluent::Theme::instance()->setTheme(Fluent::ThemeMode::AUTO);
-
-// 自定义主题色
-Fluent::Theme::instance()->setThemeColor(QColor("#0078D4"));
-```
-
-### 使用图标
-
-```cpp
-#include <Fluent/Icon/FluentIcon>
-
-auto *iconWidget = new Fluent::IconWidget(&window);
-iconWidget->setIcon(Fluent::FluentIcon::HOME);
-iconWidget->setIconSize(QSize(32, 32));
 ```
 
 ---
 
-## 组件列表
+## Component List
 
-### 基础输入
+### Basic Input
 - Button, PrimaryButton, HyperlinkButton
 - CheckBox, RadioButton
 - ComboBox, LineEdit, Slider, SpinBox
 - SwitchButton, PushButton
 
-### 显示组件
+### Display Components
 - Label, CaptionLabel, StrongLabel
 - ImageLabel, IconWidget
 - CardWidget, Loading
 
-### 日期时间
+### Date and Time
 - DatePicker, TimePicker
 - CalendarPicker, CalendarView
 - CycleListWidget
 
-### 菜单导航
+### Menu and Navigation
 - RoundMenu, NavigationPanel, NavigationBar
 - Pivot, TabBar
 
-### 对话框
+### Dialogs
 - MessageDialog, ColorDialog, Flyout, TeachingTip
 
-### 容器布局
+### Container and Layout
 - StackedWidget, ScrollArea, TableView
 - ListView, FlowLayout, ExpandLayout
 
-### 进度状态
+### Progress and Status
 - ProgressBar, ProgressRing
 - IndeterminateProgressBar, IndeterminateProgressRing
 - InfoBar, ToolTip
 
-### 设置卡片
+### Setting Cards
 - SettingCard, SettingCardGroup
 - ExpandSettingCard, OptionsSettingCard
 
-### 材料效果
+### Material Effects
 - AcrylicWidget, AcrylicLabel, AcrylicMenu, AcrylicToolTip
 
 ---
 
-## 项目结构
+## Project Structure
 
 ```
 QFluentKit/
-├── QFluent/              # 核心库
+├── QFluent/                      # Core dynamic library
 │   ├── src/
-│   │   ├── FluentGlobal.h    # 全局枚举和宏定义
-│   │   ├── QFluent/          # 公开组件头文件
-│   │   ├── Private/          # 私有实现
-│   │   └── Core/             # 核心系统 (Theme, Router, Animation)
-│   └── res/               # 资源文件 (图标、样式表)
-├── QFluentExample/        # 示例程序
-│   └── src/               # 演示界面
-└── CMakeLists.txt         # 根 CMake 配置
+│   │   ├── FluentGlobal.h        # Global enumerations (ThemeMode, IconType, ThemeStyle)
+│   │   ├── Theme.h               # Theme management system (AUTO/LIGHT/DARK)
+│   │   ├── Router.h              # Routing system (works with StackedWidget)
+│   │   ├── FluentIcon.h          # Icon system (248+ built-in SVG icons)
+│   │   ├── StyleSheet.h          # Stylesheet management system
+│   │   ├── Animation.h           # Animation system base class
+│   │   ├── QFluent/              # Public component headers
+│   │   │   ├── BasicInput/       # Basic input components
+│   │   │   ├── Display/          # Display components
+│   │   │   ├── DateTime/         # Date and time components
+│   │   │   ├── Menu/             # Menu components
+│   │   │   ├── Dialog/           # Dialogs
+│   │   │   ├── Layout/           # Layout containers
+│   │   │   ├── Progress/         # Progress components
+│   │   │   ├── Setting/          # Setting cards
+│   │   │   └── Material/         # Material effects
+│   │   └── Private/              # PIMPL private implementation
+│   └── res/                      # Resource files
+│       ├── images/icons/         # Fluent Design SVG icons
+│       └── style/                # QSS stylesheets (light/dark)
+├── QFluentExample/                # Example application
+│   ├── src/
+│   │   ├── Interface/            # 15 demo interfaces
+│   │   │   ├── HomeInterface.h
+│   │   │   ├── BasicInputInterface.h
+│   │   │   └── ...
+│   │   └── Window/               # Custom window examples
+│   │       ├── LoginWindow.h
+│   │       ├── NavbarWindow.h
+│   │       └── SplitWindow.h
+│   └── libs/qwindowkit/          # Optional window management library
+├── CMakeLists.txt                 # Root CMake configuration
+└── README.md
 ```
 
 ---
 
-## 开源协议
+## License
 
-本项目采用 [MIT](LICENSE) 协议开源。
-
----
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
+This project is open source under the [GPLv3](LICENSE) license.
 
 ---
 
-## 致谢
+## Contributing
 
-- 设计灵感来源于 [Microsoft Fluent Design System](https://www.microsoft.com/design/fluent/)
-- 图标资源来自 [Fluent UI System Icons](https://developer.microsoft.com/en-us/fluentui)
+Issues and Pull Requests are welcome!
+
+---
+
+## Acknowledgments
+
+- Core window management: [QWindowKit](https://github.com/stdware/qwindowkit)
+- Design inspiration from: [PyQt-Fluent-Widgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets)
 
 ---
 
 <div align="center">
 
-⭐ 如果觉得这个项目对你有帮助，请给个 Star！
+⭐ If you find this project helpful, please give it a Star!
 
 </div>
