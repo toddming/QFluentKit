@@ -297,5 +297,6 @@ QFluentKit/
 <div align="center">
 
 ⭐ 如果觉得这个项目对你有帮助，请给个 Star！
+🐧 欢迎加入QQ群交流: 1084320682
 
 </div>
