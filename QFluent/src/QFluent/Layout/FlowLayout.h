@@ -78,8 +78,9 @@ public:
 
     /**
      * @brief 移除并删除所有子控件
+     * @note 控件对象会被 deleteLater() 删除
      */
-    void takeAllWidgets();
+    void clearAllWidgets();
 
     // 动画设置
     /**

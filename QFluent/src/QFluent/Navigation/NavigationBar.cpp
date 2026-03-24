@@ -189,7 +189,11 @@ NavigationBar::~NavigationBar() {
 
 void NavigationBar::__initWidget() {
     this->setAttribute(Qt::WA_StyledBackground);
-    this->window()->installEventFilter(this);
+
+    // 仅在已添加到窗口时安装事件过滤器
+    if (QWidget* wnd = this->window()) {
+        wnd->installEventFilter(this);
+    }
 
     m_scrollWidget->setObjectName("scrollWidget");
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

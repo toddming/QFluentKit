@@ -665,24 +665,24 @@ void ScaleSlideAnimation::_startSlideAnimation(const QRectF &startRect, const QR
      */
 
     // 创建位置动画序列
-    QPropertyAnimation *posAni1 = new QPropertyAnimation(this, "pos");
-    QPropertyAnimation *posAni2 = new QPropertyAnimation(this, "pos");
+    QPropertyAnimation *posAni1 = new QPropertyAnimation(this, "pos", this);
+    QPropertyAnimation *posAni2 = new QPropertyAnimation(this, "pos", this);
     posAni1->setDuration(200);
     posAni2->setDuration(400);
     posAni1->setEasingCurve(FluentAnimation::createBezierCurve(0.9f, 0.1f, 1.0f, 0.2f));
     posAni2->setEasingCurve(FluentAnimation::createBezierCurve(0.1f, 0.9f, 0.2f, 1.0f));
 
     // 创建长度动画序列
-    QPropertyAnimation *lengthAni1 = new QPropertyAnimation(this, "length");
-    QPropertyAnimation *lengthAni2 = new QPropertyAnimation(this, "length");
+    QPropertyAnimation *lengthAni1 = new QPropertyAnimation(this, "length", this);
+    QPropertyAnimation *lengthAni2 = new QPropertyAnimation(this, "length", this);
     lengthAni1->setDuration(200);
     lengthAni2->setDuration(400);
     lengthAni1->setEasingCurve(FluentAnimation::createBezierCurve(0.9f, 0.1f, 1.0f, 0.2f));
     lengthAni2->setEasingCurve(FluentAnimation::createBezierCurve(0.1f, 0.9f, 0.2f, 1.0f));
 
     // 创建序列动画组
-    QSequentialAnimationGroup *posAniGroup = new QSequentialAnimationGroup();
-    QSequentialAnimationGroup *lengthAniGroup = new QSequentialAnimationGroup();
+    QSequentialAnimationGroup *posAniGroup = new QSequentialAnimationGroup(this);
+    QSequentialAnimationGroup *lengthAniGroup = new QSequentialAnimationGroup(this);
     posAniGroup->addAnimation(posAni1);
     posAniGroup->addAnimation(posAni2);
     lengthAniGroup->addAnimation(lengthAni1);
@@ -765,14 +765,14 @@ void ScaleSlideAnimation::_startCrossFadeAnimation(const QRectF &startRect, cons
     setGeometry(startGeo);
 
     // 创建长度动画
-    QPropertyAnimation *lenAni = new QPropertyAnimation(this, "length");
+    QPropertyAnimation *lenAni = new QPropertyAnimation(this, "length", this);
     lenAni->setDuration(600);
     lenAni->setStartValue(0);
     lenAni->setEndValue(dim);
     lenAni->setEasingCurve(QEasingCurve::OutQuint);
 
     // 创建位置动画
-    QPropertyAnimation *posAni = new QPropertyAnimation(this, "pos");
+    QPropertyAnimation *posAni = new QPropertyAnimation(this, "pos", this);
     posAni->setDuration(600);
     posAni->setStartValue(startGeo.topLeft());
     posAni->setEndValue(endRect.topLeft());

@@ -284,6 +284,11 @@ void FlowLayout::takeAllWidgets()
     }
 }
 
+void FlowLayout::clearAllWidgets()
+{
+    takeAllWidgets();
+}
+
 Qt::Orientations FlowLayout::expandingDirections() const
 {
     return Qt::Orientations();

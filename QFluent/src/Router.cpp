@@ -128,7 +128,7 @@ void StackedHistory::removeConsecutiveDuplicates()
 // ============================
 // Router Implementation
 // ============================
-Router* Router::s_instance = nullptr;
+Q_GLOBAL_STATIC(Router, s_router)
 
 Router::Router(QObject* parent)
     : QObject(parent)
@@ -224,10 +224,7 @@ void Router::remove(const QString& routeKey)
 
 Router* Router::instance()
 {
-    if (!s_instance) {
-        s_instance = new Router();
-    }
-    return s_instance;
+    return s_router();
 }
 
 void Router::removeConsecutiveDuplicates()

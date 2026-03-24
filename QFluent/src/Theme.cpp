@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QApplication>
 #include <QStyleHints>
+#include <QPointer>
 
 #include "StyleSheet.h"
 #include "Private/ThemePrivate.h"
@@ -20,15 +21,20 @@ Theme::Theme(QObject* parent) : QObject(parent)
     qWarning() << "当前主题:" << (currentScheme == Qt::ColorScheme::Dark ? "深色" : "浅色");
     d->_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
+    QPointer<Theme> self = this;
     QStyleHints *styleHints = QApplication::styleHints();
-    connect(styleHints, &QStyleHints::colorSchemeChanged, [d, this](Qt::ColorScheme scheme) {
+    connect(styleHints, &QStyleHints::colorSchemeChanged, [d, self](Qt::ColorScheme scheme) {
+        // 检查 Theme 对象是否仍然有效
+        if (!self) {
+            return;
+        }
         if (scheme == Qt::ColorScheme::Dark) {
             d->_sysIsDarkMode = true;
         } else if (scheme == Qt::ColorScheme::Light) {
             d->_sysIsDarkMode = false;
         }
         if (d->_autoTheme) {
-            setTheme(Fluent::ThemeMode::AUTO);
+            self->setTheme(Fluent::ThemeMode::AUTO);
         }
     });
 #endif

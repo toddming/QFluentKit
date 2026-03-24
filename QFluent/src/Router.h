@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVector>
 #include <QHash>
+#include <QGlobalStatic>
 
 #include "FluentGlobal.h"
 
@@ -76,8 +77,6 @@ private:
 
     QVector<RouteItem> m_history;
     QHash<StackedWidget*, StackedHistory*> m_stackedHistories;
-
-    static Router* s_instance;
 };
 
 #endif // ROUTER_H
