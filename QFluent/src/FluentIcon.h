@@ -15,7 +15,6 @@
 
 class FluentIconBase;
 class ColoredFluentIcon;
-class Icon;
 class QPainter;
 
 /**
@@ -61,12 +60,13 @@ public:
 
     /**
      * @brief Draw icon using FluentIconBase
+     * @param reverse If true, invert theme colors (dark theme uses light icons and vice versa)
      */
     static void drawIcon(const FluentIconBase& icon,
                         QPainter* painter,
                         const QRectF& rect,
                         Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
-                        QIcon::State state = QIcon::Off,
+                        bool reverse = false,
                         const QHash<QString, QString>& attributes = QHash<QString, QString>());
 
     /**
@@ -78,6 +78,23 @@ public:
      * @brief Convert icon enum to string
      */
     static QString enumToString(Fluent::IconType iconType);
+
+    /**
+     * @brief Build icon path from icon enum or template path
+     * @param iconEnum Icon type enum (CUSTOM_PATH for template path)
+     * @param templatePath Template path with {color} placeholder
+     * @param theme Theme mode
+     * @param reverse If true, invert theme colors
+     * @param cachedLightPath Mutable reference to light path cache (black icons)
+     * @param cachedDarkPath Mutable reference to dark path cache (white icons)
+     * @return Full path to icon file
+     */
+    static QString buildIconPath(Fluent::IconType iconEnum,
+                                 const QString& templatePath,
+                                 Fluent::ThemeMode theme,
+                                 bool reverse,
+                                 QString& cachedLightPath,
+                                 QString& cachedDarkPath);
 
 private:
     // Thread-safe cache for colored SVG data
@@ -163,8 +180,10 @@ public:
 
     /**
      * @brief Get icon file path based on theme
+     * @param reverse If true, invert theme colors (dark theme uses light icons and vice versa)
      */
-    virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const = 0;
+    virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+                         bool reverse = false) const = 0;
 
     /**
      * @brief Get QIcon representation
@@ -173,24 +192,35 @@ public:
                       const QColor& color = QColor()) const;
 
     /**
-     * @brief Create colored version of icon
-     * @note Default implementation throws warning. Override in subclasses that support coloring.
+     * @brief Create colored version of icon with separate light/dark colors
+     * @param lightColor Color for light theme
+     * @param darkColor Color for dark theme
+     * @return New colored icon instance
      */
-    virtual ColoredFluentIcon colored(const QColor& lightColor,
-                                     const QColor& darkColor) const;
+    virtual std::unique_ptr<FluentIconBase> colored(const QColor& lightColor,
+                                                    const QColor& darkColor) const;
+
+    /**
+     * @brief Create colored version of icon with single color
+     * @param color Color to use for both themes
+     * @return New colored icon instance
+     */
+    std::unique_ptr<FluentIconBase> colored(const QColor& color) const;
 
     /**
      * @brief Render icon to painter
+     * @param reverse If true, invert theme colors (dark theme uses light icons and vice versa)
      */
     virtual void render(QPainter* painter, const QRectF& rect,
                        Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+                       bool reverse = false,
                        const QList<int>& indexes = QList<int>(),
                        const QHash<QString, QString>& attributes = QHash<QString, QString>()) const;
 
     /**
      * @brief Clone this icon
      */
-    virtual FluentIconBase* clone() const = 0;
+    virtual std::unique_ptr<FluentIconBase> clone() const = 0;
 };
 
 /**
@@ -205,23 +235,25 @@ public:
     static FluentFontIconBase fromName(const QString& name);
     FluentFontIconBase& bold();
 
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+                 bool reverse = false) const override;
     QIcon icon(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
               const QColor& color = QColor()) const override;
     void render(QPainter* painter, const QRectF& rect,
                Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+               bool reverse = false,
                const QList<int>& indexes = QList<int>(),
                const QHash<QString, QString>& attributes = QHash<QString, QString>()) const override;
 
     virtual QString fontPath() const { return QString(); }
     virtual QString iconNameMapPath() const { return QString(); }
 
-    FluentIconBase* clone() const override;
+    std::unique_ptr<FluentIconBase> clone() const override;
 
 protected:
     void loadFont();
     void loadIconNames();
-    QColor iconColor(Fluent::ThemeMode theme) const;
+    QColor iconColor(Fluent::ThemeMode theme, bool reverse = false) const;
 
     QChar m_character;
     QColor m_lightColor;
@@ -248,16 +280,18 @@ public:
                               const QColor& darkColor);
     ~ColoredFluentIcon() override;
 
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+                 bool reverse = false) const override;
     void render(QPainter* painter, const QRectF& rect,
                Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+               bool reverse = false,
                const QList<int>& indexes = QList<int>(),
                const QHash<QString, QString>& attributes = QHash<QString, QString>()) const override;
-    ColoredFluentIcon colored(const QColor& lightColor,
-                             const QColor& darkColor) const override;
+    std::unique_ptr<FluentIconBase> colored(const QColor& lightColor,
+                                            const QColor& darkColor) const override;
 
     Fluent::IconType value() const { return m_iconEnum; }
-    FluentIconBase* clone() const override;
+    std::unique_ptr<FluentIconBase> clone() const override;
 
 private:
     Fluent::IconType m_iconEnum;
@@ -278,32 +312,20 @@ public:
     explicit FluentIcon(const QString& templatePath);
     ~FluentIcon() override;
 
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
+                 bool reverse = false) const override;
     Fluent::IconType value() const { return m_iconEnum; }
     QIcon qicon(bool reverse = false) const;
-    ColoredFluentIcon colored(const QColor& lightColor,
-                             const QColor& darkColor) const override;
+    std::unique_ptr<FluentIconBase> colored(const QColor& lightColor,
+                                            const QColor& darkColor) const override;
 
-    FluentIconBase* clone() const override;
+    std::unique_ptr<FluentIconBase> clone() const override;
 
 private:
     QString m_templatePath;
     Fluent::IconType m_iconEnum;
     mutable QString m_cachedLightPath;
     mutable QString m_cachedDarkPath;
-};
-
-/**
- * @brief QIcon wrapper for FluentIcon
- */
-class QFLUENT_EXPORT Icon : public QIcon
-{
-public:
-    explicit Icon(const FluentIcon& fluentIcon);
-    const FluentIcon& fluentIcon() const { return m_fluentIcon; }
-
-private:
-    FluentIcon m_fluentIcon;
 };
 
 /**

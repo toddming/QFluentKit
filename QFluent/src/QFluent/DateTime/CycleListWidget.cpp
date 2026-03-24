@@ -44,7 +44,7 @@ void ScrollButton::paintEvent(QPaintEvent* e)
         QHash<QString, QString> attrs;
         attrs["fill"] = "#5e5e5e";
         FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, y, w, h),
-                                 Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
+                                 Fluent::ThemeMode::AUTO, false, attrs);
     } else {
         FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, y, w, h));
     }

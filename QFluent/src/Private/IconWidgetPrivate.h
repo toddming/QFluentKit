@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QIcon>
+#include <memory>
 #include "FluentGlobal.h"
 #include "QFluent/IconWidget.h"
 

@@ -47,7 +47,7 @@ void ToolButton::init()
 
 void ToolButton::setFluentIcon(const FluentIconBase &icon)
 {
-    m_fluentIcon.reset(icon.clone());
+    m_fluentIcon = icon.clone();
 }
 
 FluentIconBase* ToolButton::fluentIcon() const
@@ -123,8 +123,7 @@ void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMo
 void PrimaryToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
     Q_UNUSED(theme);
-    Fluent::ThemeMode _theme = Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, theme, true);
 }
 
 // ToggleToolButton
@@ -152,8 +151,8 @@ ToggleToolButton::ToggleToolButton(const FluentIconBase &icon, QWidget* parent)
 
 void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
-    Fluent::ThemeMode _theme = theme;
-    if (Theme::instance()->isDarkTheme()) {
+    Fluent::ThemeMode _theme;
+    if (!Theme::instance()->isDarkTheme()) {
         _theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
         _theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
@@ -277,7 +276,7 @@ void DropDownToolButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& r
     } else {
         QHash<QString, QString> attrs;
         attrs["fill"] = "#646464";
-        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
+        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     }
 }
 
@@ -338,17 +337,15 @@ void DropDownToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent:
 // PrimaryDropDownToolButton
 void PrimaryDropDownToolButton::drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme)
 {
-    Q_UNUSED(theme);
     QRectF r = rect;
     r.moveLeft(12);
 
-    Fluent::ThemeMode _theme = Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, r, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, r, theme, true);
 }
 
 void PrimaryDropDownToolButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Fluent::ThemeMode::AUTO, true);
 }
 
 // SplitDropButton

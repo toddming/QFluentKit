@@ -112,7 +112,7 @@ void IconCard::setSelected(bool isSelected, bool force) {
     if (!isSelected) {
         m_iconWidget->setIconTheme(Fluent::ThemeMode::AUTO);
     } else {
-        m_iconWidget->setIconTheme(Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+        m_iconWidget->setIconTheme(Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK);
     }
 
     setProperty("isSelected", isSelected);

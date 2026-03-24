@@ -48,7 +48,7 @@ void PushButton::init()
 
 void PushButton::setFluentIcon(const FluentIconBase &icon)
 {
-    m_fluentIcon.reset(icon.clone());
+    m_fluentIcon = icon.clone();
 
     setProperty("hasIcon", m_fluentIcon != nullptr);
     style()->unpolish(this);
@@ -135,8 +135,7 @@ void PushButton::drawIcon(QPainter* painter, const QRectF& rect)
 // PrimaryPushButton
 void PrimaryPushButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    Fluent::ThemeMode _theme = Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, true);
 }
 
 
@@ -147,7 +146,7 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
     if (isEnabled()) {
         QHash<QString, QString> attrs;
         attrs["fill"] = Theme::instance()->themeColor().name();
-        FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
+        FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     } else {
         painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.3628 : 0.36);
     }
@@ -179,7 +178,7 @@ ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWid
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
     Fluent::ThemeMode _theme;
-    if (Theme::instance()->isDarkTheme()) {
+    if (!Theme::instance()->isDarkTheme()) {
         _theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
         _theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
@@ -262,7 +261,7 @@ void DropDownButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
     } else {
         QHash<QString, QString> attrs;
         attrs["fill"] = "#646464";
-        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO,  QIcon::Off, attrs);
+        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     }
 }
 
@@ -372,7 +371,7 @@ void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
 
 void PrimaryDropDownPushButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Theme::instance()->isDarkTheme() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Fluent::ThemeMode::AUTO, true);
 }
 
 void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
@@ -383,8 +382,7 @@ void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
 
 void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 {
-    Fluent::ThemeMode _theme = Theme::instance()->isDarkTheme()? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO);
 }
 
 

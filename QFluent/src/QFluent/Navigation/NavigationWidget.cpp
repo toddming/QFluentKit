@@ -167,7 +167,7 @@ void NavigationPushButton::setText(const QString& text) {
 
 void NavigationPushButton::setFluentIcon(const FluentIconBase &icon)
 {
-    m_fluentIcon.reset(icon.clone());
+    m_fluentIcon = icon.clone();
     update();
 }
 
@@ -428,7 +428,7 @@ void NavigationTreeWidget::setText(const QString& text) {
 
 void NavigationTreeWidget::setFluentIcon(const FluentIconBase &icon)
 {
-    m_fluentIcon.reset(icon.clone());
+    m_fluentIcon = icon.clone();
     if (m_itemWidget) {
         m_itemWidget->setFluentIcon(*m_fluentIcon);
     }

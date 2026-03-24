@@ -56,7 +56,7 @@ void IconWidget::setFluentIcon(const FluentIconBase &icon)
 {
     Q_D(IconWidget);
 
-    d->_fluentIcon.reset(icon.clone());
+    d->_fluentIcon = icon.clone();
 
     d->_Icon = QIcon();
     update();
