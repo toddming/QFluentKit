@@ -16,21 +16,24 @@
 
 #include "Theme.h"
 
+// 文件作用域的缓存版本号，确保 getThemeColorMap 和 clearThemeColorCache 使用同一个变量
+namespace {
+    static int s_cacheVersion = 0;
+}
+
 QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
     // 真正的静态缓存，只在第一次调用时初始化
     static QHash<QString, QString> s_colorMap;
 
     // 检查缓存是否需要更新
     static QColor s_cachedPrimaryColor;
-    static int s_cachedVersion = 0;
-    static std::atomic<int> s_cacheVersion{0};
+    static int s_localVersion = -1;  // 初始化为 -1，确保第一次必定更新
 
     Theme* theme = Theme::instance();
     const QColor currentPrimaryColor = theme->themeColor(Fluent::ThemeColor::PRIMARY);
-    const int currentVersion = s_cacheVersion.load(std::memory_order_relaxed);
 
     // 如果主题色改变或版本号变化，更新缓存
-    if (s_colorMap.isEmpty() || s_cachedPrimaryColor != currentPrimaryColor || s_cachedVersion != currentVersion) {
+    if (s_colorMap.isEmpty() || s_cachedPrimaryColor != currentPrimaryColor || s_localVersion != s_cacheVersion) {
         s_colorMap.clear();
         s_colorMap.reserve(7);
 
@@ -43,7 +46,7 @@ QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
         s_colorMap.insert("--ThemeColorLight3", theme->themeColor(Fluent::ThemeColor::LIGHT_3).name());
 
         s_cachedPrimaryColor = currentPrimaryColor;
-        s_cachedVersion = currentVersion;
+        s_localVersion = s_cacheVersion;
     }
 
     return s_colorMap;
@@ -53,8 +56,7 @@ QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
 void StyleSheetHelper::clearThemeColorCache()
 {
     // 递增版本号以强制缓存更新
-    static std::atomic<int> s_cacheVersion{0};
-    s_cacheVersion.fetch_add(1, std::memory_order_relaxed);
+    ++s_cacheVersion;
 }
 
 QString StyleSheetHelper::applyThemeColor(const QString& qss) {
