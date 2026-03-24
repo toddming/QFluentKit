@@ -271,7 +271,7 @@ void FlowLayout::removeAllWidgets()
     }
 }
 
-void FlowLayout::takeAllWidgets()
+void FlowLayout::clearAllWidgets()
 {
     while (!m_items.isEmpty()) {
         QLayoutItem *item = takeAt(0);
@@ -282,11 +282,6 @@ void FlowLayout::takeAllWidgets()
             delete item;
         }
     }
-}
-
-void FlowLayout::clearAllWidgets()
-{
-    takeAllWidgets();
 }
 
 Qt::Orientations FlowLayout::expandingDirections() const
