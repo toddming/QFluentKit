@@ -228,7 +228,7 @@ class QFLUENT_EXPORT TopInfoBarManager : public InfoBarManager {
     Q_OBJECT
 
 public:
-    static TopInfoBarManager* getInstance();
+    static TopInfoBarManager* instance();
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
@@ -246,7 +246,7 @@ class QFLUENT_EXPORT TopRightInfoBarManager : public InfoBarManager {
     Q_OBJECT
 
 public:
-    static TopRightInfoBarManager* getInstance();
+    static TopRightInfoBarManager* instance();
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
@@ -264,7 +264,7 @@ class QFLUENT_EXPORT BottomRightInfoBarManager : public InfoBarManager {
     Q_OBJECT
 
 public:
-    static BottomRightInfoBarManager* getInstance();
+    static BottomRightInfoBarManager* instance();
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
@@ -282,7 +282,7 @@ class QFLUENT_EXPORT TopLeftInfoBarManager : public InfoBarManager {
     Q_OBJECT
 
 public:
-    static TopLeftInfoBarManager* getInstance();
+    static TopLeftInfoBarManager* instance();
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
@@ -300,7 +300,7 @@ class QFLUENT_EXPORT BottomLeftInfoBarManager : public InfoBarManager {
     Q_OBJECT
 
 public:
-    static BottomLeftInfoBarManager* getInstance();
+    static BottomLeftInfoBarManager* instance();
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
@@ -318,7 +318,7 @@ class QFLUENT_EXPORT BottomInfoBarManager : public InfoBarManager {
     Q_OBJECT
 
 public:
-    static BottomInfoBarManager* getInstance();
+    static BottomInfoBarManager* instance();
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;

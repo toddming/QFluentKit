@@ -12,8 +12,8 @@ class MaskDialogBasePrivate
 public:
     MaskDialogBase *q_ptr{nullptr};
 
-    bool _isClosableOnMaskClicked;
-    QHBoxLayout *_hBoxLayout;
-    QWidget* _windowMask = nullptr;
-    QFrame* _centerWidget = nullptr;
+    bool isClosableOnMaskClicked;
+    QHBoxLayout *hBoxLayout;
+    QWidget* windowMask = nullptr;
+    QFrame* centerWidget = nullptr;
 };

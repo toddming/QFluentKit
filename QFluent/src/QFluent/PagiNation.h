@@ -48,12 +48,12 @@ private:
     static constexpr int MIN_BUTTON_COUNT = 5;
     static constexpr int DEFAULT_BUTTON_COUNT = 7;
 
-    Fluent::Alignment _align;
-    int _buttonCount;
-    int _height;
+    Fluent::Alignment m_align;
+    int m_buttonCount;
+    int m_height;
     QHBoxLayout *BJ, *BJ_main;
     // ✅ 删除spacer指针 - 让QLayout管理它们
-    int _pageNow = 1, _total = 0, _pageSize = DEFAULT_PAGE_SIZE;
+    int m_pageNow = 1, m_total = 0, m_pageSize = DEFAULT_PAGE_SIZE;
     TransparentToolButton *prevBtn, *nextBtn, *prevFBtn, *nextFBtn;
     QFrame *mainBox;
 

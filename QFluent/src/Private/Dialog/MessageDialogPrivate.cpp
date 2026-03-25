@@ -17,7 +17,7 @@ void MessageDialogPrivate::setQss()
     buttonGroup->setObjectName("buttonGroup");
     cancelButton->setObjectName("cancelButton");
 
-    StyleSheetManager::instance()->registerWidget(_dialog, Fluent::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(dialog, Fluent::ThemeStyle::DIALOG);
     StyleSheetManager::instance()->registerWidget(contentLabel, Fluent::ThemeStyle::DIALOG);
 
     yesButton->adjustSize();
@@ -35,16 +35,16 @@ void MessageDialogPrivate::setContentCopyable(bool isCopyable)
 
 void MessageDialogPrivate::adjustText()
 {
-    if (!_dialog || !titleLabel || !contentLabel) {
+    if (!dialog || !titleLabel || !contentLabel) {
         return;
     }
 
     int chars = 100;
 
-    bool isTopLevelWindow = _dialog->isWindow();
+    bool isTopLevelWindow = dialog->isWindow();
 
     if (isTopLevelWindow) {
-        QWidget *parentWidget = _dialog->parentWidget();
+        QWidget *parentWidget = dialog->parentWidget();
         if (parentWidget) {
             int w = qMax(titleLabel->width(), parentWidget->width());
             chars = qMax(qMin(w / 9, 140), 30);
@@ -52,7 +52,7 @@ void MessageDialogPrivate::adjustText()
             chars = 100;
         }
     } else {
-        QWidget *topWindow = _dialog->window();
+        QWidget *topWindow = dialog->window();
         if (topWindow) {
             int w = qMax(titleLabel->width(), topWindow->width());
             chars = qMax(qMin(w / 9, 100), 30);
@@ -61,5 +61,5 @@ void MessageDialogPrivate::adjustText()
         }
     }
 
-    contentLabel->setText(TextWrap::wrap(_content, chars, false).first);
+    contentLabel->setText(TextWrap::wrap(content, chars, false).first);
 }

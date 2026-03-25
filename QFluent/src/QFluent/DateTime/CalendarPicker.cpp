@@ -23,7 +23,7 @@ CalendarPicker::CalendarPicker(QWidget* parent)
     connect(this, &QPushButton::clicked, this, &CalendarPicker::onShowCalendarView);
 }
 
-QDate CalendarPicker::getDate() const
+QDate CalendarPicker::date() const
 {
     return m_date;
 }
@@ -42,7 +42,7 @@ void CalendarPicker::reset()
     update();
 }
 
-QString CalendarPicker::getDateFormat() const
+QString CalendarPicker::dateFormat() const
 {
     return m_dateFormat;
 }

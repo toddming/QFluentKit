@@ -14,9 +14,9 @@ IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start
     : QProgressBar(parent),
     lightBackgroundColor(QColor(0, 0, 0, 0)),
     darkBackgroundColor(QColor(255, 255, 255, 0)),
-    _strokeWidth(6),
-    _startAngle(-180),
-    _spanAngle(0),
+    m_strokeWidth(6),
+    m_startAngle(-180),
+    m_spanAngle(0),
     startAngleAni1(new QPropertyAnimation(this, "startAngle")),
     startAngleAni2(new QPropertyAnimation(this, "startAngle")),
     spanAngleAni1(new QPropertyAnimation(this, "spanAngle")),
@@ -68,72 +68,72 @@ IndeterminateProgressRing::~IndeterminateProgressRing()
 
 int IndeterminateProgressRing::startAngle() const
 {
-    return _startAngle;
+    return m_startAngle;
 }
 
 void IndeterminateProgressRing::setStartAngle(int angle)
 {
-    _startAngle = angle;
+    m_startAngle = angle;
     update();
 }
 
 int IndeterminateProgressRing::spanAngle() const
 {
-    return _spanAngle;
+    return m_spanAngle;
 }
 
 void IndeterminateProgressRing::setSpanAngle(int angle)
 {
-    _spanAngle = angle;
+    m_spanAngle = angle;
     update();
 }
 
 int IndeterminateProgressRing::strokeWidth() const
 {
-    return _strokeWidth;
+    return m_strokeWidth;
 }
 
 void IndeterminateProgressRing::setStrokeWidth(int w)
 {
-    _strokeWidth = w;
+    m_strokeWidth = w;
     update();
 }
 
 void IndeterminateProgressRing::start()
 {
-    _startAngle = 0;
-    _spanAngle = 0;
+    m_startAngle = 0;
+    m_spanAngle = 0;
     aniGroup->start();
 }
 
 void IndeterminateProgressRing::stop()
 {
     aniGroup->stop();
-    _startAngle = 0;
-    _spanAngle = 0;
+    m_startAngle = 0;
+    m_spanAngle = 0;
     update();
 }
 
 QColor IndeterminateProgressRing::lightBarColor() const
 {
-    if (_lightBarColor.isValid()) {
-        return _lightBarColor;
+    if (m_lightBarColor.isValid()) {
+        return m_lightBarColor;
     }
     return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
 }
 
 QColor IndeterminateProgressRing::darkBarColor() const
 {
-    if (_darkBarColor.isValid()) {
-        return _darkBarColor;
+    if (m_darkBarColor.isValid()) {
+        return m_darkBarColor;
     }
     return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_1);
 }
 
 void IndeterminateProgressRing::setCustomBarColor(const QColor &light, const QColor &dark)
 {
-    _lightBarColor = light;
-    _darkBarColor = dark;
+    m_lightBarColor = light;
+    m_darkBarColor = dark;
     update();
 }
 
@@ -151,7 +151,7 @@ void IndeterminateProgressRing::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
-    int cw = _strokeWidth;
+    int cw = m_strokeWidth;
     int size = qMin(height(), width()) - cw;
     QRectF rc(cw/2.0, height()/2.0 - size/2.0, size, size);
 
@@ -168,6 +168,6 @@ void IndeterminateProgressRing::paintEvent(QPaintEvent *event)
     pen.setColor(barColor);
     painter.setPen(pen);
 
-    int startAngle = -_startAngle + 180;
-    painter.drawArc(rc, (startAngle % 360) * 16, -_spanAngle * 16);
+    int startAngle = -m_startAngle + 180;
+    painter.drawArc(rc, (startAngle % 360) * 16, -m_spanAngle * 16);
 }

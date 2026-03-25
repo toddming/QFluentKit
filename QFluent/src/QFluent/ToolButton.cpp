@@ -151,13 +151,13 @@ ToggleToolButton::ToggleToolButton(const FluentIconBase &icon, QWidget* parent)
 
 void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
-    Fluent::ThemeMode _theme;
+    Fluent::ThemeMode iconTheme;
     if (!Theme::instance()->isDarkTheme()) {
-        _theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
+        iconTheme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
-        _theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
+        iconTheme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
     }
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, iconTheme);
 }
 
 // PillToolButton

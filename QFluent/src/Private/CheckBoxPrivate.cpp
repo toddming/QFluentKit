@@ -66,12 +66,12 @@ Fluent::CheckBoxState CheckBoxPrivate::state() {
     }
 
     if (q->isChecked()) {
-        if (_isPressed) return Fluent::CheckBoxState::CHECKED_PRESSED;
-        if (_isHover) return Fluent::CheckBoxState::CHECKED_HOVER;
+        if (isPressed) return Fluent::CheckBoxState::CHECKED_PRESSED;
+        if (isHover) return Fluent::CheckBoxState::CHECKED_HOVER;
         return Fluent::CheckBoxState::CHECKED;
     } else {
-        if (_isPressed) return Fluent::CheckBoxState::PRESSED;
-        if (_isHover) return Fluent::CheckBoxState::HOVER;
+        if (isPressed) return Fluent::CheckBoxState::PRESSED;
+        if (isHover) return Fluent::CheckBoxState::HOVER;
         return Fluent::CheckBoxState::NORMAL;
     }
 }

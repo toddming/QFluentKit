@@ -807,7 +807,7 @@ void CalendarView::exec(const QPoint& pos, bool ani) {
         return;
     }
 
-    QRect screenRect = Screen::getCurrentScreenGeometry();
+    QRect screenRect = Screen::currentScreenGeometry();
     QPoint adjustedPos = pos;
     adjustedPos.setX(qMax(screenRect.left(), qMin(pos.x(), screenRect.right() - width())));
     adjustedPos.setY(qMax(screenRect.top(), qMin(pos.y() - 4, screenRect.bottom() - height() + 5)));

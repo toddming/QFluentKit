@@ -11,18 +11,18 @@ using FIF = Fluent::IconType;
 class QFLUENT_EXPORT CalendarPicker : public QPushButton
 {
     Q_OBJECT
-    Q_PROPERTY(QDate date READ getDate WRITE setDate)
-    Q_PROPERTY(QString dateFormat READ getDateFormat WRITE setDateFormat)
+    Q_PROPERTY(QDate date READ date WRITE setDate)
+    Q_PROPERTY(QString dateFormat READ dateFormat WRITE setDateFormat)
 
 public:
     explicit CalendarPicker(QWidget* parent = nullptr);
     ~CalendarPicker() = default;
 
-    QDate getDate() const;
+    QDate date() const;
     void setDate(const QDate& date);
 
     void reset();
-    QString getDateFormat() const;
+    QString dateFormat() const;
     void setDateFormat(const QString& format);
     bool isResetEnabled() const;
     void setResetEnabled(bool isEnabled);

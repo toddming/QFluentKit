@@ -9,13 +9,13 @@
 class QPropertyAnimation;
 class ExpandButton : public QAbstractButton {
     Q_OBJECT
-    Q_PROPERTY(float angle READ getAngle WRITE setAngle)
+    Q_PROPERTY(float angle READ angle WRITE setAngle)
 
 public:
     explicit ExpandButton(QWidget *parent = nullptr);
 
     void setExpand(bool isExpand);
-    float getAngle() const;
+    float angle() const;
     void setAngle(float angle);
 
     void setHover(bool isHover);

@@ -30,7 +30,7 @@ public:
     void addAction(QAction* action, QLineEdit::ActionPosition position = QLineEdit::TrailingPosition);
     void addActions(QList<QAction*> actions, QLineEdit::ActionPosition position = QLineEdit::TrailingPosition);
 
-    LineEditButton *getClearButton();
+    LineEditButton *clearButton();
 
     QHBoxLayout* hBoxLayout() const { return m_layout; }
 

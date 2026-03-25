@@ -14,6 +14,6 @@ public:
     QColor backgroundColor();
     Fluent::CheckBoxState state();
 
-    bool _isPressed = false;
-    bool _isHover = false;
+    bool isPressed = false;
+    bool isHover = false;
 };

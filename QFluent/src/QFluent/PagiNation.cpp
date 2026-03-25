@@ -25,37 +25,37 @@ void Button::handleClick()
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PagiNation::PagiNation (QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), m_align(align), m_buttonCount(buttonCount)
 {
-    _height = DEFAULT_HEIGHT;
-    setFixedHeight(_height + 4);
+    m_height = DEFAULT_HEIGHT;
+    setFixedHeight(m_height + 4);
     init();
 }
 
-PagiNation::PagiNation (QPoint point, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QPoint point, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), m_align(align), m_buttonCount(buttonCount)
 {
-    _height = DEFAULT_HEIGHT;
-    setFixedHeight(_height + 4);
+    m_height = DEFAULT_HEIGHT;
+    setFixedHeight(m_height + 4);
     move(point);
     init();
 }
 
-PagiNation::PagiNation (QSize size, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QSize size, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), m_align(align), m_buttonCount(buttonCount)
 {
-    _height = size.height();
+    m_height = size.height();
     resize(size);
     setMinimumWidth(size.width());
-    setFixedHeight(_height + 4);
+    setFixedHeight(m_height + 4);
     init();
 }
 
-PagiNation::PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), _align(align), _buttonCount(buttonCount)
+PagiNation::PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align, int buttonCount): QFrame(parent), m_align(align), m_buttonCount(buttonCount)
 {
-    _height = rect.height();
+    m_height = rect.height();
     move(rect.x(), rect.y());
     resize(rect.size());
     setMinimumWidth(rect.width());
-    setFixedHeight(_height + 4);
+    setFixedHeight(m_height + 4);
     init();
 }
 
@@ -64,8 +64,8 @@ PagiNation::PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align, in
 
 /** 验证按钮数量 */
 void PagiNation::validateButtonCount() {
-    if (_buttonCount % 2 != 1 || _buttonCount < MIN_BUTTON_COUNT) {
-        _buttonCount = DEFAULT_BUTTON_COUNT;
+    if (m_buttonCount % 2 != 1 || m_buttonCount < MIN_BUTTON_COUNT) {
+        m_buttonCount = DEFAULT_BUTTON_COUNT;
     }
 }
 
@@ -82,13 +82,13 @@ void PagiNation::init () {
     prevFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Begin")), this);
     prevFBtn->setFocusPolicy(Qt::NoFocus);
     prevFBtn->setIconSize(QSize(10, 10));
-    prevFBtn->setFixedSize(_height, _height);
+    prevFBtn->setFixedSize(m_height, m_height);
     connect(prevFBtn, SIGNAL(clicked()), this, SLOT(toPrev5()));
 
     prevBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Previous")), this);
     prevBtn->setFocusPolicy(Qt::NoFocus);
     prevBtn->setIconSize(QSize(10, 10));
-    prevBtn->setFixedSize(_height, _height);
+    prevBtn->setFixedSize(m_height, m_height);
     connect(prevBtn, SIGNAL(clicked()), this, SLOT(toPrev1()));
 
     mainBox = new QFrame(this);
@@ -105,13 +105,13 @@ void PagiNation::init () {
     nextBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Next")), this);
     nextBtn->setFocusPolicy(Qt::NoFocus);
     nextBtn->setIconSize(QSize(10, 10));
-    nextBtn->setFixedSize(_height, _height);
+    nextBtn->setFixedSize(m_height, m_height);
     connect(nextBtn, SIGNAL(clicked()), this, SLOT(toNext1()));
 
     nextFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("End")), this);
     nextFBtn->setFocusPolicy(Qt::NoFocus);
     nextFBtn->setIconSize(QSize(10, 10));
-    nextFBtn->setFixedSize(_height, _height);
+    nextFBtn->setFixedSize(m_height, m_height);
     connect(nextFBtn, SIGNAL(clicked()), this, SLOT(toNext5()));
 
     setWidgetAlign();
@@ -120,12 +120,12 @@ void PagiNation::init () {
 
 /** 计算当前页码展示 */
 void PagiNation::computePage () {
-    // 1. 验证_pageSize
-    if (_pageSize <= 0) _pageSize = DEFAULT_PAGE_SIZE;
+    // 1. 验证m_pageSize
+    if (m_pageSize <= 0) m_pageSize = DEFAULT_PAGE_SIZE;
 
     // 2. 计算总页数
-    int totalNum = ceil(double(_total) / double(_pageSize));
-    if (totalNum < _pageNow) _pageNow = totalNum == 0 ? 1 : totalNum;
+    int totalNum = ceil(double(m_total) / double(m_pageSize));
+    if (totalNum < m_pageNow) m_pageNow = totalNum == 0 ? 1 : totalNum;
 
     // 3. 只有一页或零页时的处理
     if (totalNum <= 1) {
@@ -142,29 +142,29 @@ void PagiNation::computePage () {
     }
 
     // 4. 正常多页逻辑：设置导航按钮状态
-    prevFBtn->setEnabled(_pageNow > 1);
-    prevBtn->setEnabled(_pageNow > 1);
-    nextBtn->setEnabled(_pageNow < totalNum);
-    nextFBtn->setEnabled(_pageNow < totalNum);
+    prevFBtn->setEnabled(m_pageNow > 1);
+    prevBtn->setEnabled(m_pageNow > 1);
+    nextBtn->setEnabled(m_pageNow < totalNum);
+    nextFBtn->setEnabled(m_pageNow < totalNum);
 
     QList<__PagiNation_DATA> list;
 
     // 5. 处理页码列表逻辑
-    if (totalNum <= _buttonCount) {
+    if (totalNum <= m_buttonCount) {
         for (int i = 1; i <= totalNum; i ++) {
-            __PagiNation_DATA data = {PaginationItemType::Button, i, _pageNow == i};
+            __PagiNation_DATA data = {PaginationItemType::Button, i, m_pageNow == i};
             list.push_back(data);
         }
     } else {
-        int midIndex = (_buttonCount - 1) / 2;
+        int midIndex = (m_buttonCount - 1) / 2;
         int signLocation = midIndex % 2 == 0 ? midIndex / 2 : (midIndex - 1) / 2;
 
         QString position = "center";
-        int midLabel = _pageNow;
-        if (_pageNow < midIndex + 1) {
+        int midLabel = m_pageNow;
+        if (m_pageNow < midIndex + 1) {
             position = "left";
             midLabel = midIndex + 1;
-        } else if (totalNum > _buttonCount && _pageNow > totalNum - midIndex) {
+        } else if (totalNum > m_buttonCount && m_pageNow > totalNum - midIndex) {
             // ✅ 修复：添加边界检查
             position = "right";
             midLabel = totalNum - midIndex;
@@ -173,14 +173,14 @@ void PagiNation::computePage () {
         QVector<__PagiNation_DATA> leftArr(midIndex), rightArr(midIndex);
         for (int i = 0; i < midIndex; i ++) {
             if (position == "left") {
-                leftArr[i] = {PaginationItemType::Button, i + 1, _pageNow == i + 1};
+                leftArr[i] = {PaginationItemType::Button, i + 1, m_pageNow == i + 1};
             } else {
                 if (i < signLocation) leftArr[i] = {PaginationItemType::Button, i + 1, false};
                 else leftArr[i] = {PaginationItemType::Button, midLabel - (midIndex - i), false};
             }
 
             if (position == "right") {
-                rightArr[i] = {PaginationItemType::Button, totalNum - (midIndex - (i + 1)), _pageNow == totalNum - (midIndex - (i + 1))};
+                rightArr[i] = {PaginationItemType::Button, totalNum - (midIndex - (i + 1)), m_pageNow == totalNum - (midIndex - (i + 1))};
             } else {
                 if (i > midIndex - signLocation - 1) rightArr[i] = {PaginationItemType::Button, totalNum - (midIndex - (i + 1)), false};
                 else rightArr[i] = {PaginationItemType::Button, midLabel + (i + 1), false};
@@ -236,7 +236,7 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
         if (data.type == PaginationItemType::Button) {
             Button *btn = new Button(QString::number(data.labelNum), mainBox);
             btn->setFocusPolicy(Qt::NoFocus);
-            btn->setFixedHeight(_height);
+            btn->setFixedHeight(m_height);
             connect(btn, SIGNAL(cClick(Button*)), this, SLOT(handleClick(Button*)));
             if (data.choosed) {
                 btn->setCheckable(true);
@@ -249,7 +249,7 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
             BJ_main->addWidget(btn);
         } else if (data.type == PaginationItemType::Ellipsis) {
             BodyLabel *dot = new BodyLabel("...", mainBox);
-            dot->setFixedHeight(_height);
+            dot->setFixedHeight(m_height);
             dot->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
             dot->show();
             BJ_main->addWidget(dot);
@@ -283,9 +283,9 @@ void PagiNation::setWidgetAlign () {
     BJ->addWidget(nextFBtn);
 
     // ✅ 添加spacer，让QLayout管理它们（不保存指针）
-    if (_align == Fluent::Alignment::Align_Left) {
+    if (m_align == Fluent::Alignment::Align_Left) {
         BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    } else if (_align == Fluent::Alignment::Align_Right) {
+    } else if (m_align == Fluent::Alignment::Align_Right) {
         BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     } else {
         BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
@@ -295,93 +295,93 @@ void PagiNation::setWidgetAlign () {
 
 void PagiNation::handleClick (Button *self) {
     int pageNow = self->text().toInt();
-    if (pageNow != _pageNow) {
+    if (pageNow != m_pageNow) {
         setPage(pageNow, true);
     }
 }
 
 void PagiNation::toPrev1 () {
-    if (_pageNow > 1) setPage(--_pageNow, true);
+    if (m_pageNow > 1) setPage(--m_pageNow, true);
 }
 
 void PagiNation::toPrev5 () {
-    if (_pageNow > 1) setPage(std::max(_pageNow - 5, 1), true);
+    if (m_pageNow > 1) setPage(std::max(m_pageNow - 5, 1), true);
 }
 
 void PagiNation::toNext1 () {
-    if (_pageSize <= 0) _pageSize = DEFAULT_PAGE_SIZE;
-    int totalNum = ceil(double(_total) / double(_pageSize));
-    if (_pageNow < totalNum) setPage(++_pageNow, true);
+    if (m_pageSize <= 0) m_pageSize = DEFAULT_PAGE_SIZE;
+    int totalNum = ceil(double(m_total) / double(m_pageSize));
+    if (m_pageNow < totalNum) setPage(++m_pageNow, true);
 }
 
 void PagiNation::toNext5 () {
-    if (_pageSize <= 0) _pageSize = DEFAULT_PAGE_SIZE;
-    int totalNum = ceil(double(_total) / double(_pageSize));
-    if (_pageNow < totalNum) {
-        int nextPage = std::min(_pageNow + 5, totalNum);
+    if (m_pageSize <= 0) m_pageSize = DEFAULT_PAGE_SIZE;
+    int totalNum = ceil(double(m_total) / double(m_pageSize));
+    if (m_pageNow < totalNum) {
+        int nextPage = std::min(m_pageNow + 5, totalNum);
         setPage(nextPage, true);
     }
 }
 
 // ----------------- 公有接口 ---------------------
 int PagiNation::page () {
-    return _pageNow;
+    return m_pageNow;
 }
 
 int PagiNation::pageSize () {
-    return _pageSize;
+    return m_pageSize;
 }
 
 int PagiNation::total () {
-    return _total;
+    return m_total;
 }
 
 int PagiNation::buttonCount () {
-    return _buttonCount;
+    return m_buttonCount;
 }
 
 Fluent::Alignment PagiNation::alignment () {
-    return _align;
+    return m_align;
 }
 
 void PagiNation::setButtonCount (int buttonCount, bool needEmit) {
-    _buttonCount = buttonCount;
+    m_buttonCount = buttonCount;
     validateButtonCount();
     computePage();
-    if (needEmit) emit pageChanged(_pageNow, _pageSize);
+    if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }
 
 void PagiNation::setAlign (Fluent::Alignment align, bool needEmit) {
-    if (align == _align) return;
-    _align = align;
+    if (align == m_align) return;
+    m_align = align;
     setWidgetAlign();
-    if (needEmit) emit pageChanged(_pageNow, _pageSize);
+    if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }
 
 void PagiNation::setPageSize (int pageSize, bool needEmit) {
-    _pageNow = 1;
-    _pageSize = (pageSize > 0) ? pageSize : DEFAULT_PAGE_SIZE;  // 验证
+    m_pageNow = 1;
+    m_pageSize = (pageSize > 0) ? pageSize : DEFAULT_PAGE_SIZE;  // 验证
     computePage();
-    if (needEmit) emit pageChanged(_pageNow, _pageSize);
+    if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }
 
 void PagiNation::setTotal (int total, bool needEmit) {
-    _total = (total < 0) ? 0 : total;
+    m_total = (total < 0) ? 0 : total;
     computePage();
-    if (needEmit) emit pageChanged(_pageNow, _pageSize);
+    if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }
 
 void PagiNation::setPage (int pageNow, bool needEmit) {
-    _pageNow = (pageNow > 0) ? pageNow : 1;  // 验证页码
+    m_pageNow = (pageNow > 0) ? pageNow : 1;  // 验证页码
     computePage();
-    if (needEmit) emit pageChanged(_pageNow, _pageSize);
+    if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }
 
 void PagiNation::setPage (int pageNow, int total, bool needEmit) {
-    _pageNow = (pageNow > 0) ? pageNow : 1;  // 验证页码
-    _total = (total < 0) ? 0 : total;
+    m_pageNow = (pageNow > 0) ? pageNow : 1;  // 验证页码
+    m_total = (total < 0) ? 0 : total;
     computePage();
-    if (needEmit) emit pageChanged(_pageNow, _pageSize);
+    if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }
 
 void PagiNation::connectPageChange (function<void(int, int)> method) {

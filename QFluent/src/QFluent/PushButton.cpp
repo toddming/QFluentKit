@@ -177,13 +177,13 @@ ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWid
 
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    Fluent::ThemeMode _theme;
+    Fluent::ThemeMode theme;
     if (!Theme::instance()->isDarkTheme()) {
-        _theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
+        theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
-        _theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
+        theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
     }
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, _theme);
+    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, theme);
 }
 
 

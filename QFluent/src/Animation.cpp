@@ -82,12 +82,12 @@ TranslateYAnimation::~TranslateYAnimation() {}
 
 float TranslateYAnimation::y() const {
     Q_D(const TranslateYAnimation);
-    return d->_y;
+    return d->y;
 }
 
 void TranslateYAnimation::setY(float y) {
     Q_D(TranslateYAnimation);
-    d->_y = y;
+    d->y = y;
     static_cast<QWidget*>(parent())->update();
     emit valueChanged(y);
 }
@@ -129,12 +129,12 @@ BackgroundColorObject::~BackgroundColorObject() {}
 
 QColor BackgroundColorObject::backgroundColor() const {
     Q_D(const BackgroundColorObject);
-    return d->_backgroundColor;
+    return d->backgroundColor;
 }
 
 void BackgroundColorObject::setBackgroundColor(const QColor &color) {
     Q_D(BackgroundColorObject);
-    d->_backgroundColor = color;
+    d->backgroundColor = color;
     if (auto widget = qobject_cast<QWidget*>(parent())) {
         widget->update();
     }
@@ -192,9 +192,9 @@ void BackgroundAnimationWidget::updateBackgroundColor() {
         color = disabledBackgroundColor();
     } else if (qobject_cast<QLineEdit*>(this) && hasFocus()) {
         color = focusInBackgroundColor();
-    } else if (d->m_isPressed) {
+    } else if (d->isPressed) {
         color = pressedBackgroundColor();
-    } else if (d->m_isHover) {
+    } else if (d->isHover) {
         color = hoverBackgroundColor();
     } else {
         color = normalBackgroundColor();
@@ -220,14 +220,14 @@ bool BackgroundAnimationWidget::eventFilter(QObject *obj, QEvent *e) {
 
 void BackgroundAnimationWidget::mousePressEvent(QMouseEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isPressed = true;
+    d->isPressed = true;
     updateBackgroundColor();
     QWidget::mousePressEvent(e);
 }
 
 void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isPressed = false;
+    d->isPressed = false;
     updateBackgroundColor();
     QWidget::mouseReleaseEvent(e);
 }
@@ -235,14 +235,14 @@ void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void BackgroundAnimationWidget::enterEvent(QEnterEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isHover = true;
+    d->isHover = true;
     updateBackgroundColor();
     QWidget::enterEvent(e);
 }
 #else
 void BackgroundAnimationWidget::enterEvent(QEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isHover = true;
+    d->isHover = true;
     updateBackgroundColor();
     QWidget::enterEvent(e);
 }
@@ -250,7 +250,7 @@ void BackgroundAnimationWidget::enterEvent(QEvent *e) {
 
 void BackgroundAnimationWidget::leaveEvent(QEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isHover = false;
+    d->isHover = false;
     updateBackgroundColor();
     QWidget::leaveEvent(e);
 }
@@ -262,22 +262,22 @@ void BackgroundAnimationWidget::focusInEvent(QFocusEvent *e) {
 
 bool BackgroundAnimationWidget::isHover() const {
     Q_D(const BackgroundAnimationWidget);
-    return d->m_isHover;
+    return d->isHover;
 }
 
 bool BackgroundAnimationWidget::isPressed() const {
     Q_D(const BackgroundAnimationWidget);
-    return d->m_isPressed;
+    return d->isPressed;
 }
 
 void BackgroundAnimationWidget::setHover(bool hover) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isHover = hover;
+    d->isHover = hover;
 }
 
 void BackgroundAnimationWidget::setPressed(bool pressed) {
     Q_D(BackgroundAnimationWidget);
-    d->m_isPressed = pressed;
+    d->isPressed = pressed;
 }
 
 QColor BackgroundAnimationWidget::backgroundColor() const {
@@ -405,14 +405,14 @@ FluentAnimationProperObject *FluentAnimationProperObject::create(FluentAnimation
 
 // ==================== Property Objects ====================
 PositionObject::PositionObject(QObject *parent)
-    : FluentAnimationProperObject(parent), _position(QPoint()) {}
+    : FluentAnimationProperObject(parent), m_position(QPoint()) {}
 
-QVariant PositionObject::getValue() const {
-    return _position;
+QVariant PositionObject::value() const {
+    return m_position;
 }
 
 void PositionObject::setValue(const QVariant &pos) {
-    _position = pos.toPoint();
+    m_position = pos.toPoint();
     if (parent()) {
         static_cast<QWidget*>(parent())->update();
     }
@@ -420,12 +420,12 @@ void PositionObject::setValue(const QVariant &pos) {
 
 ScaleObject::ScaleObject(QObject *parent) : FluentAnimationProperObject(parent) {}
 
-QVariant ScaleObject::getValue() const {
-    return _scale;
+QVariant ScaleObject::value() const {
+    return m_scale;
 }
 
 void ScaleObject::setValue(const QVariant &scale) {
-    _scale = scale.toFloat();
+    m_scale = scale.toFloat();
     if (parent()) {
         static_cast<QWidget*>(parent())->update();
     }
@@ -433,12 +433,12 @@ void ScaleObject::setValue(const QVariant &scale) {
 
 AngleObject::AngleObject(QObject *parent) : FluentAnimationProperObject(parent) {}
 
-QVariant AngleObject::getValue() const {
-    return _angle;
+QVariant AngleObject::value() const {
+    return m_angle;
 }
 
 void AngleObject::setValue(const QVariant &angle) {
-    _angle = angle.toFloat();
+    m_angle = angle.toFloat();
     if (parent()) {
         static_cast<QWidget*>(parent())->update();
     }
@@ -446,12 +446,12 @@ void AngleObject::setValue(const QVariant &angle) {
 
 OpacityObject::OpacityObject(QObject *parent) : FluentAnimationProperObject(parent) {}
 
-QVariant OpacityObject::getValue() const {
-    return _opacity;
+QVariant OpacityObject::value() const {
+    return m_opacity;
 }
 
 void OpacityObject::setValue(const QVariant &opacity) {
-    _opacity = opacity.toFloat();
+    m_opacity = opacity.toFloat();
     if (parent()) {
         static_cast<QWidget*>(parent())->update();
     }
@@ -514,7 +514,7 @@ void FluentAnimation::startAnimation(const QVariant &endValue, const QVariant &s
 }
 
 QVariant FluentAnimation::value() const {
-    return static_cast<FluentAnimationProperObject*>(targetObject())->getValue();
+    return static_cast<FluentAnimationProperObject*>(targetObject())->value();
 }
 
 void FluentAnimation::setValue(const QVariant &value) {
@@ -614,9 +614,9 @@ ScaleSlideAnimation::ScaleSlideAnimation(QWidget *parent, Qt::Orientation orient
     d->orient = orient;
 
     if (isHorizontal()) {
-        d->_geometry = QRectF(0, 0, 16, 3);
+        d->geometry = QRectF(0, 0, 16, 3);
     } else {
-        d->_geometry = QRectF(0, 0, 3, 16);
+        d->geometry = QRectF(0, 0, 3, 16);
     }
 }
 
@@ -794,7 +794,7 @@ QPointF ScaleSlideAnimation::pos() const {
 
 void ScaleSlideAnimation::setPos(const QPointF &pos) {
     Q_D(ScaleSlideAnimation);
-    d->_geometry.moveTopLeft(pos);
+    d->geometry.moveTopLeft(pos);
     emit valueChanged(geometry());
 }
 
@@ -807,9 +807,9 @@ void ScaleSlideAnimation::setLength(qreal length) {
     Q_D(ScaleSlideAnimation);
 
     if (isHorizontal()) {
-        d->_geometry.setWidth(length);
+        d->geometry.setWidth(length);
     } else {
-        d->_geometry.setHeight(length);
+        d->geometry.setHeight(length);
     }
 
     emit valueChanged(geometry());
@@ -817,17 +817,17 @@ void ScaleSlideAnimation::setLength(qreal length) {
 
 QRectF ScaleSlideAnimation::geometry() const {
     Q_D(const ScaleSlideAnimation);
-    return d->_geometry;
+    return d->geometry;
 }
 
 void ScaleSlideAnimation::setGeometry(const QRectF &rect) {
     Q_D(ScaleSlideAnimation);
-    d->_geometry = rect;
+    d->geometry = rect;
 }
 
 void ScaleSlideAnimation::moveLeft(qreal x) {
     Q_D(ScaleSlideAnimation);
-    d->_geometry.moveLeft(x);
+    d->geometry.moveLeft(x);
     emit valueChanged(geometry());
 }
 

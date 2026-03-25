@@ -60,14 +60,14 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private slots:
-    void _onItemClicked();
+    void onItemClicked();
 
 private:
-    void _adjustIndicatorPos();
+    void adjustIndicatorPos();
     PivotItem *widget(const QString &routeKey) const;
 
     QMap<QString, PivotItem *> items;
-    QString _currentRouteKey;
+    QString m_currentRouteKey;
     QColor lightIndicatorColor;
     QColor darkIndicatorColor;
     QHBoxLayout *hBoxLayout;

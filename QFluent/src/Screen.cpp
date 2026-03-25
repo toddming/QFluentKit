@@ -5,7 +5,7 @@
 #include <QRect>
 #include <QApplication>
 
-QScreen* Screen::getCurrentScreen()
+QScreen* Screen::currentScreen()
 {
     const QPoint cursorPos = QCursor::pos();
 
@@ -19,9 +19,9 @@ QScreen* Screen::getCurrentScreen()
     return QApplication::primaryScreen();
 }
 
-QRect Screen::getCurrentScreenGeometry(bool available)
+QRect Screen::currentScreenGeometry(bool available)
 {
-    QScreen* screen = getCurrentScreen();
+    QScreen* screen = currentScreen();
 
     // 理论上不会为空，但安全起见
     if (!screen) {

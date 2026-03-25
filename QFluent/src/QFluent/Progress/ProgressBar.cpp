@@ -14,10 +14,10 @@
 #include "Theme.h"
 
 ProgressBar::ProgressBar(QWidget *parent, bool useAni)
-    : QProgressBar(parent), _val(0), _useAni(useAni),
+    : QProgressBar(parent), m_val(0), m_useAni(useAni),
       lightBackgroundColor(QColor(0, 0, 0, 155)),
       darkBackgroundColor(QColor(255, 255, 255, 155)),
-      _isPaused(false), _isError(false)
+      m_isPaused(false), m_isError(false)
 {
     setFixedHeight(4);
     setMinimum(0);
@@ -27,39 +27,39 @@ ProgressBar::ProgressBar(QWidget *parent, bool useAni)
     ani.setTargetObject(this);
     ani.setPropertyName("val");
     ani.setEasingCurve(QEasingCurve::OutQuad);
-    connect(this, &QProgressBar::valueChanged, this, &ProgressBar::_onValueChanged);
+    connect(this, &QProgressBar::valueChanged, this, &ProgressBar::onValueChanged);
 }
 
 bool ProgressBar::isUseAni() const
 {
-    return _useAni;
+    return m_useAni;
 }
 
 void ProgressBar::setUseAni(bool isUse)
 {
-    if (_useAni != isUse) {
-        _useAni = isUse;
+    if (m_useAni != isUse) {
+        m_useAni = isUse;
         emit useAniChanged(isUse);
     }
 }
 
-float ProgressBar::getVal() const
+float ProgressBar::value() const
 {
-    return _val;
+    return m_val;
 }
 
 void ProgressBar::setVal(float v)
 {
-    if (qFuzzyCompare(_val, v)) return;
-    _val = v;
-    emit valChanged(_val);
+    if (qFuzzyCompare(m_val, v)) return;
+    m_val = v;
+    emit valChanged(m_val);
     update();
 }
 
-void ProgressBar::_onValueChanged(int value)
+void ProgressBar::onValueChanged(int value)
 {
-    if (!_useAni) {
-        _val = value;
+    if (!m_useAni) {
+        m_val = value;
         return;
     }
 
@@ -72,37 +72,37 @@ void ProgressBar::_onValueChanged(int value)
 
 void ProgressBar::resume()
 {
-    _isPaused = false;
-    _isError = false;
+    m_isPaused = false;
+    m_isError = false;
     update();
 }
 
 void ProgressBar::pause()
 {
-    _isPaused = true;
+    m_isPaused = true;
     update();
 }
 
 void ProgressBar::setPaused(bool isPaused)
 {
-    _isPaused = isPaused;
+    m_isPaused = isPaused;
     update();
 }
 
 bool ProgressBar::isPaused() const
 {
-    return _isPaused;
+    return m_isPaused;
 }
 
 void ProgressBar::error()
 {
-    _isError = true;
+    m_isError = true;
     update();
 }
 
 void ProgressBar::setError(bool isError)
 {
-    _isError = isError;
+    m_isError = isError;
     if (isError) {
         error();
     } else {
@@ -112,13 +112,13 @@ void ProgressBar::setError(bool isError)
 
 bool ProgressBar::isError() const
 {
-    return _isError;
+    return m_isError;
 }
 
 void ProgressBar::setCustomBarColor(const QColor &light, const QColor &dark)
 {
-    _lightBarColor = light;
-    _darkBarColor = dark;
+    m_lightBarColor = light;
+    m_darkBarColor = dark;
     update();
 }
 
@@ -137,7 +137,7 @@ QColor ProgressBar::barColor() const
     if (isError()) {
         return Theme::instance()->isDarkTheme() ? QColor(255, 153, 164) : QColor(196, 43, 28);
     }
-    QColor color = Theme::instance()->isDarkTheme() ? _darkBarColor : _lightBarColor;
+    QColor color = Theme::instance()->isDarkTheme() ? m_darkBarColor : m_lightBarColor;
     color = color.isValid() ? color : Theme::instance()->themeColor();
     return color;
 }
@@ -159,7 +159,7 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     // 绘制进度条
     painter.setPen(Qt::NoPen);
     painter.setBrush(barColor());
-    int w = static_cast<int>(_val / (maximum() - minimum()) * width());
+    int w = static_cast<int>(m_val / (maximum() - minimum()) * width());
     int r = height() / 2;
     painter.drawRoundedRect(0, 0, w, height(), r, r);
 }

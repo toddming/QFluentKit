@@ -170,7 +170,7 @@ QPoint ToolTipPositionManager::position(ToolTip *tooltip, QWidget *parent)
     int x = pos.x();
     int y = pos.y();
 
-    QRect screenRect = Screen::getCurrentScreenGeometry();
+    QRect screenRect = Screen::currentScreenGeometry();
     x = qMax(screenRect.left(), qMin(x, screenRect.right() - tooltip->width() - 4));
     y = qMax(screenRect.top(), qMin(y, screenRect.bottom() - tooltip->height() - 4));
 

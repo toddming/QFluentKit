@@ -51,7 +51,7 @@ void PivotItem::drawIcon(QPainter* painter, const QRectF& rect)
 }
 
 Pivot::Pivot(QWidget *parent)
-    : QWidget(parent), _currentRouteKey(""), lightIndicatorColor(), darkIndicatorColor()
+    : QWidget(parent), m_currentRouteKey(""), lightIndicatorColor(), darkIndicatorColor()
 {
     hBoxLayout = new QHBoxLayout(this);
     hBoxLayout->setSpacing(0);
@@ -99,7 +99,7 @@ void Pivot::insertWidget(int index, const QString &routeKey, PivotItem *widget) 
     }
 
     widget->setProperty("routeKey", routeKey);
-    connect(widget, &PivotItem::itemClicked, this, &Pivot::_onItemClicked);
+    connect(widget, &PivotItem::itemClicked, this, &Pivot::onItemClicked);
     items[routeKey] = widget;
     hBoxLayout->insertWidget(index, widget, 1);
 }
@@ -113,7 +113,7 @@ void Pivot::removeWidget(const QString &routeKey) {
     hBoxLayout->removeWidget(item);
     item->deleteLater();
     if (items.isEmpty()) {
-        _currentRouteKey = "";
+        m_currentRouteKey = "";
     }
 }
 
@@ -124,26 +124,26 @@ void Pivot::clear() {
         item->deleteLater();
     }
     items.clear();
-    _currentRouteKey = "";
+    m_currentRouteKey = "";
 }
 
 PivotItem *Pivot::currentItem() const {
-    if (_currentRouteKey.isEmpty()) {
+    if (m_currentRouteKey.isEmpty()) {
         return nullptr;
     }
-    return widget(_currentRouteKey);
+    return widget(m_currentRouteKey);
 }
 
 QString Pivot::currentRouteKey() const {
-    return _currentRouteKey;
+    return m_currentRouteKey;
 }
 
 void Pivot::setCurrentItem(const QString &routeKey) {
-    if (!items.contains(routeKey) || routeKey == _currentRouteKey) {
+    if (!items.contains(routeKey) || routeKey == m_currentRouteKey) {
         return;
     }
 
-    _currentRouteKey = routeKey;
+    m_currentRouteKey = routeKey;
     slideAni->stop();
     slideAni->startAnimation(widget(routeKey)->x());
     for (auto it = items.begin(); it != items.end(); ++it) {
@@ -175,7 +175,7 @@ void Pivot::setIndicatorColor(const QColor &light, const QColor &dark) {
     update();
 }
 
-void Pivot::_onItemClicked() {
+void Pivot::onItemClicked() {
     PivotItem *item = qobject_cast<PivotItem *>(sender());
     if (item) {
         setCurrentItem(item->property("routeKey").toString());
@@ -184,12 +184,12 @@ void Pivot::_onItemClicked() {
 
 void Pivot::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
-    _adjustIndicatorPos();
+    adjustIndicatorPos();
 }
 
 void Pivot::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
-    _adjustIndicatorPos();
+    adjustIndicatorPos();
 }
 
 void Pivot::paintEvent(QPaintEvent *event) {
@@ -209,7 +209,7 @@ void Pivot::paintEvent(QPaintEvent *event) {
     painter.drawRoundedRect(x, height() - 3, 16, 3, 1.5, 1.5);
 }
 
-void Pivot::_adjustIndicatorPos() {
+void Pivot::adjustIndicatorPos() {
     PivotItem *item = currentItem();
     if (item) {
         slideAni->stop();

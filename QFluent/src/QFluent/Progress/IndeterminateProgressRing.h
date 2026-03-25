@@ -42,11 +42,11 @@ protected:
 private:
     QColor lightBackgroundColor;
     QColor darkBackgroundColor;
-    QColor _lightBarColor;
-    QColor _darkBarColor;
-    int _strokeWidth;
-    int _startAngle;
-    int _spanAngle;
+    QColor m_lightBarColor;
+    QColor m_darkBarColor;
+    int m_strokeWidth;
+    int m_startAngle;
+    int m_spanAngle;
 
     QPropertyAnimation *startAngleAni1;
     QPropertyAnimation *startAngleAni2;

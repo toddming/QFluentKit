@@ -266,7 +266,7 @@ void LineEdit::paintEvent(QPaintEvent* e) {
     painter.fillPath(path, Theme::instance()->themeColor());
 }
 
-LineEditButton* LineEdit::getClearButton()
+LineEditButton* LineEdit::clearButton()
 {
     return m_clearButton;
 }
@@ -289,7 +289,7 @@ void SearchLineEdit::initWidgets()
     setClearButtonEnabled(true);
     setTextMargins(0, 0, 59, 0);
 
-    clearButton = getClearButton();
+    clearButton = LineEdit::clearButton();
     hBoxLayout = qobject_cast<QHBoxLayout*>(layout());
 
     searchButton = new LineEditButton(FluentIcon(Fluent::IconType::SEARCH).qicon(), this);

@@ -95,7 +95,7 @@ int MenuActionListWidget::heightForAnimation(const QPoint &pos, Fluent::MenuAnim
 {
     int ih = itemsHeight();
     int sh = 0;
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
 
     switch (aniType) {
     case Fluent::MenuAnimation::DROP_DOWN:
@@ -139,7 +139,7 @@ int MenuActionListWidget::itemsHeight() const
 
 QPoint MenuActionListWidget::availableViewSize(const QPoint &pos, Fluent::MenuAnimation aniType)
 {
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     QPoint point;
 
     switch (aniType) {

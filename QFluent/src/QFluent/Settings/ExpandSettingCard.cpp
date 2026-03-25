@@ -108,7 +108,7 @@ void ExpandButton::setExpand(bool isExpand) {
     m_rotateAni->start();
 }
 
-float ExpandButton::getAngle() const {
+float ExpandButton::angle() const {
     return m_angle;
 }
 

@@ -177,7 +177,7 @@ public:
     explicit FluentAnimationProperObject(QObject *parent = nullptr);
     virtual ~FluentAnimationProperObject();
 
-    virtual QVariant getValue() const = 0;
+    virtual QVariant value() const = 0;
     virtual void setValue(const QVariant &value) = 0;
 
     static void registerObject(FluentAnimationProperty name,
@@ -189,57 +189,57 @@ public:
 // PositionObject
 class PositionObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant position READ getValue WRITE setValue)
+    Q_PROPERTY(QVariant position READ value WRITE setValue)
 public:
     explicit PositionObject(QObject *parent = nullptr);
 
-    QVariant getValue() const override;
+    QVariant value() const override;
     void setValue(const QVariant &pos) override;
 
 private:
-    QPoint _position;
+    QPoint m_position;
 };
 
 // ScaleObject
 class ScaleObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant scale READ getValue WRITE setValue)
+    Q_PROPERTY(QVariant scale READ value WRITE setValue)
 public:
     explicit ScaleObject(QObject *parent = nullptr);
 
-    QVariant getValue() const override;
+    QVariant value() const override;
     void setValue(const QVariant &scale) override;
 
 private:
-    float _scale = 1.0f;
+    float m_scale = 1.0f;
 };
 
 // AngleObject
 class AngleObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant angle READ getValue WRITE setValue)
+    Q_PROPERTY(QVariant angle READ value WRITE setValue)
 public:
     explicit AngleObject(QObject *parent = nullptr);
 
-    QVariant getValue() const override;
+    QVariant value() const override;
     void setValue(const QVariant &angle) override;
 
 private:
-    float _angle = 0.0f;
+    float m_angle = 0.0f;
 };
 
 // OpacityObject
 class OpacityObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant opacity READ getValue WRITE setValue)
+    Q_PROPERTY(QVariant opacity READ value WRITE setValue)
 public:
     explicit OpacityObject(QObject *parent = nullptr);
 
-    QVariant getValue() const override;
+    QVariant value() const override;
     void setValue(const QVariant &opacity) override;
 
 private:
-    float _opacity = 0.0f;
+    float m_opacity = 0.0f;
 };
 
 // FluentAnimation

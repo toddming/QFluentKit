@@ -50,7 +50,7 @@ QColor CardWidget::pressedBackgroundColor() const
     return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 8 : 64);
 }
 
-int CardWidget::getBorderRadius() const
+int CardWidget::borderRadius() const
 {
     return m_borderRadius;
 }
@@ -132,7 +132,7 @@ void SimpleCardWidget::paintEvent(QPaintEvent *e)
     else
         painter.setPen(QColor(0, 0, 0, 12));
 
-    int r = this->getBorderRadius();
+    int r = this->borderRadius();
     painter.drawRoundedRect(this->rect().adjusted(1, 1, -1, -1), r, r);
 }
 

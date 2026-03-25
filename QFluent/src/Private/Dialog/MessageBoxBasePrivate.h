@@ -14,10 +14,10 @@ class MessageBoxBasePrivate : public MaskDialogBasePrivate
     Q_DECLARE_PUBLIC(MessageBoxBase)
 
 public:
-    QFrame *_buttonGroup;
+    QFrame *buttonGroup;
 
-    QVBoxLayout *_viewLayout;
-    QHBoxLayout *_buttonLayout;
-    PrimaryPushButton *_yesButton;
-    QPushButton *_cancelButton;
+    QVBoxLayout *viewLayout;
+    QHBoxLayout *buttonLayout;
+    PrimaryPushButton *yesButton;
+    QPushButton *cancelButton;
 };

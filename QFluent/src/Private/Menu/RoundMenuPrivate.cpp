@@ -175,7 +175,7 @@ void RoundMenuPrivate::onShowMenuTimeout()
     int x = widgetRect.right() + 5;
     int y = widgetRect.top() - 5;
 
-    QRect screenRect = Screen::getCurrentScreenGeometry();
+    QRect screenRect = Screen::currentScreenGeometry();
     QSize subMenuSize = subMenu->sizeHint();
 
     // 右边界检测

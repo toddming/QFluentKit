@@ -13,7 +13,7 @@ public:
     IconWidget *q_ptr{nullptr};
 
 private:
-    std::unique_ptr<FluentIconBase> _fluentIcon;
-    QIcon _Icon;
-    Fluent::ThemeMode _IconTheme;
+    std::unique_ptr<FluentIconBase> fluentIcon;
+    QIcon icon;
+    Fluent::ThemeMode iconTheme;
 };

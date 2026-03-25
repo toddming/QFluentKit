@@ -26,7 +26,7 @@ public:
     bool isAnimationEnabled(Qt::Orientation orientation) const;
 
 private:
-    ScrollBar* getScrollBar(Qt::Orientation orientation) const;
+    ScrollBar* scrollBar(Qt::Orientation orientation) const;
     static void configureScrollerProperties(
             QScrollerProperties& properties,
             qreal gestureRecognitionTime = 0.5

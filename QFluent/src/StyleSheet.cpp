@@ -21,7 +21,7 @@ namespace {
     static int s_cacheVersion = 0;
 }
 
-QHash<QString, QString> StyleSheetHelper::getThemeColorMap() {
+QHash<QString, QString> StyleSheetHelper::themeColorMap() {
     // 真正的静态缓存，只在第一次调用时初始化
     static QHash<QString, QString> s_colorMap;
 
@@ -64,7 +64,7 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
         return qss;
     }
 
-    const QHash<QString, QString>& colorMap = getThemeColorMap();
+    const QHash<QString, QString>& colorMap = themeColorMap();
     if (colorMap.isEmpty()) {
         return qss;
     }
@@ -113,7 +113,7 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
     return result;
 }
 
-QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
+QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
     static QHash<QString, QString> s_cache;
     static QMutex s_cacheMutex;
 
@@ -140,7 +140,7 @@ QString StyleSheetHelper::getStyleSheetFromFile(const QString& filePath) {
     return content;
 }
 
-QString StyleSheetHelper::getStyleSheet(const std::shared_ptr<StyleSheetBase>& source,
+QString StyleSheetHelper::styleSheet(const std::shared_ptr<StyleSheetBase>& source,
                                         Fluent::ThemeMode theme) {
     if (!source) {
         return QString();
@@ -148,8 +148,8 @@ QString StyleSheetHelper::getStyleSheet(const std::shared_ptr<StyleSheetBase>& s
     return applyThemeColor(source->content(theme));
 }
 
-QString StyleSheetHelper::getStyleSheet(const QString& source, Fluent::ThemeMode theme) {
-    return getStyleSheet(std::make_shared<StyleSheetFile>(source), theme);
+QString StyleSheetHelper::styleSheet(const QString& source, Fluent::ThemeMode theme) {
+    return styleSheet(std::make_shared<StyleSheetFile>(source), theme);
 }
 
 void StyleSheetHelper::setStyleSheet(QWidget* widget,
@@ -164,7 +164,7 @@ void StyleSheetHelper::setStyleSheet(QWidget* widget,
         StyleSheetManager::instance()->registerWidget(source, widget);
     } else {
         // 直接设置样式表，不注册
-        widget->setStyleSheet(getStyleSheet(source, theme));
+        widget->setStyleSheet(styleSheet(source, theme));
     }
 }
 
@@ -190,13 +190,13 @@ void StyleSheetHelper::addStyleSheet(QWidget* widget,
 
     if (registerWidget) {
         StyleSheetManager::instance()->registerWidget(source, widget, false);
-        QString qss = getStyleSheet(StyleSheetManager::instance()->source(widget), theme);
+        QString qss = styleSheet(StyleSheetManager::instance()->source(widget), theme);
         widget->setStyleSheet(qss);
     } else {
         const QString& currentQss = widget->styleSheet();
         QString newQss;
         newQss.reserve(currentQss.size() + source->content(theme).size() + 1);
-        newQss = currentQss + "\n" + getStyleSheet(source, theme);
+        newQss = currentQss + "\n" + styleSheet(source, theme);
         widget->setStyleSheet(newQss);
     }
 }
@@ -214,7 +214,7 @@ QString StyleSheetBase::path(Fluent::ThemeMode theme) {
 }
 
 QString StyleSheetBase::content(Fluent::ThemeMode theme) {
-    return StyleSheetHelper::getStyleSheetFromFile(path(theme));
+    return StyleSheetHelper::styleSheetFromFile(path(theme));
 }
 
 void StyleSheetBase::apply(QWidget* widget, Fluent::ThemeMode theme) {
@@ -281,7 +281,7 @@ std::shared_ptr<StyleSheetBase> TemplateStyleSheetFile::clone() const {
 
 FluentStyleSheet::FluentStyleSheet(Fluent::ThemeStyle type) : m_type(type) {}
 
-const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::getTypeMap() {
+const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::typeMap() {
     static QHash<Fluent::ThemeStyle, QString> typeMap;
     static bool initialized = false;
 
@@ -340,7 +340,7 @@ QString FluentStyleSheet::path(Fluent::ThemeMode theme) {
 }
 
 QString FluentStyleSheet::typeToString(Fluent::ThemeStyle type) {
-    return getTypeMap().value(type, "unknown");
+    return typeMap().value(type, "unknown");
 }
 
 std::shared_ptr<StyleSheetBase> FluentStyleSheet::clone() const {
@@ -529,7 +529,7 @@ void CustomStyleSheetWatcher::applyStyleSheetIfNeeded()
     auto* widget = m_watchedWidget;
     auto compose = StyleSheetManager::instance()->source(widget);
     if (compose && compose->size() > 0) {
-        const QString qss = StyleSheetHelper::getStyleSheet(compose, Theme::instance()->theme());
+        const QString qss = StyleSheetHelper::styleSheet(compose, Theme::instance()->theme());
         widget->setStyleSheet(qss);
     }
 
@@ -590,7 +590,7 @@ void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& so
     }
 
     // 立即应用样式
-    widget->setStyleSheet(StyleSheetHelper::getStyleSheet(m_widgets[widget]));
+    widget->setStyleSheet(StyleSheetHelper::styleSheet(m_widgets[widget]));
 }
 
 void StyleSheetManager::deregisterWidget(QWidget* widget) {

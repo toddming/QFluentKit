@@ -367,7 +367,7 @@ QPoint TeachingTipManager::position(TeachingTip* tip)
     int x = p.x();
     int y = p.y();
 
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     x = qMax(rect.left(), qMin(p.x(), rect.right() - tip->width() - 4));
     y = qMax(rect.top(), qMin(p.y(), rect.bottom() - tip->height() - 4));
 

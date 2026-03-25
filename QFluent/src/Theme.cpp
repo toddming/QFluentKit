@@ -19,7 +19,7 @@ Theme::Theme(QObject* parent) : QObject(parent)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
     qWarning() << "当前主题:" << (currentScheme == Qt::ColorScheme::Dark ? "深色" : "浅色");
-    d->_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
+    d->sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
     QPointer<Theme> self = this;
     QStyleHints *styleHints = QApplication::styleHints();
@@ -29,11 +29,11 @@ Theme::Theme(QObject* parent) : QObject(parent)
             return;
         }
         if (scheme == Qt::ColorScheme::Dark) {
-            d->_sysIsDarkMode = true;
+            d->sysIsDarkMode = true;
         } else if (scheme == Qt::ColorScheme::Light) {
-            d->_sysIsDarkMode = false;
+            d->sysIsDarkMode = false;
         }
-        if (d->_autoTheme) {
+        if (d->autoTheme) {
             self->setTheme(Fluent::ThemeMode::AUTO);
         }
     });
@@ -52,21 +52,21 @@ Theme *Theme::instance()
 
 Fluent::ThemeMode Theme::theme() const {
     Q_D(const Theme);
-    return d->_currentTheme;
+    return d->currentTheme;
 }
 
 void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
     Q_D(Theme);
 
     if(theme == Fluent::ThemeMode::AUTO) {
-        d->_autoTheme = true;
-        theme = (d->_sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+        d->autoTheme = true;
+        theme = (d->sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
     } else {
-        d->_autoTheme = false;
+        d->autoTheme = false;
     }
 
-    if (d->_currentTheme != theme) {
-        d->_currentTheme = theme;
+    if (d->currentTheme != theme) {
+        d->currentTheme = theme;
         if (!lazy) {
             StyleSheetManager::instance()->updateStyleSheet(lazy);
             emit themeModeChanged(theme);
@@ -81,7 +81,7 @@ void Theme::toggleTheme(bool lazy) {
 
 QColor Theme::themeColor() const {
     Q_D(const Theme);
-    return d->_themeColor;
+    return d->themeColor;
 }
 
 QColor Theme::themeColor(Fluent::ThemeColor type) const {
@@ -92,8 +92,8 @@ QColor Theme::themeColor(Fluent::ThemeColor type) const {
 void Theme::setThemeColor(const QColor& color, bool lazy) {
     Q_D(Theme);
 
-    if (d->_themeColor != color) {
-        d->_themeColor = color;
+    if (d->themeColor != color) {
+        d->themeColor = color;
         if (!lazy) {
             StyleSheetManager::instance()->updateStyleSheet(lazy);
             // emit themeColorChanged(color);
@@ -103,7 +103,7 @@ void Theme::setThemeColor(const QColor& color, bool lazy) {
 
 bool Theme::isDarkTheme() const {
     Q_D(const Theme);
-    return d->_currentTheme == Fluent::ThemeMode::DARK;
+    return d->currentTheme == Fluent::ThemeMode::DARK;
 }
 
 
@@ -112,10 +112,10 @@ bool Theme::isDarkTheme() const {
 
 void Theme::setFont(QWidget *widget, int fontSize, QFont::Weight weight)
 {
-    widget->setFont(getFont(fontSize, weight));
+    widget->setFont(font(fontSize, weight));
 }
 
-QFont Theme::getFont(int fontSize, QFont::Weight weight)
+QFont Theme::font(int fontSize, QFont::Weight weight)
 {
     QFont font;
     font.setFamilies({"Microsoft YaHei", "PingFang SC", "Segoe UI"});

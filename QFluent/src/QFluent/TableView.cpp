@@ -76,7 +76,7 @@ void TableItemDelegate::initStyleOption(QStyleOptionViewItem* option, const QMod
     QStyledItemDelegate::initStyleOption(option, index);
 
     // 字体设置示例
-    // option->font = Theme::instance()->getFont(13);
+    // option->font = Theme::instance()->font(13);
 
     QColor textColor = Theme::instance()->isDarkTheme() ? Qt::white : Qt::black;
     QVariant textBrushVar = index.data(Qt::ForegroundRole);

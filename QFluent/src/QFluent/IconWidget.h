@@ -22,10 +22,10 @@ public:
     void setIcon(const QIcon &icon);
     void setIcon(const QString &iconPath);
     void setFluentIcon(const FluentIconBase &icon);
-    QIcon getIcon() const;
+    QIcon icon() const;
 
     void setIconTheme(Fluent::ThemeMode theme);
-    Fluent::ThemeMode getIconTheme();
+    Fluent::ThemeMode iconTheme();
 
     QSize sizeHint() const override;
 

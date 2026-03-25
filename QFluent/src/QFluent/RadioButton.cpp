@@ -12,7 +12,7 @@
 
 
 RadioButton::RadioButton(QWidget *parent)
-    : QRadioButton(parent), indicatorPos_(11, 12), isHover_(false)
+    : QRadioButton(parent), m_indicatorPos(11, 12), m_isHover(false)
 {
     init();
 }
@@ -41,14 +41,14 @@ void RadioButton::paintEvent(QPaintEvent *event)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void RadioButton::enterEvent(QEnterEvent *event)
 {
-    isHover_ = true;
+    m_isHover = true;
     update();
     QRadioButton::enterEvent(event);
 }
 #else
 void RadioButton::enterEvent(QEvent *event)
 {
-    isHover_ = true;
+    m_isHover = true;
     update();
     QRadioButton::enterEvent(event);
 }
@@ -56,7 +56,7 @@ void RadioButton::enterEvent(QEvent *event)
 
 void RadioButton::leaveEvent(QEvent *event)
 {
-    isHover_ = false;
+    m_isHover = false;
     update();
     QRadioButton::leaveEvent(event);
 }
@@ -87,10 +87,10 @@ void RadioButton::drawIndicator(QPainter &painter)
 
         filledColor = isDark ? Qt::black : Qt::white;
 
-        if (isHover_ && !isDown()) {
-            drawCircle(painter, indicatorPos_, 10, 4, borderColor, filledColor);
+        if (m_isHover && !isDown()) {
+            drawCircle(painter, m_indicatorPos, 10, 4, borderColor, filledColor);
         } else {
-            drawCircle(painter, indicatorPos_, 10, 5, borderColor, filledColor);
+            drawCircle(painter, m_indicatorPos, 10, 5, borderColor, filledColor);
         }
     } else {
         if (isEnabled()) {
@@ -102,7 +102,7 @@ void RadioButton::drawIndicator(QPainter &painter)
 
             if (isDown()) {
                 filledColor = isDark ? Qt::black : Qt::white;
-            } else if (isHover_) {
+            } else if (m_isHover) {
                 filledColor = isDark ? QColor(255, 255, 255, 11) : QColor(0, 0, 0, 15);
             } else {
                 filledColor = isDark ? QColor(0, 0, 0, 26) : QColor(0, 0, 0, 6);
@@ -112,11 +112,11 @@ void RadioButton::drawIndicator(QPainter &painter)
             borderColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         }
 
-        drawCircle(painter, indicatorPos_, 10, 1, borderColor, filledColor);
+        drawCircle(painter, m_indicatorPos, 10, 1, borderColor, filledColor);
 
         if (isEnabled() && isDown()) {
             borderColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 24);
-            drawCircle(painter, indicatorPos_, 9, 4, borderColor, Qt::transparent);
+            drawCircle(painter, m_indicatorPos, 9, 4, borderColor, Qt::transparent);
         }
     }
 }

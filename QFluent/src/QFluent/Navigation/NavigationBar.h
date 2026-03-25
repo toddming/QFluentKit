@@ -12,10 +12,10 @@
 // IconSlideAnimation 类
 class IconSlideAnimation : public QPropertyAnimation {
     Q_OBJECT
-    Q_PROPERTY(float offset READ getOffset WRITE setOffset)
+    Q_PROPERTY(float offset READ offset WRITE setOffset)
 public:
     explicit IconSlideAnimation(QWidget* parent = nullptr);
-    float getOffset() const;
+    float offset() const;
     void setOffset(float value);
     void slideDown();
     void slideUp();
@@ -24,7 +24,7 @@ protected:
     QVariant animateValue(const QVariant& startValue, const QVariant& endValue, float progress);
 
 private:
-    float _offset;
+    float m_offset;
     float maxOffset;
 };
 
@@ -44,15 +44,15 @@ protected:
     void paintEvent(QPaintEvent* e) override;
 
 private:
-    void _drawBackground(QPainter& painter);
-    void _drawIcon(QPainter& painter);
-    void _drawText(QPainter& painter);
+    void drawBackground(QPainter& painter);
+    void drawIcon(QPainter& painter);
+    void drawText(QPainter& painter);
 
 private:
     IconSlideAnimation *m_iconAni;
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 
-    bool _isSelectedTextVisible;
+    bool m_isSelectedTextVisible;
     QColor lightSelectedColor;
     QColor darkSelectedColor;
 };
@@ -102,12 +102,12 @@ protected:
     bool eventFilter(QObject* obj, QEvent* e) override;
 
 private:
-    void __initWidget();
-    void __initLayout();
-    void _registerWidget(const QString& routeKey, NavigationWidget* widget, const std::function<void()>& onClick);
-    void _insertWidgetToLayout(int index, NavigationWidget* widget, Fluent::NavigationItemPosition position);
-    void _onWidgetClicked();
-    void _onExpandAniFinished();
+    void initWidget();
+    void initLayout();
+    void registerWidget(const QString& routeKey, NavigationWidget* widget, const std::function<void()>& onClick);
+    void insertWidgetToLayout(int index, NavigationWidget* widget, Fluent::NavigationItemPosition position);
+    void onWidgetClicked();
+    void onExpandAniFinished();
     void setWidgetCompacted(bool isCompacted);
 
 private:

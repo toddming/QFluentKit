@@ -8,7 +8,7 @@ class QFLUENT_EXPORT ProgressBar : public QProgressBar
 {
     Q_OBJECT
     Q_PROPERTY(bool useAni READ isUseAni WRITE setUseAni NOTIFY useAniChanged)
-    Q_PROPERTY(float val READ getVal WRITE setVal NOTIFY valChanged)
+    Q_PROPERTY(float val READ value WRITE setVal NOTIFY valChanged)
 
 public:
     explicit ProgressBar(QWidget *parent = nullptr, bool useAni = true);
@@ -16,7 +16,7 @@ public:
 
     bool isUseAni() const;
     void setUseAni(bool isUse);
-    float getVal() const;
+    float value() const;
     void setVal(float v);
 
     void resume();
@@ -40,16 +40,16 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private slots:
-    void _onValueChanged(int value);
+    void onValueChanged(int value);
 
 private:
-    float _val;
-    bool _useAni;
+    float m_val;
+    bool m_useAni;
     QColor lightBackgroundColor;
     QColor darkBackgroundColor;
-    QColor _lightBarColor;
-    QColor _darkBarColor;
+    QColor m_lightBarColor;
+    QColor m_darkBarColor;
     QPropertyAnimation ani;
-    bool _isPaused;
-    bool _isError;
+    bool m_isPaused;
+    bool m_isError;
 };

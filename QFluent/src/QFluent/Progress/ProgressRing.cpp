@@ -4,7 +4,7 @@
 #include "Theme.h"
 
 ProgressRing::ProgressRing(QWidget *parent, bool useAni)
-    : ProgressBar(parent, useAni), _strokeWidth(6)
+    : ProgressBar(parent, useAni), m_strokeWidth(6)
 {
     lightBackgroundColor = QColor(0, 0, 0, 34);
     darkBackgroundColor = QColor(255, 255, 255, 34);
@@ -15,19 +15,19 @@ ProgressRing::ProgressRing(QWidget *parent, bool useAni)
     setFixedSize(55, 55);
 }
 
-int ProgressRing::getStrokeWidth() const
+int ProgressRing::strokeWidth() const
 {
-    return _strokeWidth;
+    return m_strokeWidth;
 }
 
 void ProgressRing::setStrokeWidth(int w)
 {
-    if (_strokeWidth == w) return;
-    _strokeWidth = w;
+    if (m_strokeWidth == w) return;
+    m_strokeWidth = w;
     update();
 }
 
-void ProgressRing::_drawText(QPainter &painter, const QString &text)
+void ProgressRing::drawText(QPainter &painter, const QString &text)
 {
     painter.setFont(font());
     painter.setPen(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
@@ -40,7 +40,7 @@ void ProgressRing::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
-    const int cw = _strokeWidth; // 圆环厚度
+    const int cw = m_strokeWidth; // 圆环厚度
     const int w = qMin(width(), height()) - cw;
     const QRectF rc(cw / 2, height() / 2 - w / 2, w, w);
 
@@ -55,11 +55,11 @@ void ProgressRing::paintEvent(QPaintEvent *event)
     // 绘制进度条
     pen.setColor(barColor());
     painter.setPen(pen);
-    const int degree = static_cast<int>(getVal() / (maximum() - minimum()) * 360);
+    const int degree = static_cast<int>(ProgressBar::value() / (maximum() - minimum()) * 360);
     painter.drawArc(rc, 90 * 16, -degree * 16);
 
     // 绘制文本
     if (isTextVisible()) {
-        _drawText(painter, QString::number(static_cast<int>(getVal())) + "%");
+        drawText(painter, QString::number(static_cast<int>(ProgressBar::value())) + "%");
     }
 }

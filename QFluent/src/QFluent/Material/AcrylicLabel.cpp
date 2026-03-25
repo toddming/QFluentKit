@@ -515,7 +515,7 @@ void AcrylicBrush::setLuminosityColor(const QColor &color)
 
 void AcrylicBrush::grabImage(const QRect &rect)
 {
-    QScreen *screen = Screen::getCurrentScreen();
+    QScreen *screen = Screen::currentScreen();
     if (!screen) {
         screen = QApplication::primaryScreen();
     }

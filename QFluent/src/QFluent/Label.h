@@ -81,7 +81,7 @@ public:
 class QFLUENT_EXPORT HyperlinkLabel : public QPushButton
 {
     Q_OBJECT
-    Q_PROPERTY(QUrl url READ getUrl WRITE setUrl)
+    Q_PROPERTY(QUrl url READ url WRITE setUrl)
     Q_PROPERTY(bool underlineVisible READ isUnderlineVisible WRITE setUnderlineVisible)
 
 public:
@@ -89,7 +89,7 @@ public:
     explicit HyperlinkLabel(const QString &text, QWidget *parent = nullptr);
     HyperlinkLabel(const QUrl &url, const QString &text, QWidget *parent = nullptr);
 
-    QUrl getUrl() const;
+    QUrl url() const;
     void setUrl(const QUrl &url);
 
     bool isUnderlineVisible() const;

@@ -73,7 +73,7 @@ private:
     };
 
     void removeConsecutiveDuplicates();
-    StackedHistory* getOrCreateHistory(StackedWidget* stackedWidget);
+    StackedHistory* ensureHistory(StackedWidget* stackedWidget);
 
     QVector<RouteItem> m_history;
     QHash<StackedWidget*, StackedHistory*> m_stackedHistories;

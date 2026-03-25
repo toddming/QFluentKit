@@ -12,13 +12,13 @@ public:
     explicit ThemePrivate();
 
 private:
-    Fluent::ThemeMode _currentTheme{Fluent::ThemeMode::LIGHT};
+    Fluent::ThemeMode currentTheme{Fluent::ThemeMode::LIGHT};
 
-    QColor _themeColor{0x0066b4};
+    QColor themeColor{0x0066b4};
 
-    bool _sysIsDarkMode;
+    bool sysIsDarkMode;
 
-    bool _autoTheme{true};
+    bool autoTheme{true};
 
     QColor calculateThemeColor(Fluent::ThemeColor type) const;
 };

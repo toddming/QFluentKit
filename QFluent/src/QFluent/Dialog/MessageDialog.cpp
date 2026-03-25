@@ -18,8 +18,8 @@ MessageDialog::MessageDialog(const QString &title, const QString &content, QWidg
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    d->_dialog = this->centerWidget();
-    d->_content = content;
+    d->dialog = this->centerWidget();
+    d->content = content;
 
     // 创建控件
     d->titleLabel = new QLabel(title, centerWidget());

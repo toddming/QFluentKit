@@ -40,7 +40,7 @@ public:
 
     void setIsClosableOnMaskClicked(bool enable);
 
-    bool getIsClosableOnMaskClicked();
+    bool isClosableOnMaskClicked();
 
 protected:
     explicit MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent = nullptr);
@@ -52,7 +52,7 @@ protected:
     void syncGeometryWithParent();
 
     // 获取实际要覆盖的目标窗口(可能是parent或window)
-    QWidget* getTargetWidget() const;
+    QWidget* targetWidget() const;
 
 private:
     // 初始化事件过滤器

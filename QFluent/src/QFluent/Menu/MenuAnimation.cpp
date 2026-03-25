@@ -102,7 +102,7 @@ QPoint MenuAnimationManager::endPosition(const QPoint& pos) const
         margins = m->layout()->contentsMargins();
     }
 
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     int w = m->width() + 5;
     int h = m->height();
 
@@ -243,7 +243,7 @@ QPoint PullUpMenuAnimationManager::endPosition(const QPoint& pos) const
         margins = m->layout()->contentsMargins();
     }
 
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     int w = m->width() + 5;
     int h = m->height();
     int x = qMin(pos.x() - margins.left(), rect.right() - w);
@@ -338,7 +338,7 @@ QPoint FadeInPullUpMenuAnimationManager::endPosition(const QPoint& pos) const
         margins = m->layout()->contentsMargins();
     }
 
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     int w = m->width() + 5;
     int h = m->height();
     int x = qMin(pos.x() - margins.left(), rect.right() - w);

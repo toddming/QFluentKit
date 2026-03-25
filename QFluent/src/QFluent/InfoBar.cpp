@@ -30,17 +30,17 @@ namespace {
 struct InfoBarManagerRegistrar {
     InfoBarManagerRegistrar() {
         InfoBarManager::registerManager(Fluent::MessagePosition::TOP,
-                                       []() { return TopInfoBarManager::getInstance(); });
+                                       []() { return TopInfoBarManager::instance(); });
         InfoBarManager::registerManager(Fluent::MessagePosition::TOP_RIGHT,
-                                       []() { return TopRightInfoBarManager::getInstance(); });
+                                       []() { return TopRightInfoBarManager::instance(); });
         InfoBarManager::registerManager(Fluent::MessagePosition::BOTTOM_RIGHT,
-                                       []() { return BottomRightInfoBarManager::getInstance(); });
+                                       []() { return BottomRightInfoBarManager::instance(); });
         InfoBarManager::registerManager(Fluent::MessagePosition::TOP_LEFT,
-                                       []() { return TopLeftInfoBarManager::getInstance(); });
+                                       []() { return TopLeftInfoBarManager::instance(); });
         InfoBarManager::registerManager(Fluent::MessagePosition::BOTTOM_LEFT,
-                                       []() { return BottomLeftInfoBarManager::getInstance(); });
+                                       []() { return BottomLeftInfoBarManager::instance(); });
         InfoBarManager::registerManager(Fluent::MessagePosition::BOTTOM,
-                                       []() { return BottomInfoBarManager::getInstance(); });
+                                       []() { return BottomInfoBarManager::instance(); });
     }
 };
 
@@ -628,7 +628,7 @@ QString InfoBarManager::toString(Fluent::MessageType type)
 
 TopInfoBarManager* TopInfoBarManager::s_instance = nullptr;
 
-TopInfoBarManager* TopInfoBarManager::getInstance()
+TopInfoBarManager* TopInfoBarManager::instance()
 {
     if (!s_instance) {
         s_instance = new TopInfoBarManager();
@@ -674,7 +674,7 @@ QPoint TopInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 
 TopRightInfoBarManager* TopRightInfoBarManager::s_instance = nullptr;
 
-TopRightInfoBarManager* TopRightInfoBarManager::getInstance()
+TopRightInfoBarManager* TopRightInfoBarManager::instance()
 {
     if (!s_instance) {
         s_instance = new TopRightInfoBarManager();
@@ -720,7 +720,7 @@ QPoint TopRightInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 
 BottomRightInfoBarManager* BottomRightInfoBarManager::s_instance = nullptr;
 
-BottomRightInfoBarManager* BottomRightInfoBarManager::getInstance()
+BottomRightInfoBarManager* BottomRightInfoBarManager::instance()
 {
     if (!s_instance) {
         s_instance = new BottomRightInfoBarManager();
@@ -766,7 +766,7 @@ QPoint BottomRightInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 
 TopLeftInfoBarManager* TopLeftInfoBarManager::s_instance = nullptr;
 
-TopLeftInfoBarManager* TopLeftInfoBarManager::getInstance()
+TopLeftInfoBarManager* TopLeftInfoBarManager::instance()
 {
     if (!s_instance) {
         s_instance = new TopLeftInfoBarManager();
@@ -811,7 +811,7 @@ QPoint TopLeftInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 
 BottomLeftInfoBarManager* BottomLeftInfoBarManager::s_instance = nullptr;
 
-BottomLeftInfoBarManager* BottomLeftInfoBarManager::getInstance()
+BottomLeftInfoBarManager* BottomLeftInfoBarManager::instance()
 {
     if (!s_instance) {
         s_instance = new BottomLeftInfoBarManager();
@@ -855,7 +855,7 @@ QPoint BottomLeftInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 
 BottomInfoBarManager* BottomInfoBarManager::s_instance = nullptr;
 
-BottomInfoBarManager* BottomInfoBarManager::getInstance()
+BottomInfoBarManager* BottomInfoBarManager::instance()
 {
     if (!s_instance) {
         s_instance = new BottomInfoBarManager();

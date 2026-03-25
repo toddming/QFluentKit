@@ -17,13 +17,13 @@ class QFLUENT_EXPORT StyleSheetHelper {
 public:
     // 样式表内容处理
     static QString applyThemeColor(const QString& qss);
-    static QString getStyleSheetFromFile(const QString& filePath);
+    static QString styleSheetFromFile(const QString& filePath);
 
     // 样式表应用 - 获取样式表内容
-    static QString getStyleSheet(const std::shared_ptr<StyleSheetBase>& source,
-                                Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
-    static QString getStyleSheet(const QString& source,
-                                Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    static QString styleSheet(const std::shared_ptr<StyleSheetBase>& source,
+                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    static QString styleSheet(const QString& source,
+                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
 
     static void setStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
@@ -46,7 +46,7 @@ public:
     static void clearThemeColorCache();
 
 private:
-    static QHash<QString, QString> getThemeColorMap();
+    static QHash<QString, QString> themeColorMap();
 };
 
 class QFLUENT_EXPORT StyleSheetBase {
@@ -101,7 +101,7 @@ private:
     Fluent::ThemeStyle m_type;
 
     // 静态缓存类型到字符串的映射
-    static const QHash<Fluent::ThemeStyle, QString>& getTypeMap();
+    static const QHash<Fluent::ThemeStyle, QString>& typeMap();
 
 public:
     explicit FluentStyleSheet(Fluent::ThemeStyle type);

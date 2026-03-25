@@ -604,7 +604,7 @@ void PickerPanel::exec(const QPoint& pos, bool ani)
     
     show();
     
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     int w = width() + 5;
     int h = height();
     

@@ -153,28 +153,28 @@ bool ScrollArea::isOvershootEnabled(Qt::Orientation orientation) const
 
 void ScrollArea::setAnimationEnabled(Qt::Orientation orientation, bool isEnable)
 {
-    ScrollBar* scrollBar = getScrollBar(orientation);
-    if (scrollBar) {
-        scrollBar->setAnimationEnabled(isEnable);
+    ScrollBar* sb = scrollBar(orientation);
+    if (sb) {
+        sb->setAnimationEnabled(isEnable);
     }
 }
 
 bool ScrollArea::isAnimationEnabled(Qt::Orientation orientation) const
 {
-    ScrollBar* scrollBar = getScrollBar(orientation);
-    if (scrollBar) {
-        return scrollBar->isAnimationEnabled();
+    ScrollBar* sb = scrollBar(orientation);
+    if (sb) {
+        return sb->isAnimationEnabled();
     }
     return false;
 }
 
-ScrollBar* ScrollArea::getScrollBar(Qt::Orientation orientation) const
+ScrollBar* ScrollArea::scrollBar(Qt::Orientation orientation) const
 {
-    QScrollBar* scrollBar = (orientation == Qt::Horizontal)
+    QScrollBar* sb = (orientation == Qt::Horizontal)
             ? horizontalScrollBar()
             : verticalScrollBar();
 
-    return safeScrollBarCast(scrollBar);
+    return safeScrollBarCast(sb);
 }
 
 // ===================== SingleDirectionScrollArea =====================

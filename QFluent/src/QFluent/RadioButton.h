@@ -27,7 +27,7 @@ private:
     void drawText(QPainter &painter);
     void drawCircle(QPainter &painter, const QPoint &center, int radius, int thickness, const QColor &borderColor, const QColor &filledColor);
 
-    QPoint indicatorPos_;
-    bool isHover_;
+    QPoint m_indicatorPos;
+    bool m_isHover;
 };
 

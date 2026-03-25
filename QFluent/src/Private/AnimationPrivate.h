@@ -22,9 +22,9 @@ public:
 // TranslateYAnimationPrivate
 class TranslateYAnimationPrivate : public AnimationBasePrivate {
 public:
-    TranslateYAnimationPrivate() : _y(0.0f), maxOffset(2), ani(nullptr) {}
+    TranslateYAnimationPrivate() : y(0.0f), maxOffset(2), ani(nullptr) {}
 
-    float _y;
+    float y;
     int maxOffset;
     QPropertyAnimation *ani;
 };
@@ -34,21 +34,21 @@ class BackgroundColorObjectPrivate {
 public:
     BackgroundColorObjectPrivate() {}
 
-    QColor _backgroundColor;
+    QColor backgroundColor;
 };
 
 // BackgroundAnimationWidgetPrivate
 class BackgroundAnimationWidgetPrivate {
 public:
     BackgroundAnimationWidgetPrivate()
-        : m_isHover(false)
-        , m_isPressed(false)
+        : isHover(false)
+        , isPressed(false)
         , bgColorObject(nullptr)
         , backgroundColorAni(nullptr)
     {}
 
-    bool m_isHover;
-    bool m_isPressed;
+    bool isHover;
+    bool isPressed;
     BackgroundColorObject *bgColorObject;
     QPropertyAnimation *backgroundColorAni;
 };
@@ -87,10 +87,10 @@ class ScaleSlideAnimationPrivate {
 public:
     ScaleSlideAnimationPrivate()
         : orient(Qt::Horizontal)
-        , _geometry(0, 0, 16, 3)
+        , geometry(0, 0, 16, 3)
     {}
 
     Qt::Orientation orient;
-    QRectF _geometry;
+    QRectF geometry;
 };
 

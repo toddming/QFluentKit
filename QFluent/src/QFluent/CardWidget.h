@@ -10,7 +10,7 @@
 class QFLUENT_EXPORT CardWidget : public BackgroundAnimationWidget
 {
     Q_OBJECT
-    Q_PROPERTY(int borderRadius READ getBorderRadius WRITE setBorderRadius)
+    Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 
 public:
     explicit CardWidget(QWidget *parent = nullptr);
@@ -18,7 +18,7 @@ public:
     void setClickEnabled(bool isEnabled);
     bool isClickEnabled() const;
 
-    int getBorderRadius() const;
+    int borderRadius() const;
     void setBorderRadius(int radius);
 
 signals:

@@ -10,14 +10,14 @@
 
 FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(parent) {
-    setFont(Theme::instance()->getFont(fontSize, weight));
+    setFont(Theme::instance()->font(fontSize, weight));
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
 
 FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(text, parent) {
-    setFont(Theme::instance()->getFont(fontSize, weight));
+    setFont(Theme::instance()->font(fontSize, weight));
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
@@ -128,7 +128,7 @@ void HyperlinkLabel::init()
     connect(this, &HyperlinkLabel::clicked, this, &HyperlinkLabel::onClicked);
 }
 
-QUrl HyperlinkLabel::getUrl() const
+QUrl HyperlinkLabel::url() const
 {
     return m_url;
 }
@@ -152,7 +152,7 @@ void HyperlinkLabel::setUnderlineVisible(bool isVisible)
 
 void HyperlinkLabel::onClicked()
 {
-    if (getUrl().isValid()) {
-        QDesktopServices::openUrl(getUrl());
+    if (url().isValid()) {
+        QDesktopServices::openUrl(url());
     }
 }

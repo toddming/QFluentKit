@@ -16,17 +16,17 @@
 #include "StyleSheet.h"
 
 IconSlideAnimation::IconSlideAnimation(QWidget* parent)
-    : QPropertyAnimation(parent), _offset(0), maxOffset(6) {
+    : QPropertyAnimation(parent), m_offset(0), maxOffset(6) {
     setTargetObject(this);
     setPropertyName("offset");
 }
 
-float IconSlideAnimation::getOffset() const {
-    return _offset;
+float IconSlideAnimation::offset() const {
+    return m_offset;
 }
 
 void IconSlideAnimation::setOffset(float value) {
-    _offset = value;
+    m_offset = value;
     QWidget *parent = qobject_cast<QWidget*>(this->parent());
     if (parent != nullptr)
         parent->update();
@@ -56,7 +56,7 @@ NavigationBarPushButton::NavigationBarPushButton(const FluentIconBase& icon, con
     : NavigationPushButton(text, icon, isSelectable, parent)
     , m_iconAni(new IconSlideAnimation(this))
     , m_fluentIcon(icon.clone())
-    , _isSelectedTextVisible(true)
+    , m_isSelectedTextVisible(true)
     , lightSelectedColor(QColor())
     , darkSelectedColor(QColor()) {
 
@@ -73,7 +73,7 @@ void NavigationBarPushButton::setSelectedColor(const QColor& light, const QColor
 }
 
 void NavigationBarPushButton::setSelectedTextVisible(bool isVisible) {
-    _isSelectedTextVisible = isVisible;
+    m_isSelectedTextVisible = isVisible;
     update();
 }
 
@@ -92,12 +92,12 @@ void NavigationBarPushButton::paintEvent(QPaintEvent* e) {
                            QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
     painter.setPen(Qt::NoPen);
 
-    _drawBackground(painter);
-    _drawIcon(painter);
-    _drawText(painter);
+    drawBackground(painter);
+    drawIcon(painter);
+    drawText(painter);
 }
 
-void NavigationBarPushButton::_drawBackground(QPainter& painter) {
+void NavigationBarPushButton::drawBackground(QPainter& painter) {
     if (property("isSelected").toBool()) {
         QColor bg = Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, 42) : Qt::white;
         painter.setBrush(bg);
@@ -119,7 +119,7 @@ void NavigationBarPushButton::_drawBackground(QPainter& painter) {
     }
 }
 
-void NavigationBarPushButton::_drawIcon(QPainter& painter) {
+void NavigationBarPushButton::drawIcon(QPainter& painter) {
     if (property("isPressed").toBool() || (!property("isEnter").toBool() && !property("isSelected").toBool())) {
         painter.setOpacity(0.6);
     }
@@ -128,10 +128,10 @@ void NavigationBarPushButton::_drawIcon(QPainter& painter) {
     }
 
     QRectF rect;
-    if (_isSelectedTextVisible) {
+    if (m_isSelectedTextVisible) {
         rect = QRectF(22, 13, 20, 20);
     } else {
-        rect = QRectF(22, 13 + m_iconAni->getOffset(), 20, 20);
+        rect = QRectF(22, 13 + m_iconAni->offset(), 20, 20);
     }
 
     if (property("isSelected").toBool()) {
@@ -144,8 +144,8 @@ void NavigationBarPushButton::_drawIcon(QPainter& painter) {
     }
 }
 
-void NavigationBarPushButton::_drawText(QPainter& painter) {
-    if (property("isSelected").toBool() && !_isSelectedTextVisible) {
+void NavigationBarPushButton::drawText(QPainter& painter) {
+    if (property("isSelected").toBool() && !m_isSelectedTextVisible) {
         return;
     }
 
@@ -174,7 +174,7 @@ NavigationBar::NavigationBar(QWidget* parent)
       m_isCollapsible(true),
       m_isAcrylicEnabled(false) {
 
-    __initWidget();
+    initWidget();
 }
 
 NavigationBar::~NavigationBar() {
@@ -187,7 +187,7 @@ NavigationBar::~NavigationBar() {
     delete m_expandAni;
 }
 
-void NavigationBar::__initWidget() {
+void NavigationBar::initWidget() {
     this->setAttribute(Qt::WA_StyledBackground);
 
     // 仅在已添加到窗口时安装事件过滤器
@@ -229,8 +229,8 @@ void NavigationBar::__initWidget() {
     StyleSheetManager::instance()->registerWidget(m_scrollWidget, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
 }
 
-void NavigationBar::__initLayout() {
-    // Layouts are initialized in __initWidget()
+void NavigationBar::initLayout() {
+    // Layouts are initialized in initWidget()
 }
 
 NavigationWidget* NavigationBar::widget(const QString& routeKey) {
@@ -271,8 +271,8 @@ void NavigationBar::insertWidget(int index, const QString& routeKey, NavigationW
         return;
     }
 
-    _registerWidget(routeKey, widget, onClick);
-    _insertWidgetToLayout(index, widget, position);
+    registerWidget(routeKey, widget, onClick);
+    insertWidgetToLayout(index, widget, position);
 }
 
 void NavigationBar::addSeparator(Fluent::NavigationItemPosition position) {
@@ -281,11 +281,11 @@ void NavigationBar::addSeparator(Fluent::NavigationItemPosition position) {
 
 void NavigationBar::insertSeparator(int index, Fluent::NavigationItemPosition position) {
     NavigationSeparator* separator = new NavigationSeparator(this);
-    _insertWidgetToLayout(index, separator, position);
+    insertWidgetToLayout(index, separator, position);
 }
 
-void NavigationBar::_registerWidget(const QString& routeKey, NavigationWidget* widget, const std::function<void()>& onClick) {
-    connect(widget, &NavigationWidget::clicked, this, &NavigationBar::_onWidgetClicked);
+void NavigationBar::registerWidget(const QString& routeKey, NavigationWidget* widget, const std::function<void()>& onClick) {
+    connect(widget, &NavigationWidget::clicked, this, &NavigationBar::onWidgetClicked);
     if (onClick) {
         connect(widget, &NavigationWidget::clicked, onClick);
     }
@@ -293,7 +293,7 @@ void NavigationBar::_registerWidget(const QString& routeKey, NavigationWidget* w
     m_items[routeKey] = {routeKey, "", widget};
 }
 
-void NavigationBar::_insertWidgetToLayout(int index, NavigationWidget* widget, Fluent::NavigationItemPosition position) {
+void NavigationBar::insertWidgetToLayout(int index, NavigationWidget* widget, Fluent::NavigationItemPosition position) {
     if (position == Fluent::NavigationItemPosition::TOP) {
         widget->setParent(this);
         m_topLayout->insertWidget(index, widget, 0, Qt::AlignTop);
@@ -360,7 +360,7 @@ QList<NavigationBarPushButton*> NavigationBar::buttons() const {
     return result;
 }
 
-void NavigationBar::_onWidgetClicked() {
+void NavigationBar::onWidgetClicked() {
     NavigationWidget* widget = qobject_cast<NavigationWidget*>(sender());
     if (widget->property("isSelectable").toBool()) {
         setCurrentItem(widget->property("routeKey").toString());

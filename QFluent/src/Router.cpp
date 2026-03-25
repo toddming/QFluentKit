@@ -153,7 +153,7 @@ void Router::setDefaultRouteKey(StackedWidget* stackedWidget, const QString& rou
         return;
     }
 
-    StackedHistory* history = getOrCreateHistory(stackedWidget);
+    StackedHistory* history = ensureHistory(stackedWidget);
     history->setDefaultRouteKey(routeKey);
 }
 
@@ -169,7 +169,7 @@ void Router::push(StackedWidget* stackedWidget, const QString& routeKey)
 
     RouteItem item(stackedWidget, routeKey);
 
-    StackedHistory* history = getOrCreateHistory(stackedWidget);
+    StackedHistory* history = ensureHistory(stackedWidget);
     if (history->push(routeKey)) {
         m_history.append(item);
         emit emptyChanged(m_history.isEmpty());
@@ -245,7 +245,7 @@ void Router::removeConsecutiveDuplicates()
     m_history = deduplicated;
 }
 
-StackedHistory* Router::getOrCreateHistory(StackedWidget* stackedWidget)
+StackedHistory* Router::ensureHistory(StackedWidget* stackedWidget)
 {
     StackedHistory* history = m_stackedHistories.value(stackedWidget);
     if (!history) {

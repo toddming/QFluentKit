@@ -500,7 +500,7 @@ QPoint FlyoutAnimationManager::adjustPosition(const QPoint& pos)
         return pos;
     }
 
-    QRect rect = Screen::getCurrentScreenGeometry();
+    QRect rect = Screen::currentScreenGeometry();
     int w = m_flyout->sizeHint().width() + 5;
     int h = m_flyout->sizeHint().height();
     int x = qMax(rect.left(), qMin(pos.x(), rect.right() - w));

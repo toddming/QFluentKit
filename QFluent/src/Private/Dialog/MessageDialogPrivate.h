@@ -19,8 +19,8 @@ public:
     PrimaryPushButton *yesButton;
     QPushButton *cancelButton;
 
-    QString _content;
-    QWidget *_dialog;
+    QString content;
+    QWidget *dialog;
 
     void setQss();
 

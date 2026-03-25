@@ -16,8 +16,8 @@ class QPropertyAnimation;
 class ScrollBarStyle : public QProxyStyle
 {
     Q_OBJECT
-    Q_PROPERTY(qreal opacity READ getOpacity WRITE setOpacity)
-    Q_PROPERTY(qreal sliderExtent READ getSliderExtent WRITE setSliderExtent)
+    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)
+    Q_PROPERTY(qreal sliderExtent READ sliderExtent WRITE setSliderExtent)
 
 public:
     explicit ScrollBarStyle(QStyle* style = nullptr);
@@ -30,13 +30,13 @@ public:
     ScrollBarStyle& operator=(ScrollBarStyle&&) = delete;
 
     // Getter/Setter方法（遵循Qt命名规范）
-    qreal getOpacity() const { return m_opacity; }
+    qreal opacity() const { return m_opacity; }
     void setOpacity(qreal value);
 
-    qreal getSliderExtent() const { return m_sliderExtent; }
+    qreal sliderExtent() const { return m_sliderExtent; }
     void setSliderExtent(qreal value);
 
-    ScrollBar* getScrollBar() const { return m_scrollBar; }
+    ScrollBar* scrollBar() const { return m_scrollBar; }
     void setScrollBar(ScrollBar* scrollBar);
 
     // 重写的Qt样式方法
