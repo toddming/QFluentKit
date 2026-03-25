@@ -364,7 +364,7 @@ QString FluentIconUtils::buildIconPath(Fluent::IconType iconEnum,
     if (iconEnum != Fluent::IconType::CUSTOM_PATH) {
         const QString iconName = enumToString(iconEnum);
         if (!iconName.isEmpty()) {
-            cache = QStringLiteral(":/res/images/icons/%1_%2.svg").arg(iconName, color);
+            cache = QStringLiteral(":/qfluent/images/icons/%1_%2.svg").arg(iconName, color);
         }
     } else if (!templatePath.isEmpty()) {
         cache = templatePath;

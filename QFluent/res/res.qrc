@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/res">
+    <qresource prefix="/qfluent">
         <file>images/check_box/Accept_black.svg</file>
         <file>images/check_box/Accept_white.svg</file>
         <file>images/check_box/PartialAccept_black.svg</file>

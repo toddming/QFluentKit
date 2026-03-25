@@ -196,7 +196,7 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
     painter->setBrush(checked ? Theme::instance()->themeColor() : QColor(0, 0, 0, 6));
     painter->drawRoundedRect(QRectF(x, y, s, s), 2.5, 2.5);
 
-    const QString fillPath = ":/res/images/check_box/%1_{color}.svg";
+    const QString fillPath = ":/qfluent/images/check_box/%1_{color}.svg";
     if (checked) {
         FluentIconUtils::drawIcon(FluentIcon(fillPath.arg("Accept")), painter, QRectF(x, y, s, s));
     }

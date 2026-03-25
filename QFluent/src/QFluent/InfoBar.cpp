@@ -68,7 +68,7 @@ void InfoIconWidget::paintEvent(QPaintEvent* event)
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     QRectF iconRect(10, 10, 15, 15);
-    QString iconPath = QString(":/res/images/info_bar/%1_{color}.svg")
+    QString iconPath = QString(":/qfluent/images/info_bar/%1_{color}.svg")
                           .arg(InfoBarManager::toString(m_type));
     FluentIcon icon(iconPath);
     icon.render(&painter, iconRect);

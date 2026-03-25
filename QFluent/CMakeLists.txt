@@ -12,7 +12,6 @@ set(CMAKE_AUTOUIC ON)
 if(MINGW)
     set(CMAKE_CXX_FLAGS_DEBUG "-g1 -O0")
     set(CMAKE_C_FLAGS_DEBUG "-g1 -O0")
-    # Release：使用 -O2 保证性能，体积优化交由链接器 --gc-sections 处理
     set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
     set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections")

@@ -79,13 +79,13 @@ void PagiNation::init () {
     // ✅ 不再在init中创建TH_left和TH_right
     // 改为在setWidgetAlign()中创建临时对象
 
-    prevFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Begin")), this);
+    prevFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Begin")), this);
     prevFBtn->setFocusPolicy(Qt::NoFocus);
     prevFBtn->setIconSize(QSize(10, 10));
     prevFBtn->setFixedSize(m_height, m_height);
     connect(prevFBtn, SIGNAL(clicked()), this, SLOT(toPrev5()));
 
-    prevBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Previous")), this);
+    prevBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Previous")), this);
     prevBtn->setFocusPolicy(Qt::NoFocus);
     prevBtn->setIconSize(QSize(10, 10));
     prevBtn->setFixedSize(m_height, m_height);
@@ -102,13 +102,13 @@ void PagiNation::init () {
     mainBox->setObjectName("mainBox");
     mainBox->setStyleSheet("QFrame#mainBox{margin-left: 4px; margin-right: 4px;}");
 
-    nextBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("Next")), this);
+    nextBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Next")), this);
     nextBtn->setFocusPolicy(Qt::NoFocus);
     nextBtn->setIconSize(QSize(10, 10));
     nextBtn->setFixedSize(m_height, m_height);
     connect(nextBtn, SIGNAL(clicked()), this, SLOT(toNext1()));
 
-    nextFBtn = new TransparentToolButton(FluentIcon(QString(":/res/images/pagination/%1_{color}.svg").arg("End")), this);
+    nextFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("End")), this);
     nextFBtn->setFocusPolicy(Qt::NoFocus);
     nextFBtn->setIconSize(QSize(10, 10));
     nextFBtn->setFixedSize(m_height, m_height);

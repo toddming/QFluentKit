@@ -94,7 +94,7 @@ void CheckBox::paintEvent(QPaintEvent *event) {
         painter.setOpacity(0.8);
     }
 
-    const QString fillPath = ":/res/images/check_box/%1_{color}.svg";
+    const QString fillPath = ":/qfluent/images/check_box/%1_{color}.svg";
     if (checkState() == Qt::Checked) {
         FluentIconUtils::drawIcon(FluentIcon(fillPath.arg("Accept")), &painter, rect);
     } else if (checkState() == Qt::PartiallyChecked) {

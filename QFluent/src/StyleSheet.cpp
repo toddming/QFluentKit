@@ -336,7 +336,7 @@ QString FluentStyleSheet::path(Fluent::ThemeMode theme) {
                 QStringLiteral("light") : QStringLiteral("dark");
     const QString& typeStr = typeToString(m_type);
 
-    return QString(":/res/style/%1/%2.qss").arg(themeStr, typeStr);
+    return QString(":/qfluent/style/%1/%2.qss").arg(themeStr, typeStr);
 }
 
 QString FluentStyleSheet::typeToString(Fluent::ThemeStyle type) {

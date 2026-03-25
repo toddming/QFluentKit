@@ -360,7 +360,7 @@ void AcrylicTextureLabel::setTintColor(const QColor &color)
 
 QImage AcrylicTextureLabel::createNoiseImage()
 {
-    return QImage(":/res/images/acrylic/noise.png");
+    return QImage(":/qfluent/images/acrylic/noise.png");
 }
 
 void AcrylicTextureLabel::paintEvent(QPaintEvent *event)
@@ -482,7 +482,7 @@ AcrylicBrush::AcrylicBrush(QWidget *device,
 
 QImage AcrylicBrush::createNoiseImage()
 {
-    return QImage(":/res/images/acrylic/noise.png");
+    return QImage(":/qfluent/images/acrylic/noise.png");
 }
 
 void AcrylicBrush::setBlurRadius(int radius)
