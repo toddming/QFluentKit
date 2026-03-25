@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QStyleOptionButton>
 #include <QEnterEvent>
+#include <QHBoxLayout>
+#include <QPointer>
 
 #include "Theme.h"
 #include "FluentIcon.h"
@@ -15,21 +17,27 @@
 #include "Menu/MenuActionListWidget.h"
 
 // PushButton
-PushButton::PushButton(QWidget *parent) :
-    QPushButton(parent)
+PushButton::PushButton(QWidget *parent)
+    : QPushButton(parent)
+    , m_isPressed(false)
+    , m_isHover(false)
 {
     init();
 }
 
-PushButton::PushButton(const QString &text, QWidget* parent) :
-    QPushButton(text, parent)
+PushButton::PushButton(const QString &text, QWidget *parent)
+    : QPushButton(text, parent)
+    , m_isPressed(false)
+    , m_isHover(false)
 {
     init();
 }
 
-PushButton::PushButton(const QString &text, const FluentIconBase &icon, QWidget* parent) :
-    QPushButton(text, parent)
-  , m_fluentIcon(icon.clone())
+PushButton::PushButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
+    : QPushButton(text, parent)
+    , m_isPressed(false)
+    , m_isHover(false)
+    , m_fluentIcon(icon.clone())
 {
     init();
     setProperty("hasIcon", true);
@@ -61,44 +69,54 @@ FluentIconBase* PushButton::fluentIcon() const
     return m_fluentIcon.get();
 }
 
-void PushButton::mousePressEvent(QMouseEvent *e)
+bool PushButton::isPressed() const
 {
-    m_isPressed = true;
-    QPushButton::mousePressEvent(e);
+    return m_isPressed;
 }
 
-void PushButton::mouseReleaseEvent(QMouseEvent *e)
+bool PushButton::isHover() const
+{
+    return m_isHover;
+}
+
+void PushButton::mousePressEvent(QMouseEvent *event)
+{
+    m_isPressed = true;
+    QPushButton::mousePressEvent(event);
+}
+
+void PushButton::mouseReleaseEvent(QMouseEvent *event)
 {
     m_isPressed = false;
-    QPushButton::mouseReleaseEvent(e);
+    QPushButton::mouseReleaseEvent(event);
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void PushButton::enterEvent(QEnterEvent *e)
+void PushButton::enterEvent(QEnterEvent *event)
 {
     m_isHover = true;
     update();
-    QPushButton::enterEvent(e);
+    QPushButton::enterEvent(event);
 }
 #else
-void PushButton::enterEvent(QEvent *e)
+void PushButton::enterEvent(QEvent *event)
 {
     m_isHover = true;
     update();
-    QPushButton::enterEvent(e);
+    QPushButton::enterEvent(event);
 }
 #endif
 
-void PushButton::leaveEvent(QEvent *e)
+void PushButton::leaveEvent(QEvent *event)
 {
     m_isHover = false;
     update();
-    QPushButton::leaveEvent(e);
+    QPushButton::leaveEvent(event);
 }
 
-void PushButton::paintEvent(QPaintEvent *e)
+void PushButton::paintEvent(QPaintEvent *event)
 {
-    QPushButton::paintEvent(e);
+    QPushButton::paintEvent(event);
 
     if (!m_fluentIcon)
         return;

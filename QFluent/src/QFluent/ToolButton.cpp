@@ -6,6 +6,8 @@
 #include <QIcon>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QHBoxLayout>
+#include <QPointer>
 #include <memory>
 
 #include "Theme.h"
@@ -16,22 +18,27 @@
 #include "Menu/MenuActionListWidget.h"
 
 // ToolButton
-ToolButton::ToolButton(QWidget* parent)
+ToolButton::ToolButton(QWidget *parent)
     : QToolButton(parent)
+    , m_isPressed(false)
+    , m_isHover(false)
 {
     init();
 }
 
-ToolButton::ToolButton(const QIcon &icon, QWidget* parent)
+ToolButton::ToolButton(const QIcon &icon, QWidget *parent)
     : QToolButton(parent)
+    , m_isPressed(false)
+    , m_isHover(false)
 {
     setIcon(icon);
     init();
 }
 
-
-ToolButton::ToolButton(const FluentIconBase &icon, QWidget* parent)
+ToolButton::ToolButton(const FluentIconBase &icon, QWidget *parent)
     : QToolButton(parent)
+    , m_isPressed(false)
+    , m_isHover(false)
     , m_fluentIcon(icon.clone())
 {
     init();
@@ -39,11 +46,8 @@ ToolButton::ToolButton(const FluentIconBase &icon, QWidget* parent)
 
 void ToolButton::init()
 {
-    m_isPressed = false;
-    m_isHover = false;
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::BUTTON);
 }
-
 
 void ToolButton::setFluentIcon(const FluentIconBase &icon)
 {
@@ -55,7 +59,17 @@ FluentIconBase* ToolButton::fluentIcon() const
     return m_fluentIcon.get();
 }
 
-void ToolButton::mousePressEvent(QMouseEvent* event)
+bool ToolButton::isPressed() const
+{
+    return m_isPressed;
+}
+
+bool ToolButton::isHover() const
+{
+    return m_isHover;
+}
+
+void ToolButton::mousePressEvent(QMouseEvent *event)
 {
     m_isPressed = true;
     QToolButton::mousePressEvent(event);
