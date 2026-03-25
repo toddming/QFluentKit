@@ -1,4 +1,4 @@
-﻿#include "ComboBoxPrivate.h"
+#include "ComboBoxPrivate.h"
 #include "QFluent/ComboBox.h"
 #include "QFluent/Menu/ComboBoxMenu.h"
 #include "QFluent/Menu/MenuActionListWidget.h"
@@ -11,6 +11,11 @@
 ComboBoxPrivate::ComboBoxPrivate(ComboBox *parent)
     : QObject(parent)
     , q_ptr(parent)
+    , m_isPressed(false)
+    , m_isHover(false)
+    , m_placeholderText(QString())
+    , m_currentIndex(-1)
+    , m_maxVisibleItems(-1)
 {
 }
 
@@ -21,16 +26,16 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
     ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
     for (int i = 0; i < q->count(); ++i) {
-        QAction *action = new QAction(items[i].icon, items[i].text, menu);
+        QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setData(i);
         action->setCheckable(true);
-        if (i == currentIndex) {
+        if (i == m_currentIndex) {
             action->setChecked(true);
         }
         menu->addAction(action);
         connect(action, &QAction::triggered, q, [=]() {
             int index = action->data().toInt();
-            if (index != currentIndex) {
+            if (index != m_currentIndex) {
                 q->setCurrentIndex(index);
                 emit q->activated(index);
                 emit q->textActivated(action->text());
@@ -40,7 +45,7 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
     connect(menu, &ComboBoxMenu::closed, q, [=]() {
         QPoint pos = q->mapFromGlobal(QCursor::pos());
         if (!q->rect().contains(pos)) {
-            dropMenu = nullptr;
+            m_dropMenu = nullptr;
         }
     });
     return menu;
@@ -67,44 +72,44 @@ void ComboBoxPrivate::showComboMenu()
         return;
     }
 
-    dropMenu = createComboMenu();
+    m_dropMenu = createComboMenu();
 
-    if (dropMenu->view()->width() < q->width()) {
-        dropMenu->view()->setMinimumWidth(q->width());
-        dropMenu->adjustMenuSize();
+    if (m_dropMenu->view()->width() < q->width()) {
+        m_dropMenu->view()->setMinimumWidth(q->width());
+        m_dropMenu->adjustMenuSize();
     }
 
     if (q->currentIndex() >= 0 && q->currentIndex() < q->count()) {
-        dropMenu->setDefaultAction(dropMenu->menuActions().at(q->currentIndex()));
+        m_dropMenu->setDefaultAction(m_dropMenu->menuActions().at(q->currentIndex()));
     }
 
-    int x = -dropMenu->width() / 2 + dropMenu->layout()->contentsMargins().left() + q->width() / 2;
+    int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + q->width() / 2;
     QPoint pd = q->mapToGlobal(QPoint(x, q->height()));
-    int hd = dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
+    int hd = m_dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
 
     QPoint pu = q->mapToGlobal(QPoint(x, 0));
-    int hu = dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
+    int hu = m_dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
 
     if (hd >= hu) {
-        dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
-        dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
+        m_dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
+        m_dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
     } else {
-        dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
-        dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
+        m_dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
+        m_dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
     }
 }
 
 void ComboBoxPrivate::closeComboMenu()
 {
-    if (!dropMenu) {
+    if (!m_dropMenu) {
         return;
     }
-    dropMenu = nullptr;
+    m_dropMenu = nullptr;
 }
 
 void ComboBoxPrivate::toggleComboMenu()
 {
-    if (dropMenu != nullptr) {
+    if (m_dropMenu != nullptr) {
         closeComboMenu();
     } else {
         showComboMenu();
@@ -120,7 +125,7 @@ void ComboBoxPrivate::handleMenuAction(QAction *action)
         return;
     }
 
-    if (index != currentIndex) {
+    if (index != m_currentIndex) {
         q->setCurrentIndex(index);
     }
 

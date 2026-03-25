@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <QObject>
 #include <QIcon>
@@ -8,22 +8,27 @@
 #include "QFluent/EditableComboBox.h"
 
 namespace EditableComboBoxDetail {
-struct ComboItem {
+
+struct ComboItem
+{
     QString text;
     QIcon icon;
     QVariant userData;
 
-    ComboItem(const QString &text = "",
+    ComboItem(const QString &text = QString(),
               const QIcon &icon = QIcon(),
-              const QVariant &userData = {})
+              const QVariant &userData = QVariant())
         : text(text), icon(icon), userData(userData) {}
 };
-}
+
+} // namespace EditableComboBoxDetail
 
 class QAction;
 class ComboBoxMenu;
 class TranslateYAnimation;
-class EditableComboBoxPrivate : public QObject {
+
+class EditableComboBoxPrivate : public QObject
+{
     Q_DECLARE_PUBLIC(EditableComboBox)
 
 public:
@@ -32,27 +37,27 @@ public:
     void handleMenuAction(QAction *action);
     void toggleComboMenu();
 
-    bool isPressed;
-    bool isHover;
-    QString placeholderText;
-    int currentIndex;
-    int maxVisibleItems;
-
     void onClearButtonClicked();
     void onDropMenuClosed();
     void onComboTextChanged(const QString &text);
     void onActivated(const QString &text);
     void onReturnPressed();
 
-    LineEditButton *dropButton = nullptr;
-    ComboBoxMenu *dropMenu = nullptr;
-    TranslateYAnimation *arrowAni = nullptr;
-    QVector<EditableComboBoxDetail::ComboItem> items;
-
     ComboBoxMenu* createComboMenu();
     void updateTextState(bool isPlaceholder);
     void showComboMenu();
     void closeComboMenu();
+
+    bool m_isPressed;
+    bool m_isHover;
+    QString m_placeholderText;
+    int m_currentIndex;
+    int m_maxVisibleItems;
+
+    LineEditButton *m_dropButton = nullptr;
+    ComboBoxMenu *m_dropMenu = nullptr;
+    TranslateYAnimation *m_arrowAni = nullptr;
+    QVector<EditableComboBoxDetail::ComboItem> m_items;
 
 private:
     EditableComboBox * const q_ptr;
