@@ -74,9 +74,4 @@ else()
     target_compile_definitions(QFluentExample PRIVATE USE_QWINDOWKIT=0)
 endif()
 
-include(GNUInstallDirs)
-install(TARGETS QFluentExample
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
+# QFluentExample 是示例程序，不需要安装

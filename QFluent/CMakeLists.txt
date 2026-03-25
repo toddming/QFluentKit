@@ -12,8 +12,9 @@ set(CMAKE_AUTOUIC ON)
 if(MINGW)
     set(CMAKE_CXX_FLAGS_DEBUG "-g1 -O0")
     set(CMAKE_C_FLAGS_DEBUG "-g1 -O0")
-    set(CMAKE_CXX_FLAGS_RELEASE "-Os -s -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELEASE "-Os -s -DNDEBUG")
+    # Release：使用 -O2 保证性能，体积优化交由链接器 --gc-sections 处理
+    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -s")
     add_compile_options(-ffunction-sections -fdata-sections)
@@ -37,8 +38,19 @@ if(NOT QFLUENT_CPP_SOURCES)
     message(FATAL_ERROR "No C/C++ sources found in ${CMAKE_CURRENT_SOURCE_DIR}/src.\nPlease add sources or adjust the glob patterns.")
 endif()
 
+# 资源处理：必须在 add_library 之前设置 AUTORCC，确保 Qt6 下资源初始化顺序正确
+# Qt6 使用 AUTORCC；Qt5 使用 qt5_add_resources（保留原始行为，避免静态初始化时序问题）
+if(${QT_VERSION_MAJOR} EQUAL 6)
+    set(CMAKE_AUTORCC ON)
+endif()
+
 add_library(QFluent SHARED ${QFLUENT_CPP_SOURCES})
+
+# 头文件加入 target_sources 以在 Qt Creator / VS Code / CLion 等 IDE 中可见
+# FILE_SET 方式（CMake 3.23+）对旧版本不兼容，使用 PRIVATE 方式保持兼容性
+# 头文件不参与编译，但 IDE 会通过此列表显示它们
 target_sources(QFluent PRIVATE ${QFLUENT_HEADER_SOURCES})
+
 target_include_directories(QFluent PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
@@ -48,11 +60,13 @@ target_compile_definitions(QFluent PRIVATE QFLUENT_LIBRARY)
 set_target_properties(QFluent PROPERTIES
     DEBUG_POSTFIX "d"
 )
-# 资源处理：Qt6 使用 CMake AUTORCC，Qt5 使用 qt5_add_resources
+
+# 资源文件挂载
 if(${QT_VERSION_MAJOR} EQUAL 6)
-    set(CMAKE_AUTORCC ON)
+    # Qt6：AUTORCC 已在 add_library 前启用，直接添加 .qrc 即可
     target_sources(QFluent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/res/res.qrc)
 else()
+    # Qt5：使用 qt5_add_resources 保持与原始行为完全一致
     qt5_add_resources(RCC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/res/res.qrc)
     target_sources(QFluent PRIVATE ${RCC_SOURCES})
 endif()
@@ -73,40 +87,63 @@ option(QFLUENT_INSTALL_TO_QT "Install QFluent to Qt installation directory" OFF)
 
 # 设置 Qt 安装路径
 if(QFLUENT_INSTALL_TO_QT)
-    # 获取 Qt 安装路径
-    get_target_property(QT_CORE_LOCATION Qt${QT_VERSION_MAJOR}::Core LOCATION)
-    get_filename_component(QT_LIB_DIR "${QT_CORE_LOCATION}" DIRECTORY)
-    get_filename_component(QT_INSTALL_DIR "${QT_LIB_DIR}" DIRECTORY)
+    # Qt6 通过 QT6_INSTALL_PREFIX 直接暴露安装前缀，更稳定
+    # Qt5 通过 _qt5Core_install_prefix 变量获取
+    # 兜底方案：从 Qt::Core 的 IMPORTED_LOCATION 推导（兼容 Qt5/Qt6 多配置生成器）
+    if(${QT_VERSION_MAJOR} EQUAL 6 AND DEFINED QT6_INSTALL_PREFIX)
+        set(QT_INSTALL_DIR "${QT6_INSTALL_PREFIX}")
+    elseif(${QT_VERSION_MAJOR} EQUAL 5 AND DEFINED _qt5Core_install_prefix)
+        set(QT_INSTALL_DIR "${_qt5Core_install_prefix}")
+    else()
+        # 使用生成器表达式安全获取路径（兼容多配置生成器，避免废弃的 LOCATION 属性）
+        get_target_property(QT_CORE_IMPORTED_CONFIGS Qt${QT_VERSION_MAJOR}::Core IMPORTED_CONFIGURATIONS)
+        # 取第一个可用配置的路径
+        list(GET QT_CORE_IMPORTED_CONFIGS 0 _first_cfg)
+        string(TOUPPER "${_first_cfg}" _first_cfg_upper)
+        get_target_property(QT_CORE_LOCATION Qt${QT_VERSION_MAJOR}::Core
+            IMPORTED_LOCATION_${_first_cfg_upper}
+        )
+        get_filename_component(QT_LIB_DIR "${QT_CORE_LOCATION}" DIRECTORY)
+        get_filename_component(QT_INSTALL_DIR "${QT_LIB_DIR}" DIRECTORY)
+    endif()
     set(CMAKE_INSTALL_PREFIX "${QT_INSTALL_DIR}" CACHE PATH "Qt installation directory" FORCE)
     message(STATUS "QFluent will be installed to Qt directory: ${QT_INSTALL_DIR}")
 endif()
 
-# 公开头文件目录（用于安装）
-# 注意：src/ 根目录包含核心头文件，src/QFluent/ 包含组件头文件
-# Private/ 目录不安装（PIMPL 私有实现）
 
-# 安装核心头文件（src/ 根目录，排除 Private 和 QFluent 子目录）
-install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/FluentGlobal.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Theme.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/FluentIcon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Router.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Animation.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Screen.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/StyleSheet.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/TextWrap.h
+# 安装核心头文件（src/ 根目录，自动排除 QFluent/ 和 Private/ 子目录）
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QFluent
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+        PATTERN "QFluent" EXCLUDE
+        PATTERN "Private" EXCLUDE
 )
 
-# 安装组件头文件（src/QFluent/ 目录）
+# 安装组件头文件（src/QFluent/ 目录，自动排除 Private/ 子目录）
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/QFluent/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QFluent
-    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+        PATTERN "Private" EXCLUDE
 )
 
-# 安装资源文件（图标、样式表等）
+# 安装运行时资源文件（图标、样式表等，供应用程序运行时加载）
+# 路径：<prefix>/share/QFluent/res/
+# 应用程序可通过 QStandardPaths::GenericDataLocation + "QFluent/res" 定位
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/QFluent/res
+    FILES_MATCHING
+        PATTERN "*.svg"
+        PATTERN "*.png"
+        PATTERN "*.qss"
+        PATTERN "*.css"
+        PATTERN "*.xml"
+        PATTERN "*.json"
+        # 排除 qrc 源文件本身（已编译进库，无需重复安装）
+        PATTERN "*.qrc" EXCLUDE
 )
 
 # ==================== 库文件安装 ====================

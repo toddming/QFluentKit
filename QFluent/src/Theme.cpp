@@ -17,26 +17,27 @@ Theme::Theme(QObject* parent) : QObject(parent)
     d->q_ptr = this;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
-    Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
-    qWarning() << "当前主题:" << (currentScheme == Qt::ColorScheme::Dark ? "深色" : "浅色");
-    d->sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
+    if (qApp) {
+        Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
+        d->sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
-    QPointer<Theme> self = this;
-    QStyleHints *styleHints = QApplication::styleHints();
-    connect(styleHints, &QStyleHints::colorSchemeChanged, [d, self](Qt::ColorScheme scheme) {
-        // 检查 Theme 对象是否仍然有效
-        if (!self) {
-            return;
-        }
-        if (scheme == Qt::ColorScheme::Dark) {
-            d->sysIsDarkMode = true;
-        } else if (scheme == Qt::ColorScheme::Light) {
-            d->sysIsDarkMode = false;
-        }
-        if (d->autoTheme) {
-            self->setTheme(Fluent::ThemeMode::AUTO);
-        }
-    });
+        QPointer<Theme> self = this;
+        QStyleHints *styleHints = QApplication::styleHints();
+        connect(styleHints, &QStyleHints::colorSchemeChanged, [d, self](Qt::ColorScheme scheme) {
+            // 检查 Theme 对象是否仍然有效
+            if (!self) {
+                return;
+            }
+            if (scheme == Qt::ColorScheme::Dark) {
+                d->sysIsDarkMode = true;
+            } else if (scheme == Qt::ColorScheme::Light) {
+                d->sysIsDarkMode = false;
+            }
+            if (d->autoTheme) {
+                self->setTheme(Fluent::ThemeMode::AUTO);
+            }
+        });
+    }
 #endif
 }
 
