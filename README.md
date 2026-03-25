@@ -160,16 +160,12 @@ After installation, files are organized as follows (taking Qt 6.8.3 MSVC as exam
 E:/Qt/6.8.3/msvc2022_64/
 ├── bin/
 │   ├── QFluent.dll           # Release DLL
-│   ├── Debug/
-│   │   └── QFluent.dll       # Debug DLL
-│   └── Release/
-│       └── QFluent.dll       # Release DLL (copy)
+│   ├── QFluentd.dll          # Debug DLL (with 'd' suffix)
+│   ├── QFluent.pdb           # Debug PDB (MSVC only)
+│   └── ...
 ├── lib/
-│   ├── QFluent.lib           # Import library
-│   ├── Debug/
-│   │   └── QFluent.lib       # Debug import library
-│   ├── Release/
-│   │   └── QFluent.lib       # Release import library
+│   ├── QFluent.lib           # Release import library
+│   ├── QFluentd.lib          # Debug import library (with 'd' suffix)
 │   └── cmake/
 │       └── QFluent/          # CMake config files
 │           ├── QFluentConfig.cmake
@@ -185,6 +181,8 @@ E:/Qt/6.8.3/msvc2022_64/
     └── QFluent/
         └── res/              # Resource files (icons, stylesheets)
 ```
+
+**Note:** Debug libraries use the `d` suffix (e.g., `QFluentd.dll`, `QFluentd.lib`), following Qt's convention. This allows Debug and Release versions to coexist in the same directory.
 
 ### Method 2: Install to Custom Directory
 

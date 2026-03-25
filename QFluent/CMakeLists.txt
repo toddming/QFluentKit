@@ -43,6 +43,11 @@ target_include_directories(QFluent PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 target_compile_definitions(QFluent PRIVATE QFLUENT_LIBRARY)
+
+# Debug 版本使用 'd' 后缀（类似 Qt 的做法：Qt6Cored.dll vs Qt6Core.dll）
+set_target_properties(QFluent PROPERTIES
+    DEBUG_POSTFIX "d"
+)
 # 资源处理：Qt6 使用 CMake AUTORCC，Qt5 使用 qt5_add_resources
 if(${QT_VERSION_MAJOR} EQUAL 6)
     set(CMAKE_AUTORCC ON)
@@ -80,15 +85,6 @@ endif()
 # 注意：src/ 根目录包含核心头文件，src/QFluent/ 包含组件头文件
 # Private/ 目录不安装（PIMPL 私有实现）
 
-# 安装目标（默认安装，不区分配置）
-install(TARGETS QFluent
-    EXPORT QFluentTargets
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
 # 安装核心头文件（src/ 根目录，排除 Private 和 QFluent 子目录）
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/FluentGlobal.h
@@ -113,33 +109,23 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/QFluent/res
 )
 
-# ==================== Debug/Release 区分安装 ====================
-# Windows 平台区分 Debug/Release 库文件
-if(WIN32)
-    # 安装 Debug 版本到单独目录
-    install(TARGETS QFluent
+# ==================== 库文件安装 ====================
+# Windows 平台：Debug 版本使用 'd' 后缀，与 Release 版本共存于同一目录
+install(TARGETS QFluent
+    EXPORT QFluentTargets
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# 安装 PDB 文件（MSVC Debug）
+if(MSVC)
+    install(FILES $<TARGET_PDB_FILE:QFluent>
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
         CONFIGURATIONS Debug
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/Debug
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/Debug
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Debug
+        OPTIONAL
     )
-
-    # 安装 Release 版本到单独目录
-    install(TARGETS QFluent
-        CONFIGURATIONS Release
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/Release
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/Release
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Release
-    )
-
-    # 安装 PDB 文件（MSVC Debug）
-    if(MSVC)
-        install(FILES $<TARGET_PDB_FILE:QFluent>
-            DESTINATION ${CMAKE_INSTALL_BINDIR}/Debug
-            CONFIGURATIONS Debug
-            OPTIONAL
-        )
-    endif()
 endif()
 
 # ==================== CMake 配置文件安装 ====================

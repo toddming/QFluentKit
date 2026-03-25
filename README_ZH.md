@@ -160,16 +160,12 @@ target_link_libraries(MyApp PRIVATE QFluent::QFluent)
 E:/Qt/6.8.3/msvc2022_64/
 ├── bin/
 │   ├── QFluent.dll           # Release 动态库
-│   ├── Debug/
-│   │   └── QFluent.dll       # Debug 动态库
-│   └── Release/
-│       └── QFluent.dll       # Release 动态库（副本）
+│   ├── QFluentd.dll          # Debug 动态库（带 'd' 后缀）
+│   ├── QFluent.pdb           # Debug PDB 文件（仅 MSVC）
+│   └── ...
 ├── lib/
-│   ├── QFluent.lib           # 导入库
-│   ├── Debug/
-│   │   └── QFluent.lib       # Debug 导入库
-│   ├── Release/
-│   │   └── QFluent.lib       # Release 导入库
+│   ├── QFluent.lib           # Release 导入库
+│   ├── QFluentd.lib          # Debug 导入库（带 'd' 后缀）
 │   └── cmake/
 │       └── QFluent/          # CMake 配置文件
 │           ├── QFluentConfig.cmake
@@ -185,6 +181,8 @@ E:/Qt/6.8.3/msvc2022_64/
     └── QFluent/
         └── res/              # 资源文件（图标、样式表）
 ```
+
+**说明：** Debug 版本的库文件使用 `d` 后缀（如 `QFluentd.dll`、`QFluentd.lib`），遵循 Qt 的命名惯例。这样 Debug 和 Release 版本可以共存于同一目录，互不覆盖。
 
 ### 方式二：安装到自定义目录
 
