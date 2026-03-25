@@ -1,0 +1,20 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# 查找 Qt 依赖
+find_dependency(Qt@QT_VERSION_MAJOR@ COMPONENTS Core Widgets Svg Xml)
+
+# 包含导出的目标
+include("${CMAKE_CURRENT_LIST_DIR}/QFluentTargets.cmake")
+
+# 检查目标是否存在
+check_required_components(QFluent)
+
+# 提供便捷变量
+set(QFLUENT_INCLUDE_DIRS "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR_FOR_CONFIG@/QFluent")
+set(QFLUENT_LIBRARIES QFluent::QFluent)
+
+# 打印信息
+message(STATUS "Found QFluent: ${CMAKE_CURRENT_LIST_DIR}")
+message(STATUS "QFluent include dirs: ${QFLUENT_INCLUDE_DIRS}")

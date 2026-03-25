@@ -113,27 +113,133 @@ QFluentExample.exe  # Windows
 
 ## 集成到你的项目
 
-### CMake 方式
+### 方式一：安装到 Qt 目录（推荐）
 
-在你的 `CMakeLists.txt` 中添加：
+将 QFluentKit 安装到 Qt 安装目录后，所有 Qt 项目都可以直接使用。
+
+#### 步骤 1：构建和安装
+
+**Windows (MSVC)**
+```bash
+mkdir build && cd build
+cmake -G "Visual Studio 17 2022" -A x64 -DQFLUENT_INSTALL_TO_QT=ON ..
+cmake --build . --config Release
+cmake --install . --config Release
+```
+
+**Windows (MinGW)**
+```bash
+mkdir build && cd build
+cmake -G "MinGW Makefiles" -DQFLUENT_INSTALL_TO_QT=ON ..
+mingw32-make
+mingw32-make install
+```
+
+**Linux/macOS**
+```bash
+mkdir build && cd build
+cmake -DQFLUENT_INSTALL_TO_QT=ON ..
+make -j$(nproc)
+sudo make install
+```
+
+#### 步骤 2：在项目中使用
+
+安装完成后，只需在 `CMakeLists.txt` 中添加：
 
 ```cmake
-# 最小 CMake 版本
-cmake_minimum_required(VERSION 3.15)
+find_package(QFluent REQUIRED)
+target_link_libraries(MyApp PRIVATE QFluent::QFluent)
+```
 
+#### 安装目录结构
+
+安装完成后，文件组织如下（以 Qt 6.8.3 MSVC 为例）：
+
+```
+E:/Qt/6.8.3/msvc2022_64/
+├── bin/
+│   ├── QFluent.dll           # Release 动态库
+│   ├── Debug/
+│   │   └── QFluent.dll       # Debug 动态库
+│   └── Release/
+│       └── QFluent.dll       # Release 动态库（副本）
+├── lib/
+│   ├── QFluent.lib           # 导入库
+│   ├── Debug/
+│   │   └── QFluent.lib       # Debug 导入库
+│   ├── Release/
+│   │   └── QFluent.lib       # Release 导入库
+│   └── cmake/
+│       └── QFluent/          # CMake 配置文件
+│           ├── QFluentConfig.cmake
+│           ├── QFluentConfigVersion.cmake
+│           └── QFluentTargets.cmake
+├── include/
+│   └── QFluent/              # 头文件
+│       ├── FluentGlobal.h
+│       ├── Theme.h
+│       ├── FluentIcon.h
+│       └── ...
+└── share/
+    └── QFluent/
+        └── res/              # 资源文件（图标、样式表）
+```
+
+### 方式二：安装到自定义目录
+
+也可以安装到自定义位置：
+
+```bash
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+cmake --build . --config Release
+cmake --install . --config Release
+```
+
+然后在项目中指定安装路径：
+
+```cmake
+# 方式 1：添加到 CMAKE_PREFIX_PATH
+set(CMAKE_PREFIX_PATH "/path/to/install/lib/cmake/QFluent;${CMAKE_PREFIX_PATH}")
+find_package(QFluent REQUIRED)
+target_link_libraries(MyApp PRIVATE QFluent::QFluent)
+```
+
+或设置 `QFluent_DIR`：
+
+```cmake
+# 方式 2：设置 QFluent_DIR
+set(QFluent_DIR "/path/to/install/lib/cmake/QFluent")
+find_package(QFluent REQUIRED)
+target_link_libraries(MyApp PRIVATE QFluent::QFluent)
+```
+
+### 方式三：子目录集成
+
+将 QFluentKit 作为子目录添加到项目中：
+
+```cmake
 # 添加 QFluentKit 子目录
 add_subdirectory(QFluentKit)
 
-# 链接 QFluentKit
+# 链接 QFluent
 target_link_libraries(MyApp PRIVATE QFluent)
-
 ```
 
-### 手动方式
+### 方式四：手动集成
 
-1. 编译 QFluentKit 生成 `QFluentKit.dll` (Windows) 或 `libQFluentKit.so` (Linux/macOS)
+1. 编译 QFluentKit 生成 `QFluent.dll` (Windows) 或 `libQFluent.so` (Linux/macOS)
 2. 在你的项目中包含头文件目录：`QFluentKit/QFluent/src/`
 3. 链接生成的库文件
+
+### CMake 选项说明
+
+| 选项 | 默认值 | 说明 |
+|------|--------|------|
+| `QFLUENT_INSTALL_TO_QT` | OFF | 安装到 Qt 安装目录 |
+| `CMAKE_INSTALL_PREFIX` | 系统默认 | 自定义安装路径 |
+| `BUILD_QWINDOWKIT` | OFF | 启用 QWindowKit 集成 |
 
 ### 可选：启用 QWindowKit 集成
 

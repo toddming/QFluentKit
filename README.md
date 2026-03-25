@@ -113,27 +113,132 @@ QFluentExample.exe  # Windows
 
 ## Integration into Your Project
 
-### CMake Method
+### Method 1: Install to Qt Directory (Recommended)
 
-Add to your `CMakeLists.txt`:
+Installing QFluentKit to your Qt installation directory allows all Qt projects to use it seamlessly.
+
+#### Step 1: Build and Install
+
+**Windows (MSVC)**
+```bash
+mkdir build && cd build
+cmake -G "Visual Studio 17 2022" -A x64 -DQFLUENT_INSTALL_TO_QT=ON ..
+cmake --build . --config Release
+cmake --install . --config Release
+```
+
+**Windows (MinGW)**
+```bash
+mkdir build && cd build
+cmake -G "MinGW Makefiles" -DQFLUENT_INSTALL_TO_QT=ON ..
+mingw32-make
+mingw32-make install
+```
+
+**Linux/macOS**
+```bash
+mkdir build && cd build
+cmake -DQFLUENT_INSTALL_TO_QT=ON ..
+make -j$(nproc)
+sudo make install
+```
+
+#### Step 2: Use in Your Project
+
+After installation, simply add to your `CMakeLists.txt`:
 
 ```cmake
-# Minimum CMake version
-cmake_minimum_required(VERSION 3.15)
+find_package(QFluent REQUIRED)
+target_link_libraries(MyApp PRIVATE QFluent::QFluent)
+```
 
+#### Installation Structure
+
+After installation, files are organized as follows (taking Qt 6.8.3 MSVC as example):
+
+```
+E:/Qt/6.8.3/msvc2022_64/
+├── bin/
+│   ├── QFluent.dll           # Release DLL
+│   ├── Debug/
+│   │   └── QFluent.dll       # Debug DLL
+│   └── Release/
+│       └── QFluent.dll       # Release DLL (copy)
+├── lib/
+│   ├── QFluent.lib           # Import library
+│   ├── Debug/
+│   │   └── QFluent.lib       # Debug import library
+│   ├── Release/
+│   │   └── QFluent.lib       # Release import library
+│   └── cmake/
+│       └── QFluent/          # CMake config files
+│           ├── QFluentConfig.cmake
+│           ├── QFluentConfigVersion.cmake
+│           └── QFluentTargets.cmake
+├── include/
+│   └── QFluent/              # Header files
+│       ├── FluentGlobal.h
+│       ├── Theme.h
+│       ├── FluentIcon.h
+│       └── ...
+└── share/
+    └── QFluent/
+        └── res/              # Resource files (icons, stylesheets)
+```
+
+### Method 2: Install to Custom Directory
+
+You can also install to a custom location:
+
+```bash
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+cmake --build . --config Release
+cmake --install . --config Release
+```
+
+Then in your project, specify the installation path:
+
+```cmake
+# Add to CMAKE_PREFIX_PATH
+set(CMAKE_PREFIX_PATH "/path/to/install/lib/cmake/QFluent;${CMAKE_PREFIX_PATH}")
+find_package(QFluent REQUIRED)
+target_link_libraries(MyApp PRIVATE QFluent::QFluent)
+```
+
+Or set `QFluent_DIR`:
+
+```cmake
+set(QFluent_DIR "/path/to/install/lib/cmake/QFluent")
+find_package(QFluent REQUIRED)
+target_link_libraries(MyApp PRIVATE QFluent::QFluent)
+```
+
+### Method 3: Subdirectory Integration
+
+Add QFluentKit as a subdirectory in your project:
+
+```cmake
 # Add QFluentKit subdirectory
 add_subdirectory(QFluentKit)
 
-# Link QFluentKit
+# Link QFluent
 target_link_libraries(MyApp PRIVATE QFluent)
-
 ```
 
-### Manual Method
+### Method 4: Manual Integration
 
-1. Build QFluentKit to generate `QFluentKit.dll` (Windows) or `libQFluentKit.so` (Linux/macOS)
+1. Build QFluentKit to generate `QFluent.dll` (Windows) or `libQFluent.so` (Linux/macOS)
 2. Include the header directory in your project: `QFluentKit/QFluent/src/`
 3. Link the generated library file
+
+### CMake Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `QFLUENT_INSTALL_TO_QT` | OFF | Install to Qt installation directory |
+| `CMAKE_INSTALL_PREFIX` | System default | Custom installation path |
+| `BUILD_QWINDOWKIT` | OFF | Enable QWindowKit integration |
 
 ### Optional: Enable QWindowKit Integration
 
