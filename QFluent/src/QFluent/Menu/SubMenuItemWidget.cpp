@@ -1,4 +1,4 @@
-﻿#include "SubMenuItemWidget.h"
+#include "SubMenuItemWidget.h"
 
 #include <QPainter>
 #include <QRectF>
@@ -8,36 +8,40 @@
 #include "FluentIcon.h"
 #include "FluentGlobal.h"
 
-SubMenuItemWidget::SubMenuItemWidget(QMenu* menu, QListWidgetItem* item, QWidget* parent)
+SubMenuItemWidget::SubMenuItemWidget(QMenu *menu, QListWidgetItem *item, QWidget *parent)
     : QWidget(parent)
-    , menuAsQMenu(menu)
-    , item(item)
+    , m_menuAsQMenu(menu)
+    , m_menuAsRoundMenu(nullptr)
+    , m_item(item)
 {
 }
 
-SubMenuItemWidget::SubMenuItemWidget(RoundMenu* menu, QListWidgetItem* item, QWidget* parent)
+SubMenuItemWidget::SubMenuItemWidget(RoundMenu *menu, QListWidgetItem *item, QWidget *parent)
     : QWidget(parent)
-    , menuAsRoundMenu(menu)
-    , item(item)
+    , m_menuAsQMenu(nullptr)
+    , m_menuAsRoundMenu(menu)
+    , m_item(item)
 {
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void SubMenuItemWidget::enterEvent(QEnterEvent* event)
+void SubMenuItemWidget::enterEvent(QEnterEvent *event)
 {
     QWidget::enterEvent(event);
-    emit showMenuSig(item);
+    emit showMenuSig(m_item);
 }
 #else
-void SubMenuItemWidget::enterEvent(QEvent* event)
+void SubMenuItemWidget::enterEvent(QEvent *event)
 {
     QWidget::enterEvent(event);
-    emit showMenuSig(item);
+    emit showMenuSig(m_item);
 }
 #endif
 
-void SubMenuItemWidget::paintEvent(QPaintEvent* event)
+void SubMenuItemWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 

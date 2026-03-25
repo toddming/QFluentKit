@@ -40,7 +40,7 @@ protected:
 
 private:
     QPointer<RoundMenu> m_menu;
-    QPropertyAnimation* m_ani;
+    QPropertyAnimation *m_ani = nullptr;
 };
 
 class DummyMenuAnimationManager : public MenuAnimationManager

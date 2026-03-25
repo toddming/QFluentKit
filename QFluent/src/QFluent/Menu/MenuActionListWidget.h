@@ -23,6 +23,6 @@ public:
     virtual void addItem(QListWidgetItem *item);
 
 protected:
-    void wheelEvent(QWheelEvent* e) override;
+    void wheelEvent(QWheelEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 };

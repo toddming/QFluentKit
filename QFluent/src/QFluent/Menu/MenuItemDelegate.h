@@ -2,12 +2,14 @@
 
 #include <QStyledItemDelegate>
 
+#include "FluentGlobal.h"
+
 class QPainter;
 class QModelIndex;
 class QStyleOptionViewItem;
 class QAction;
 
-class MenuItemDelegate : public QStyledItemDelegate
+class QFLUENT_EXPORT MenuItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
@@ -21,7 +23,7 @@ protected:
                const QModelIndex &index) const override;
 };
 
-class ShortcutMenuItemDelegate : public MenuItemDelegate
+class QFLUENT_EXPORT ShortcutMenuItemDelegate : public MenuItemDelegate
 {
     Q_OBJECT
 
@@ -34,7 +36,7 @@ protected:
                const QModelIndex &index) const override;
 };
 
-class IndicatorMenuItemDelegate : public MenuItemDelegate
+class QFLUENT_EXPORT IndicatorMenuItemDelegate : public MenuItemDelegate
 {
     Q_OBJECT
 
@@ -47,7 +49,7 @@ protected:
                const QModelIndex &index) const override;
 };
 
-class CheckableMenuItemDelegate : public ShortcutMenuItemDelegate
+class QFLUENT_EXPORT CheckableMenuItemDelegate : public ShortcutMenuItemDelegate
 {
     Q_OBJECT
 
@@ -64,7 +66,7 @@ protected:
                                const QModelIndex &index, bool checked) const = 0;
 };
 
-class RadioIndicatorMenuItemDelegate : public CheckableMenuItemDelegate
+class QFLUENT_EXPORT RadioIndicatorMenuItemDelegate : public CheckableMenuItemDelegate
 {
     Q_OBJECT
 
@@ -77,7 +79,7 @@ protected:
                        const QModelIndex &index, bool checked) const override;
 };
 
-class CheckIndicatorMenuItemDelegate : public CheckableMenuItemDelegate
+class QFLUENT_EXPORT CheckIndicatorMenuItemDelegate : public CheckableMenuItemDelegate
 {
     Q_OBJECT
 

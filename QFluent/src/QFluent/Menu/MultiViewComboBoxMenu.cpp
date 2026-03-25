@@ -3,7 +3,8 @@
 #include "MenuActionListWidget.h"
 #include "MenuItemDelegate.h"
 
-MultiViewComboBoxMenu::MultiViewComboBoxMenu(const QString& title, QWidget *parent) : RoundMenu(title, parent)
+MultiViewComboBoxMenu::MultiViewComboBoxMenu(const QString &title, QWidget *parent)
+    : RoundMenu(title, parent)
 {
     setItemHeight(36);
     setHideByClick(false);
@@ -12,7 +13,7 @@ MultiViewComboBoxMenu::MultiViewComboBoxMenu(const QString& title, QWidget *pare
     view()->setObjectName("multiListWidget");
 }
 
-void MultiViewComboBoxMenu::exec(const QPoint& pos, bool animate, Fluent::MenuAnimation aniType)
+void MultiViewComboBoxMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniType)
 {
     view()->adjustSize(pos, aniType);
     adjustMenuSize();
@@ -22,6 +23,6 @@ void MultiViewComboBoxMenu::exec(const QPoint& pos, bool animate, Fluent::MenuAn
 int MultiViewComboBoxMenu::adjustItemText(QListWidgetItem *item, QAction *action)
 {
     int w = RoundMenu::adjustItemText(item, action);
-    item->setSizeHint(QSize(w + 26, this->itemHeight()));
+    item->setSizeHint(QSize(w + 26, itemHeight()));
     return w + 26;
 }

@@ -1,13 +1,14 @@
-﻿#pragma once
+#pragma once
 
 #include "RoundMenu.h"
 
-class ComboBoxMenu : public RoundMenu
+class QFLUENT_EXPORT ComboBoxMenu : public RoundMenu
 {
+    Q_OBJECT
+
 public:
-    explicit ComboBoxMenu(const QString& title = "", QWidget *parent = nullptr);
+    explicit ComboBoxMenu(const QString &title = QString(), QWidget *parent = nullptr);
 
-    void exec(const QPoint& pos, bool animate = true,
-              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN);
-
+    void exec(const QPoint &pos, bool animate = true,
+              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN) override;
 };
