@@ -52,9 +52,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    SettingIconWidget *iconLabel;
+    SettingIconWidget *m_iconLabel;
     QLabel *m_titleLabel;
-    QLabel *contentLabel;
+    QLabel *m_contentLabel;
     QHBoxLayout *m_hBoxLayout;
     QVBoxLayout *m_vBoxLayout;
 };

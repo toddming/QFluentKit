@@ -66,11 +66,11 @@ private:
     void adjustIndicatorPos();
     PivotItem *widget(const QString &routeKey) const;
 
-    QMap<QString, PivotItem *> items;
+    QMap<QString, PivotItem *> m_items;
     QString m_currentRouteKey;
-    QColor lightIndicatorColor;
-    QColor darkIndicatorColor;
-    QHBoxLayout *hBoxLayout;
-    FluentAnimation *slideAni;
+    QColor m_lightIndicatorColor;
+    QColor m_darkIndicatorColor;
+    QHBoxLayout *m_hBoxLayout;
+    FluentAnimation *m_slideAni;
 };
 

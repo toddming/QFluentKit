@@ -21,8 +21,8 @@ signals:
     void strokeWidthChanged(int w);
 
 private:
-    QColor lightBackgroundColor;
-    QColor darkBackgroundColor;
+    QColor m_lightBackgroundColor;
+    QColor m_darkBackgroundColor;
 
     int m_strokeWidth;
 

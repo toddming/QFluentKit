@@ -15,8 +15,8 @@
 
 ProgressBar::ProgressBar(QWidget *parent, bool useAni)
     : QProgressBar(parent), m_val(0), m_useAni(useAni),
-      lightBackgroundColor(QColor(0, 0, 0, 155)),
-      darkBackgroundColor(QColor(255, 255, 255, 155)),
+      m_lightBackgroundColor(QColor(0, 0, 0, 155)),
+      m_darkBackgroundColor(QColor(255, 255, 255, 155)),
       m_isPaused(false), m_isError(false)
 {
     setFixedHeight(4);
@@ -24,9 +24,9 @@ ProgressBar::ProgressBar(QWidget *parent, bool useAni)
     setMaximum(100);
     setValue(0);
 
-    ani.setTargetObject(this);
-    ani.setPropertyName("val");
-    ani.setEasingCurve(QEasingCurve::OutQuad);
+    m_ani.setTargetObject(this);
+    m_ani.setPropertyName("val");
+    m_ani.setEasingCurve(QEasingCurve::OutQuad);
     connect(this, &QProgressBar::valueChanged, this, &ProgressBar::onValueChanged);
 }
 
@@ -63,10 +63,10 @@ void ProgressBar::onValueChanged(int value)
         return;
     }
 
-    ani.stop();
-    ani.setEndValue(value);
-    ani.setDuration(150);
-    ani.start();
+    m_ani.stop();
+    m_ani.setEndValue(value);
+    m_ani.setDuration(150);
+    m_ani.start();
     QProgressBar::setValue(value); // 触发值更新
 }
 
@@ -124,8 +124,8 @@ void ProgressBar::setCustomBarColor(const QColor &light, const QColor &dark)
 
 void ProgressBar::setCustomBackgroundColor(const QColor &light, const QColor &dark)
 {
-    lightBackgroundColor = light;
-    darkBackgroundColor = dark;
+    m_lightBackgroundColor = light;
+    m_darkBackgroundColor = dark;
     update();
 }
 
@@ -149,7 +149,7 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::Antialiasing);
 
     // 绘制背景线
-    QColor bc = Theme::instance()->isDarkTheme() ? darkBackgroundColor : lightBackgroundColor;
+    QColor bc = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
     painter.setPen(bc);
     int y = height() / 2;
     painter.drawLine(0, y, width(), y);

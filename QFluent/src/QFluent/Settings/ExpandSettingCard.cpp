@@ -221,47 +221,47 @@ void ExpandBorderWidget::paintEvent(QPaintEvent *e) {
 ExpandSettingCard::ExpandSettingCard(const QIcon &icon, const QString &title, const QString &content, QWidget *parent)
     : QScrollArea(parent),
     m_isExpand(false) {
-    scrollWidget = new QFrame(this);
-    m_view = new QFrame(scrollWidget);
+    m_scrollWidget = new QFrame(this);
+    m_view = new QFrame(m_scrollWidget);
     m_card = new HeaderSettingCard(icon, title, content, this);
 
-    scrollLayout = new QVBoxLayout(scrollWidget);
+    m_scrollLayout = new QVBoxLayout(m_scrollWidget);
     m_viewLayout = new QVBoxLayout(m_view);
-    m_spaceWidget = new SpaceWidget(scrollWidget);
-    borderWidget = new ExpandBorderWidget(this);
+    m_spaceWidget = new SpaceWidget(m_scrollWidget);
+    m_borderWidget = new ExpandBorderWidget(this);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    expandAni = new QPropertyAnimation(this->verticalScrollBar(), "value", this);
+    m_expandAni = new QPropertyAnimation(this->verticalScrollBar(), "value", this);
 
     initWidget();
 }
 
 void ExpandSettingCard::initWidget() {
-    setWidget(scrollWidget);
+    setWidget(m_scrollWidget);
     setWidgetResizable(true);
     setFixedHeight(m_card->height());
     setViewportMargins(0, m_card->height(), 0, 0);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    scrollLayout->setContentsMargins(0, 0, 0, 0);
-    scrollLayout->setSpacing(0);
-    scrollLayout->addWidget(m_view);
-    scrollLayout->addWidget(m_spaceWidget);
+    m_scrollLayout->setContentsMargins(0, 0, 0, 0);
+    m_scrollLayout->setSpacing(0);
+    m_scrollLayout->addWidget(m_view);
+    m_scrollLayout->addWidget(m_spaceWidget);
 
-    expandAni->setEasingCurve(QEasingCurve::OutQuad);
-    expandAni->setDuration(200);
+    m_expandAni->setEasingCurve(QEasingCurve::OutQuad);
+    m_expandAni->setDuration(200);
 
     m_view->setObjectName("view");
-    scrollWidget->setObjectName("scrollWidget");
+    m_scrollWidget->setObjectName("scrollWidget");
     setProperty("isExpand", false);
 
     StyleSheetManager::instance()->registerWidget(m_card, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
 
     m_card->installEventFilter(this);
-    connect(expandAni, &QPropertyAnimation::valueChanged, this, &ExpandSettingCard::onExpandValueChanged);
+    connect(m_expandAni, &QPropertyAnimation::valueChanged, this, &ExpandSettingCard::onExpandValueChanged);
     connect(m_card->expandButton(), &ExpandButton::clicked, this, &ExpandSettingCard::toggleExpand);
 }
 
@@ -288,14 +288,14 @@ void ExpandSettingCard::setExpand(bool isExpand) {
     if (isExpand) {
         int h = m_viewLayout->sizeHint().height();
         verticalScrollBar()->setValue(h);
-        expandAni->setStartValue(h);
-        expandAni->setEndValue(0);
+        m_expandAni->setStartValue(h);
+        m_expandAni->setEndValue(0);
     } else {
-        expandAni->setStartValue(0);
-        expandAni->setEndValue(verticalScrollBar()->maximum());
+        m_expandAni->setStartValue(0);
+        m_expandAni->setEndValue(verticalScrollBar()->maximum());
     }
 
-    expandAni->start();
+    m_expandAni->start();
     m_card->expandButton()->setExpand(isExpand);
 }
 
@@ -305,7 +305,7 @@ void ExpandSettingCard::toggleExpand() {
 
 void ExpandSettingCard::resizeEvent(QResizeEvent *e) {
     m_card->resize(width(), m_card->height());
-    scrollWidget->resize(width(), scrollWidget->height());
+    m_scrollWidget->resize(width(), m_scrollWidget->height());
 }
 
 void ExpandSettingCard::onExpandValueChanged(const QVariant &value) {
@@ -356,23 +356,23 @@ void ExpandGroupSettingCard::addGroupWidget(QWidget *widget) {
     }
 
     widget->setParent(view());
-    widgets.append(widget);
+    m_widgets.append(widget);
     viewLayout()->addWidget(widget);
     adjustViewSize();
 }
 
 void ExpandGroupSettingCard::removeGroupWidget(QWidget *widget) {
-    if (!widgets.contains(widget)) {
+    if (!m_widgets.contains(widget)) {
         return;
     }
 
     int layoutIndex = viewLayout()->indexOf(widget);
-    int index = widgets.indexOf(widget);
+    int index = m_widgets.indexOf(widget);
 
     viewLayout()->removeWidget(widget);
-    widgets.removeOne(widget);
+    m_widgets.removeOne(widget);
 
-    if (widgets.isEmpty()) {
+    if (m_widgets.isEmpty()) {
         return adjustViewSize();
     }
 
@@ -395,7 +395,7 @@ void ExpandGroupSettingCard::removeGroupWidget(QWidget *widget) {
 
 void ExpandGroupSettingCard::adjustViewSize() {
     int h = 0;
-    const auto &constWidgets = widgets;
+    const auto &constWidgets = m_widgets;
     for (QWidget *w : constWidgets) {
         h += w->sizeHint().height() + 3;
     }

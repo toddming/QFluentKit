@@ -6,9 +6,9 @@
 ProgressRing::ProgressRing(QWidget *parent, bool useAni)
     : ProgressBar(parent, useAni), m_strokeWidth(6)
 {
-    lightBackgroundColor = QColor(0, 0, 0, 34);
-    darkBackgroundColor = QColor(255, 255, 255, 34);
-    setCustomBackgroundColor(lightBackgroundColor, darkBackgroundColor);
+    m_lightBackgroundColor = QColor(0, 0, 0, 34);
+    m_darkBackgroundColor = QColor(255, 255, 255, 34);
+    setCustomBackgroundColor(m_lightBackgroundColor, m_darkBackgroundColor);
 
     setFont(QFont("Segoe UI", 10));
     setTextVisible(false);
@@ -45,7 +45,7 @@ void ProgressRing::paintEvent(QPaintEvent *event)
     const QRectF rc(cw / 2, height() / 2 - w / 2, w, w);
 
     // 绘制背景
-    const QColor bc = Theme::instance()->isDarkTheme() ? darkBackgroundColor : lightBackgroundColor;
+    const QColor bc = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
     QPen pen(bc, cw, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     painter.setPen(pen);
     painter.drawArc(rc, 0, 360 * 16);

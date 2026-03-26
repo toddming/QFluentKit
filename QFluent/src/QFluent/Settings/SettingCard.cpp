@@ -21,20 +21,20 @@ class SettingIconWidget;
 SettingCard::SettingCard(const QIcon &icon, const QString &title,
                          const QString &content, QWidget *parent)
     : QFrame(parent)
-    , iconLabel(new SettingIconWidget(icon, this))
+    , m_iconLabel(new SettingIconWidget(icon, this))
     , m_titleLabel(new QLabel(title, this))
-    , contentLabel(new QLabel(content, this))
+    , m_contentLabel(new QLabel(content, this))
     , m_hBoxLayout(new QHBoxLayout(this))
     , m_vBoxLayout(new QVBoxLayout)
 {
     if (content.isEmpty()) {
-        contentLabel->hide();
+        m_contentLabel->hide();
         setFixedHeight(50);
     } else {
         setFixedHeight(70);
     }
 
-    iconLabel->setFixedSize(16, 16);
+    m_iconLabel->setFixedSize(16, 16);
 
     // 初始化布局
     m_hBoxLayout->setSpacing(0);
@@ -46,17 +46,17 @@ SettingCard::SettingCard(const QIcon &icon, const QString &title,
     m_vBoxLayout->setAlignment(Qt::AlignVCenter);
 
     // 组装布局
-    m_hBoxLayout->addWidget(iconLabel, 0, Qt::AlignLeft);
+    m_hBoxLayout->addWidget(m_iconLabel, 0, Qt::AlignLeft);
     m_hBoxLayout->addSpacing(16);
     m_hBoxLayout->addLayout(m_vBoxLayout);
 
     m_vBoxLayout->addWidget(m_titleLabel, 0, Qt::AlignLeft);
-    m_vBoxLayout->addWidget(contentLabel, 0, Qt::AlignLeft);
+    m_vBoxLayout->addWidget(m_contentLabel, 0, Qt::AlignLeft);
 
     m_hBoxLayout->addSpacing(16);
     m_hBoxLayout->addStretch(1);
 
-    contentLabel->setObjectName("contentLabel");
+    m_contentLabel->setObjectName("contentLabel");
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SETTING_CARD);
 }
@@ -68,8 +68,8 @@ void SettingCard::setTitle(const QString &title)
 
 void SettingCard::setContent(const QString &content)
 {
-    contentLabel->setText(content);
-    contentLabel->setVisible(!content.isEmpty());
+    m_contentLabel->setText(content);
+    m_contentLabel->setVisible(!content.isEmpty());
 
     setFixedHeight(content.isEmpty() ? 50 : 70);
 }
@@ -82,7 +82,7 @@ void SettingCard::setValue(const QVariant &value)
 
 void SettingCard::setIconSize(int width, int height)
 {
-    iconLabel->setFixedSize(width, height);
+    m_iconLabel->setFixedSize(width, height);
     // 如果 SettingIconWidget 支持动态缩放图标，可调用其 setIcon 方法
     // 此处仅调整容器大小，图标 pixmap 不自动缩放 —— 如需缩放，需重设 pixmap
 }

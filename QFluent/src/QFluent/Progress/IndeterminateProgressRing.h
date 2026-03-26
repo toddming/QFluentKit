@@ -40,21 +40,21 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QColor lightBackgroundColor;
-    QColor darkBackgroundColor;
+    QColor m_lightBackgroundColor;
+    QColor m_darkBackgroundColor;
     QColor m_lightBarColor;
     QColor m_darkBarColor;
     int m_strokeWidth;
     int m_startAngle;
     int m_spanAngle;
 
-    QPropertyAnimation *startAngleAni1;
-    QPropertyAnimation *startAngleAni2;
-    QPropertyAnimation *spanAngleAni1;
-    QPropertyAnimation *spanAngleAni2;
+    QPropertyAnimation *m_startAngleAni1;
+    QPropertyAnimation *m_startAngleAni2;
+    QPropertyAnimation *m_spanAngleAni1;
+    QPropertyAnimation *m_spanAngleAni2;
 
-    QSequentialAnimationGroup *startAngleAniGroup;
-    QSequentialAnimationGroup *spanAngleAniGroup;
-    QParallelAnimationGroup *aniGroup;
+    QSequentialAnimationGroup *m_startAngleAniGroup;
+    QSequentialAnimationGroup *m_spanAngleAniGroup;
+    QParallelAnimationGroup *m_aniGroup;
 
 };

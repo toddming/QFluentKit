@@ -25,7 +25,7 @@ protected:
 
 private:
     float m_offset;
-    float maxOffset;
+    float m_maxOffset;
 };
 
 // NavigationBarPushButton 类
@@ -53,8 +53,8 @@ private:
     std::unique_ptr<FluentIconBase> m_fluentIcon;
 
     bool m_isSelectedTextVisible;
-    QColor lightSelectedColor;
-    QColor darkSelectedColor;
+    QColor m_lightSelectedColor;
+    QColor m_darkSelectedColor;
 };
 
 // NavigationBar 类

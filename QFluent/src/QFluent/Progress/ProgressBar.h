@@ -45,11 +45,11 @@ private slots:
 private:
     float m_val;
     bool m_useAni;
-    QColor lightBackgroundColor;
-    QColor darkBackgroundColor;
+    QColor m_lightBackgroundColor;
+    QColor m_darkBackgroundColor;
     QColor m_lightBarColor;
     QColor m_darkBarColor;
-    QPropertyAnimation ani;
+    QPropertyAnimation m_ani;
     bool m_isPaused;
     bool m_isError;
 };

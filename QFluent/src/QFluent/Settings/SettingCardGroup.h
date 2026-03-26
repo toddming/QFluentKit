@@ -19,7 +19,7 @@ public:
     void adjustSize();
 
 private:
-    QLabel *titleLabel;
-    QVBoxLayout *vBoxLayout;
-    ExpandLayout *cardLayout;
+    QLabel *m_titleLabel;
+    QVBoxLayout *m_vBoxLayout;
+    ExpandLayout *m_cardLayout;
 };

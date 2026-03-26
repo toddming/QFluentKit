@@ -12,46 +12,46 @@
 
 IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start)
     : QProgressBar(parent),
-    lightBackgroundColor(QColor(0, 0, 0, 0)),
-    darkBackgroundColor(QColor(255, 255, 255, 0)),
+    m_lightBackgroundColor(QColor(0, 0, 0, 0)),
+    m_darkBackgroundColor(QColor(255, 255, 255, 0)),
     m_strokeWidth(6),
     m_startAngle(-180),
     m_spanAngle(0),
-    startAngleAni1(new QPropertyAnimation(this, "startAngle")),
-    startAngleAni2(new QPropertyAnimation(this, "startAngle")),
-    spanAngleAni1(new QPropertyAnimation(this, "spanAngle")),
-    spanAngleAni2(new QPropertyAnimation(this, "spanAngle")),
-    startAngleAniGroup(new QSequentialAnimationGroup(this)),
-    spanAngleAniGroup(new QSequentialAnimationGroup(this)),
-    aniGroup(new QParallelAnimationGroup(this))
+    m_startAngleAni1(new QPropertyAnimation(this, "startAngle")),
+    m_startAngleAni2(new QPropertyAnimation(this, "startAngle")),
+    m_spanAngleAni1(new QPropertyAnimation(this, "spanAngle")),
+    m_spanAngleAni2(new QPropertyAnimation(this, "spanAngle")),
+    m_startAngleAniGroup(new QSequentialAnimationGroup(this)),
+    m_spanAngleAniGroup(new QSequentialAnimationGroup(this)),
+    m_aniGroup(new QParallelAnimationGroup(this))
 {
     // Initialize start angle animation
-    startAngleAni1->setDuration(1000);
-    startAngleAni1->setStartValue(0);
-    startAngleAni1->setEndValue(450);
+    m_startAngleAni1->setDuration(1000);
+    m_startAngleAni1->setStartValue(0);
+    m_startAngleAni1->setEndValue(450);
 
-    startAngleAni2->setDuration(1000);
-    startAngleAni2->setStartValue(450);
-    startAngleAni2->setEndValue(1080);
+    m_startAngleAni2->setDuration(1000);
+    m_startAngleAni2->setStartValue(450);
+    m_startAngleAni2->setEndValue(1080);
 
-    startAngleAniGroup->addAnimation(startAngleAni1);
-    startAngleAniGroup->addAnimation(startAngleAni2);
+    m_startAngleAniGroup->addAnimation(m_startAngleAni1);
+    m_startAngleAniGroup->addAnimation(m_startAngleAni2);
 
     // Initialize span angle animation
-    spanAngleAni1->setDuration(1000);
-    spanAngleAni1->setStartValue(0);
-    spanAngleAni1->setEndValue(180);
+    m_spanAngleAni1->setDuration(1000);
+    m_spanAngleAni1->setStartValue(0);
+    m_spanAngleAni1->setEndValue(180);
 
-    spanAngleAni2->setDuration(1000);
-    spanAngleAni2->setStartValue(180);
-    spanAngleAni2->setEndValue(0);
+    m_spanAngleAni2->setDuration(1000);
+    m_spanAngleAni2->setStartValue(180);
+    m_spanAngleAni2->setEndValue(0);
 
-    spanAngleAniGroup->addAnimation(spanAngleAni1);
-    spanAngleAniGroup->addAnimation(spanAngleAni2);
+    m_spanAngleAniGroup->addAnimation(m_spanAngleAni1);
+    m_spanAngleAniGroup->addAnimation(m_spanAngleAni2);
 
-    aniGroup->addAnimation(startAngleAniGroup);
-    aniGroup->addAnimation(spanAngleAniGroup);
-    aniGroup->setLoopCount(-1);
+    m_aniGroup->addAnimation(m_startAngleAniGroup);
+    m_aniGroup->addAnimation(m_spanAngleAniGroup);
+    m_aniGroup->setLoopCount(-1);
 
     setFixedSize(80, 80);
 
@@ -103,12 +103,12 @@ void IndeterminateProgressRing::start()
 {
     m_startAngle = 0;
     m_spanAngle = 0;
-    aniGroup->start();
+    m_aniGroup->start();
 }
 
 void IndeterminateProgressRing::stop()
 {
-    aniGroup->stop();
+    m_aniGroup->stop();
     m_startAngle = 0;
     m_spanAngle = 0;
     update();
@@ -139,8 +139,8 @@ void IndeterminateProgressRing::setCustomBarColor(const QColor &light, const QCo
 
 void IndeterminateProgressRing::setCustomBackgroundColor(const QColor &light, const QColor &dark)
 {
-    lightBackgroundColor = light;
-    darkBackgroundColor = dark;
+    m_lightBackgroundColor = light;
+    m_darkBackgroundColor = dark;
     update();
 }
 
@@ -155,7 +155,7 @@ void IndeterminateProgressRing::paintEvent(QPaintEvent *event)
     int size = qMin(height(), width()) - cw;
     QRectF rc(cw/2.0, height()/2.0 - size/2.0, size, size);
 
-    QColor bc = Theme::instance()->isDarkTheme() ? darkBackgroundColor : lightBackgroundColor;
+    QColor bc = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
 
     QPen pen(bc, cw, Qt::SolidLine);
     pen.setCapStyle(Qt::RoundCap);

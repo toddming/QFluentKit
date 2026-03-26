@@ -12,12 +12,12 @@ OptionsSettingCard::OptionsSettingCard(const QIcon& icon,
                                        const QVector<QString>& texts,
                                        QWidget* parent)
     : ExpandSettingCard(icon, title, content, parent),
-    texts(texts),
-    choiceLabel(new QLabel(this)),
-    buttonGroup(new QButtonGroup(this)) {
+    m_texts(texts),
+    m_choiceLabel(new QLabel(this)),
+    m_buttonGroup(new QButtonGroup(this)) {
 
-    choiceLabel->setObjectName("titleLabel");
-    addWidget(choiceLabel);
+    m_choiceLabel->setObjectName("titleLabel");
+    addWidget(m_choiceLabel);
 
     // 设置布局参数
     QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(viewLayout());
@@ -27,42 +27,42 @@ OptionsSettingCard::OptionsSettingCard(const QIcon& icon,
     }
 
     // 创建按钮
-    for (int i = 0; i < texts.size(); ++i) {
-        auto button = new RadioButton(texts[i], view());
-        buttonGroup->addButton(button);
+    for (int i = 0; i < m_texts.size(); ++i) {
+        auto button = new RadioButton(m_texts[i], view());
+        m_buttonGroup->addButton(button);
         layout->addWidget(button);
     }
 
     adjustViewSize();
 
-    connect(buttonGroup, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+    connect(m_buttonGroup, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this, &OptionsSettingCard::onButtonClicked);
 }
 
 void OptionsSettingCard::onButtonClicked(QAbstractButton *button) {
-    if (button->text() == choiceLabel->text())
+    if (button->text() == m_choiceLabel->text())
         return;
 
-    // QVariant value = button->property(configName.toUtf8().constData());
+    // QVariant value = button->property(m_configName.toUtf8().constData());
 
-    int index = buttonGroup->buttons().indexOf(button);
+    int index = m_buttonGroup->buttons().indexOf(button);
     const QString text = button->text();
     emit optionChanged(index, text);
 
-    choiceLabel->setText(button->text());
-    choiceLabel->adjustSize();
+    m_choiceLabel->setText(button->text());
+    m_choiceLabel->adjustSize();
 }
 
 void OptionsSettingCard::setValue(const QVariant& value) {
 
-    for (auto btn : buttonGroup->buttons()) {
+    for (auto btn : m_buttonGroup->buttons()) {
         bool isChecked = btn->text() == value.toString();
 
         btn->setChecked(isChecked);
 
         if (isChecked) {
-            choiceLabel->setText(btn->text());
-            choiceLabel->adjustSize();
+            m_choiceLabel->setText(btn->text());
+            m_choiceLabel->adjustSize();
         }
     }
 }

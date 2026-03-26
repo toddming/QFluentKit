@@ -108,10 +108,10 @@ private:
     void onExpandValueChanged(const QVariant &value);
     void adjustViewSize();
 
-    QFrame *scrollWidget;
-    QVBoxLayout *scrollLayout;
-    ExpandBorderWidget *borderWidget;
-    QPropertyAnimation *expandAni;
+    QFrame *m_scrollWidget;
+    QVBoxLayout *m_scrollLayout;
+    ExpandBorderWidget *m_borderWidget;
+    QPropertyAnimation *m_expandAni;
     bool m_isExpand;
     HeaderSettingCard *m_card;
     QVBoxLayout *m_viewLayout;
@@ -141,7 +141,7 @@ public:
 private:
     void adjustViewSize();
 
-    QList<QWidget *> widgets;
+    QList<QWidget *> m_widgets;
 };
 
 class QFLUENT_EXPORT SimpleExpandGroupSettingCard : public ExpandGroupSettingCard {

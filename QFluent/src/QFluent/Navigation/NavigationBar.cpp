@@ -16,7 +16,7 @@
 #include "StyleSheet.h"
 
 IconSlideAnimation::IconSlideAnimation(QWidget* parent)
-    : QPropertyAnimation(parent), m_offset(0), maxOffset(6) {
+    : QPropertyAnimation(parent), m_offset(0), m_maxOffset(6) {
     setTargetObject(this);
     setPropertyName("offset");
 }
@@ -33,7 +33,7 @@ void IconSlideAnimation::setOffset(float value) {
 }
 
 void IconSlideAnimation::slideDown() {
-    setEndValue(maxOffset);
+    setEndValue(m_maxOffset);
     setDuration(100);
     start();
 }
@@ -57,8 +57,8 @@ NavigationBarPushButton::NavigationBarPushButton(const FluentIconBase& icon, con
     , m_iconAni(new IconSlideAnimation(this))
     , m_fluentIcon(icon.clone())
     , m_isSelectedTextVisible(true)
-    , lightSelectedColor(QColor())
-    , darkSelectedColor(QColor()) {
+    , m_lightSelectedColor(QColor())
+    , m_darkSelectedColor(QColor()) {
 
     setFixedSize(64, 58);
 
@@ -67,8 +67,8 @@ NavigationBarPushButton::NavigationBarPushButton(const FluentIconBase& icon, con
 }
 
 void NavigationBarPushButton::setSelectedColor(const QColor& light, const QColor& dark) {
-    lightSelectedColor = light;
-    darkSelectedColor = dark;
+    m_lightSelectedColor = light;
+    m_darkSelectedColor = dark;
     update();
 }
 

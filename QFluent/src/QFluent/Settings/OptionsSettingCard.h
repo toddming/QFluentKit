@@ -23,10 +23,10 @@ private slots:
     void onButtonClicked(QAbstractButton *button);
 
 private:
-    QVector<QString> texts;
-    QString configName;
-    QLabel* choiceLabel;
-    QButtonGroup* buttonGroup;
+    QVector<QString> m_texts;
+    QString m_configName;
+    QLabel* m_choiceLabel;
+    QButtonGroup* m_buttonGroup;
 
     void adjustViewSize();
 };

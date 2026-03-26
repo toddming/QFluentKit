@@ -9,30 +9,30 @@
 
 SettingCardGroup::SettingCardGroup(const QString &title, QWidget *parent)
     : QWidget(parent)
-    , titleLabel(new QLabel(title, this))
-    , vBoxLayout(new QVBoxLayout(this))
-    , cardLayout(new ExpandLayout())
+    , m_titleLabel(new QLabel(title, this))
+    , m_vBoxLayout(new QVBoxLayout(this))
+    , m_cardLayout(new ExpandLayout())
 {
     // 设置布局属性
-    vBoxLayout->setContentsMargins(0, 0, 0, 0);
-    vBoxLayout->setAlignment(Qt::AlignTop);
-    vBoxLayout->setSpacing(0);
+    m_vBoxLayout->setContentsMargins(0, 0, 0, 0);
+    m_vBoxLayout->setAlignment(Qt::AlignTop);
+    m_vBoxLayout->setSpacing(0);
 
-    cardLayout->setContentsMargins(0, 0, 0, 0);
-    cardLayout->setSpacing(2);
+    m_cardLayout->setContentsMargins(0, 0, 0, 0);
+    m_cardLayout->setSpacing(2);
 
     // 添加控件到布局
-    vBoxLayout->addWidget(titleLabel);
-    vBoxLayout->addSpacing(12);
-    vBoxLayout->addLayout(cardLayout, 1);
+    m_vBoxLayout->addWidget(m_titleLabel);
+    m_vBoxLayout->addSpacing(12);
+    m_vBoxLayout->addLayout(m_cardLayout, 1);
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SETTING_CARD_GROUP);
 
     // 设置字体大小为 20
-    QFont font = titleLabel->font();
+    QFont font = m_titleLabel->font();
     font.setPointSize(20);
-    titleLabel->setFont(font);
-    titleLabel->adjustSize();
+    m_titleLabel->setFont(font);
+    m_titleLabel->adjustSize();
 }
 
 void SettingCardGroup::addSettingCard(QWidget *card)
@@ -40,7 +40,7 @@ void SettingCardGroup::addSettingCard(QWidget *card)
     if (!card) return;
 
     card->setParent(this); // 确保 parent 正确
-    cardLayout->addWidget(card);
+    m_cardLayout->addWidget(card);
     adjustSize(); // 调整自身大小
 }
 
@@ -54,6 +54,6 @@ void SettingCardGroup::addSettingCards(const QList<QWidget *> &cards)
 void SettingCardGroup::adjustSize()
 {
     // 根据 ExpandLayout 的 heightForWidth 计算高度
-    int h = cardLayout->heightForWidth(width()) + 56;
+    int h = m_cardLayout->heightForWidth(width()) + 56;
     resize(width(), h);
 }
