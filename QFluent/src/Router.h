@@ -10,7 +10,7 @@
 
 class StackedWidget;
 
-class StackedHistory : public QObject
+class QFLUENT_EXPORT StackedHistory : public QObject
 {
     Q_OBJECT
 

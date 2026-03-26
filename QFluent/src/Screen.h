@@ -1,8 +1,11 @@
 ﻿#pragma once
-#include <QRect>
 
+#include "FluentGlobal.h"
+
+class QRect;
 class QScreen;
-class Screen
+
+class QFLUENT_EXPORT Screen
 {
 public:
     /**

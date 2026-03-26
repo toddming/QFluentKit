@@ -25,17 +25,17 @@ std::pair<QString, bool> TextWrap::wrap(const QString &text, int width, bool onc
 void TextWrap::setCacheSize(int size)
 {
     TextWrap* inst = instance();
-    inst->d_func()->widthCache.setMaxCost(size);
-    inst->d_func()->charWidthCache.setMaxCost(size * 2);
-    inst->d_func()->tokenizeCache.setMaxCost(size / 2);
-    inst->d_func()->splitCache.setMaxCost(size / 2);
+    inst->d_func()->m_widthCache.setMaxCost(size);
+    inst->d_func()->m_charWidthCache.setMaxCost(size * 2);
+    inst->d_func()->m_tokenizeCache.setMaxCost(size / 2);
+    inst->d_func()->m_splitCache.setMaxCost(size / 2);
 }
 
 void TextWrap::clearCache()
 {
     TextWrap* inst = instance();
-    inst->d_func()->widthCache.clear();
-    inst->d_func()->charWidthCache.clear();
-    inst->d_func()->tokenizeCache.clear();
-    inst->d_func()->splitCache.clear();
+    inst->d_func()->m_widthCache.clear();
+    inst->d_func()->m_charWidthCache.clear();
+    inst->d_func()->m_tokenizeCache.clear();
+    inst->d_func()->m_splitCache.clear();
 }

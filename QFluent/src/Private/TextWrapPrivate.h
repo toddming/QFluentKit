@@ -47,10 +47,10 @@ public:
     friend uint qHash(const SplitKey &key, uint seed);
 
     // 缓存实例
-    QCache<WidthKey, int> widthCache;
-    QCache<QString, int> charWidthCache;
-    QCache<TokenizeKey, QVector<QString>> tokenizeCache;
-    QCache<SplitKey, QVector<QString>> splitCache;
+    QCache<WidthKey, int> m_widthCache;
+    QCache<QString, int> m_charWidthCache;
+    QCache<TokenizeKey, QVector<QString>> m_tokenizeCache;
+    QCache<SplitKey, QVector<QString>> m_splitCache;
 
     // 成员函数
     void initCache();

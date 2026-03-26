@@ -32,16 +32,16 @@ TextWrapPrivate::~TextWrapPrivate()
 
 void TextWrapPrivate::initCache()
 {
-    widthCache.setMaxCost(1000);
-    charWidthCache.setMaxCost(2000);
-    tokenizeCache.setMaxCost(500);
-    splitCache.setMaxCost(500);
+    m_widthCache.setMaxCost(1000);
+    m_charWidthCache.setMaxCost(2000);
+    m_tokenizeCache.setMaxCost(500);
+    m_splitCache.setMaxCost(500);
 }
 
 int TextWrapPrivate::getCharWidth(QChar ch)
 {
     QString key = QString(ch);
-    if (int* cached = charWidthCache.object(key)) {
+    if (int* cached = m_charWidthCache.object(key)) {
         return *cached;
     }
 
@@ -51,7 +51,7 @@ int TextWrapPrivate::getCharWidth(QChar ch)
     // 基本 ASCII 空白和控制字符(宽度为 1)
     if (ucs4 < 0x20 || ucs4 == 0x7F) {
         auto *value = new int(1);
-        charWidthCache.insert(key, value);
+        m_charWidthCache.insert(key, value);
         return 1;
     }
 
@@ -75,20 +75,20 @@ int TextWrapPrivate::getCharWidth(QChar ch)
         (ucs4 >= 0x30000 && ucs4 <= 0x3FFDF)
         ) {
         auto *value = new int(2);
-        charWidthCache.insert(key, value);
+        m_charWidthCache.insert(key, value);
         return 2;
     }
 
     // 半角片假名等(宽度为 1)
     if ((ucs4 >= 0xFF61 && ucs4 <= 0xFF9F)) { // Halfwidth Katakana
         auto *value = new int(1);
-        charWidthCache.insert(key, value);
+        m_charWidthCache.insert(key, value);
         return 1;
     }
 
     // 默认:窄字符(Latin, 数字, 符号等)
     auto *value = new int(1);
-    charWidthCache.insert(key, value);
+    m_charWidthCache.insert(key, value);
     return 1;
 }
 
@@ -97,7 +97,7 @@ int TextWrapPrivate::getTextWidth(const QString &str)
     if (str.isEmpty()) return 0;
 
     WidthKey key{str};
-    if (int* cached = widthCache.object(key)) {
+    if (int* cached = m_widthCache.object(key)) {
         return *cached;
     }
 
@@ -107,7 +107,7 @@ int TextWrapPrivate::getTextWidth(const QString &str)
     }
 
     auto *value = new int(width);
-    widthCache.insert(key, value);
+    m_widthCache.insert(key, value);
     return width;
 }
 
@@ -130,7 +130,7 @@ QString TextWrapPrivate::processWhitespace(const QString &text)
 QVector<QString> TextWrapPrivate::splitLongToken(const QString &token, int width)
 {
     SplitKey key{token, width};
-    if (auto* cached = splitCache.object(key)) {
+    if (auto* cached = m_splitCache.object(key)) {
         return *cached;
     }
 
@@ -150,7 +150,7 @@ QVector<QString> TextWrapPrivate::splitLongToken(const QString &token, int width
     }
 
     auto *value = new QVector<QString>(chunks);
-    splitCache.insert(key, value);
+    m_splitCache.insert(key, value);
     return chunks;
 }
 
@@ -159,7 +159,7 @@ QVector<QString> TextWrapPrivate::tokenize(const QString &line)
     if (line.isEmpty()) return {};
 
     TokenizeKey key{line};
-    if (auto* cached = tokenizeCache.object(key)) {
+    if (auto* cached = m_tokenizeCache.object(key)) {
         return *cached;
     }
 
@@ -185,7 +185,7 @@ QVector<QString> TextWrapPrivate::tokenize(const QString &line)
     }
 
     auto *value = new QVector<QString>(tokens);
-    tokenizeCache.insert(key, value);
+    m_tokenizeCache.insert(key, value);
     return tokens;
 }
 
