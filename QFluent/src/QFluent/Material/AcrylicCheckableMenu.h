@@ -1,27 +1,30 @@
-﻿#pragma once
+#pragma once
 
 #include "QFluent/Menu/RoundMenu.h"
 #include "FluentGlobal.h"
 #include "AcrylicLabel.h"
 #include "AcrylicMenu.h"
 
+class QAction;
+class QListWidgetItem;
 
-class QFLUENT_EXPORT AcrylicCheckableMenu : public RoundMenu {
+class QFLUENT_EXPORT AcrylicCheckableMenu : public RoundMenu
+{
     Q_OBJECT
 
 public:
-    explicit AcrylicCheckableMenu(const QString& title = "", QWidget* parent = nullptr,
+    explicit AcrylicCheckableMenu(const QString &title = QString(), QWidget *parent = nullptr,
                                   Fluent::MenuIndicator indicatorType = Fluent::MenuIndicator::CHECK);
 
     void setItemHeight(int height);
 
     void setUpMenu(AcrylicMenuActionListWidget *view);
     void exec(const QPoint &pos, bool animate = true,
-              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN);
+              Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN) override;
 
 protected:
     int adjustItemText(QListWidgetItem *item, QAction *action) override;
 
 private:
-    AcrylicMenuActionListWidget *listWidget;
+    AcrylicMenuActionListWidget *m_listWidget;
 };

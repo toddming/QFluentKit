@@ -1,21 +1,25 @@
-﻿#pragma once
+#pragma once
 
 #include "QFluent/Menu/MenuActionListWidget.h"
 #include "QFluent/Menu/RoundMenu.h"
 #include "FluentGlobal.h"
 #include "AcrylicLabel.h"
 
-class QFLUENT_EXPORT AcrylicMenuActionListWidget : public MenuActionListWidget {
+class QPainterPath;
+
+class QFLUENT_EXPORT AcrylicMenuActionListWidget : public MenuActionListWidget
+{
     Q_OBJECT
+
 public:
     explicit AcrylicMenuActionListWidget(QWidget *parent = nullptr);
 
     void setItemHeight(int height);
-    void addItem(QListWidgetItem *item);
+    void addItem(QListWidgetItem *item) override;
     QListWidgetItem* createPlaceholderItem(int height = 2);
     QPainterPath clipPath() const;
 
-    AcrylicBrush acrylicBrush;
+    AcrylicBrush m_acrylicBrush;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -26,10 +30,12 @@ private:
     int bottomMargin() const;
 };
 
-class QFLUENT_EXPORT AcrylicMenu : public RoundMenu {
+class QFLUENT_EXPORT AcrylicMenu : public RoundMenu
+{
     Q_OBJECT
+
 public:
-    explicit AcrylicMenu(const QString &title = "", QWidget *parent = nullptr);
+    explicit AcrylicMenu(const QString &title = QString(), QWidget *parent = nullptr);
 
     void setItemHeight(int height);
 
@@ -38,5 +44,5 @@ public:
               Fluent::MenuAnimation aniType = Fluent::MenuAnimation::DROP_DOWN) override;
 
 private:
-    AcrylicMenuActionListWidget *listWidget;
+    AcrylicMenuActionListWidget *m_listWidget;
 };

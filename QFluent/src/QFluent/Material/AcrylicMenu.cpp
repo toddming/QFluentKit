@@ -1,4 +1,4 @@
-﻿#include "AcrylicMenu.h"
+#include "AcrylicMenu.h"
 #include <QApplication>
 #include <QStyle>
 #include <QPainter>
@@ -14,15 +14,17 @@
 #include "Theme.h"
 
 AcrylicMenuActionListWidget::AcrylicMenuActionListWidget(QWidget *parent)
-    : MenuActionListWidget(parent),
-      acrylicBrush(viewport(), 35) {
+    : MenuActionListWidget(parent)
+    , m_acrylicBrush(viewport(), 35)
+{
     setViewportMargins(0, 0, 0, 0);
     setProperty("transparent", true);
     MenuActionListWidget::addItem(createPlaceholderItem(topMargin()));
     MenuActionListWidget::addItem(createPlaceholderItem(bottomMargin()));
 }
 
-void AcrylicMenuActionListWidget::updateAcrylicColor() {
+void AcrylicMenuActionListWidget::updateAcrylicColor()
+{
     QColor tintColor, luminosityColor;
     if (Theme::instance()->isDarkTheme()) {
         tintColor = QColor(32, 32, 32, 200);
@@ -31,23 +33,26 @@ void AcrylicMenuActionListWidget::updateAcrylicColor() {
         tintColor = QColor(255, 255, 255, 160);
         luminosityColor = QColor(255, 255, 255, 50);
     }
-    acrylicBrush.setTintColor(tintColor);
-    acrylicBrush.setLuminosityColor(luminosityColor);
+    m_acrylicBrush.setTintColor(tintColor);
+    m_acrylicBrush.setLuminosityColor(luminosityColor);
 }
 
-int AcrylicMenuActionListWidget::topMargin() const {
+int AcrylicMenuActionListWidget::topMargin() const
+{
     return 6;
 }
 
-int AcrylicMenuActionListWidget::bottomMargin() const {
+int AcrylicMenuActionListWidget::bottomMargin() const
+{
     return 6;
 }
 
-void AcrylicMenuActionListWidget::setItemHeight(int height) {
-    if (height == this->property("_itemHeight").toInt()) {
+void AcrylicMenuActionListWidget::setItemHeight(int height)
+{
+    if (height == property("_itemHeight").toInt()) {
         return;
     }
-    this->setProperty("_itemHeight", height);
+    setProperty("_itemHeight", height);
 
     for (int i = 1; i < count() - 1; ++i) {
         QListWidgetItem *item = this->item(i);
@@ -60,45 +65,50 @@ void AcrylicMenuActionListWidget::setItemHeight(int height) {
     adjustSize();
 }
 
-void AcrylicMenuActionListWidget::addItem(QListWidgetItem *item) {
+void AcrylicMenuActionListWidget::addItem(QListWidgetItem *item)
+{
     insertItem(count() - 1, item);
 }
 
-QListWidgetItem* AcrylicMenuActionListWidget::createPlaceholderItem(int height) {
+QListWidgetItem* AcrylicMenuActionListWidget::createPlaceholderItem(int height)
+{
     QListWidgetItem *item = new QListWidgetItem();
     item->setSizeHint(QSize(1, height));
     item->setFlags(Qt::NoItemFlags);
     return item;
 }
 
-QPainterPath AcrylicMenuActionListWidget::clipPath() const {
+QPainterPath AcrylicMenuActionListWidget::clipPath() const
+{
     QPainterPath path;
     path.addRoundedRect(QRectF(rect()).adjusted(0, 0, -2.5, -2.5), 8, 8);
     return path;
 }
 
-void AcrylicMenuActionListWidget::paintEvent(QPaintEvent *event) {
+void AcrylicMenuActionListWidget::paintEvent(QPaintEvent *event)
+{
     QPainter painter(viewport());
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    acrylicBrush.setClipPath(clipPath());
+    m_acrylicBrush.setClipPath(clipPath());
     updateAcrylicColor();
-    acrylicBrush.paint();
+    m_acrylicBrush.paint();
     MenuActionListWidget::paintEvent(event);
 }
 
 AcrylicMenu::AcrylicMenu(const QString &title, QWidget *parent)
     : RoundMenu(title, parent)
 {
-    listWidget = new AcrylicMenuActionListWidget(this);
-    setUpMenu(listWidget);
+    m_listWidget = new AcrylicMenuActionListWidget(this);
+    setUpMenu(m_listWidget);
 }
 
 void AcrylicMenu::setItemHeight(int height)
 {
-    listWidget->setItemHeight(height);
+    m_listWidget->setItemHeight(height);
 }
 
-void AcrylicMenu::setUpMenu(AcrylicMenuActionListWidget *newView) {
+void AcrylicMenu::setUpMenu(AcrylicMenuActionListWidget *newView)
+{
     if (view()) {
         hBoxLayout()->removeWidget(view());
         view()->deleteLater();
@@ -110,8 +120,9 @@ void AcrylicMenu::setUpMenu(AcrylicMenuActionListWidget *newView) {
     connect(newView, &AcrylicMenuActionListWidget::itemEntered, this, &AcrylicMenu::onItemEntered);
 }
 
-void AcrylicMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniType) {
+void AcrylicMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniType)
+{
     QPoint p = MenuAnimationManager::make(this, aniType)->endPosition(pos);
     RoundMenu::exec(pos, animate, aniType);
-    listWidget->acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));
+    m_listWidget->m_acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));
 }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <QLabel>
 #include <QThread>
@@ -7,9 +7,14 @@
 #include "FluentGlobal.h"
 
 class QWidget;
+class QPixmap;
+class QImage;
+class QString;
+class QSize;
+class QColor;
 
 // 高斯模糊工具类
-class GaussianBlur
+class QFLUENT_EXPORT GaussianBlur
 {
 public:
     static QPixmap blur(const QPixmap &source, int radius, double brightFactor = 1.0);
@@ -19,8 +24,8 @@ public:
 private:
     static QImage gaussianBlurImage(const QImage &source, int radius);
     static void boxBlur(QImage &image, int radius);
-    static void boxBlurHorizontal(uint32_t* src, uint32_t* dest, int w, int h, int r);
-    static void boxBlurVertical(uint32_t* src, uint32_t* dest, int w, int h, int r);
+    static void boxBlurHorizontal(uint32_t *src, uint32_t *dest, int w, int h, int r);
+    static void boxBlurVertical(uint32_t *src, uint32_t *dest, int w, int h, int r);
 
     // 修正: 参数改为 double 类型，因为 sigma 是浮点数
     static std::vector<int> boxesForGauss(double sigma, int n);
@@ -30,7 +35,7 @@ private:
 };
 
 // 模糊线程类
-class BlurCoverThread : public QThread
+class QFLUENT_EXPORT BlurCoverThread : public QThread
 {
     Q_OBJECT
 
