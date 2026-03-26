@@ -129,22 +129,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/QFluent/
         PATTERN "Private" EXCLUDE
 )
 
-# 安装运行时资源文件（图标、样式表等，供应用程序运行时加载）
-# 路径：<prefix>/share/QFluent/res/
-# 应用程序可通过 QStandardPaths::GenericDataLocation + "QFluent/res" 定位
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/QFluent/res
-    FILES_MATCHING
-        PATTERN "*.svg"
-        PATTERN "*.png"
-        PATTERN "*.qss"
-        PATTERN "*.css"
-        PATTERN "*.xml"
-        PATTERN "*.json"
-        # 排除 qrc 源文件本身（已编译进库，无需重复安装）
-        PATTERN "*.qrc" EXCLUDE
-)
-
 # ==================== 库文件安装 ====================
 # Windows 平台：Debug 版本使用 'd' 后缀，与 Release 版本共存于同一目录
 install(TARGETS QFluent
