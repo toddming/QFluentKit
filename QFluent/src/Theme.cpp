@@ -24,7 +24,6 @@ Theme::Theme(QObject* parent) : QObject(parent)
         QPointer<Theme> self = this;
         QStyleHints *styleHints = QApplication::styleHints();
         connect(styleHints, &QStyleHints::colorSchemeChanged, [d, self](Qt::ColorScheme scheme) {
-            // 检查 Theme 对象是否仍然有效
             if (!self) {
                 return;
             }
@@ -43,7 +42,11 @@ Theme::Theme(QObject* parent) : QObject(parent)
 
 Theme::~Theme()
 {
-
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+    if (qApp) {
+        disconnect(QApplication::styleHints(), nullptr, this, nullptr);
+    }
+#endif
 }
 
 Theme *Theme::instance()
@@ -77,6 +80,8 @@ void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
 
 void Theme::toggleTheme(bool lazy) {
     Fluent::ThemeMode newTheme = isDarkTheme() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
+    Q_D(Theme);
+    d->m_autoTheme = false;
     setTheme(newTheme, lazy);
 }
 
@@ -97,18 +102,18 @@ void Theme::setThemeColor(const QColor& color, bool lazy) {
         d->m_themeColor = color;
         if (!lazy) {
             StyleSheetManager::instance()->updateStyleSheet(lazy);
-            // emit themeColorChanged(color);
+            emit themeColorChanged(color);
         }
     }
 }
 
 bool Theme::isDarkTheme() const {
     Q_D(const Theme);
+    if (d->m_autoTheme) {
+        return d->m_sysIsDarkMode;
+    }
     return d->m_currentTheme == Fluent::ThemeMode::DARK;
 }
-
-
-
 
 
 void Theme::setFont(QWidget *widget, int fontSize, QFont::Weight weight)

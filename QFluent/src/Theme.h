@@ -12,6 +12,7 @@ class QFLUENT_EXPORT Theme : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE_D(d_ptr, Theme)
+    Q_DISABLE_COPY(Theme)
 
 public:
     explicit Theme(QObject* parent = nullptr);
@@ -29,12 +30,12 @@ public:
 
     bool isDarkTheme() const;
 
-
     void setFont(QWidget *widget, int fontSize = 14, QFont::Weight weight = QFont::Normal);
     QFont font(int fontSize = 14, QFont::Weight weight = QFont::Normal);
 
 Q_SIGNALS:
     Q_SIGNAL void themeModeChanged(Fluent::ThemeMode themeType);
+    Q_SIGNAL void themeColorChanged(const QColor& color);
 
 private:
     QScopedPointer<ThemePrivate> d_ptr;
