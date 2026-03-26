@@ -15,5 +15,5 @@ protected:
     void hideEvent(QHideEvent *event);
 
 private:
-    IndeterminateProgressRing *progressRing{nullptr};
+    IndeterminateProgressRing *m_progressRing{nullptr};
 };

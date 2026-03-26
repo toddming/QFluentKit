@@ -57,7 +57,7 @@ void EditLayer::paintEvent(QPaintEvent *)
 TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
-    layer = new EditLayer(this);
+    m_layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
     setHorizontalScrollBar(new ScrollBar(this));
@@ -75,7 +75,7 @@ void TextEdit::contextMenuEvent(QContextMenuEvent *e)
 PlainTextEdit::PlainTextEdit(QWidget *parent)
     : QPlainTextEdit(parent)
 {
-    layer = new EditLayer(this);
+    m_layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
     setHorizontalScrollBar(new ScrollBar(this));
@@ -95,7 +95,7 @@ void PlainTextEdit::contextMenuEvent(QContextMenuEvent *e)
 TextBrowser::TextBrowser(QWidget *parent)
     : QTextBrowser(parent)
 {
-    layer = new EditLayer(this);
+    m_layer = new EditLayer(this);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
     setHorizontalScrollBar(new ScrollBar(this));

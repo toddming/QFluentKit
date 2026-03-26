@@ -110,9 +110,9 @@ private slots:
     void onClearButtonClicked();
 
 private:
-    LineEditButton *searchButton;
-    LineEditButton *clearButton;
-    QHBoxLayout *hBoxLayout;
+    LineEditButton *m_searchButton;
+    LineEditButton *m_clearButton;
+    QHBoxLayout *m_hBoxLayout;
 
     void initWidgets();
     void updateTextMargins();
@@ -187,5 +187,5 @@ protected:
     QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
 
 private:
-    LineEditButton *viewButton = nullptr;
+    LineEditButton *m_viewButton = nullptr;
 };

@@ -277,9 +277,9 @@ LineEditButton* LineEdit::clearButton()
 
 SearchLineEdit::SearchLineEdit(QWidget *parent)
     : LineEdit(parent)
-    , searchButton(nullptr)
-    , clearButton(nullptr)
-    , hBoxLayout(nullptr)
+    , m_searchButton(nullptr)
+    , m_clearButton(nullptr)
+    , m_hBoxLayout(nullptr)
 {
     initWidgets();
 }
@@ -289,14 +289,14 @@ void SearchLineEdit::initWidgets()
     setClearButtonEnabled(true);
     setTextMargins(0, 0, 59, 0);
 
-    clearButton = LineEdit::clearButton();
-    hBoxLayout = qobject_cast<QHBoxLayout*>(layout());
+    m_clearButton = LineEdit::clearButton();
+    m_hBoxLayout = qobject_cast<QHBoxLayout*>(layout());
 
-    searchButton = new LineEditButton(FluentIcon(Fluent::IconType::SEARCH).qicon(), this);
-    hBoxLayout->addWidget(searchButton);
+    m_searchButton = new LineEditButton(FluentIcon(Fluent::IconType::SEARCH).qicon(), this);
+    m_hBoxLayout->addWidget(m_searchButton);
 
-    connect(searchButton, &LineEditButton::clicked, this, &SearchLineEdit::search);
-    connect(searchButton, &LineEditButton::clicked, this, &SearchLineEdit::onClearButtonClicked);
+    connect(m_searchButton, &LineEditButton::clicked, this, &SearchLineEdit::search);
+    connect(m_searchButton, &LineEditButton::clicked, this, &SearchLineEdit::onClearButtonClicked);
 
     // connect(this, &SearchLineEdit::textChanged, [this](const QString &text) {
     //     clearButton->setVisible(!text.isEmpty());
@@ -483,16 +483,16 @@ void CompleterMenu::popup()
 PasswordLineEdit::PasswordLineEdit(QWidget *parent)
     : LineEdit(parent)
 {
-    viewButton = new LineEditButton(FluentIcon(Fluent::IconType::VIEW).qicon(), this);
+    m_viewButton = new LineEditButton(FluentIcon(Fluent::IconType::VIEW).qicon(), this);
 
     setEchoMode(QLineEdit::Password);
     setContextMenuPolicy(Qt::NoContextMenu);
     setClearButtonEnabled(false);
-    hBoxLayout()->addWidget(viewButton, 0, Qt::AlignRight);
+    hBoxLayout()->addWidget(m_viewButton, 0, Qt::AlignRight);
 
-    viewButton->installEventFilter(this);
-    viewButton->setIconSize(QSize(13, 13));
-    viewButton->setFixedSize(29, 25);
+    m_viewButton->installEventFilter(this);
+    m_viewButton->setIconSize(QSize(13, 13));
+    m_viewButton->setFixedSize(29, 25);
 }
 
 void PasswordLineEdit::setPasswordVisible(bool isVisible)
@@ -510,30 +510,30 @@ void PasswordLineEdit::setClearButtonEnabled(bool enable)
     LineEdit::setClearButtonEnabled(enable);
 
     const int clearWidth = 28 * enable;
-    const int viewWidth = viewButton->isHidden() ? 0 : 30;
+    const int viewWidth = m_viewButton->isHidden() ? 0 : 30;
     setTextMargins(0, 0, clearWidth + viewWidth, 0);
 }
 
 void PasswordLineEdit::setViewPasswordButtonVisible(bool isVisible)
 {
-    viewButton->setVisible(isVisible);
+    m_viewButton->setVisible(isVisible);
     // 重新调整边距
     setClearButtonEnabled(isClearButtonEnabled());
 }
 
 bool PasswordLineEdit::eventFilter(QObject *obj, QEvent *e)
 {
-    if (obj != viewButton || !isEnabled()) {
+    if (obj != m_viewButton || !isEnabled()) {
         return LineEdit::eventFilter(obj, e);
     }
 
     if (e->type() == QEvent::MouseButtonPress) {
-        viewButton->setProperty("isPressed", true);
+        m_viewButton->setProperty("isPressed", true);
         setPasswordVisible(true);
         return true;
     }
     else if (e->type() == QEvent::MouseButtonRelease) {
-        viewButton->setProperty("isPressed", false);
+        m_viewButton->setProperty("isPressed", false);
         setPasswordVisible(false);
         return true;
     }

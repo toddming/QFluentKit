@@ -37,7 +37,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
-    EditLayer *layer = nullptr;
+    EditLayer *m_layer = nullptr;
 };
 
 // ============================================================
@@ -54,7 +54,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
-    EditLayer *layer = nullptr;
+    EditLayer *m_layer = nullptr;
 };
 
 // ============================================================
@@ -71,5 +71,5 @@ protected:
     void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
-    EditLayer *layer = nullptr;
+    EditLayer *m_layer = nullptr;
 };

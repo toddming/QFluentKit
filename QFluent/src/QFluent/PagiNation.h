@@ -51,11 +51,11 @@ private:
     Fluent::Alignment m_align;
     int m_buttonCount;
     int m_height;
-    QHBoxLayout *BJ, *BJ_main;
+    QHBoxLayout *m_BJ, *m_BJMain;
     // ✅ 删除spacer指针 - 让QLayout管理它们
     int m_pageNow = 1, m_total = 0, m_pageSize = DEFAULT_PAGE_SIZE;
-    TransparentToolButton *prevBtn, *nextBtn, *prevFBtn, *nextFBtn;
-    QFrame *mainBox;
+    TransparentToolButton *m_prevBtn, *m_nextBtn, *m_prevFBtn, *m_nextFBtn;
+    QFrame *m_mainBox;
 
 signals:
     /** 页码变更信号 */

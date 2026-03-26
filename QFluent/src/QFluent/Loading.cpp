@@ -18,11 +18,11 @@ Loading::Loading(const QString &content, QWidget *parent)
     QVBoxLayout *lay = new QVBoxLayout(w);
     lay->setSpacing(12);
 
-    progressRing = new IndeterminateProgressRing(w);
-    progressRing->setFixedSize(45, 45);
-    progressRing->setStrokeWidth(4);
-    progressRing->setCustomBarColor(Qt::white, Qt::white);
-    lay->addWidget(progressRing, 0, Qt::AlignHCenter);
+    m_progressRing = new IndeterminateProgressRing(w);
+    m_progressRing->setFixedSize(45, 45);
+    m_progressRing->setStrokeWidth(4);
+    m_progressRing->setCustomBarColor(Qt::white, Qt::white);
+    lay->addWidget(m_progressRing, 0, Qt::AlignHCenter);
 
     auto contentLabel = new QLabel(w);
     contentLabel->setStyleSheet("QLabel{color: white; font-weight: bold; font-size: 16px;}");
@@ -37,16 +37,16 @@ Loading::Loading(const QString &content, QWidget *parent)
 
 void Loading::showEvent(QShowEvent *event)
 {
-    if (progressRing) {
-        progressRing->start();
+    if (m_progressRing) {
+        m_progressRing->start();
     }
     MaskDialogBase::showEvent(event);
 }
 
 void Loading::hideEvent(QHideEvent *event)
 {
-    if (progressRing) {
-        progressRing->stop();
+    if (m_progressRing) {
+        m_progressRing->stop();
     }
     MaskDialogBase::hideEvent(event);
 }

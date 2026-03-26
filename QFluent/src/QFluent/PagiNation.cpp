@@ -72,47 +72,47 @@ void PagiNation::validateButtonCount() {
 void PagiNation::init () {
     validateButtonCount();
 
-    BJ = new QHBoxLayout(this);
-    BJ->setSpacing(0);
-    BJ->setContentsMargins(0, 0, 0, 0);
+    m_BJ = new QHBoxLayout(this);
+    m_BJ->setSpacing(0);
+    m_BJ->setContentsMargins(0, 0, 0, 0);
 
     // ✅ 不再在init中创建TH_left和TH_right
     // 改为在setWidgetAlign()中创建临时对象
 
-    prevFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Begin")), this);
-    prevFBtn->setFocusPolicy(Qt::NoFocus);
-    prevFBtn->setIconSize(QSize(10, 10));
-    prevFBtn->setFixedSize(m_height, m_height);
-    connect(prevFBtn, SIGNAL(clicked()), this, SLOT(toPrev5()));
+    m_prevFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Begin")), this);
+    m_prevFBtn->setFocusPolicy(Qt::NoFocus);
+    m_prevFBtn->setIconSize(QSize(10, 10));
+    m_prevFBtn->setFixedSize(m_height, m_height);
+    connect(m_prevFBtn, SIGNAL(clicked()), this, SLOT(toPrev5()));
 
-    prevBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Previous")), this);
-    prevBtn->setFocusPolicy(Qt::NoFocus);
-    prevBtn->setIconSize(QSize(10, 10));
-    prevBtn->setFixedSize(m_height, m_height);
-    connect(prevBtn, SIGNAL(clicked()), this, SLOT(toPrev1()));
+    m_prevBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Previous")), this);
+    m_prevBtn->setFocusPolicy(Qt::NoFocus);
+    m_prevBtn->setIconSize(QSize(10, 10));
+    m_prevBtn->setFixedSize(m_height, m_height);
+    connect(m_prevBtn, SIGNAL(clicked()), this, SLOT(toPrev1()));
 
-    mainBox = new QFrame(this);
+    m_mainBox = new QFrame(this);
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
 
-    BJ_main = new QHBoxLayout(mainBox);
-    BJ_main->setSpacing(4);
-    BJ_main->setContentsMargins(0, 0, 0, 0);
+    m_BJMain = new QHBoxLayout(m_mainBox);
+    m_BJMain->setSpacing(4);
+    m_BJMain->setContentsMargins(0, 0, 0, 0);
 
-    mainBox->setSizePolicy(CL);
-    mainBox->setObjectName("mainBox");
-    mainBox->setStyleSheet("QFrame#mainBox{margin-left: 4px; margin-right: 4px;}");
+    m_mainBox->setSizePolicy(CL);
+    m_mainBox->setObjectName("mainBox");
+    m_mainBox->setStyleSheet("QFrame#mainBox{margin-left: 4px; margin-right: 4px;}");
 
-    nextBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Next")), this);
-    nextBtn->setFocusPolicy(Qt::NoFocus);
-    nextBtn->setIconSize(QSize(10, 10));
-    nextBtn->setFixedSize(m_height, m_height);
-    connect(nextBtn, SIGNAL(clicked()), this, SLOT(toNext1()));
+    m_nextBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Next")), this);
+    m_nextBtn->setFocusPolicy(Qt::NoFocus);
+    m_nextBtn->setIconSize(QSize(10, 10));
+    m_nextBtn->setFixedSize(m_height, m_height);
+    connect(m_nextBtn, SIGNAL(clicked()), this, SLOT(toNext1()));
 
-    nextFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("End")), this);
-    nextFBtn->setFocusPolicy(Qt::NoFocus);
-    nextFBtn->setIconSize(QSize(10, 10));
-    nextFBtn->setFixedSize(m_height, m_height);
-    connect(nextFBtn, SIGNAL(clicked()), this, SLOT(toNext5()));
+    m_nextFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("End")), this);
+    m_nextFBtn->setFocusPolicy(Qt::NoFocus);
+    m_nextFBtn->setIconSize(QSize(10, 10));
+    m_nextFBtn->setFixedSize(m_height, m_height);
+    connect(m_nextFBtn, SIGNAL(clicked()), this, SLOT(toNext5()));
 
     setWidgetAlign();
     computePage();
@@ -129,10 +129,10 @@ void PagiNation::computePage () {
 
     // 3. 只有一页或零页时的处理
     if (totalNum <= 1) {
-        prevFBtn->setEnabled(false);
-        prevBtn->setEnabled(false);
-        nextBtn->setEnabled(false);
-        nextFBtn->setEnabled(false);
+        m_prevFBtn->setEnabled(false);
+        m_prevBtn->setEnabled(false);
+        m_nextBtn->setEnabled(false);
+        m_nextFBtn->setEnabled(false);
 
         QList<__PagiNation_DATA> list;
         __PagiNation_DATA data = {PaginationItemType::Button, 1, true}; // 显示第1页
@@ -142,10 +142,10 @@ void PagiNation::computePage () {
     }
 
     // 4. 正常多页逻辑：设置导航按钮状态
-    prevFBtn->setEnabled(m_pageNow > 1);
-    prevBtn->setEnabled(m_pageNow > 1);
-    nextBtn->setEnabled(m_pageNow < totalNum);
-    nextFBtn->setEnabled(m_pageNow < totalNum);
+    m_prevFBtn->setEnabled(m_pageNow > 1);
+    m_prevBtn->setEnabled(m_pageNow > 1);
+    m_nextBtn->setEnabled(m_pageNow < totalNum);
+    m_nextFBtn->setEnabled(m_pageNow < totalNum);
 
     QList<__PagiNation_DATA> list;
 
@@ -222,19 +222,19 @@ void PagiNation::computePage () {
 /** 渲染按钮列表 */
 void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
     // 先取消所有按钮的选中状态，避免闪烁
-    QList<Button*> buttons = mainBox->findChildren<Button*>();
+    QList<Button*> buttons = m_mainBox->findChildren<Button*>();
     for (Button* btn : buttons) {
         if (btn->isCheckable()) {
             btn->setCheckable(false);
         }
     }
 
-    qDeleteAll(mainBox->findChildren<Button*>());
-    qDeleteAll(mainBox->findChildren<QLabel*>());
+    qDeleteAll(m_mainBox->findChildren<Button*>());
+    qDeleteAll(m_mainBox->findChildren<QLabel*>());
 
     for (const auto& data : list) {
         if (data.type == PaginationItemType::Button) {
-            Button *btn = new Button(QString::number(data.labelNum), mainBox);
+            Button *btn = new Button(QString::number(data.labelNum), m_mainBox);
             btn->setFocusPolicy(Qt::NoFocus);
             btn->setFixedHeight(m_height);
             connect(btn, SIGNAL(cClick(Button*)), this, SLOT(handleClick(Button*)));
@@ -246,13 +246,13 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
             if (allDisabled) btn->setEnabled(false);
 
             btn->show();
-            BJ_main->addWidget(btn);
+            m_BJMain->addWidget(btn);
         } else if (data.type == PaginationItemType::Ellipsis) {
-            BodyLabel *dot = new BodyLabel("...", mainBox);
+            BodyLabel *dot = new BodyLabel("...", m_mainBox);
             dot->setFixedHeight(m_height);
             dot->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
             dot->show();
-            BJ_main->addWidget(dot);
+            m_BJMain->addWidget(dot);
         }
     }
 }
@@ -261,8 +261,8 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
 void PagiNation::setWidgetAlign () {
     // ✅ 清除布局中的所有项
     // QLayout 会自动删除 spacer（QLayoutItem 是 QSpacerItem 的基类）
-    while (BJ->count() > 0) {
-        QLayoutItem *item = BJ->takeAt(0);
+    while (m_BJ->count() > 0) {
+        QLayoutItem *item = m_BJ->takeAt(0);
         if (item != nullptr) {
             // takeAt 只是移除，如果是widget会保留
             // 但spacer会被自动删除（由QLayout管理）
@@ -271,25 +271,25 @@ void PagiNation::setWidgetAlign () {
     }
 
     // 重新添加所有widgets
-    BJ->setSpacing(0);
-    BJ->setContentsMargins(0, 0, 0, 0);
+    m_BJ->setSpacing(0);
+    m_BJ->setContentsMargins(0, 0, 0, 0);
 
-    BJ->addWidget(prevFBtn);
-    BJ->addSpacing(2);
-    BJ->addWidget(prevBtn);
-    BJ->addWidget(mainBox);
-    BJ->addWidget(nextBtn);
-    BJ->addSpacing(2);
-    BJ->addWidget(nextFBtn);
+    m_BJ->addWidget(m_prevFBtn);
+    m_BJ->addSpacing(2);
+    m_BJ->addWidget(m_prevBtn);
+    m_BJ->addWidget(m_mainBox);
+    m_BJ->addWidget(m_nextBtn);
+    m_BJ->addSpacing(2);
+    m_BJ->addWidget(m_nextFBtn);
 
     // ✅ 添加spacer，让QLayout管理它们（不保存指针）
     if (m_align == Fluent::Alignment::Align_Left) {
-        BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        m_BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     } else if (m_align == Fluent::Alignment::Align_Right) {
-        BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        m_BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     } else {
-        BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        m_BJ->insertItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        m_BJ->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     }
 }
 

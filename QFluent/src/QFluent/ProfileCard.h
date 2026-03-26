@@ -18,8 +18,8 @@ public:
                          QWidget *parent = nullptr);
 
 private:
-    AvatarWidget *avatar;
-    BodyLabel *nameLabel;
-    CaptionLabel *emailLabel;
-    HyperlinkButton *logoutButton;
+    AvatarWidget *m_avatar;
+    BodyLabel *m_nameLabel;
+    CaptionLabel *m_emailLabel;
+    HyperlinkButton *m_logoutButton;
 };
