@@ -74,20 +74,20 @@ TranslateYAnimation::TranslateYAnimation(QWidget *parent, int offset)
     : AnimationBase(*new TranslateYAnimationPrivate(), parent)
 {
     Q_D(TranslateYAnimation);
-    d->maxOffset = offset;
-    d->ani = new QPropertyAnimation(this, "y", this);
+    d->m_maxOffset = offset;
+    d->m_ani = new QPropertyAnimation(this, "y", this);
 }
 
 TranslateYAnimation::~TranslateYAnimation() {}
 
 float TranslateYAnimation::y() const {
     Q_D(const TranslateYAnimation);
-    return d->y;
+    return d->m_y;
 }
 
 void TranslateYAnimation::setY(float y) {
     Q_D(TranslateYAnimation);
-    d->y = y;
+    d->m_y = y;
     static_cast<QWidget*>(parent())->update();
     emit valueChanged(y);
 }
@@ -95,19 +95,19 @@ void TranslateYAnimation::setY(float y) {
 void TranslateYAnimation::_onPress(QMouseEvent *e) {
     Q_UNUSED(e);
     Q_D(TranslateYAnimation);
-    d->ani->setEndValue(d->maxOffset);
-    d->ani->setEasingCurve(QEasingCurve::OutQuad);
-    d->ani->setDuration(150);
-    d->ani->start();
+    d->m_ani->setEndValue(d->m_maxOffset);
+    d->m_ani->setEasingCurve(QEasingCurve::OutQuad);
+    d->m_ani->setDuration(150);
+    d->m_ani->start();
 }
 
 void TranslateYAnimation::_onRelease(QMouseEvent *e) {
     Q_UNUSED(e);
     Q_D(TranslateYAnimation);
-    d->ani->setEndValue(0);
-    d->ani->setDuration(500);
-    d->ani->setEasingCurve(QEasingCurve::OutElastic);
-    d->ani->start();
+    d->m_ani->setEndValue(0);
+    d->m_ani->setDuration(500);
+    d->m_ani->setEasingCurve(QEasingCurve::OutElastic);
+    d->m_ani->start();
 }
 
 // ==================== BackgroundColorObject ====================
@@ -129,12 +129,12 @@ BackgroundColorObject::~BackgroundColorObject() {}
 
 QColor BackgroundColorObject::backgroundColor() const {
     Q_D(const BackgroundColorObject);
-    return d->backgroundColor;
+    return d->m_backgroundColor;
 }
 
 void BackgroundColorObject::setBackgroundColor(const QColor &color) {
     Q_D(BackgroundColorObject);
-    d->backgroundColor = color;
+    d->m_backgroundColor = color;
     if (auto widget = qobject_cast<QWidget*>(parent())) {
         widget->update();
     }
@@ -146,9 +146,9 @@ BackgroundAnimationWidget::BackgroundAnimationWidget(QWidget *parent)
     , d_ptr(new BackgroundAnimationWidgetPrivate())
 {
     Q_D(BackgroundAnimationWidget);
-    d->bgColorObject = new BackgroundColorObject(this);
-    d->backgroundColorAni = new QPropertyAnimation(d->bgColorObject, "backgroundColor", this);
-    d->backgroundColorAni->setDuration(120);
+    d->m_bgColorObject = new BackgroundColorObject(this);
+    d->m_backgroundColorAni = new QPropertyAnimation(d->m_bgColorObject, "backgroundColor", this);
+    d->m_backgroundColorAni->setDuration(120);
     installEventFilter(this);
 }
 
@@ -157,9 +157,9 @@ BackgroundAnimationWidget::BackgroundAnimationWidget(BackgroundAnimationWidgetPr
     , d_ptr(&dd)
 {
     Q_D(BackgroundAnimationWidget);
-    d->bgColorObject = new BackgroundColorObject(this);
-    d->backgroundColorAni = new QPropertyAnimation(d->bgColorObject, "backgroundColor", this);
-    d->backgroundColorAni->setDuration(120);
+    d->m_bgColorObject = new BackgroundColorObject(this);
+    d->m_backgroundColorAni = new QPropertyAnimation(d->m_bgColorObject, "backgroundColor", this);
+    d->m_backgroundColorAni->setDuration(120);
     installEventFilter(this);
 }
 
@@ -192,17 +192,17 @@ void BackgroundAnimationWidget::updateBackgroundColor() {
         color = disabledBackgroundColor();
     } else if (qobject_cast<QLineEdit*>(this) && hasFocus()) {
         color = focusInBackgroundColor();
-    } else if (d->isPressed) {
+    } else if (d->m_isPressed) {
         color = pressedBackgroundColor();
-    } else if (d->isHover) {
+    } else if (d->m_isHover) {
         color = hoverBackgroundColor();
     } else {
         color = normalBackgroundColor();
     }
 
-    d->backgroundColorAni->stop();
-    d->backgroundColorAni->setEndValue(color);
-    d->backgroundColorAni->start();
+    d->m_backgroundColorAni->stop();
+    d->m_backgroundColorAni->setEndValue(color);
+    d->m_backgroundColorAni->start();
 }
 
 bool BackgroundAnimationWidget::eventFilter(QObject *obj, QEvent *e) {
@@ -220,14 +220,14 @@ bool BackgroundAnimationWidget::eventFilter(QObject *obj, QEvent *e) {
 
 void BackgroundAnimationWidget::mousePressEvent(QMouseEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->isPressed = true;
+    d->m_isPressed = true;
     updateBackgroundColor();
     QWidget::mousePressEvent(e);
 }
 
 void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->isPressed = false;
+    d->m_isPressed = false;
     updateBackgroundColor();
     QWidget::mouseReleaseEvent(e);
 }
@@ -235,14 +235,14 @@ void BackgroundAnimationWidget::mouseReleaseEvent(QMouseEvent *e) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void BackgroundAnimationWidget::enterEvent(QEnterEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->isHover = true;
+    d->m_isHover = true;
     updateBackgroundColor();
     QWidget::enterEvent(e);
 }
 #else
 void BackgroundAnimationWidget::enterEvent(QEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->isHover = true;
+    d->m_isHover = true;
     updateBackgroundColor();
     QWidget::enterEvent(e);
 }
@@ -250,7 +250,7 @@ void BackgroundAnimationWidget::enterEvent(QEvent *e) {
 
 void BackgroundAnimationWidget::leaveEvent(QEvent *e) {
     Q_D(BackgroundAnimationWidget);
-    d->isHover = false;
+    d->m_isHover = false;
     updateBackgroundColor();
     QWidget::leaveEvent(e);
 }
@@ -262,32 +262,32 @@ void BackgroundAnimationWidget::focusInEvent(QFocusEvent *e) {
 
 bool BackgroundAnimationWidget::isHover() const {
     Q_D(const BackgroundAnimationWidget);
-    return d->isHover;
+    return d->m_isHover;
 }
 
 bool BackgroundAnimationWidget::isPressed() const {
     Q_D(const BackgroundAnimationWidget);
-    return d->isPressed;
+    return d->m_isPressed;
 }
 
 void BackgroundAnimationWidget::setHover(bool hover) {
     Q_D(BackgroundAnimationWidget);
-    d->isHover = hover;
+    d->m_isHover = hover;
 }
 
 void BackgroundAnimationWidget::setPressed(bool pressed) {
     Q_D(BackgroundAnimationWidget);
-    d->isPressed = pressed;
+    d->m_isPressed = pressed;
 }
 
 QColor BackgroundAnimationWidget::backgroundColor() const {
     Q_D(const BackgroundAnimationWidget);
-    return d->bgColorObject->backgroundColor();
+    return d->m_bgColorObject->backgroundColor();
 }
 
 void BackgroundAnimationWidget::setBackgroundColor(const QColor &color) {
     Q_D(BackgroundAnimationWidget);
-    d->bgColorObject->setBackgroundColor(color);
+    d->m_bgColorObject->setBackgroundColor(color);
 }
 
 // ==================== DropShadowAnimation ====================
@@ -296,10 +296,10 @@ DropShadowAnimation::DropShadowAnimation(QWidget *parent, const QColor &normalCo
     , d_ptr(new DropShadowAnimationPrivate())
 {
     Q_D(DropShadowAnimation);
-    d->normalColor = normalColor;
-    d->hoverColor = hoverColor;
-    d->shadowEffect = new QGraphicsDropShadowEffect(this);
-    d->shadowEffect->setColor(normalColor);
+    d->m_normalColor = normalColor;
+    d->m_hoverColor = hoverColor;
+    d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
+    d->m_shadowEffect->setColor(normalColor);
     parent->installEventFilter(this);
 }
 
@@ -307,22 +307,22 @@ DropShadowAnimation::~DropShadowAnimation() {}
 
 void DropShadowAnimation::setBlurRadius(int radius) {
     Q_D(DropShadowAnimation);
-    d->blurRadius = radius;
+    d->m_blurRadius = radius;
 }
 
 void DropShadowAnimation::setOffset(int dx, int dy) {
     Q_D(DropShadowAnimation);
-    d->offset = QPoint(dx, dy);
+    d->m_offset = QPoint(dx, dy);
 }
 
 void DropShadowAnimation::setNormalColor(const QColor &color) {
     Q_D(DropShadowAnimation);
-    d->normalColor = color;
+    d->m_normalColor = color;
 }
 
 void DropShadowAnimation::setHoverColor(const QColor &color) {
     Q_D(DropShadowAnimation);
-    d->hoverColor = color;
+    d->m_hoverColor = color;
 }
 
 void DropShadowAnimation::setColor(const QColor &color) {
@@ -331,17 +331,17 @@ void DropShadowAnimation::setColor(const QColor &color) {
 
 QGraphicsDropShadowEffect *DropShadowAnimation::_createShadowEffect() {
     Q_D(DropShadowAnimation);
-    d->shadowEffect = new QGraphicsDropShadowEffect(this);
-    d->shadowEffect->setOffset(d->offset);
-    d->shadowEffect->setBlurRadius(d->blurRadius);
-    d->shadowEffect->setColor(d->normalColor);
+    d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
+    d->m_shadowEffect->setOffset(d->m_offset);
+    d->m_shadowEffect->setBlurRadius(d->m_blurRadius);
+    d->m_shadowEffect->setColor(d->m_normalColor);
 
-    setTargetObject(d->shadowEffect);
-    setStartValue(d->shadowEffect->color());
+    setTargetObject(d->m_shadowEffect);
+    setStartValue(d->m_shadowEffect->color());
     setPropertyName("color");
     setDuration(150);
 
-    return d->shadowEffect;
+    return d->m_shadowEffect;
 }
 
 bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
@@ -349,17 +349,17 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
     QWidget *p = static_cast<QWidget*>(parent());
     if (obj == p && p->isEnabled()) {
         if (e->type() == QEvent::Enter) {
-            d->isHover = true;
+            d->m_isHover = true;
             if (state() != QPropertyAnimation::Running) {
                 p->setGraphicsEffect(_createShadowEffect());
             }
-            setEndValue(d->hoverColor);
+            setEndValue(d->m_hoverColor);
             start();
         } else if (e->type() == QEvent::Leave || e->type() == QEvent::MouseButtonPress) {
-            d->isHover = false;
+            d->m_isHover = false;
             if (p->graphicsEffect()) {
                 connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::_onAniFinished);
-                setEndValue(d->normalColor);
+                setEndValue(d->m_normalColor);
                 start();
             }
         }
@@ -370,7 +370,7 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
 void DropShadowAnimation::_onAniFinished() {
     Q_D(DropShadowAnimation);
     disconnect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::_onAniFinished);
-    d->shadowEffect = nullptr;
+    d->m_shadowEffect = nullptr;
     static_cast<QWidget*>(parent())->setGraphicsEffect(nullptr);
 }
 
@@ -611,12 +611,12 @@ ScaleSlideAnimation::ScaleSlideAnimation(QWidget *parent, Qt::Orientation orient
     , d_ptr(new ScaleSlideAnimationPrivate())
 {
     Q_D(ScaleSlideAnimation);
-    d->orient = orient;
+    d->m_orient = orient;
 
     if (isHorizontal()) {
-        d->geometry = QRectF(0, 0, 16, 3);
+        d->m_geometry = QRectF(0, 0, 16, 3);
     } else {
-        d->geometry = QRectF(0, 0, 3, 16);
+        d->m_geometry = QRectF(0, 0, 3, 16);
     }
 }
 
@@ -785,7 +785,7 @@ void ScaleSlideAnimation::_startCrossFadeAnimation(const QRectF &startRect, cons
 
 bool ScaleSlideAnimation::isHorizontal() const {
     Q_D(const ScaleSlideAnimation);
-    return d->orient == Qt::Horizontal;
+    return d->m_orient == Qt::Horizontal;
 }
 
 QPointF ScaleSlideAnimation::pos() const {
@@ -794,7 +794,7 @@ QPointF ScaleSlideAnimation::pos() const {
 
 void ScaleSlideAnimation::setPos(const QPointF &pos) {
     Q_D(ScaleSlideAnimation);
-    d->geometry.moveTopLeft(pos);
+    d->m_geometry.moveTopLeft(pos);
     emit valueChanged(geometry());
 }
 
@@ -807,9 +807,9 @@ void ScaleSlideAnimation::setLength(qreal length) {
     Q_D(ScaleSlideAnimation);
 
     if (isHorizontal()) {
-        d->geometry.setWidth(length);
+        d->m_geometry.setWidth(length);
     } else {
-        d->geometry.setHeight(length);
+        d->m_geometry.setHeight(length);
     }
 
     emit valueChanged(geometry());
@@ -817,17 +817,17 @@ void ScaleSlideAnimation::setLength(qreal length) {
 
 QRectF ScaleSlideAnimation::geometry() const {
     Q_D(const ScaleSlideAnimation);
-    return d->geometry;
+    return d->m_geometry;
 }
 
 void ScaleSlideAnimation::setGeometry(const QRectF &rect) {
     Q_D(ScaleSlideAnimation);
-    d->geometry = rect;
+    d->m_geometry = rect;
 }
 
 void ScaleSlideAnimation::moveLeft(qreal x) {
     Q_D(ScaleSlideAnimation);
-    d->geometry.moveLeft(x);
+    d->m_geometry.moveLeft(x);
     emit valueChanged(geometry());
 }
 

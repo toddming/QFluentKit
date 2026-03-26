@@ -22,11 +22,11 @@ public:
 // TranslateYAnimationPrivate
 class TranslateYAnimationPrivate : public AnimationBasePrivate {
 public:
-    TranslateYAnimationPrivate() : y(0.0f), maxOffset(2), ani(nullptr) {}
+    TranslateYAnimationPrivate() : m_y(0.0f), m_maxOffset(2), m_ani(nullptr) {}
 
-    float y;
-    int maxOffset;
-    QPropertyAnimation *ani;
+    float m_y;
+    int m_maxOffset;
+    QPropertyAnimation *m_ani;
 };
 
 // BackgroundColorObjectPrivate
@@ -34,43 +34,43 @@ class BackgroundColorObjectPrivate {
 public:
     BackgroundColorObjectPrivate() {}
 
-    QColor backgroundColor;
+    QColor m_backgroundColor;
 };
 
 // BackgroundAnimationWidgetPrivate
 class BackgroundAnimationWidgetPrivate {
 public:
     BackgroundAnimationWidgetPrivate()
-        : isHover(false)
-        , isPressed(false)
-        , bgColorObject(nullptr)
-        , backgroundColorAni(nullptr)
+        : m_isHover(false)
+        , m_isPressed(false)
+        , m_bgColorObject(nullptr)
+        , m_backgroundColorAni(nullptr)
     {}
 
-    bool isHover;
-    bool isPressed;
-    BackgroundColorObject *bgColorObject;
-    QPropertyAnimation *backgroundColorAni;
+    bool m_isHover;
+    bool m_isPressed;
+    BackgroundColorObject *m_bgColorObject;
+    QPropertyAnimation *m_backgroundColorAni;
 };
 
 // DropShadowAnimationPrivate
 class DropShadowAnimationPrivate {
 public:
     DropShadowAnimationPrivate()
-        : normalColor(0, 0, 0, 0)
-        , hoverColor(0, 0, 0, 75)
-        , offset(0, 0)
-        , blurRadius(38)
-        , isHover(false)
-        , shadowEffect(nullptr)
+        : m_normalColor(0, 0, 0, 0)
+        , m_hoverColor(0, 0, 0, 75)
+        , m_offset(0, 0)
+        , m_blurRadius(38)
+        , m_isHover(false)
+        , m_shadowEffect(nullptr)
     {}
 
-    QColor normalColor;
-    QColor hoverColor;
-    QPoint offset;
-    int blurRadius;
-    bool isHover;
-    QGraphicsDropShadowEffect *shadowEffect;
+    QColor m_normalColor;
+    QColor m_hoverColor;
+    QPoint m_offset;
+    int m_blurRadius;
+    bool m_isHover;
+    QGraphicsDropShadowEffect *m_shadowEffect;
 };
 
 // FluentAnimationPrivate
@@ -86,11 +86,11 @@ public:
 class ScaleSlideAnimationPrivate {
 public:
     ScaleSlideAnimationPrivate()
-        : orient(Qt::Horizontal)
-        , geometry(0, 0, 16, 3)
+        : m_orient(Qt::Horizontal)
+        , m_geometry(0, 0, 16, 3)
     {}
 
-    Qt::Orientation orient;
-    QRectF geometry;
+    Qt::Orientation m_orient;
+    QRectF m_geometry;
 };
 
