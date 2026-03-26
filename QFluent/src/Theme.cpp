@@ -19,7 +19,7 @@ Theme::Theme(QObject* parent) : QObject(parent)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     if (qApp) {
         Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
-        d->sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
+        d->m_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
         QPointer<Theme> self = this;
         QStyleHints *styleHints = QApplication::styleHints();
@@ -29,11 +29,11 @@ Theme::Theme(QObject* parent) : QObject(parent)
                 return;
             }
             if (scheme == Qt::ColorScheme::Dark) {
-                d->sysIsDarkMode = true;
+                d->m_sysIsDarkMode = true;
             } else if (scheme == Qt::ColorScheme::Light) {
-                d->sysIsDarkMode = false;
+                d->m_sysIsDarkMode = false;
             }
-            if (d->autoTheme) {
+            if (d->m_autoTheme) {
                 self->setTheme(Fluent::ThemeMode::AUTO);
             }
         });
@@ -53,21 +53,21 @@ Theme *Theme::instance()
 
 Fluent::ThemeMode Theme::theme() const {
     Q_D(const Theme);
-    return d->currentTheme;
+    return d->m_currentTheme;
 }
 
 void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
     Q_D(Theme);
 
     if(theme == Fluent::ThemeMode::AUTO) {
-        d->autoTheme = true;
-        theme = (d->sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+        d->m_autoTheme = true;
+        theme = (d->m_sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
     } else {
-        d->autoTheme = false;
+        d->m_autoTheme = false;
     }
 
-    if (d->currentTheme != theme) {
-        d->currentTheme = theme;
+    if (d->m_currentTheme != theme) {
+        d->m_currentTheme = theme;
         if (!lazy) {
             StyleSheetManager::instance()->updateStyleSheet(lazy);
             emit themeModeChanged(theme);
@@ -82,7 +82,7 @@ void Theme::toggleTheme(bool lazy) {
 
 QColor Theme::themeColor() const {
     Q_D(const Theme);
-    return d->themeColor;
+    return d->m_themeColor;
 }
 
 QColor Theme::themeColor(Fluent::ThemeColor type) const {
@@ -93,8 +93,8 @@ QColor Theme::themeColor(Fluent::ThemeColor type) const {
 void Theme::setThemeColor(const QColor& color, bool lazy) {
     Q_D(Theme);
 
-    if (d->themeColor != color) {
-        d->themeColor = color;
+    if (d->m_themeColor != color) {
+        d->m_themeColor = color;
         if (!lazy) {
             StyleSheetManager::instance()->updateStyleSheet(lazy);
             // emit themeColorChanged(color);
@@ -104,7 +104,7 @@ void Theme::setThemeColor(const QColor& color, bool lazy) {
 
 bool Theme::isDarkTheme() const {
     Q_D(const Theme);
-    return d->currentTheme == Fluent::ThemeMode::DARK;
+    return d->m_currentTheme == Fluent::ThemeMode::DARK;
 }
 
 

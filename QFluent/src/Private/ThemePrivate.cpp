@@ -10,7 +10,7 @@ ThemePrivate::ThemePrivate()
 QColor ThemePrivate::calculateThemeColor(Fluent::ThemeColor type) const {
     Q_Q(const Theme);
 
-    QColor color = themeColor;
+    QColor color = m_themeColor;
     qreal h, s, v, a;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     float h_f, s_f, v_f, a_f;
@@ -20,7 +20,7 @@ QColor ThemePrivate::calculateThemeColor(Fluent::ThemeColor type) const {
     color.getHsvF(&h, &s, &v, &a);
 #endif
 
-    if (currentTheme == Fluent::ThemeMode::DARK) {
+    if (m_currentTheme == Fluent::ThemeMode::DARK) {
         s *= 0.84f;
         v = 1.0f;
         switch (type) {
