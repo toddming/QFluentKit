@@ -45,22 +45,22 @@ public slots:
 public:
     RoundMenu *q_ptr;
 
-    bool isSubMenu;
-    bool isHideBySystem;
-    bool isHideByClick;
+    bool m_isSubMenu;
+    bool m_isHideBySystem;
+    bool m_isHideByClick;
 
-    MenuActionListWidget *view;
-    QHBoxLayout *layout;
-    QTimer *showTimer;
+    MenuActionListWidget *m_view;
+    QHBoxLayout *m_layout;
+    QTimer *m_showTimer;
 
-    QList<QAction *> actions;
-    QList<RoundMenu *> subMenus;
+    QList<QAction *> m_actions;
+    QList<RoundMenu *> m_subMenus;
 
-    QGraphicsDropShadowEffect *shadowEffect;
+    QGraphicsDropShadowEffect *m_shadowEffect;
 
-    QListWidgetItem *lastHoverSubMenuItem;
-    QListWidgetItem *lastHoverItem;
-    QListWidgetItem *menuItem;
+    QListWidgetItem *m_lastHoverSubMenuItem;
+    QListWidgetItem *m_lastHoverItem;
+    QListWidgetItem *m_menuItem;
 
-    RoundMenu *parentMenu;
+    RoundMenu *m_parentMenu;
 };

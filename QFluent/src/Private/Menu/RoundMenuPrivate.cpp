@@ -18,23 +18,23 @@
 RoundMenuPrivate::RoundMenuPrivate(RoundMenu *parent)
     : QObject(parent)
     , q_ptr(parent)
-    , isSubMenu(false)
-    , isHideBySystem(true)
-    , isHideByClick(true)
-    , view(nullptr)
-    , layout(nullptr)
-    , showTimer(nullptr)
-    , shadowEffect(nullptr)
-    , lastHoverSubMenuItem(nullptr)
-    , lastHoverItem(nullptr)
-    , menuItem(nullptr)
-    , parentMenu(nullptr)
+    , m_isSubMenu(false)
+    , m_isHideBySystem(true)
+    , m_isHideByClick(true)
+    , m_view(nullptr)
+    , m_layout(nullptr)
+    , m_showTimer(nullptr)
+    , m_shadowEffect(nullptr)
+    , m_lastHoverSubMenuItem(nullptr)
+    , m_lastHoverItem(nullptr)
+    , m_menuItem(nullptr)
+    , m_parentMenu(nullptr)
 {
 }
 
 bool RoundMenuPrivate::hasItemIcon() const
 {
-    for (QAction *action : actions) {
+    for (QAction *action : m_actions) {
         if (!action->icon().isNull())
             return true;
     }
@@ -48,7 +48,7 @@ int RoundMenuPrivate::longestShortcutWidth() const
     QFontMetrics fontMetrics(q->font());
     int maxWidth = 0;
 
-    for (QAction *action : actions) {
+    for (QAction *action : m_actions) {
         if (action->shortcut().isEmpty())
             continue;
 
@@ -69,16 +69,16 @@ QListWidgetItem *RoundMenuPrivate::createActionItem(QAction *action, QAction *be
         return nullptr;
 
     if (!before) {
-        actions.append(action);
-    } else if (actions.contains(before)) {
-        int index = actions.indexOf(before);
-        actions.insert(index, action);
+        m_actions.append(action);
+    } else if (m_actions.contains(before)) {
+        int index = m_actions.indexOf(before);
+        m_actions.insert(index, action);
     }
 
     QListWidgetItem *item = new QListWidgetItem(action->icon(), action->text());
 
     int width = q->adjustItemText(item, action);
-    item->setSizeHint(QSize(width, view->itemHeight()));
+    item->setSizeHint(QSize(width, m_view->itemHeight()));
 
     if (!action->isEnabled()) {
         item->setFlags(Qt::NoItemFlags);
@@ -86,7 +86,7 @@ QListWidgetItem *RoundMenuPrivate::createActionItem(QAction *action, QAction *be
 
     item->setData(Qt::UserRole, QVariant::fromValue(action));
     action->setProperty("item", QVariant::fromValue(item));
-    action->setProperty("index", QVariant::fromValue(actions.indexOf(action)));
+    action->setProperty("index", QVariant::fromValue(m_actions.indexOf(action)));
 
     connect(action, &QAction::changed, this, &RoundMenuPrivate::onActionChanged);
 
@@ -100,12 +100,12 @@ void RoundMenuPrivate::createSubMenuItem(RoundMenu *menu)
     if (!menu)
         return;
 
-    subMenus.append(menu);
+    m_subMenus.append(menu);
 
     QListWidgetItem *item = new QListWidgetItem(menu->icon(), menu->title());
     item->setData(Qt::UserRole, QVariant::fromValue(menu));
 
-    QFontMetricsF fontMetrics(view->font());
+    QFontMetricsF fontMetrics(m_view->font());
     qreal width = 120;
 
     if (!hasItemIcon()) {
@@ -117,12 +117,12 @@ void RoundMenuPrivate::createSubMenuItem(RoundMenu *menu)
     }
 
     menu->dPtr->setParentMenu(q, item);
-    item->setSizeHint(QSize(width, view->itemHeight()));
-    view->addItem(item);
+    item->setSizeHint(QSize(width, m_view->itemHeight()));
+    m_view->addItem(item);
 
-    SubMenuItemWidget *widget = new SubMenuItemWidget(menu, item, view);
+    SubMenuItemWidget *widget = new SubMenuItemWidget(menu, item, m_view);
     connect(widget, &SubMenuItemWidget::showMenuSig, this, &RoundMenuPrivate::showSubMenu);
-    view->setItemWidget(item, widget);
+    m_view->setItemWidget(item, widget);
 }
 
 void RoundMenuPrivate::onActionChanged()
@@ -149,16 +149,16 @@ void RoundMenuPrivate::onActionChanged()
         item->setFlags(Qt::NoItemFlags);
     }
 
-    view->adjustSize();
+    m_view->adjustSize();
     q->adjustSize();
 }
 
 void RoundMenuPrivate::onShowMenuTimeout()
 {
-    if (!lastHoverSubMenuItem || lastHoverItem != lastHoverSubMenuItem)
+    if (!m_lastHoverSubMenuItem || m_lastHoverItem != m_lastHoverSubMenuItem)
         return;
 
-    QVariant data = lastHoverItem->data(Qt::UserRole);
+    QVariant data = m_lastHoverItem->data(Qt::UserRole);
     if (!data.canConvert<RoundMenu *>())
         return;
 
@@ -166,7 +166,7 @@ void RoundMenuPrivate::onShowMenuTimeout()
     if (!subMenu || subMenu->isVisible())
         return;
 
-    QWidget *widget = view->itemWidget(lastHoverItem);
+    QWidget *widget = m_view->itemWidget(m_lastHoverItem);
     if (!widget)
         return;
 
@@ -196,22 +196,22 @@ void RoundMenuPrivate::onShowMenuTimeout()
 
 void RoundMenuPrivate::setShadowEffect(int blurRadius, const QPointF &offset, const QColor &color)
 {
-    if (!shadowEffect)
+    if (!m_shadowEffect)
         return;
 
-    shadowEffect->setBlurRadius(blurRadius);
-    shadowEffect->setOffset(offset);
-    shadowEffect->setColor(color);
+    m_shadowEffect->setBlurRadius(blurRadius);
+    m_shadowEffect->setOffset(offset);
+    m_shadowEffect->setColor(color);
 
-    view->setGraphicsEffect(nullptr);
-    view->setGraphicsEffect(shadowEffect);
+    m_view->setGraphicsEffect(nullptr);
+    m_view->setGraphicsEffect(m_shadowEffect);
 }
 
 void RoundMenuPrivate::setParentMenu(RoundMenu *parent, QListWidgetItem *item)
 {
-    parentMenu = parent;
-    menuItem = item;
-    isSubMenu = (parent != nullptr);
+    m_parentMenu = parent;
+    m_menuItem = item;
+    m_isSubMenu = (parent != nullptr);
 }
 
 void RoundMenuPrivate::removeItem(QListWidgetItem *item)
@@ -219,10 +219,10 @@ void RoundMenuPrivate::removeItem(QListWidgetItem *item)
     if (!item)
         return;
 
-    view->takeItem(view->row(item));
+    m_view->takeItem(m_view->row(item));
     item->setData(Qt::UserRole, QVariant());
 
-    QWidget *widget = view->itemWidget(item);
+    QWidget *widget = m_view->itemWidget(item);
     if (widget) {
         widget->deleteLater();
     }
@@ -235,8 +235,8 @@ void RoundMenuPrivate::showSubMenu(QListWidgetItem *item)
     if (!item)
         return;
 
-    lastHoverItem = item;
-    lastHoverSubMenuItem = item;
-    showTimer->stop();
-    showTimer->start();
+    m_lastHoverItem = item;
+    m_lastHoverSubMenuItem = item;
+    m_showTimer->stop();
+    m_showTimer->start();
 }
