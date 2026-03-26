@@ -1,4 +1,4 @@
-﻿#include "MaskDialogBase.h"
+#include "MaskDialogBase.h"
 
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
@@ -13,60 +13,60 @@
 #include "Private/Dialog/MaskDialogBasePrivate.h"
 
 
-MaskDialogBase::MaskDialogBase(QWidget* parent)
+MaskDialogBase::MaskDialogBase(QWidget *parent)
     : QDialog(parent)
     , d_ptr(new MaskDialogBasePrivate)
 {
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
-    d->isClosableOnMaskClicked = false;
+    d->m_isClosableOnMaskClicked = false;
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    d->hBoxLayout = new QHBoxLayout(this);
-    d->hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    d->m_hBoxLayout = new QHBoxLayout(this);
+    d->m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 
-    d->windowMask = new QWidget(this);
-    d->windowMask->installEventFilter(this);
+    d->m_windowMask = new QWidget(this);
+    d->m_windowMask->installEventFilter(this);
 
-    d->centerWidget = new QFrame(this);
-    d->centerWidget->setObjectName("centerWidget");
-    d->hBoxLayout->addWidget(d->centerWidget, 1, Qt::AlignCenter);
+    d->m_centerWidget = new QFrame(this);
+    d->m_centerWidget->setObjectName("centerWidget");
+    d->m_hBoxLayout->addWidget(d->m_centerWidget, 1, Qt::AlignCenter);
 
     int c = Theme::instance()->isDarkTheme() ? 0 : 255;
-    d->windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
+    d->m_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
 
     setShadowEffect();
 
     setupEventFilters();
 }
 
-MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
+MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate &dd, QWidget *parent)
     : QDialog(parent)
     , d_ptr(&dd)
 {
     Q_D(MaskDialogBase);
     d->q_ptr = this;
 
-    d->isClosableOnMaskClicked = false;
+    d->m_isClosableOnMaskClicked = false;
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    d->hBoxLayout = new QHBoxLayout(this);
-    d->hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    d->m_hBoxLayout = new QHBoxLayout(this);
+    d->m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 
-    d->windowMask = new QWidget(this);
-    d->windowMask->installEventFilter(this);
+    d->m_windowMask = new QWidget(this);
+    d->m_windowMask->installEventFilter(this);
 
-    d->centerWidget = new QFrame(this);
-    d->centerWidget->setObjectName("centerWidget");
-    d->hBoxLayout->addWidget(d->centerWidget, 1, Qt::AlignCenter);
+    d->m_centerWidget = new QFrame(this);
+    d->m_centerWidget->setObjectName("centerWidget");
+    d->m_hBoxLayout->addWidget(d->m_centerWidget, 1, Qt::AlignCenter);
 
     int c = Theme::instance()->isDarkTheme() ? 0 : 255;
-    d->windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
+    d->m_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
 
     setShadowEffect();
 
@@ -75,12 +75,11 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent)
 
 MaskDialogBase::~MaskDialogBase()
 {
-
 }
 
 void MaskDialogBase::setupEventFilters()
 {
-    QWidget* tw = targetWidget();
+    QWidget *tw = targetWidget();
     if (tw) {
         tw->installEventFilter(this);
     }
@@ -88,7 +87,7 @@ void MaskDialogBase::setupEventFilters()
 
 QWidget* MaskDialogBase::targetWidget() const
 {
-    QWidget* parentWidget = qobject_cast<QWidget*>(parent());
+    QWidget *parentWidget = qobject_cast<QWidget*>(parent());
     if (!parentWidget) {
         return nullptr;
     }
@@ -102,47 +101,47 @@ QWidget* MaskDialogBase::targetWidget() const
 QHBoxLayout* MaskDialogBase::hBoxLayout()
 {
     Q_D(MaskDialogBase);
-    return d->hBoxLayout;
+    return d->m_hBoxLayout;
 }
 
 QWidget* MaskDialogBase::centerWidget() const
 {
     Q_D(const MaskDialogBase);
 
-    return d->centerWidget;
+    return d->m_centerWidget;
 }
 
-void MaskDialogBase::setMaskColor(const QColor& color)
+void MaskDialogBase::setMaskColor(const QColor &color)
 {
     Q_D(MaskDialogBase);
-    d->windowMask->setStyleSheet(QString(
+    d->m_windowMask->setStyleSheet(QString(
                                       "background: rgba(%1, %2, %3, %4);"
                                       ).arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha()));
     update();
 }
 
-void MaskDialogBase::setShadowEffect(int blurRadius, const QPoint& offset, const QColor& color)
+void MaskDialogBase::setShadowEffect(int blurRadius, const QPoint &offset, const QColor &color)
 {
     Q_D(MaskDialogBase);
 
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(d->centerWidget);
+    QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(d->m_centerWidget);
     shadowEffect->setBlurRadius(blurRadius);
     shadowEffect->setOffset(offset);
     shadowEffect->setColor(color);
-    d->centerWidget->setGraphicsEffect(nullptr);
-    d->centerWidget->setGraphicsEffect(shadowEffect);
+    d->m_centerWidget->setGraphicsEffect(nullptr);
+    d->m_centerWidget->setGraphicsEffect(shadowEffect);
 }
 
 
-void MaskDialogBase::showEvent(QShowEvent* event)
+void MaskDialogBase::showEvent(QShowEvent *event)
 {
     // 显示时同步目标窗口尺寸
     syncGeometryWithParent();
 
-    auto* opacityEffect = new QGraphicsOpacityEffect(this);
+    auto *opacityEffect = new QGraphicsOpacityEffect(this);
     setGraphicsEffect(opacityEffect);
 
-    auto* opacityAni = new QPropertyAnimation(opacityEffect, "opacity", this);
+    auto *opacityAni = new QPropertyAnimation(opacityEffect, "opacity", this);
     opacityAni->setStartValue(0.0);
     opacityAni->setEndValue(1.0);
     opacityAni->setDuration(200);
@@ -162,12 +161,12 @@ void MaskDialogBase::done(int code)
 {
     Q_D(MaskDialogBase);
 
-    d->centerWidget->setGraphicsEffect(nullptr);
+    d->m_centerWidget->setGraphicsEffect(nullptr);
 
-    auto* opacityEffect = new QGraphicsOpacityEffect(this);
+    auto *opacityEffect = new QGraphicsOpacityEffect(this);
     setGraphicsEffect(opacityEffect);
 
-    auto* opacityAni = new QPropertyAnimation(opacityEffect, "opacity", this);
+    auto *opacityAni = new QPropertyAnimation(opacityEffect, "opacity", this);
     opacityAni->setStartValue(1.0);
     opacityAni->setEndValue(0.0);
     opacityAni->setDuration(100);
@@ -186,22 +185,22 @@ void MaskDialogBase::onDone(int code)
     QDialog::done(code);
 }
 
-void MaskDialogBase::resizeEvent(QResizeEvent* event)
+void MaskDialogBase::resizeEvent(QResizeEvent *event)
 {
     Q_D(MaskDialogBase);
 
-    d->windowMask->resize(size());
+    d->m_windowMask->resize(size());
     QDialog::resizeEvent(event);
 }
 
-bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
+bool MaskDialogBase::eventFilter(QObject *watched, QEvent *event)
 {
     Q_D(MaskDialogBase);
 
-    QWidget* tw = targetWidget();
+    QWidget *tw = targetWidget();
 
     // 处理目标窗口的resize和move事件
-    if (obj == tw) {
+    if (watched == tw) {
         if (event->type() == QEvent::Resize) {
             syncGeometryWithParent();
         } else if (event->type() == QEvent::Move) {
@@ -213,19 +212,19 @@ bool MaskDialogBase::eventFilter(QObject* obj, QEvent* event)
                 syncGeometryWithParent();
             }, Qt::QueuedConnection);
         }
-    } else if (obj == d->windowMask && event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-        if (mouseEvent->button() == Qt::LeftButton && d->isClosableOnMaskClicked) {
+    } else if (watched == d->m_windowMask && event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        if (mouseEvent->button() == Qt::LeftButton && d->m_isClosableOnMaskClicked) {
             reject();
         }
     }
 
-    return QDialog::eventFilter(obj, event);
+    return QDialog::eventFilter(watched, event);
 }
 
 void MaskDialogBase::syncGeometryWithParent()
 {
-    QWidget* tw = targetWidget();
+    QWidget *tw = targetWidget();
     if (!tw) {
         return;
     }
@@ -237,7 +236,7 @@ void MaskDialogBase::syncGeometryWithParent()
     if (targetSize.width() > 0 && targetSize.height() > 0) {
         // 将dialog的geometry设置为相对于父窗口的坐标
         // 由于dialog的parent已经设置,这里的坐标是相对于parent的
-        QWidget* parentWidget = qobject_cast<QWidget*>(parent());
+        QWidget *parentWidget = qobject_cast<QWidget*>(parent());
         if (parentWidget) {
             // 如果parent就是targetWidget,直接覆盖
             if (parentWidget == tw) {
@@ -256,11 +255,11 @@ void MaskDialogBase::syncGeometryWithParent()
 void MaskDialogBase::setIsClosableOnMaskClicked(bool enable)
 {
     Q_D(MaskDialogBase);
-    d->isClosableOnMaskClicked = enable;
+    d->m_isClosableOnMaskClicked = enable;
 }
 
-bool MaskDialogBase::isClosableOnMaskClicked()
+bool MaskDialogBase::isClosableOnMaskClicked() const
 {
-    Q_D(MaskDialogBase);
-    return d->isClosableOnMaskClicked;
+    Q_D(const MaskDialogBase);
+    return d->m_isClosableOnMaskClicked;
 }

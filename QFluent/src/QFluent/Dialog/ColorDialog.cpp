@@ -39,14 +39,14 @@ HuePanel::HuePanel(const QColor& color, QWidget* parent)
     setColor(color);
 }
 
-void HuePanel::mousePressEvent(QMouseEvent* e)
+void HuePanel::mousePressEvent(QMouseEvent* event)
 {
-    setPickerPosition(e->pos());
+    setPickerPosition(event->pos());
 }
 
-void HuePanel::mouseMoveEvent(QMouseEvent* e)
+void HuePanel::mouseMoveEvent(QMouseEvent* event)
 {
-    setPickerPosition(e->pos());
+    setPickerPosition(event->pos());
 }
 
 void HuePanel::setPickerPosition(const QPoint& pos)
@@ -72,9 +72,9 @@ void HuePanel::setColor(const QColor& color)
     update();
 }
 
-void HuePanel::paintEvent(QPaintEvent* e)
+void HuePanel::paintEvent(QPaintEvent* event)
 {
-    Q_UNUSED(e);
+    Q_UNUSED(event);
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -164,9 +164,9 @@ void ColorCard::setColor(const QColor& color)
     update();
 }
 
-void ColorCard::paintEvent(QPaintEvent* e)
+void ColorCard::paintEvent(QPaintEvent* event)
 {
-    Q_UNUSED(e);
+    Q_UNUSED(event);
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
@@ -258,9 +258,9 @@ OpacityLineEdit::OpacityLineEdit(int value, QWidget* parent)
     connect(this, &QLineEdit::textChanged, this, &OpacityLineEdit::adjustSuffixPos);
 }
 
-void OpacityLineEdit::showEvent(QShowEvent* e)
+void OpacityLineEdit::showEvent(QShowEvent* event)
 {
-    LineEdit::showEvent(e);
+    LineEdit::showEvent(event);
     adjustSuffixPos();
 }
 
@@ -469,10 +469,10 @@ void ColorDialog::updateStyle()
     m_opacityLabel->adjustSize();
 }
 
-void ColorDialog::showEvent(QShowEvent* e)
+void ColorDialog::showEvent(QShowEvent* event)
 {
     updateStyle();
-    MaskDialogBase::showEvent(e);
+    MaskDialogBase::showEvent(event);
 }
 
 void ColorDialog::connectSignalToSlot()

@@ -39,7 +39,7 @@ enum class FlyoutAnimationType {
 // ============================================================================
 // 图标组件
 // ============================================================================
-class FlyoutIconWidget : public QWidget {
+class QFLUENT_EXPORT FlyoutIconWidget : public QWidget {
     Q_OBJECT
 public:
     explicit FlyoutIconWidget(const QIcon& icon, QWidget* parent = nullptr);
@@ -181,7 +181,7 @@ private:
 // ============================================================================
 // 动画管理器基类
 // ============================================================================
-class FlyoutAnimationManager : public QObject {
+class QFLUENT_EXPORT FlyoutAnimationManager : public QObject {
     Q_OBJECT
 public:
     explicit FlyoutAnimationManager(Flyout* flyout);
@@ -205,7 +205,7 @@ protected:
 // ============================================================================
 // 各种动画管理器实现
 // ============================================================================
-class PullUpFlyoutAnimationManager : public FlyoutAnimationManager {
+class QFLUENT_EXPORT PullUpFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
     explicit PullUpFlyoutAnimationManager(Flyout* flyout);
@@ -213,7 +213,7 @@ public:
     void exec(const QPoint& pos) override;
 };
 
-class DropDownFlyoutAnimationManager : public FlyoutAnimationManager {
+class QFLUENT_EXPORT DropDownFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
     explicit DropDownFlyoutAnimationManager(Flyout* flyout);
@@ -221,7 +221,7 @@ public:
     void exec(const QPoint& pos) override;
 };
 
-class SlideLeftFlyoutAnimationManager : public FlyoutAnimationManager {
+class QFLUENT_EXPORT SlideLeftFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
     explicit SlideLeftFlyoutAnimationManager(Flyout* flyout);
@@ -229,7 +229,7 @@ public:
     void exec(const QPoint& pos) override;
 };
 
-class SlideRightFlyoutAnimationManager : public FlyoutAnimationManager {
+class QFLUENT_EXPORT SlideRightFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
     explicit SlideRightFlyoutAnimationManager(Flyout* flyout);
@@ -237,7 +237,7 @@ public:
     void exec(const QPoint& pos) override;
 };
 
-class FadeInFlyoutAnimationManager : public FlyoutAnimationManager {
+class QFLUENT_EXPORT FadeInFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
     explicit FadeInFlyoutAnimationManager(Flyout* flyout);
@@ -245,7 +245,7 @@ public:
     void exec(const QPoint& pos) override;
 };
 
-class DummyFlyoutAnimationManager : public FlyoutAnimationManager {
+class QFLUENT_EXPORT DummyFlyoutAnimationManager : public FlyoutAnimationManager {
     Q_OBJECT
 public:
     explicit DummyFlyoutAnimationManager(Flyout* flyout);

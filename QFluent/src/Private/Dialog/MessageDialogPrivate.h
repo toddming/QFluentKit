@@ -1,30 +1,29 @@
-﻿#pragma once
+#pragma once
+
 #include "MaskDialogBasePrivate.h"
 #include "QFluent/Dialog/MessageDialog.h"
-#include <QString>
 
 class QLabel;
 class QFrame;
 class BodyLabel;
 class QPushButton;
 class PrimaryPushButton;
+
 class MessageDialogPrivate : public MaskDialogBasePrivate
 {
     Q_DECLARE_PUBLIC(MessageDialog)
 
 public:
-    QLabel *titleLabel;
-    BodyLabel *contentLabel;
-    QFrame *buttonGroup;
-    PrimaryPushButton *yesButton;
-    QPushButton *cancelButton;
+    QLabel *m_titleLabel;
+    BodyLabel *m_contentLabel;
+    QFrame *m_buttonGroup;
+    PrimaryPushButton *m_yesButton;
+    QPushButton *m_cancelButton;
 
-    QString content;
-    QWidget *dialog;
+    QString m_content;
+    QWidget *m_dialog;
 
     void setQss();
-
     void adjustText();
     void setContentCopyable(bool isCopyable);
-
 };

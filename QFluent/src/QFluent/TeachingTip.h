@@ -82,7 +82,7 @@ private:
 // ============================================================================
 // TeachingTip 气泡
 // ============================================================================
-class TeachTipBubble : public QWidget {
+class QFLUENT_EXPORT TeachTipBubble : public QWidget {
     Q_OBJECT
 public:
     explicit TeachTipBubble(FlyoutViewBase* view,
@@ -145,8 +145,8 @@ public:
                               bool isDeleteOnClose = true);
 
     // 公共成员（保持与原代码兼容）
-    QWidget* target;
-    int duration;
+    QWidget* m_target = nullptr;
+    int m_duration;
     TeachingTipManager* m_manager;
 
 protected:
@@ -168,7 +168,7 @@ private:
 // ============================================================================
 // PopupTeachingTip
 // ============================================================================
-class PopupTeachingTip : public TeachingTip {
+class QFLUENT_EXPORT PopupTeachingTip : public TeachingTip {
     Q_OBJECT
 public:
     explicit PopupTeachingTip(FlyoutViewBase* view,
@@ -184,7 +184,7 @@ public:
 // ============================================================================
 // TeachingTip 管理器基类
 // ============================================================================
-class TeachingTipManager : public QObject {
+class QFLUENT_EXPORT TeachingTipManager : public QObject {
     Q_OBJECT
 public:
     explicit TeachingTipManager(QObject* parent = nullptr);
@@ -204,7 +204,7 @@ protected:
 // ============================================================================
 // 各种位置的管理器实现
 // ============================================================================
-class TopTailTeachingTipManager : public TeachingTipManager {
+class QFLUENT_EXPORT TopTailTeachingTipManager : public TeachingTipManager {
     Q_OBJECT
 public:
     explicit TopTailTeachingTipManager(QObject* parent = nullptr);
@@ -216,7 +216,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class BottomTailTeachingTipManager : public TeachingTipManager {
+class QFLUENT_EXPORT BottomTailTeachingTipManager : public TeachingTipManager {
     Q_OBJECT
 public:
     explicit BottomTailTeachingTipManager(QObject* parent = nullptr);
@@ -227,7 +227,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class LeftTailTeachingTipManager : public TeachingTipManager {
+class QFLUENT_EXPORT LeftTailTeachingTipManager : public TeachingTipManager {
     Q_OBJECT
 public:
     explicit LeftTailTeachingTipManager(QObject* parent = nullptr);
@@ -239,7 +239,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class RightTailTeachingTipManager : public TeachingTipManager {
+class QFLUENT_EXPORT RightTailTeachingTipManager : public TeachingTipManager {
     Q_OBJECT
 public:
     explicit RightTailTeachingTipManager(QObject* parent = nullptr);
@@ -251,7 +251,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class TopLeftTailTeachingTipManager : public TopTailTeachingTipManager {
+class QFLUENT_EXPORT TopLeftTailTeachingTipManager : public TopTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit TopLeftTailTeachingTipManager(QObject* parent = nullptr);
@@ -261,7 +261,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class TopRightTailTeachingTipManager : public TopTailTeachingTipManager {
+class QFLUENT_EXPORT TopRightTailTeachingTipManager : public TopTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit TopRightTailTeachingTipManager(QObject* parent = nullptr);
@@ -271,7 +271,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class BottomLeftTailTeachingTipManager : public BottomTailTeachingTipManager {
+class QFLUENT_EXPORT BottomLeftTailTeachingTipManager : public BottomTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit BottomLeftTailTeachingTipManager(QObject* parent = nullptr);
@@ -281,7 +281,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class BottomRightTailTeachingTipManager : public BottomTailTeachingTipManager {
+class QFLUENT_EXPORT BottomRightTailTeachingTipManager : public BottomTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit BottomRightTailTeachingTipManager(QObject* parent = nullptr);
@@ -291,7 +291,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class LeftTopTailTeachingTipManager : public LeftTailTeachingTipManager {
+class QFLUENT_EXPORT LeftTopTailTeachingTipManager : public LeftTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit LeftTopTailTeachingTipManager(QObject* parent = nullptr);
@@ -302,7 +302,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class LeftBottomTailTeachingTipManager : public LeftTailTeachingTipManager {
+class QFLUENT_EXPORT LeftBottomTailTeachingTipManager : public LeftTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit LeftBottomTailTeachingTipManager(QObject* parent = nullptr);
@@ -313,7 +313,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class RightTopTailTeachingTipManager : public RightTailTeachingTipManager {
+class QFLUENT_EXPORT RightTopTailTeachingTipManager : public RightTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit RightTopTailTeachingTipManager(QObject* parent = nullptr);
@@ -324,7 +324,7 @@ protected:
     QPoint pos(TeachingTip* tip) override;
 };
 
-class RightBottomTailTeachingTipManager : public RightTailTeachingTipManager {
+class QFLUENT_EXPORT RightBottomTailTeachingTipManager : public RightTailTeachingTipManager {
     Q_OBJECT
 public:
     explicit RightBottomTailTeachingTipManager(QObject* parent = nullptr);

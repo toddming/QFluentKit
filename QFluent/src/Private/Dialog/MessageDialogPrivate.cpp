@@ -12,21 +12,21 @@
 
 void MessageDialogPrivate::setQss()
 {
-    titleLabel->setObjectName("titleLabel");
-    contentLabel->setObjectName("contentLabel");
-    buttonGroup->setObjectName("buttonGroup");
-    cancelButton->setObjectName("cancelButton");
+    m_titleLabel->setObjectName("titleLabel");
+    m_contentLabel->setObjectName("contentLabel");
+    m_buttonGroup->setObjectName("buttonGroup");
+    m_cancelButton->setObjectName("cancelButton");
 
-    StyleSheetManager::instance()->registerWidget(dialog, Fluent::ThemeStyle::DIALOG);
-    StyleSheetManager::instance()->registerWidget(contentLabel, Fluent::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(m_dialog, Fluent::ThemeStyle::DIALOG);
+    StyleSheetManager::instance()->registerWidget(m_contentLabel, Fluent::ThemeStyle::DIALOG);
 
-    yesButton->adjustSize();
-    cancelButton->adjustSize();
+    m_yesButton->adjustSize();
+    m_cancelButton->adjustSize();
 }
 
 void MessageDialogPrivate::setContentCopyable(bool isCopyable)
 {
-    contentLabel->setTextInteractionFlags(
+    m_contentLabel->setTextInteractionFlags(
         isCopyable ?
             (Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard) :
             Qt::NoTextInteraction
@@ -35,31 +35,31 @@ void MessageDialogPrivate::setContentCopyable(bool isCopyable)
 
 void MessageDialogPrivate::adjustText()
 {
-    if (!dialog || !titleLabel || !contentLabel) {
+    if (!m_dialog || !m_titleLabel || !m_contentLabel) {
         return;
     }
 
     int chars = 100;
 
-    bool isTopLevelWindow = dialog->isWindow();
+    bool isTopLevelWindow = m_dialog->isWindow();
 
     if (isTopLevelWindow) {
-        QWidget *parentWidget = dialog->parentWidget();
+        QWidget *parentWidget = m_dialog->parentWidget();
         if (parentWidget) {
-            int w = qMax(titleLabel->width(), parentWidget->width());
+            int w = qMax(m_titleLabel->width(), parentWidget->width());
             chars = qMax(qMin(w / 9, 140), 30);
         } else {
             chars = 100;
         }
     } else {
-        QWidget *topWindow = dialog->window();
+        QWidget *topWindow = m_dialog->window();
         if (topWindow) {
-            int w = qMax(titleLabel->width(), topWindow->width());
+            int w = qMax(m_titleLabel->width(), topWindow->width());
             chars = qMax(qMin(w / 9, 100), 30);
         } else {
             chars = 100;
         }
     }
 
-    contentLabel->setText(TextWrap::wrap(content, chars, false).first);
+    m_contentLabel->setText(TextWrap::wrap(m_content, chars, false).first);
 }

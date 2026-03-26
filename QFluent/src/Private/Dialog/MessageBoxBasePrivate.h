@@ -1,23 +1,24 @@
-﻿#pragma once
+#pragma once
+
 #include "MaskDialogBasePrivate.h"
 #include "QFluent/Dialog/MaskDialogBase.h"
 #include "QFluent/Dialog/MessageBoxBase.h"
-#include <QString>
 
 class QFrame;
 class QPushButton;
 class QVBoxLayout;
 class QHBoxLayout;
 class PrimaryPushButton;
+
 class MessageBoxBasePrivate : public MaskDialogBasePrivate
 {
     Q_DECLARE_PUBLIC(MessageBoxBase)
 
 public:
-    QFrame *buttonGroup;
+    QFrame *m_buttonGroup;
 
-    QVBoxLayout *viewLayout;
-    QHBoxLayout *buttonLayout;
-    PrimaryPushButton *yesButton;
-    QPushButton *cancelButton;
+    QVBoxLayout *m_viewLayout;
+    QHBoxLayout *m_buttonLayout;
+    PrimaryPushButton *m_yesButton;
+    QPushButton *m_cancelButton;
 };

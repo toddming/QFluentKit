@@ -16,12 +16,12 @@ public:
     explicit MessageBoxBase(QWidget *parent = nullptr);
     ~MessageBoxBase();
 
-    QVBoxLayout* viewLayout();
+    QVBoxLayout* viewLayout() const;
 
     void hideYesButton();
     void hideCancelButton();
 
-    QPushButton* yesButton();
-    QPushButton* cancelbutton();
+    QPushButton* yesButton() const;
+    QPushButton* cancelButton() const;
 
 };

@@ -15,44 +15,44 @@ MessageBoxBase::MessageBoxBase(QWidget *parent)
 {
     Q_D(MessageBoxBase);
 
-    d->buttonGroup = new QFrame(centerWidget());
-    d->yesButton = new PrimaryPushButton(QObject::tr("OK"), d->buttonGroup);
-    d->cancelButton = new QPushButton(QObject::tr("Cancel"), d->buttonGroup);
-    d->yesButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
-    d->cancelButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
+    d->m_buttonGroup = new QFrame(centerWidget());
+    d->m_yesButton = new PrimaryPushButton(QObject::tr("OK"), d->m_buttonGroup);
+    d->m_cancelButton = new QPushButton(QObject::tr("Cancel"), d->m_buttonGroup);
+    d->m_yesButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
+    d->m_cancelButton->setAttribute(Qt::WA_LayoutUsesWidgetRect);
 
     auto *vBoxLayout = new QVBoxLayout(centerWidget());
-    d->viewLayout = new QVBoxLayout();
-    d->buttonLayout = new QHBoxLayout(d->buttonGroup);
+    d->m_viewLayout = new QVBoxLayout();
+    d->m_buttonLayout = new QHBoxLayout(d->m_buttonGroup);
 
-    d->buttonGroup->setObjectName("buttonGroup");
-    d->cancelButton->setObjectName("cancelButton");
+    d->m_buttonGroup->setObjectName("buttonGroup");
+    d->m_cancelButton->setObjectName("cancelButton");
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::DIALOG);
 
     vBoxLayout->setSpacing(0);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);
-    vBoxLayout->addLayout(d->viewLayout, 1);
-    vBoxLayout->addWidget(d->buttonGroup, 0, Qt::AlignBottom);
+    vBoxLayout->addLayout(d->m_viewLayout, 1);
+    vBoxLayout->addWidget(d->m_buttonGroup, 0, Qt::AlignBottom);
 
-    d->viewLayout->setSpacing(12);
-    d->viewLayout->setContentsMargins(24, 24, 24, 24);
+    d->m_viewLayout->setSpacing(12);
+    d->m_viewLayout->setContentsMargins(24, 24, 24, 24);
 
-    d->buttonLayout->setSpacing(12);
-    d->buttonLayout->setContentsMargins(24, 24, 24, 24);
-    d->buttonLayout->addWidget(d->yesButton, 1, Qt::AlignVCenter);
-    d->buttonLayout->addWidget(d->cancelButton, 1, Qt::AlignVCenter);
+    d->m_buttonLayout->setSpacing(12);
+    d->m_buttonLayout->setContentsMargins(24, 24, 24, 24);
+    d->m_buttonLayout->addWidget(d->m_yesButton, 1, Qt::AlignVCenter);
+    d->m_buttonLayout->addWidget(d->m_cancelButton, 1, Qt::AlignVCenter);
 
     setShadowEffect(60, QPoint(0, 10), QColor(0, 0, 0, 50));
     setMaskColor(QColor(0, 0, 0, 76));
 
-    d->yesButton->setFocus();
-    d->buttonGroup->setFixedHeight(81);
+    d->m_yesButton->setFocus();
+    d->m_buttonGroup->setFixedHeight(81);
 
-    connect(d->yesButton, &QPushButton::clicked, this, [this]() {
+    connect(d->m_yesButton, &QPushButton::clicked, this, [this]() {
         accept();
     });
 
-    connect(d->cancelButton, &QPushButton::clicked, this, [this]() {
+    connect(d->m_cancelButton, &QPushButton::clicked, this, [this]() {
         reject();
     });
 
@@ -66,32 +66,32 @@ MessageBoxBase::~MessageBoxBase()
 void MessageBoxBase::hideYesButton()
 {
     Q_D(MessageBoxBase);
-    d->yesButton->hide();
-    d->buttonLayout->insertStretch(0, 1);
+    d->m_yesButton->hide();
+    d->m_buttonLayout->insertStretch(0, 1);
 }
 
 void MessageBoxBase::hideCancelButton()
 {
     Q_D(MessageBoxBase);
-    d->cancelButton->hide();
-    d->buttonLayout->insertStretch(0, 1);
+    d->m_cancelButton->hide();
+    d->m_buttonLayout->insertStretch(0, 1);
 }
 
-QPushButton* MessageBoxBase::yesButton()
+QPushButton* MessageBoxBase::yesButton() const
 {
-    Q_D(MessageBoxBase);
-    return d->yesButton;
+    Q_D(const MessageBoxBase);
+    return d->m_yesButton;
 }
 
-QPushButton* MessageBoxBase::cancelbutton()
+QPushButton* MessageBoxBase::cancelButton() const
 {
-    Q_D(MessageBoxBase);
-    return d->cancelButton;
+    Q_D(const MessageBoxBase);
+    return d->m_cancelButton;
 }
 
 
-QVBoxLayout* MessageBoxBase::viewLayout()
+QVBoxLayout* MessageBoxBase::viewLayout() const
 {
-    Q_D(MessageBoxBase);
-    return d->viewLayout;
+    Q_D(const MessageBoxBase);
+    return d->m_viewLayout;
 }

@@ -40,7 +40,7 @@ public:
 
     void setIsClosableOnMaskClicked(bool enable);
 
-    bool isClosableOnMaskClicked();
+    bool isClosableOnMaskClicked() const;
 
 protected:
     explicit MaskDialogBase(MaskDialogBasePrivate& dd, QWidget* parent = nullptr);

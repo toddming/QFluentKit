@@ -15,7 +15,7 @@ class SingleDirectionScrollArea;
 /**
  * @brief 色调面板
  */
-class HuePanel : public QWidget
+class QFLUENT_EXPORT HuePanel : public QWidget
 {
     Q_OBJECT
 
@@ -30,9 +30,9 @@ signals:
     void colorChanged(const QColor& color);
 
 protected:
-    void mousePressEvent(QMouseEvent* e) override;
-    void mouseMoveEvent(QMouseEvent* e) override;
-    void paintEvent(QPaintEvent* e) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private:
     void setPickerPosition(const QPoint& pos);
@@ -46,7 +46,7 @@ private:
 /**
  * @brief 亮度滑块
  */
-class BrightnessSlider : public ClickableSlider
+class QFLUENT_EXPORT BrightnessSlider : public ClickableSlider
 {
     Q_OBJECT
 
@@ -69,7 +69,7 @@ private:
 /**
  * @brief 颜色卡片
  */
-class ColorCard : public QWidget
+class QFLUENT_EXPORT ColorCard : public QWidget
 {
     Q_OBJECT
 
@@ -79,7 +79,7 @@ public:
     void setColor(const QColor& color);
 
 protected:
-    void paintEvent(QPaintEvent* e) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private:
     QPixmap createTitledBackground();
@@ -93,7 +93,7 @@ private:
 /**
  * @brief 颜色行编辑框
  */
-class ColorLineEdit : public LineEdit
+class QFLUENT_EXPORT ColorLineEdit : public LineEdit
 {
     Q_OBJECT
 
@@ -111,7 +111,7 @@ private slots:
 /**
  * @brief 十六进制颜色行编辑框
  */
-class HexColorLineEdit : public ColorLineEdit
+class QFLUENT_EXPORT HexColorLineEdit : public ColorLineEdit
 {
     Q_OBJECT
 
@@ -129,7 +129,7 @@ private:
 /**
  * @brief 不透明度行编辑框
  */
-class OpacityLineEdit : public ColorLineEdit
+class QFLUENT_EXPORT OpacityLineEdit : public ColorLineEdit
 {
     Q_OBJECT
 
@@ -137,7 +137,7 @@ public:
     explicit OpacityLineEdit(int value, QWidget* parent = nullptr);
 
 protected:
-    void showEvent(QShowEvent* e) override;
+    void showEvent(QShowEvent* event) override;
 
 private slots:
     void adjustSuffixPos();
@@ -173,7 +173,7 @@ signals:
     void colorChanged(const QColor& color);
 
 protected:
-    void showEvent(QShowEvent* e) override;
+    void showEvent(QShowEvent* event) override;
 
 private slots:
     void onHueChanged(const QColor& color);
