@@ -13,4 +13,5 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_subdirectory(QFluent)
 add_subdirectory(QFluentExample)
+add_subdirectory(MinimalExample)
 
