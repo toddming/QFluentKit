@@ -19,7 +19,129 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
+    <number>9</number>
+   </property>
+   <item>
+    <widget class="CardWidget" name="cardWidget" native="true">
+     <layout class="QVBoxLayout" name="cardLayout">
+      <property name="spacing">
+       <number>16</number>
+      </property>
+      <item alignment="Qt::AlignmentFlag::AlignHCenter">
+       <widget class="PrimaryPushButton" name="pushButton">
+        <property name="text">
+         <string>欢迎加入QQ群交流: 1084320682</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="radioContainer" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="RadioButton" name="radioNormal">
+           <property name="text">
+            <string>无效果</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="RadioButton" name="radioDWMBlur">
+           <property name="text">
+            <string>DWM模糊</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="RadioButton" name="radioAcrylic">
+           <property name="text">
+            <string>亚克力</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="RadioButton" name="radioMica">
+           <property name="text">
+            <string>Mica</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="RadioButton" name="radioMicaAlt">
+           <property name="text">
+            <string>Mica Alt</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignmentFlag::AlignHCenter">
+       <widget class="CheckBox" name="darkCheckBox">
+        <property name="text">
+         <string>深色</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CardWidget</class>
+   <extends>QWidget</extends>
+   <header>QFluent/CardWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PrimaryPushButton</class>
+   <extends>QPushButton</extends>
+   <header>QFluent/PushButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RadioButton</class>
+   <extends>QRadioButton</extends>
+   <header>QFluent/RadioButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>QFluent/CheckBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
