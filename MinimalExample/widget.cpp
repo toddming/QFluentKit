@@ -4,12 +4,15 @@
 #include <QButtonGroup>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QClipboard>
+#include <QApplication>
 
 #include <QFluent/Theme.h>
 #include <QFluent/CheckBox.h>
 #include <QFluent/PushButton.h>
 #include <QFluent/RadioButton.h>
 #include <QFluent/CardWidget.h>
+#include <QFluent/InfoBar.h>
 
 Widget::Widget(QWidget *parent)
     : AcrylicWidget(parent)
@@ -55,8 +58,14 @@ Widget::Widget(QWidget *parent)
     buttonGroup->button(0)->setChecked(true);
 
     auto darkCheckBox = new CheckBox(tr("深色"), this);
-
-    vLayout->addWidget(new PrimaryPushButton("欢迎加入QQ群交流: 1084320682", this), 0, Qt::AlignHCenter);
+    auto pushButton = new PrimaryPushButton("欢迎加入QQ群交流: 1084320682", this);
+    connect(pushButton, &PrimaryPushButton::clicked, this, [this](){
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText("1084320682");
+        InfoBar::success("", "已复制到剪贴板",
+                         Qt::Horizontal, true, 2000, Fluent::MessagePosition::TOP, this);
+    });
+    vLayout->addWidget(pushButton, 0, Qt::AlignHCenter);
     vLayout->addLayout(hLayout);
     vLayout->addWidget(darkCheckBox, 0, Qt::AlignHCenter);
 
