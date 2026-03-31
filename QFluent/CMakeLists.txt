@@ -81,8 +81,8 @@ target_link_libraries(QFluent
 include(GNUInstallDirs)
 
 # ==================== 安装配置 ====================
-# 安装选项：是否安装到 Qt 目录（默认关闭，使用 CMAKE_INSTALL_PREFIX）
-option(QFLUENT_INSTALL_TO_QT "Install QFluent to Qt installation directory" OFF)
+# 安装选项：是否安装到 Qt 目录（默认开启，关闭后使用 CMAKE_INSTALL_PREFIX）
+option(QFLUENT_INSTALL_TO_QT "Install QFluent to Qt installation directory" ON)
 
 # 设置 Qt 安装路径
 if(QFLUENT_INSTALL_TO_QT)
