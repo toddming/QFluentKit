@@ -109,6 +109,8 @@ cd build/QFluentExample
 QFluentExample.exe  # Windows
 ```
 
+**说明：** `MinimalExample` 项目仅在 QFluent 已安装时才会构建（通过 `find_package(QFluent)` 检测）。这用于测试已安装库的集成效果。
+
 ---
 
 ## 集成到你的项目
@@ -162,6 +164,7 @@ E:/Qt/6.8.3/msvc2022_64/
 │   ├── QFluent.dll           # Release 动态库
 │   ├── QFluentd.dll          # Debug 动态库（带 'd' 后缀）
 │   ├── QFluent.pdb           # Debug PDB 文件（仅 MSVC）
+│   ├── QFluent.dll.debug     # 调试符号文件（仅 MinGW）
 │   └── ...
 ├── lib/
 │   ├── QFluent.lib           # Release 导入库
@@ -182,7 +185,10 @@ E:/Qt/6.8.3/msvc2022_64/
         └── res/              # 资源文件（图标、样式表）
 ```
 
-**说明：** Debug 版本的库文件使用 `d` 后缀（如 `QFluentd.dll`、`QFluentd.lib`），遵循 Qt 的命名惯例。这样 Debug 和 Release 版本可以共存于同一目录，互不覆盖。
+**说明：**
+- Debug 版本的库文件使用 `d` 后缀（如 `QFluentd.dll`、`QFluentd.lib`），遵循 Qt 的命名惯例。这样 Debug 和 Release 版本可以共存于同一目录，互不覆盖。
+- MSVC：Debug PDB 文件会随 DLL 一起安装，便于调试。
+- MinGW：调试符号会被提取到独立的 `.debug` 文件（如 `QFluent.dll.debug`），减小 DLL 体积的同时保留调试能力。
 
 ### 方式二：安装到自定义目录
 
@@ -235,7 +241,7 @@ target_link_libraries(MyApp PRIVATE QFluent)
 
 | 选项 | 默认值 | 说明 |
 |------|--------|------|
-| `QFLUENT_INSTALL_TO_QT` | OFF | 安装到 Qt 安装目录 |
+| `QFLUENT_INSTALL_TO_QT` | ON | 安装到 Qt 安装目录 |
 | `CMAKE_INSTALL_PREFIX` | 系统默认 | 自定义安装路径 |
 | `BUILD_QWINDOWKIT` | OFF | 启用 QWindowKit 集成 |
 

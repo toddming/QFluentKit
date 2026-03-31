@@ -109,6 +109,8 @@ cd build/QFluentExample
 QFluentExample.exe  # Windows
 ```
 
+**Note:** The `MinimalExample` project is only built when QFluent is already installed (detected via `find_package(QFluent)`). This allows testing the installed library integration.
+
 ---
 
 ## Integration into Your Project
@@ -162,6 +164,7 @@ E:/Qt/6.8.3/msvc2022_64/
 │   ├── QFluent.dll           # Release DLL
 │   ├── QFluentd.dll          # Debug DLL (with 'd' suffix)
 │   ├── QFluent.pdb           # Debug PDB (MSVC only)
+│   ├── QFluent.dll.debug     # Debug symbols (MinGW only)
 │   └── ...
 ├── lib/
 │   ├── QFluent.lib           # Release import library
@@ -182,7 +185,10 @@ E:/Qt/6.8.3/msvc2022_64/
         └── res/              # Resource files (icons, stylesheets)
 ```
 
-**Note:** Debug libraries use the `d` suffix (e.g., `QFluentd.dll`, `QFluentd.lib`), following Qt's convention. This allows Debug and Release versions to coexist in the same directory.
+**Note:**
+- Debug libraries use the `d` suffix (e.g., `QFluentd.dll`, `QFluentd.lib`), following Qt's convention. This allows Debug and Release versions to coexist in the same directory.
+- MSVC: Debug PDB files are installed alongside the DLLs for debugging.
+- MinGW: Debug symbols are extracted to separate `.debug` files (e.g., `QFluent.dll.debug`) to reduce DLL size while maintaining debugging capability.
 
 ### Method 2: Install to Custom Directory
 
@@ -234,7 +240,7 @@ target_link_libraries(MyApp PRIVATE QFluent)
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `QFLUENT_INSTALL_TO_QT` | OFF | Install to Qt installation directory |
+| `QFLUENT_INSTALL_TO_QT` | ON | Install to Qt installation directory |
 | `CMAKE_INSTALL_PREFIX` | System default | Custom installation path |
 | `BUILD_QWINDOWKIT` | OFF | Enable QWindowKit integration |
 
