@@ -7,7 +7,6 @@
 #  include <QColor>
 #  include <windows.h>
 #  include <dwmapi.h>
-#  pragma comment(lib, "dwmapi.lib")
 #endif
 
 // ────────────────────────────────────────────────────────────────────────────

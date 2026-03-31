@@ -58,6 +58,11 @@ endif()
 target_link_libraries(MinimalExample PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(MinimalExample PRIVATE QFluent::QFluent)
 
+# Windows DWM API
+if(WIN32)
+    target_link_libraries(MinimalExample PRIVATE dwmapi)
+endif()
+
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.

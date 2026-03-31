@@ -38,16 +38,12 @@ if(NOT QFLUENT_CPP_SOURCES)
 endif()
 
 # 资源处理：必须在 add_library 之前设置 AUTORCC，确保 Qt6 下资源初始化顺序正确
-# Qt6 使用 AUTORCC；Qt5 使用 qt5_add_resources（保留原始行为，避免静态初始化时序问题）
 if(${QT_VERSION_MAJOR} EQUAL 6)
     set(CMAKE_AUTORCC ON)
 endif()
 
 add_library(QFluent SHARED ${QFLUENT_CPP_SOURCES})
 
-# 头文件加入 target_sources 以在 Qt Creator / VS Code / CLion 等 IDE 中可见
-# FILE_SET 方式（CMake 3.23+）对旧版本不兼容，使用 PRIVATE 方式保持兼容性
-# 头文件不参与编译，但 IDE 会通过此列表显示它们
 target_sources(QFluent PRIVATE ${QFLUENT_HEADER_SOURCES})
 
 target_include_directories(QFluent PUBLIC
@@ -55,17 +51,15 @@ target_include_directories(QFluent PUBLIC
 )
 target_compile_definitions(QFluent PRIVATE QFLUENT_LIBRARY)
 
-# Debug 版本使用 'd' 后缀（类似 Qt 的做法：Qt6Cored.dll vs Qt6Core.dll）
+# Debug 版本使用 'd' 后缀
 set_target_properties(QFluent PROPERTIES
     DEBUG_POSTFIX "d"
 )
 
 # 资源文件挂载
 if(${QT_VERSION_MAJOR} EQUAL 6)
-    # Qt6：AUTORCC 已在 add_library 前启用，直接添加 .qrc 即可
     target_sources(QFluent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/res/res.qrc)
 else()
-    # Qt5：使用 qt5_add_resources 保持与原始行为完全一致
     qt5_add_resources(RCC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/res/res.qrc)
     target_sources(QFluent PRIVATE ${RCC_SOURCES})
 endif()
@@ -81,22 +75,15 @@ target_link_libraries(QFluent
 include(GNUInstallDirs)
 
 # ==================== 安装配置 ====================
-# 安装选项：是否安装到 Qt 目录（默认开启，关闭后使用 CMAKE_INSTALL_PREFIX）
 option(QFLUENT_INSTALL_TO_QT "Install QFluent to Qt installation directory" ON)
 
-# 设置 Qt 安装路径
 if(QFLUENT_INSTALL_TO_QT)
-    # Qt6 通过 QT6_INSTALL_PREFIX 直接暴露安装前缀，更稳定
-    # Qt5 通过 _qt5Core_install_prefix 变量获取
-    # 兜底方案：从 Qt::Core 的 IMPORTED_LOCATION 推导（兼容 Qt5/Qt6 多配置生成器）
     if(${QT_VERSION_MAJOR} EQUAL 6 AND DEFINED QT6_INSTALL_PREFIX)
         set(QT_INSTALL_DIR "${QT6_INSTALL_PREFIX}")
     elseif(${QT_VERSION_MAJOR} EQUAL 5 AND DEFINED _qt5Core_install_prefix)
         set(QT_INSTALL_DIR "${_qt5Core_install_prefix}")
     else()
-        # 使用生成器表达式安全获取路径（兼容多配置生成器，避免废弃的 LOCATION 属性）
         get_target_property(QT_CORE_IMPORTED_CONFIGS Qt${QT_VERSION_MAJOR}::Core IMPORTED_CONFIGURATIONS)
-        # 取第一个可用配置的路径
         list(GET QT_CORE_IMPORTED_CONFIGS 0 _first_cfg)
         string(TOUPPER "${_first_cfg}" _first_cfg_upper)
         get_target_property(QT_CORE_LOCATION Qt${QT_VERSION_MAJOR}::Core
@@ -109,8 +96,7 @@ if(QFLUENT_INSTALL_TO_QT)
     message(STATUS "QFluent will be installed to Qt directory: ${QT_INSTALL_DIR}")
 endif()
 
-
-# 安装核心头文件（src/ 根目录，自动排除 QFluent/ 和 Private/ 子目录）
+# 安装核心头文件
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QFluent
     FILES_MATCHING
@@ -120,7 +106,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
         PATTERN "Private" EXCLUDE
 )
 
-# 安装组件头文件（src/QFluent/ 目录，自动排除 Private/ 子目录）
+# 安装组件头文件
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/QFluent/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QFluent
     FILES_MATCHING
@@ -130,7 +116,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/QFluent/
 )
 
 # ==================== 库文件安装 ====================
-# Windows 平台：Debug 版本使用 'd' 后缀，与 Release 版本共存于同一目录
 install(TARGETS QFluent
     EXPORT QFluentTargets
     BUNDLE DESTINATION .
@@ -148,39 +133,56 @@ if(MSVC)
     )
 endif()
 
-# 安装 MinGW 调试符号（.debug 文件，需启用分离调试信息）
+# ==================== MinGW 分离调试符号 ====================
 if(MINGW)
-    # 启用分离调试信息
     set_target_properties(QFluent PROPERTIES
         ENABLE_EXPORTS ON
     )
-    # MinGW 分离调试信息需要在编译时生成
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_CONFIGURATION_TYPES)
+
+    find_program(CMAKE_OBJCOPY_FOUND objcopy)
+    if(CMAKE_OBJCOPY_FOUND OR CMAKE_OBJCOPY)
+        # 优先使用 CMake 自动检测到的 CMAKE_OBJCOPY，回退到 find_program 结果
+        if(NOT CMAKE_OBJCOPY)
+            set(CMAKE_OBJCOPY "${CMAKE_OBJCOPY_FOUND}")
+        endif()
+
         add_custom_command(TARGET QFluent POST_BUILD
-            COMMAND ${CMAKE_OBJCOPY} --only-keep-debug $<TARGET_FILE:QFluent> $<TARGET_FILE:QFluent>.debug
-            COMMAND ${CMAKE_OBJCOPY} --add-gnu-debuglink=$<TARGET_FILE:QFluent>.debug $<TARGET_FILE:QFluent>
-            BYPRODUCTS $<TARGET_FILE:QFluent>.debug
-            COMMENT "Generating separate debug symbols for MinGW"
+            # 仅在 Debug 配置下执行（生成器表达式在构建阶段求值，规避配置阶段的目标查找问题）
+            COMMAND $<$<CONFIG:Debug>:${CMAKE_OBJCOPY}>
+                    $<$<CONFIG:Debug>:--only-keep-debug>
+                    $<$<CONFIG:Debug>:$<TARGET_FILE:QFluent>>
+                    $<$<CONFIG:Debug>:$<TARGET_FILE:QFluent>.debug>
+            COMMAND $<$<CONFIG:Debug>:${CMAKE_OBJCOPY}>
+                    $<$<CONFIG:Debug>:--add-gnu-debuglink=$<TARGET_FILE:QFluent>.debug>
+                    $<$<CONFIG:Debug>:$<TARGET_FILE:QFluent>>
+            COMMENT "Generating separate debug symbols for MinGW (Debug only)"
         )
-        install(FILES $<TARGET_FILE:QFluent>.debug
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-            CONFIGURATIONS Debug
-            OPTIONAL
-        )
+
+        if(POLICY CMP0087)
+            cmake_policy(SET CMP0087 NEW)
+        endif()
+
+        install(CODE "
+            if(EXISTS \"$<TARGET_FILE:QFluent>.debug\")
+                file(INSTALL \"$<TARGET_FILE:QFluent>.debug\"
+                    DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}\"
+                )
+            endif()
+        " COMPONENT Debug)
+    else()
+        message(WARNING "objcopy not found, MinGW separate debug symbols will not be generated.")
     endif()
 endif()
 
 # ==================== CMake 配置文件安装 ====================
 include(CMakePackageConfigHelpers)
 
-# 生成版本配置文件
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/QFluentConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
-# 配置文件模板
 set(CMAKE_INSTALL_INCLUDEDIR_FOR_CONFIG "${CMAKE_INSTALL_INCLUDEDIR}")
 configure_package_config_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/QFluentConfig.cmake.in"
@@ -189,7 +191,6 @@ configure_package_config_file(
     PATH_VARS CMAKE_INSTALL_INCLUDEDIR_FOR_CONFIG
 )
 
-# 安装 CMake 配置文件
 install(EXPORT QFluentTargets
     FILE QFluentTargets.cmake
     NAMESPACE QFluent::
