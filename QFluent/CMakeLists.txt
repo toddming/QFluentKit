@@ -148,6 +148,28 @@ if(MSVC)
     )
 endif()
 
+# 安装 MinGW 调试符号（.debug 文件，需启用分离调试信息）
+if(MINGW)
+    # 启用分离调试信息
+    set_target_properties(QFluent PROPERTIES
+        ENABLE_EXPORTS ON
+    )
+    # MinGW 分离调试信息需要在编译时生成
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_CONFIGURATION_TYPES)
+        add_custom_command(TARGET QFluent POST_BUILD
+            COMMAND ${CMAKE_OBJCOPY} --only-keep-debug $<TARGET_FILE:QFluent> $<TARGET_FILE:QFluent>.debug
+            COMMAND ${CMAKE_OBJCOPY} --add-gnu-debuglink=$<TARGET_FILE:QFluent>.debug $<TARGET_FILE:QFluent>
+            BYPRODUCTS $<TARGET_FILE:QFluent>.debug
+            COMMENT "Generating separate debug symbols for MinGW"
+        )
+        install(FILES $<TARGET_FILE:QFluent>.debug
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            CONFIGURATIONS Debug
+            OPTIONAL
+        )
+    endif()
+endif()
+
 # ==================== CMake 配置文件安装 ====================
 include(CMakePackageConfigHelpers)
 

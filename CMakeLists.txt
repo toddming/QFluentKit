@@ -13,5 +13,6 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_subdirectory(QFluent)
 add_subdirectory(QFluentExample)
+# 编译 QFluent 并执行 install 后可取消下方注释
 # add_subdirectory(MinimalExample)
 

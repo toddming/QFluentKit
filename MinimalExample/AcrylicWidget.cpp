@@ -131,14 +131,19 @@ void AcrylicWidget::applyEffect(WindowEffect effect)
     applyStyleSheet();
 
 #ifdef Q_OS_WIN
-    // ── 3. 获取原生窗口句柄 ────────────────────────────────────────────────
+    // ── 3. 窗口未显示时跳过 DWM 调用（showEvent 会重新调用）───────────────
+    if (!isVisible()) {
+        return;
+    }
+
+    // ── 4. 获取原生窗口句柄 ────────────────────────────────────────────────
     const HWND hwnd = reinterpret_cast<HWND>(this->winId());
     if (!hwnd) {
         qWarning("AcrylicWidget: invalid window handle");
         return;
     }
 
-    // ── 4. 深色模式标题栏 ──────────────────────────────────────────────────
+    // ── 5. 深色模式标题栏 ──────────────────────────────────────────────────
     const BOOL darkMode = m_isDark ? TRUE : FALSE;
     HRESULT hr = DwmSetWindowAttribute(hwnd,
                                        DWMWA_USE_IMMERSIVE_DARK_MODE,
@@ -147,7 +152,7 @@ void AcrylicWidget::applyEffect(WindowEffect effect)
         qDebug("AcrylicWidget: failed to set dark mode: 0x%08lX",
                static_cast<unsigned long>(hr));
 
-    // ── 5. 根据效果类型配置 DWM ────────────────────────────────────────────
+    // ── 6. 根据效果类型配置 DWM ────────────────────────────────────────────
     bool needExtendFrame       = true;
     bool needResetCaptionColor = true;
 
@@ -185,25 +190,28 @@ void AcrylicWidget::applyEffect(WindowEffect effect)
     }
 
     case WindowEffect::Normal: {
-        int backdropType = DWMSBT_NONE;
-        hr = DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE,
-                                   &backdropType, sizeof(backdropType));
-        if (FAILED(hr))
-            qWarning("AcrylicWidget: failed to reset backdrop: 0x%08lX",
-                     static_cast<unsigned long>(hr));
+        // Windows 11 专有属性
+        if (isWin11) {
+            int backdropType = DWMSBT_NONE;
+            hr = DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE,
+                                       &backdropType, sizeof(backdropType));
+            if (FAILED(hr))
+                qWarning("AcrylicWidget: failed to reset backdrop: 0x%08lX",
+                         static_cast<unsigned long>(hr));
+
+            // 标题栏颜色跟随主题色
+            const QColor color(m_isDark ? QStringLiteral("#202020")
+                                        : QStringLiteral("#F0F4F9"));
+            const COLORREF captionColor = RGB(color.red(), color.green(), color.blue());
+            hr = DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR,
+                                       &captionColor, sizeof(captionColor));
+            if (FAILED(hr))
+                qDebug("AcrylicWidget: failed to set caption color: 0x%08lX",
+                       static_cast<unsigned long>(hr));
+        }
 
         MARGINS margins = {0, 0, 0, 0};
         DwmExtendFrameIntoClientArea(hwnd, &margins);
-
-        // 标题栏颜色跟随主题色
-        const QColor color(m_isDark ? QStringLiteral("#202020")
-                                    : QStringLiteral("#F0F4F9"));
-        const COLORREF captionColor = RGB(color.red(), color.green(), color.blue());
-        hr = DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR,
-                                   &captionColor, sizeof(captionColor));
-        if (FAILED(hr))
-            qDebug("AcrylicWidget: failed to set caption color: 0x%08lX",
-                   static_cast<unsigned long>(hr));
 
         needExtendFrame       = false;
         needResetCaptionColor = false;
@@ -214,8 +222,8 @@ void AcrylicWidget::applyEffect(WindowEffect effect)
         return;
     }
 
-    // ── 6. 特效模式：还原标题栏颜色为系统默认 ────────────────────────────────
-    if (needResetCaptionColor) {
+    // ── 7. 特效模式：还原标题栏颜色为系统默认（Windows 11 专有）────────────
+    if (needResetCaptionColor && isWin11) {
         constexpr COLORREF defaultColor = 0xFFFFFFFF;
         hr = DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR,
                                    &defaultColor, sizeof(defaultColor));
@@ -224,7 +232,7 @@ void AcrylicWidget::applyEffect(WindowEffect effect)
                    static_cast<unsigned long>(hr));
     }
 
-    // ── 7. 特效模式：将 DWM 边框扩展到整个客户区 ─────────────────────────────
+    // ── 8. 特效模式：将 DWM 边框扩展到整个客户区 ─────────────────────────────
     if (needExtendFrame) {
         MARGINS margins = {-1, -1, -1, -1};
         hr = DwmExtendFrameIntoClientArea(hwnd, &margins);
