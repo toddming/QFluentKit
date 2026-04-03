@@ -11,6 +11,18 @@ class QFLUENT_EXPORT CheckBox : public QCheckBox {
     Q_DECLARE_PRIVATE_D(d_ptr, CheckBox)
 
 public:
+    enum class State {
+        NORMAL,
+        HOVER,
+        PRESSED,
+        CHECKED,
+        CHECKED_HOVER,
+        CHECKED_PRESSED,
+        DISABLED,
+        CHECKED_DISABLED
+    };
+    Q_ENUM(State)
+
     explicit CheckBox(QWidget *parent = nullptr);
     CheckBox(const QString &text, QWidget *parent = nullptr);
     ~CheckBox();

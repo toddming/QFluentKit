@@ -22,11 +22,6 @@ class NavigationUserCard;
 class Flyout;
 class FluentIconBase;
 
-namespace Fluent {
-    enum class NavigationItemPosition;
-    enum class NavigationDisplayMode;
-}
-
 // 自定义异常类
 class RouteKeyError : public std::exception {
 public:
@@ -59,6 +54,21 @@ class QFLUENT_EXPORT NavigationPanel : public QFrame {
     Q_PROPERTY(int minimumWidth READ minimumWidth WRITE setMinimumWidth)
 
 public:
+    enum class DisplayMode {
+        MINIMAL = 0,
+        COMPACT = 1,
+        EXPAND = 2,
+        MENU = 3
+    };
+    Q_ENUM(DisplayMode)
+
+    enum class ItemPosition {
+        TOP = 0,
+        SCROLL = 1,
+        BOTTOM = 2
+    };
+    Q_ENUM(ItemPosition)
+
     explicit NavigationPanel(QWidget* parent = nullptr, bool isMinimalEnabled = false);
     ~NavigationPanel() override;
 
@@ -78,7 +88,7 @@ public:
         const QString& title,
         const QString& subtitle,
         std::function<void()> onClick = nullptr,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP,
         bool aboveMenuButton = false);
 
     // 添加导航项
@@ -88,7 +98,7 @@ public:
         const QString& text,
         const std::function<void()>& onClick = nullptr,
         bool selectable = true,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP,
         const QString& tooltip = QString(),
         const QString& parentRouteKey = QString());
 
@@ -96,7 +106,7 @@ public:
         const QString& routeKey,
         NavigationWidget* widget,
         const std::function<void()>& onClick = nullptr,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP,
         const QString& tooltip = QString(),
         const QString& parentRouteKey = QString());
 
@@ -108,7 +118,7 @@ public:
         const QString& text,
         const std::function<void()>& onClick = nullptr,
         bool selectable = true,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP,
         const QString& tooltip = QString(),
         const QString& parentRouteKey = QString());
 
@@ -117,26 +127,26 @@ public:
         const QString& routeKey,
         NavigationWidget* widget,
         const std::function<void()>& onClick = nullptr,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP,
         const QString& tooltip = QString(),
         const QString& parentRouteKey = QString());
 
     // 添加分隔符和标题
     void addSeparator(
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 
     void addItemHeader(
         const QString& text,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 
     void insertSeparator(
         int index,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 
     void insertItemHeader(
         int index,
         const QString& text,
-        Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP);
+        NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 
     // 移除和设置导航项
     void removeWidget(const QString& routeKey);
@@ -157,7 +167,7 @@ public:
     bool isCollapsed() const;
 
 signals:
-    void displayModeChanged(Fluent::NavigationDisplayMode mode);
+    void displayModeChanged(NavigationPanel::DisplayMode mode);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -182,7 +192,7 @@ private:
     void insertWidgetToLayout(
         int index,
         NavigationWidget* widget,
-        Fluent::NavigationItemPosition position);
+        NavigationPanel::ItemPosition position);
 
     void setWidgetCompacted(bool isCompacted);
     int calculateLayoutMinHeight() const;
@@ -227,7 +237,7 @@ private:
     QPropertyAnimation* m_expandAnimation;
 
     // 显示模式
-    Fluent::NavigationDisplayMode m_displayMode;
+    NavigationPanel::DisplayMode m_displayMode;
 };
 
 // 导航项布局类

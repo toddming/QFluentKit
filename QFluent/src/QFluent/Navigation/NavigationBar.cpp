@@ -168,7 +168,7 @@ NavigationBar::NavigationBar(QWidget* parent)
       m_expandAni(new QPropertyAnimation(this, "minimumWidth", this)),
       m_expandWidth(160),
       m_isMinimalEnabled(false),
-      m_displayMode(Fluent::NavigationDisplayMode::COMPACT),
+      m_displayMode(NavigationPanel::DisplayMode::COMPACT),
       m_isMenuButtonVisible(true),
       m_isReturnButtonVisible(false),
       m_isCollapsible(true),
@@ -242,19 +242,19 @@ NavigationWidget* NavigationBar::widget(const QString& routeKey) {
 
 void NavigationBar::addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                           const std::function<void()>& onClick, bool selectable,
-                          Fluent::NavigationItemPosition position) {
+                          NavigationPanel::ItemPosition position) {
     insertItem(-1, routeKey, icon, text, onClick, selectable, position);
 }
 
 void NavigationBar::addWidget(const QString& routeKey, NavigationWidget* widget,
                             const std::function<void()>& onClick,
-                            Fluent::NavigationItemPosition position) {
+                            NavigationPanel::ItemPosition position) {
     insertWidget(-1, routeKey, widget, onClick, position);
 }
 
 void NavigationBar::insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
                              const std::function<void()>& onClick, bool selectable,
-                             Fluent::NavigationItemPosition position) {
+                             NavigationPanel::ItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;
     }
@@ -266,7 +266,7 @@ void NavigationBar::insertItem(int index, const QString& routeKey, const FluentI
 
 void NavigationBar::insertWidget(int index, const QString& routeKey, NavigationWidget* widget,
                                const std::function<void()>& onClick,
-                               Fluent::NavigationItemPosition position) {
+                               NavigationPanel::ItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;
     }
@@ -275,11 +275,11 @@ void NavigationBar::insertWidget(int index, const QString& routeKey, NavigationW
     insertWidgetToLayout(index, widget, position);
 }
 
-void NavigationBar::addSeparator(Fluent::NavigationItemPosition position) {
+void NavigationBar::addSeparator(NavigationPanel::ItemPosition position) {
     insertSeparator(-1, position);
 }
 
-void NavigationBar::insertSeparator(int index, Fluent::NavigationItemPosition position) {
+void NavigationBar::insertSeparator(int index, NavigationPanel::ItemPosition position) {
     NavigationSeparator* separator = new NavigationSeparator(this);
     insertWidgetToLayout(index, separator, position);
 }
@@ -293,11 +293,11 @@ void NavigationBar::registerWidget(const QString& routeKey, NavigationWidget* wi
     m_items[routeKey] = {routeKey, "", widget};
 }
 
-void NavigationBar::insertWidgetToLayout(int index, NavigationWidget* widget, Fluent::NavigationItemPosition position) {
-    if (position == Fluent::NavigationItemPosition::TOP) {
+void NavigationBar::insertWidgetToLayout(int index, NavigationWidget* widget, NavigationPanel::ItemPosition position) {
+    if (position == NavigationPanel::ItemPosition::TOP) {
         widget->setParent(this);
         m_topLayout->insertWidget(index, widget, 0, Qt::AlignTop);
-    } else if (position == Fluent::NavigationItemPosition::SCROLL) {
+    } else if (position == NavigationPanel::ItemPosition::SCROLL) {
         widget->setParent(m_scrollWidget);
         m_scrollLayout->insertWidget(index, widget, 0, Qt::AlignTop);
     } else {

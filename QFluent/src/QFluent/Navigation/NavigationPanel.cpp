@@ -51,8 +51,8 @@ NavigationPanel::NavigationPanel(QWidget* parent, bool isMinimalEnabled)
     , m_bottomLayout(nullptr)
     , m_scrollLayout(nullptr)
     , m_expandAnimation(nullptr)
-    , m_displayMode(isMinimalEnabled ? Fluent::NavigationDisplayMode::MINIMAL
-                                     : Fluent::NavigationDisplayMode::COMPACT)
+    , m_displayMode(isMinimalEnabled ? NavigationPanel::DisplayMode::MINIMAL
+                                     : NavigationPanel::DisplayMode::COMPACT)
 {
     initWidget();
 }
@@ -153,7 +153,7 @@ NavigationUserCard* NavigationPanel::addUserCard(
     const QString& title,
     const QString& subtitle,
     std::function<void()> onClick,
-    Fluent::NavigationItemPosition position,
+    NavigationPanel::ItemPosition position,
     bool aboveMenuButton)
 {
     Q_UNUSED(routeKey);
@@ -175,7 +175,7 @@ NavigationUserCard* NavigationPanel::addUserCard(
 
     // 确定插入位置
     int index = -1;
-    if (aboveMenuButton && position == Fluent::NavigationItemPosition::TOP) {
+    if (aboveMenuButton && position == NavigationPanel::ItemPosition::TOP) {
         for (int i = 0; i < m_topLayout->count(); ++i) {
             QLayoutItem* item = m_topLayout->itemAt(i);
             if (item && item->widget() == m_menuButton) {
@@ -206,7 +206,7 @@ void NavigationPanel::addItem(
     const QString& text,
     const std::function<void()>& onClick,
     bool selectable,
-    Fluent::NavigationItemPosition position,
+    NavigationPanel::ItemPosition position,
     const QString& tooltip,
     const QString& parentRouteKey)
 {
@@ -217,7 +217,7 @@ void NavigationPanel::addWidget(
     const QString& routeKey,
     NavigationWidget* widget,
     const std::function<void()>& onClick,
-    Fluent::NavigationItemPosition position,
+    NavigationPanel::ItemPosition position,
     const QString& tooltip,
     const QString& parentRouteKey)
 {
@@ -231,7 +231,7 @@ void NavigationPanel::insertItem(
     const QString& text,
     const std::function<void()>& onClick,
     bool selectable,
-    Fluent::NavigationItemPosition position,
+    NavigationPanel::ItemPosition position,
     const QString& tooltip,
     const QString& parentRouteKey)
 {
@@ -250,7 +250,7 @@ void NavigationPanel::insertWidget(
     const QString& routeKey,
     NavigationWidget* widget,
     const std::function<void()>& onClick,
-    Fluent::NavigationItemPosition position,
+    NavigationPanel::ItemPosition position,
     const QString& tooltip,
     const QString& parentRouteKey)
 {
@@ -274,24 +274,24 @@ void NavigationPanel::insertWidget(
     }
 }
 
-void NavigationPanel::addSeparator(Fluent::NavigationItemPosition position)
+void NavigationPanel::addSeparator(NavigationPanel::ItemPosition position)
 {
     insertSeparator(-1, position);
 }
 
-void NavigationPanel::addItemHeader(const QString& text, Fluent::NavigationItemPosition position)
+void NavigationPanel::addItemHeader(const QString& text, NavigationPanel::ItemPosition position)
 {
     insertItemHeader(-1, text, position);
 }
 
-void NavigationPanel::insertSeparator(int index, Fluent::NavigationItemPosition position)
+void NavigationPanel::insertSeparator(int index, NavigationPanel::ItemPosition position)
 {
     auto* separator = new NavigationSeparator(this);
     separator->setExpandWidth(m_expandWidth);
     insertWidgetToLayout(index, separator, position);
 }
 
-void NavigationPanel::insertItemHeader(int index, const QString& text, Fluent::NavigationItemPosition position)
+void NavigationPanel::insertItemHeader(int index, const QString& text, NavigationPanel::ItemPosition position)
 {
     auto* header = new NavigationItemHeader(text, this);
     insertWidgetToLayout(index, header, position);
@@ -324,8 +324,8 @@ void NavigationPanel::registerWidget(
 
     m_items[routeKey] = NavigationItem(routeKey, parentRouteKey, widget);
 
-    if (m_displayMode == Fluent::NavigationDisplayMode::EXPAND ||
-        m_displayMode == Fluent::NavigationDisplayMode::MENU) {
+    if (m_displayMode == NavigationPanel::DisplayMode::EXPAND ||
+        m_displayMode == NavigationPanel::DisplayMode::MENU) {
         widget->setCompacted(false);
     }
 }
@@ -333,24 +333,24 @@ void NavigationPanel::registerWidget(
 void NavigationPanel::insertWidgetToLayout(
     int index,
     NavigationWidget* widget,
-    Fluent::NavigationItemPosition position)
+    NavigationPanel::ItemPosition position)
 {
     if (!widget) {
         return;
     }
 
     switch (position) {
-        case Fluent::NavigationItemPosition::TOP:
+        case NavigationPanel::ItemPosition::TOP:
             widget->setParent(this);
             m_topLayout->insertWidget(index, widget, 0, Qt::AlignTop);
             break;
 
-        case Fluent::NavigationItemPosition::SCROLL:
+        case NavigationPanel::ItemPosition::SCROLL:
             widget->setParent(m_scrollWidget);
             m_scrollLayout->insertWidget(index, widget, 0, Qt::AlignTop);
             break;
 
-        case Fluent::NavigationItemPosition::BOTTOM:
+        case NavigationPanel::ItemPosition::BOTTOM:
             widget->setParent(this);
             m_bottomLayout->insertWidget(index, widget, 0, Qt::AlignBottom);
             break;
@@ -415,7 +415,7 @@ void NavigationPanel::setReturnButtonVisible(bool isVisible)
 void NavigationPanel::setCollapsible(bool on)
 {
     m_isCollapsible = on;
-    if (!on && m_displayMode != Fluent::NavigationDisplayMode::EXPAND) {
+    if (!on && m_displayMode != NavigationPanel::DisplayMode::EXPAND) {
         expand(false);
     }
 }
@@ -454,12 +454,12 @@ void NavigationPanel::expand(bool useAnimation)
     m_expandAnimation->setProperty("expand", true);
 
     if (!m_isMinimalEnabled || !m_isCollapsible) {
-        m_displayMode = Fluent::NavigationDisplayMode::EXPAND;
+        m_displayMode = NavigationPanel::DisplayMode::EXPAND;
     } else {
         setProperty("menu", true);
         style()->unpolish(this);
         style()->polish(this);
-        m_displayMode = Fluent::NavigationDisplayMode::MENU;
+        m_displayMode = NavigationPanel::DisplayMode::MENU;
 
         // 从父窗口分离为独立窗口
         if (m_parentWidget && !m_parentWidget->isWindow()) {
@@ -510,8 +510,8 @@ void NavigationPanel::collapse()
 
 void NavigationPanel::toggle()
 {
-    if (m_displayMode == Fluent::NavigationDisplayMode::COMPACT ||
-        m_displayMode == Fluent::NavigationDisplayMode::MINIMAL) {
+    if (m_displayMode == NavigationPanel::DisplayMode::COMPACT ||
+        m_displayMode == NavigationPanel::DisplayMode::MINIMAL) {
         expand();
     } else {
         collapse();
@@ -520,7 +520,7 @@ void NavigationPanel::toggle()
 
 bool NavigationPanel::isCollapsed() const
 {
-    return m_displayMode == Fluent::NavigationDisplayMode::COMPACT;
+    return m_displayMode == NavigationPanel::DisplayMode::COMPACT;
 }
 
 void NavigationPanel::onWidgetClicked()
@@ -544,7 +544,7 @@ void NavigationPanel::onWidgetClicked()
         isLeaf = treeWidget->isLeaf();
     }
 
-    if (m_displayMode == Fluent::NavigationDisplayMode::MENU && isLeaf) {
+    if (m_displayMode == NavigationPanel::DisplayMode::MENU && isLeaf) {
         collapse();
     } else if (isCollapsed()) {
         if (auto* treeWidget = qobject_cast<NavigationTreeWidget*>(widget)) {
@@ -622,7 +622,7 @@ bool NavigationPanel::eventFilter(QObject* obj, QEvent* event)
     if (event->type() == QEvent::MouseButtonRelease) {
         auto* mouseEvent = static_cast<QMouseEvent*>(event);
         if (!geometry().contains(mouseEvent->pos()) &&
-            m_displayMode == Fluent::NavigationDisplayMode::MENU) {
+            m_displayMode == NavigationPanel::DisplayMode::MENU) {
             collapse();
         }
     } else if (event->type() == QEvent::Resize) {
@@ -630,10 +630,10 @@ bool NavigationPanel::eventFilter(QObject* obj, QEvent* event)
         int width = resizeEvent->size().width();
 
         if (width < m_minimumExpandWidth &&
-            m_displayMode == Fluent::NavigationDisplayMode::EXPAND) {
+            m_displayMode == NavigationPanel::DisplayMode::EXPAND) {
             collapse();
         } else if (width >= m_minimumExpandWidth &&
-                   m_displayMode == Fluent::NavigationDisplayMode::COMPACT &&
+                   m_displayMode == NavigationPanel::DisplayMode::COMPACT &&
                    !m_isMenuButtonVisible) {
             expand();
         }
@@ -645,17 +645,17 @@ bool NavigationPanel::eventFilter(QObject* obj, QEvent* event)
 void NavigationPanel::onExpandAnimationFinished()
 {
     if (!m_expandAnimation->property("expand").toBool()) {
-        m_displayMode = m_isMinimalEnabled ? Fluent::NavigationDisplayMode::MINIMAL
-                                           : Fluent::NavigationDisplayMode::COMPACT;
+        m_displayMode = m_isMinimalEnabled ? NavigationPanel::DisplayMode::MINIMAL
+                                           : NavigationPanel::DisplayMode::COMPACT;
         emit displayModeChanged(m_displayMode);
     }
 
-    if (m_displayMode == Fluent::NavigationDisplayMode::MINIMAL) {
+    if (m_displayMode == NavigationPanel::DisplayMode::MINIMAL) {
         hide();
         setProperty("menu", false);
         style()->unpolish(this);
         style()->polish(this);
-    } else if (m_displayMode == Fluent::NavigationDisplayMode::COMPACT) {
+    } else if (m_displayMode == NavigationPanel::DisplayMode::COMPACT) {
         setProperty("menu", false);
         style()->unpolish(this);
         style()->polish(this);
@@ -711,7 +711,7 @@ bool NavigationPanel::canDrawAcrylic() const
 
 void NavigationPanel::paintEvent(QPaintEvent* event)
 {
-    if (!canDrawAcrylic() || m_displayMode != Fluent::NavigationDisplayMode::MENU) {
+    if (!canDrawAcrylic() || m_displayMode != NavigationPanel::DisplayMode::MENU) {
         QFrame::paintEvent(event);
         return;
     }

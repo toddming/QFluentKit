@@ -8,7 +8,7 @@
 #include "QFluent/Navigation/NavigationBar.h"
 
 using FIT = Fluent::IconType;
-using NIP = Fluent::NavigationItemPosition;
+using NIP = NavigationPanel::ItemPosition;
 
 SplitWidget::SplitWidget()
 {
@@ -84,7 +84,7 @@ QWidget* SplitWidget::createWidget(const QString &text, QWidget* parent)
 
 void SplitWidget::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                                    QWidget* widget, bool selectable,
-                                   Fluent::NavigationItemPosition position, const QString& tooltip,
+                                   NavigationPanel::ItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)
 {
     m_navPanel->addItem(routeKey, icon, text, [=](){m_stacked->setCurrentWidget(widget, false);}, selectable, position, tooltip, parentRouteKey);

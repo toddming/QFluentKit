@@ -43,7 +43,7 @@ Widget::Widget(QWidget *parent)
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText("1084320682");
         InfoBar::success("", tr("已复制到剪贴板"),
-                         Qt::Horizontal, true, 2000, Fluent::MessagePosition::TOP, this);
+                         Qt::Horizontal, true, 2000, InfoBar::Position::TOP, this);
     });
 
     // 深色主题切换

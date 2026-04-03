@@ -29,7 +29,7 @@
 #endif
 
 using FIT = Fluent::IconType;
-using NIP = Fluent::NavigationItemPosition;
+using NIP = NavigationPanel::ItemPosition;
 
 MainWindow::MainWindow()
 {
@@ -126,7 +126,7 @@ void MainWindow::showDialog()
 
 void MainWindow::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                                    QWidget* widget, bool selectable,
-                                   Fluent::NavigationItemPosition position, const QString& tooltip,
+                                   NavigationPanel::ItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)
 {
     m_navPanel->addItem(routeKey, icon, text, [=](){Router::instance()->push(m_stacked, widget->objectName());}, selectable, position, tooltip, parentRouteKey);

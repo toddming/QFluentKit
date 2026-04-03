@@ -24,7 +24,7 @@ private:
 
     void addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
                          QWidget* widget, bool selectable = true,
-                         Fluent::NavigationItemPosition position = Fluent::NavigationItemPosition::TOP,
+                         NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP,
                          const QString& tooltip = QString(), const QString& parentRouteKey = QString());
 
 };

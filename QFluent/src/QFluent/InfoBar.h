@@ -18,24 +18,7 @@ class QShowEvent;
 class QHideEvent;
 class QCloseEvent;
 class TransparentToolButton;
-
-/**
- * @brief 信息栏图标组件
- * 显示不同类型消息对应的图标
- */
-class QFLUENT_EXPORT InfoIconWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit InfoIconWidget(Fluent::MessageType type, QWidget* parent = nullptr);
-    ~InfoIconWidget() override = default;
-
-protected:
-    void paintEvent(QPaintEvent* event) override;
-
-private:
-    Fluent::MessageType m_type;
-};
+class InfoIconWidget;
 
 /**
  * @brief 信息栏主类
@@ -45,13 +28,32 @@ class QFLUENT_EXPORT InfoBar : public QFrame {
     Q_OBJECT
 
 public:
-    explicit InfoBar(Fluent::MessageType type,
+    enum class Type {
+        INFORMATION,
+        SUCCESS,
+        WARNING,
+        ERROR
+    };
+    Q_ENUM(Type)
+
+    enum class Position {
+        TOP = 0,
+        BOTTOM = 1,
+        TOP_LEFT = 2,
+        TOP_RIGHT = 3,
+        BOTTOM_LEFT = 4,
+        BOTTOM_RIGHT = 5,
+        NONE = 6
+    };
+    Q_ENUM(Position)
+
+    explicit InfoBar(Type type,
                      const QString& title,
                      const QString& content,
                      Qt::Orientation orientation = Qt::Horizontal,
                      bool isClosable = true,
                      int duration = 1000,
-                     Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
+                     Position position = Position::TOP_RIGHT,
                      QWidget* parent = nullptr);
     ~InfoBar() override = default;
 
@@ -70,13 +72,13 @@ public:
     void setCustomBackgroundColor(const QColor& light, const QColor& dark);
 
     // 静态工厂方法
-    static InfoBar* newInfoBar(Fluent::MessageType type,
+    static InfoBar* newInfoBar(Type type,
                                const QString& title,
                                const QString& content,
                                Qt::Orientation orientation = Qt::Horizontal,
                                bool isClosable = true,
                                int duration = 1000,
-                               Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
+                               Position position = Position::TOP_RIGHT,
                                QWidget* parent = nullptr);
 
     static InfoBar* info(const QString& title,
@@ -84,7 +86,7 @@ public:
                         Qt::Orientation orientation = Qt::Horizontal,
                         bool isClosable = true,
                         int duration = 1000,
-                        Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
+                        Position position = Position::TOP_RIGHT,
                         QWidget* parent = nullptr);
 
     static InfoBar* success(const QString& title,
@@ -92,7 +94,7 @@ public:
                            Qt::Orientation orientation = Qt::Horizontal,
                            bool isClosable = true,
                            int duration = 1000,
-                           Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
+                           Position position = Position::TOP_RIGHT,
                            QWidget* parent = nullptr);
 
     static InfoBar* warning(const QString& title,
@@ -100,7 +102,7 @@ public:
                            Qt::Orientation orientation = Qt::Horizontal,
                            bool isClosable = true,
                            int duration = 1000,
-                           Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
+                           Position position = Position::TOP_RIGHT,
                            QWidget* parent = nullptr);
 
     static InfoBar* error(const QString& title,
@@ -108,7 +110,7 @@ public:
                          Qt::Orientation orientation = Qt::Horizontal,
                          bool isClosable = true,
                          int duration = 1000,
-                         Fluent::MessagePosition position = Fluent::MessagePosition::TOP_RIGHT,
+                         Position position = Position::TOP_RIGHT,
                          QWidget* parent = nullptr);
 
 signals:
@@ -133,10 +135,10 @@ private:
     QString m_title;
     QString m_content;
     Qt::Orientation m_orientation;
-    Fluent::MessageType m_type;
+    InfoBar::Type m_type;
     int m_duration;
     bool m_isClosable;
-    Fluent::MessagePosition m_position;
+    InfoBar::Position m_position;
 
     // UI组件（使用原始指针，因为Qt的父子关系会自动管理内存）
     QLabel* m_titleLabel;
@@ -156,6 +158,24 @@ private:
     // 自定义颜色
     QColor m_lightBackgroundColor;
     QColor m_darkBackgroundColor;
+};
+
+/**
+ * @brief 信息栏图标组件
+ * 显示不同类型消息对应的图标
+ */
+class QFLUENT_EXPORT InfoIconWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    explicit InfoIconWidget(InfoBar::Type type, QWidget* parent = nullptr);
+    ~InfoIconWidget() override = default;
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+
+private:
+    InfoBar::Type m_type;
 };
 
 /**
@@ -179,18 +199,18 @@ public:
     /**
      * @brief 注册管理器
      */
-    static void registerManager(Fluent::MessagePosition position,
+    static void registerManager(InfoBar::Position position,
                                 std::function<InfoBarManager*()> creator);
 
     /**
      * @brief 创建指定位置的管理器
      */
-    static InfoBarManager* make(Fluent::MessagePosition position);
+    static InfoBarManager* make(InfoBar::Position position);
 
     /**
      * @brief 将消息类型转换为字符串
      */
-    static QString toString(Fluent::MessageType type);
+    static QString toString(InfoBar::Type type);
 
 protected:
     explicit InfoBarManager(QObject* parent = nullptr);
@@ -218,7 +238,7 @@ protected:
     QList<QPropertyAnimation*> m_slideAnimations;
     QList<QPropertyAnimation*> m_dropAnimations;
 
-    static QMap<Fluent::MessagePosition, std::function<InfoBarManager*()>> s_managers;
+    static QMap<InfoBar::Position, std::function<InfoBarManager*()>> s_managers;
 };
 
 /**

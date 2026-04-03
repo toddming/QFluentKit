@@ -12,7 +12,7 @@ public:
 
     QColor borderColor() const;
     QColor backgroundColor() const;
-    Fluent::CheckBoxState state() const;
+    CheckBox::State state() const;
 
     bool m_isPressed = false;
     bool m_isHover = false;

@@ -250,19 +250,6 @@ enum class IconType {
 };
 Q_ENUM_NS(IconType)
 
-// ========== 复选框相关 ==========
-enum class CheckBoxState {
-    NORMAL,
-    HOVER,
-    PRESSED,
-    CHECKED,
-    CHECKED_HOVER,
-    CHECKED_PRESSED,
-    DISABLED,
-    CHECKED_DISABLED
-};
-Q_ENUM_NS(CheckBoxState)
-
 // ========== 菜单相关 ==========
 enum class MenuAnimation {
     NONE,
@@ -281,26 +268,6 @@ Q_ENUM_NS(MenuIndicator)
 
 
 
-// ========== 信息栏相关 ==========
-enum class MessageType {
-    INFORMATION,
-    SUCCESS,
-    WARNING,
-    ERROR
-};
-Q_ENUM_NS(MessageType)
-
-enum class MessagePosition {
-    TOP = 0,
-    BOTTOM = 1,
-    TOP_LEFT = 2,
-    TOP_RIGHT = 3,
-    BOTTOM_LEFT = 4,
-    BOTTOM_RIGHT = 5,
-    NONE = 6
-};
-Q_ENUM_NS(MessagePosition)
-
 // ========== 分页相关 ==========
 enum class Alignment {
     Align_Left,
@@ -309,36 +276,7 @@ enum class Alignment {
 };
 Q_ENUM_NS(Alignment)
 
-// ========== 导航相关 ==========
-enum class NavigationDisplayMode {
-    MINIMAL = 0,
-    COMPACT = 1,
-    EXPAND = 2,
-    MENU = 3
-};
-Q_ENUM_NS(NavigationDisplayMode)
-
-enum class NavigationItemPosition {
-    TOP = 0,
-    SCROLL = 1,
-    BOTTOM = 2
-};
-Q_ENUM_NS(NavigationItemPosition)
-
-enum class SmoothMode {
-    NO_SMOOTH = 0,
-    CONSTANT = 1,
-    LINEAR = 2,
-    QUADRATI = 3,
-    COSINE = 4
-};
-Q_ENUM_NS(SmoothMode)
-
-enum class ScrollBarHandleDisplayMode {
-    ALWAYS = 0,
-    ON_HOVER = 1
-};
-Q_ENUM_NS(ScrollBarHandleDisplayMode)
+} // namespace Fluent
 
 
 #ifndef FLUENT_QHASH_FUNCTIONS_DEFINED
@@ -374,6 +312,4 @@ inline FluentQHashReturnType qHash(const Fluent::ThemeStyle key, FluentQHashRetu
 }
 
 #endif // FLUENT_QHASH_FUNCTIONS_DEFINED
-
-} // namespace Fluent
 
