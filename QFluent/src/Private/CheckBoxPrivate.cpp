@@ -5,7 +5,7 @@
 #include "Theme.h"
 #include "QFluent/CheckBox.h"
 
-QColor CheckBoxPrivate::borderColor()  {
+QColor CheckBoxPrivate::borderColor() const {
     if (Theme::instance()->isDarkTheme()) {
         switch (state()) {
         case Fluent::CheckBoxState::NORMAL: return QColor(255, 255, 255, 141);
@@ -32,7 +32,7 @@ QColor CheckBoxPrivate::borderColor()  {
     return QColor();
 }
 
-QColor CheckBoxPrivate::backgroundColor() {
+QColor CheckBoxPrivate::backgroundColor() const {
     if (Theme::instance()->isDarkTheme()) {
         switch (state()) {
         case Fluent::CheckBoxState::NORMAL: return QColor(0, 0, 0, 26);
@@ -59,19 +59,19 @@ QColor CheckBoxPrivate::backgroundColor() {
     return QColor();
 }
 
-Fluent::CheckBoxState CheckBoxPrivate::state() {
-    Q_Q(CheckBox);
+Fluent::CheckBoxState CheckBoxPrivate::state() const {
+    Q_Q(const CheckBox);
     if (!q->isEnabled()) {
         return q->isChecked() ? Fluent::CheckBoxState::CHECKED_DISABLED : Fluent::CheckBoxState::DISABLED;
     }
 
     if (q->isChecked()) {
-        if (isPressed) return Fluent::CheckBoxState::CHECKED_PRESSED;
-        if (isHover) return Fluent::CheckBoxState::CHECKED_HOVER;
+        if (m_isPressed) return Fluent::CheckBoxState::CHECKED_PRESSED;
+        if (m_isHover) return Fluent::CheckBoxState::CHECKED_HOVER;
         return Fluent::CheckBoxState::CHECKED;
     } else {
-        if (isPressed) return Fluent::CheckBoxState::PRESSED;
-        if (isHover) return Fluent::CheckBoxState::HOVER;
+        if (m_isPressed) return Fluent::CheckBoxState::PRESSED;
+        if (m_isHover) return Fluent::CheckBoxState::HOVER;
         return Fluent::CheckBoxState::NORMAL;
     }
 }

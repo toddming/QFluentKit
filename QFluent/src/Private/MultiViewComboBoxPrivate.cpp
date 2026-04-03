@@ -17,13 +17,13 @@ void MultiViewComboBoxPrivate::updateText()
 {
     Q_Q(MultiViewComboBox);
 
-    if (selectedIndexes.isEmpty()) {
-        q->setText(placeholderText);
+    if (m_selectedIndexes.isEmpty()) {
+        q->setText(m_placeholderText);
         q->setProperty("isPlaceholderText", true);
     } else {
         QStringList texts;
-        for (int index : selectedIndexes) {
-            texts.append(items[index].text);
+        for (int index : m_selectedIndexes) {
+            texts.append(m_items[index].text);
         }
         q->setText(texts.join(", "));
         q->setProperty("isPlaceholderText", false);
@@ -42,9 +42,9 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
     menu->setAttribute(Qt::WA_DeleteOnClose);
 
     for (int i = 0; i < q->count(); ++i) {
-        QAction *action = new QAction(items[i].icon, items[i].text, menu);
+        QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setCheckable(true);
-        action->setChecked(selectedIndexes.contains(i));
+        action->setChecked(m_selectedIndexes.contains(i));
         menu->addAction(action);
         connect(action, &QAction::triggered, q, [=](bool checked) {
             handleCheckBoxToggled(i, checked);
@@ -54,14 +54,14 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
     connect(menu, &MultiViewComboBoxMenu::closed, q, [=]() {
         QPoint pos = q->mapFromGlobal(QCursor::pos());
         if (!q->rect().contains(pos)) {
-            dropMenu = nullptr;
+            m_dropMenu = nullptr;
         }
     });
 
-    // 如果 maxVisibleItems > 0，设置最大高度（假设每个项高度约 30px，您可调整）
-    if (maxVisibleItems > 0) {
+    // 如果 m_maxVisibleItems > 0，设置最大高度（假设每个项高度约 30px，您可调整）
+    if (m_maxVisibleItems > 0) {
         int itemHeight = 30;  // 假设每个 CheckBox 高度
-        menu->setMaximumHeight(maxVisibleItems * itemHeight + menu->layout()->contentsMargins().top() + menu->layout()->contentsMargins().bottom());
+        menu->setMaximumHeight(m_maxVisibleItems * itemHeight + menu->layout()->contentsMargins().top() + menu->layout()->contentsMargins().bottom());
     }
 
     return menu;
@@ -75,40 +75,40 @@ void MultiViewComboBoxPrivate::showComboMenu()
         return;
     }
 
-    dropMenu = createComboMenu();
+    m_dropMenu = createComboMenu();
 
-    if (dropMenu->view()->width() < q->width()) {
-        dropMenu->view()->setMinimumWidth(q->width());
-        dropMenu->adjustMenuSize();
+    if (m_dropMenu->view()->width() < q->width()) {
+        m_dropMenu->view()->setMinimumWidth(q->width());
+        m_dropMenu->adjustMenuSize();
     }
 
-    int x = -dropMenu->width() / 2 + dropMenu->layout()->contentsMargins().left() + q->width() / 2;
+    int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + q->width() / 2;
     QPoint pd = q->mapToGlobal(QPoint(x, q->height()));
-    int hd = dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
+    int hd = m_dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
 
     QPoint pu = q->mapToGlobal(QPoint(x, 0));
-    int hu = dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
+    int hu = m_dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
 
     if (hd >= hu) {
-        dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
-        dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
+        m_dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
+        m_dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
     } else {
-        dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
-        dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
+        m_dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
+        m_dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
     }
 }
 
 void MultiViewComboBoxPrivate::closeComboMenu()
 {
-    if (!dropMenu) {
+    if (!m_dropMenu) {
         return;
     }
-    dropMenu = nullptr;
+    m_dropMenu = nullptr;
 }
 
 void MultiViewComboBoxPrivate::toggleComboMenu()
 {
-    if (dropMenu != nullptr) {
+    if (m_dropMenu != nullptr) {
         closeComboMenu();
     } else {
         showComboMenu();
@@ -120,12 +120,12 @@ void MultiViewComboBoxPrivate::handleCheckBoxToggled(int index, bool checked)
     Q_Q(MultiViewComboBox);
 
     if (checked) {
-        if (!selectedIndexes.contains(index)) {
-            selectedIndexes.append(index);
-            std::sort(selectedIndexes.begin(), selectedIndexes.end());
+        if (!m_selectedIndexes.contains(index)) {
+            m_selectedIndexes.append(index);
+            std::sort(m_selectedIndexes.begin(), m_selectedIndexes.end());
         }
     } else {
-        selectedIndexes.removeAll(index);
+        m_selectedIndexes.removeAll(index);
     }
 
     updateText();

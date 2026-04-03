@@ -21,8 +21,8 @@ CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CHECK_BOX);
 
-    d->isPressed = false;
-    d->isHover = false;
+    d->m_isPressed = false;
+    d->m_isHover = false;
 }
 
 CheckBox::CheckBox(const QString &text, QWidget *parent) : CheckBox(parent)
@@ -34,14 +34,14 @@ CheckBox::~CheckBox() {}
 
 void CheckBox::mousePressEvent(QMouseEvent *event) {
     Q_D(CheckBox);
-    d->isPressed = true;
+    d->m_isPressed = true;
     QCheckBox::mousePressEvent(event);
 }
 
 void CheckBox::mouseReleaseEvent(QMouseEvent *event) {
     Q_D(CheckBox);
 
-    d->isPressed = false;
+    d->m_isPressed = false;
     QCheckBox::mouseReleaseEvent(event);
 }
 
@@ -49,7 +49,7 @@ void CheckBox::mouseReleaseEvent(QMouseEvent *event) {
 void CheckBox::enterEvent(QEnterEvent *event) {
     Q_D(CheckBox);
 
-    d->isHover = true;
+    d->m_isHover = true;
     update();
     QCheckBox::enterEvent(event);
 }
@@ -57,7 +57,7 @@ void CheckBox::enterEvent(QEnterEvent *event) {
 void CheckBox::enterEvent(QEvent *event) {
     Q_D(CheckBox);
 
-    d->isHover = true;
+    d->m_isHover = true;
     update();
     QCheckBox::enterEvent(event);
 }
@@ -66,7 +66,7 @@ void CheckBox::enterEvent(QEvent *event) {
 void CheckBox::leaveEvent(QEvent *event) {
     Q_D(CheckBox);
 
-    d->isHover = false;
+    d->m_isHover = false;
     update();
     QCheckBox::leaveEvent(event);
 }

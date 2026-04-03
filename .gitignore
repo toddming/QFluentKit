@@ -55,6 +55,8 @@ compile_commands.json
 
 /build
 
+/docs
+
 /.claude
 
 CLAUDE.md

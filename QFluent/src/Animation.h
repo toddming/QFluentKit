@@ -53,13 +53,13 @@ protected:
     AnimationBase(AnimationBasePrivate &dd, QWidget *parent);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual void _onHover(QEnterEvent *e);
+    virtual void onHover(QEnterEvent *e);
 #else
-    virtual void _onHover(QEvent *e);
+    virtual void onHover(QEvent *e);
 #endif
-    virtual void _onLeave(QEvent *e);
-    virtual void _onPress(QMouseEvent *e);
-    virtual void _onRelease(QMouseEvent *e);
+    virtual void onLeave(QEvent *e);
+    virtual void onPress(QMouseEvent *e);
+    virtual void onRelease(QMouseEvent *e);
 
     bool eventFilter(QObject *obj, QEvent *e) override;
 
@@ -82,8 +82,8 @@ signals:
     void valueChanged(float);
 
 protected:
-    void _onPress(QMouseEvent *e) override;
-    void _onRelease(QMouseEvent *e) override;
+    void onPress(QMouseEvent *e) override;
+    void onRelease(QMouseEvent *e) override;
 };
 
 // BackgroundColorObject
@@ -160,11 +160,11 @@ public:
     void setColor(const QColor &color);
 
 protected:
-    class QGraphicsDropShadowEffect *_createShadowEffect();
+    class QGraphicsDropShadowEffect *createShadowEffect();
     bool eventFilter(QObject *obj, QEvent *e) override;
 
 private slots:
-    void _onAniFinished();
+    void onAniFinished();
 
 private:
     QScopedPointer<DropShadowAnimationPrivate> d_ptr;
@@ -361,9 +361,9 @@ signals:
     void valueChanged(const QRectF &rect);
 
 private:
-    void _startSlideAnimation(const QRectF &startRect, const QRectF &endRect,
+    void startSlideAnimation(const QRectF &startRect, const QRectF &endRect,
                              qreal from, qreal to, qreal dimension);
-    void _startCrossFadeAnimation(const QRectF &startRect, const QRectF &endRect);
+    void startCrossFadeAnimation(const QRectF &startRect, const QRectF &endRect);
 
     QScopedPointer<ScaleSlideAnimationPrivate> d_ptr;
 };

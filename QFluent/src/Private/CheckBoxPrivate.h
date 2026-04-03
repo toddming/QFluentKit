@@ -10,10 +10,10 @@ class CheckBoxPrivate
 public:
     CheckBox *q_ptr{nullptr};
 
-    QColor borderColor();
-    QColor backgroundColor();
-    Fluent::CheckBoxState state();
+    QColor borderColor() const;
+    QColor backgroundColor() const;
+    Fluent::CheckBoxState state() const;
 
-    bool isPressed = false;
-    bool isHover = false;
+    bool m_isPressed = false;
+    bool m_isHover = false;
 };

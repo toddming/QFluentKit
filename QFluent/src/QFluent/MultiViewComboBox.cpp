@@ -19,7 +19,7 @@ MultiViewComboBox::MultiViewComboBox(QWidget *parent)
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
 
-    d->arrowAni = new TranslateYAnimation(this);
+    d->m_arrowAni = new TranslateYAnimation(this);
     d->updateText();  // 初始化文本
 }
 
@@ -46,10 +46,10 @@ void MultiViewComboBox::insertItem(int index, const QString &text, const QIcon &
         index = count();
     }
 
-    d->items.insert(index, MultiViewComboBoxDetail::ComboItem(text, icon, userData));
+    d->m_items.insert(index, MultiViewComboBoxDetail::ComboItem(text, icon, userData));
 
     // 调整选中索引（如果插入在选中项前，索引需后移）
-    for (int &selIndex : d->selectedIndexes) {
+    for (int &selIndex : d->m_selectedIndexes) {
         if (selIndex >= index) {
             ++selIndex;
         }
@@ -73,13 +73,13 @@ void MultiViewComboBox::removeItem(int index)
         return;
     }
 
-    d->items.removeAt(index);
+    d->m_items.removeAt(index);
 
     // 移除选中
-    d->selectedIndexes.removeAll(index);
+    d->m_selectedIndexes.removeAll(index);
 
     // 调整剩余选中索引
-    for (int &selIndex : d->selectedIndexes) {
+    for (int &selIndex : d->m_selectedIndexes) {
         if (selIndex > index) {
             --selIndex;
         }
@@ -92,8 +92,8 @@ void MultiViewComboBox::clear()
 {
     Q_D(MultiViewComboBox);
 
-    d->items.clear();
-    d->selectedIndexes.clear();
+    d->m_items.clear();
+    d->m_selectedIndexes.clear();
     d->updateText();
 }
 
@@ -106,12 +106,12 @@ void MultiViewComboBox::setItemSelected(int index, bool selected)
     }
 
     if (selected) {
-        if (!d->selectedIndexes.contains(index)) {
-            d->selectedIndexes.append(index);
-            std::sort(d->selectedIndexes.begin(), d->selectedIndexes.end());
+        if (!d->m_selectedIndexes.contains(index)) {
+            d->m_selectedIndexes.append(index);
+            std::sort(d->m_selectedIndexes.begin(), d->m_selectedIndexes.end());
         }
     } else {
-        d->selectedIndexes.removeAll(index);
+        d->m_selectedIndexes.removeAll(index);
     }
 
     d->updateText();
@@ -121,21 +121,21 @@ void MultiViewComboBox::setItemSelected(int index, bool selected)
 bool MultiViewComboBox::isItemSelected(int index) const
 {
     Q_D(const MultiViewComboBox);
-    return d->selectedIndexes.contains(index);
+    return d->m_selectedIndexes.contains(index);
 }
 
 QList<int> MultiViewComboBox::selectedIndexes() const
 {
     Q_D(const MultiViewComboBox);
-    return d->selectedIndexes;
+    return d->m_selectedIndexes;
 }
 
 QStringList MultiViewComboBox::selectedTexts() const
 {
     Q_D(const MultiViewComboBox);
     QStringList texts;
-    for (int index : d->selectedIndexes) {
-        texts.append(d->items[index].text);
+    for (int index : d->m_selectedIndexes) {
+        texts.append(d->m_items[index].text);
     }
     return texts;
 }
@@ -144,8 +144,8 @@ QList<QVariant> MultiViewComboBox::selectedDatas() const
 {
     Q_D(const MultiViewComboBox);
     QList<QVariant> datas;
-    for (int index : d->selectedIndexes) {
-        datas.append(d->items[index].userData);
+    for (int index : d->m_selectedIndexes) {
+        datas.append(d->m_items[index].userData);
     }
     return datas;
 }
@@ -153,14 +153,14 @@ QList<QVariant> MultiViewComboBox::selectedDatas() const
 int MultiViewComboBox::count() const
 {
     Q_D(const MultiViewComboBox);
-    return d->items.size();
+    return d->m_items.size();
 }
 
 QString MultiViewComboBox::itemText(int index) const
 {
     Q_D(const MultiViewComboBox);
     if (index >= 0 && index < count()) {
-        return d->items[index].text;
+        return d->m_items[index].text;
     }
     return "";
 }
@@ -169,7 +169,7 @@ QIcon MultiViewComboBox::itemIcon(int index) const
 {
     Q_D(const MultiViewComboBox);
     if (index >= 0 && index < count()) {
-        return d->items[index].icon;
+        return d->m_items[index].icon;
     }
     return QIcon();
 }
@@ -179,7 +179,7 @@ QVariant MultiViewComboBox::itemData(int index) const
     Q_D(const MultiViewComboBox);
 
     if (index >= 0 && index < count()) {
-        return d->items[index].userData;
+        return d->m_items[index].userData;
     }
     return {};
 }
@@ -189,7 +189,7 @@ int MultiViewComboBox::findText(const QString &text) const
     Q_D(const MultiViewComboBox);
 
     for (int i = 0; i < count(); ++i) {
-        if (d->items[i].text == text) {
+        if (d->m_items[i].text == text) {
             return i;
         }
     }
@@ -201,7 +201,7 @@ int MultiViewComboBox::findData(const QVariant &data) const
     Q_D(const MultiViewComboBox);
 
     for (int i = 0; i < count(); ++i) {
-        if (d->items[i].userData == data) {
+        if (d->m_items[i].userData == data) {
             return i;
         }
     }
@@ -211,26 +211,26 @@ int MultiViewComboBox::findData(const QVariant &data) const
 void MultiViewComboBox::setPlaceholderText(const QString &text)
 {
     Q_D(MultiViewComboBox);
-    d->placeholderText = text;
+    d->m_placeholderText = text;
     d->updateText();
 }
 
 QString MultiViewComboBox::placeholderText() const
 {
     Q_D(const MultiViewComboBox);
-    return d->placeholderText;
+    return d->m_placeholderText;
 }
 
 void MultiViewComboBox::setMaxVisibleItems(int count)
 {
     Q_D(MultiViewComboBox);
-    d->maxVisibleItems = count;
+    d->m_maxVisibleItems = count;
 }
 
 int MultiViewComboBox::maxVisibleItems() const
 {
     Q_D(const MultiViewComboBox);
-    return d->maxVisibleItems;
+    return d->m_maxVisibleItems;
 }
 
 void MultiViewComboBox::paintEvent(QPaintEvent *event)
@@ -242,13 +242,13 @@ void MultiViewComboBox::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (d->isHover) {
+    if (d->m_isHover) {
         painter.setOpacity(0.8);
-    } else if (d->isPressed) {
+    } else if (d->m_isPressed) {
         painter.setOpacity(0.7);
     }
 
-    QRectF rect = QRectF(width() - 22, height() / 2 - 5 + d->arrowAni->y(), 10, 10);
+    QRectF rect = QRectF(width() - 22, height() / 2 - 5 + d->m_arrowAni->y(), 10, 10);
     FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, rect);
 }
 
@@ -265,19 +265,19 @@ bool MultiViewComboBox::eventFilter(QObject *watched, QEvent *event)
     if (watched == this) {
         switch (event->type()) {
         case QEvent::MouseButtonPress:
-            d->isPressed = true;
+            d->m_isPressed = true;
             update();
             break;
         case QEvent::MouseButtonRelease:
-            d->isPressed = false;
+            d->m_isPressed = false;
             update();
             break;
         case QEvent::Enter:
-            d->isHover = true;
+            d->m_isHover = true;
             update();
             break;
         case QEvent::Leave:
-            d->isHover = false;
+            d->m_isHover = false;
             update();
             break;
         default:

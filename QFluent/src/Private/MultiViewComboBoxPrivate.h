@@ -30,15 +30,15 @@ public:
     explicit MultiViewComboBoxPrivate(MultiViewComboBox *parent);
     void updateText();  // 更新按钮文本
 
-    bool isPressed = false;
-    bool isHover = false;
-    QString placeholderText;
-    int maxVisibleItems = -1;
-    QList<int> selectedIndexes;  // 选中的索引列表
+    bool m_isPressed = false;
+    bool m_isHover = false;
+    QString m_placeholderText;
+    int m_maxVisibleItems = -1;
+    QList<int> m_selectedIndexes;  // 选中的索引列表
 
-    MultiViewComboBoxMenu *dropMenu = nullptr;
-    TranslateYAnimation *arrowAni = nullptr;
-    QVector<MultiViewComboBoxDetail::ComboItem> items;
+    MultiViewComboBoxMenu *m_dropMenu = nullptr;
+    TranslateYAnimation *m_arrowAni = nullptr;
+    QVector<MultiViewComboBoxDetail::ComboItem> m_items;
 
     MultiViewComboBoxMenu* createComboMenu();
     void showComboMenu();

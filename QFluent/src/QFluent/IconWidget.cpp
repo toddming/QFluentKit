@@ -11,7 +11,7 @@ IconWidget::IconWidget(QWidget *parent)
 {
     Q_D(IconWidget);
     d->q_ptr = this;
-    d->iconTheme = Fluent::ThemeMode::AUTO;
+    d->m_iconTheme = Fluent::ThemeMode::AUTO;
 
     setIcon(QIcon());
 }
@@ -42,7 +42,7 @@ void IconWidget::setIcon(const QIcon &icon)
 {
     Q_D(IconWidget);
 
-    d->icon = icon;
+    d->m_icon = icon;
     update();
 }
 
@@ -56,16 +56,16 @@ void IconWidget::setFluentIcon(const FluentIconBase &icon)
 {
     Q_D(IconWidget);
 
-    d->fluentIcon = icon.clone();
+    d->m_fluentIcon = icon.clone();
 
-    d->icon = QIcon();
+    d->m_icon = QIcon();
     update();
 }
 
 QIcon IconWidget::icon() const
 {
     Q_D(const IconWidget);
-    return d->icon;
+    return d->m_icon;
 }
 
 QSize IconWidget::sizeHint() const
@@ -84,21 +84,21 @@ void IconWidget::paintEvent(QPaintEvent *event)
 
     QRect rect = this->rect();
 
-    if (d->fluentIcon) {
-        FluentIconUtils::drawIcon(*d->fluentIcon, &painter, rect, d->iconTheme);
-    } else if (!d->icon.isNull()) {
-        d->icon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);
+    if (d->m_fluentIcon) {
+        FluentIconUtils::drawIcon(*d->m_fluentIcon, &painter, rect, d->m_iconTheme);
+    } else if (!d->m_icon.isNull()) {
+        d->m_icon.paint(&painter, rect, Qt::AlignCenter, QIcon::Normal);
     }
 }
 
 void IconWidget::setIconTheme(Fluent::ThemeMode theme)
 {
     Q_D(IconWidget);
-    d->iconTheme = theme;
+    d->m_iconTheme = theme;
 }
 
 Fluent::ThemeMode IconWidget::iconTheme()
 {
     Q_D(IconWidget);
-    return d->iconTheme;
+    return d->m_iconTheme;
 }

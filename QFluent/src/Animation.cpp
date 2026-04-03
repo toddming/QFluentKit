@@ -29,41 +29,41 @@ AnimationBase::AnimationBase(AnimationBasePrivate &dd, QWidget *parent)
 AnimationBase::~AnimationBase() {}
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void AnimationBase::_onHover(QEnterEvent *e) {
+void AnimationBase::onHover(QEnterEvent *e) {
     Q_UNUSED(e);
 }
 #else
-void AnimationBase::_onHover(QEvent *e) {
+void AnimationBase::onHover(QEvent *e) {
     Q_UNUSED(e);
 }
 #endif
 
-void AnimationBase::_onLeave(QEvent *e) {
+void AnimationBase::onLeave(QEvent *e) {
     Q_UNUSED(e);
 }
 
-void AnimationBase::_onPress(QMouseEvent *e) {
+void AnimationBase::onPress(QMouseEvent *e) {
     Q_UNUSED(e);
 }
 
-void AnimationBase::_onRelease(QMouseEvent *e) {
+void AnimationBase::onRelease(QMouseEvent *e) {
     Q_UNUSED(e);
 }
 
 bool AnimationBase::eventFilter(QObject *obj, QEvent *e) {
     if (obj == parent()) {
         if (e->type() == QEvent::MouseButtonPress) {
-            _onPress(static_cast<QMouseEvent*>(e));
+            onPress(static_cast<QMouseEvent*>(e));
         } else if (e->type() == QEvent::MouseButtonRelease) {
-            _onRelease(static_cast<QMouseEvent*>(e));
+            onRelease(static_cast<QMouseEvent*>(e));
         } else if (e->type() == QEvent::Enter) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            _onHover(static_cast<QEnterEvent*>(e));
+            onHover(static_cast<QEnterEvent*>(e));
 #else
-            _onHover(e);
+            onHover(e);
 #endif
         } else if (e->type() == QEvent::Leave) {
-            _onLeave(e);
+            onLeave(e);
         }
     }
     return QObject::eventFilter(obj, e);
@@ -92,7 +92,7 @@ void TranslateYAnimation::setY(float y) {
     emit valueChanged(y);
 }
 
-void TranslateYAnimation::_onPress(QMouseEvent *e) {
+void TranslateYAnimation::onPress(QMouseEvent *e) {
     Q_UNUSED(e);
     Q_D(TranslateYAnimation);
     d->m_ani->setEndValue(d->m_maxOffset);
@@ -101,7 +101,7 @@ void TranslateYAnimation::_onPress(QMouseEvent *e) {
     d->m_ani->start();
 }
 
-void TranslateYAnimation::_onRelease(QMouseEvent *e) {
+void TranslateYAnimation::onRelease(QMouseEvent *e) {
     Q_UNUSED(e);
     Q_D(TranslateYAnimation);
     d->m_ani->setEndValue(0);
@@ -329,7 +329,7 @@ void DropShadowAnimation::setColor(const QColor &color) {
     Q_UNUSED(color);
 }
 
-QGraphicsDropShadowEffect *DropShadowAnimation::_createShadowEffect() {
+QGraphicsDropShadowEffect *DropShadowAnimation::createShadowEffect() {
     Q_D(DropShadowAnimation);
     d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
     d->m_shadowEffect->setOffset(d->m_offset);
@@ -351,14 +351,14 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
         if (e->type() == QEvent::Enter) {
             d->m_isHover = true;
             if (state() != QPropertyAnimation::Running) {
-                p->setGraphicsEffect(_createShadowEffect());
+                p->setGraphicsEffect(createShadowEffect());
             }
             setEndValue(d->m_hoverColor);
             start();
         } else if (e->type() == QEvent::Leave || e->type() == QEvent::MouseButtonPress) {
             d->m_isHover = false;
             if (p->graphicsEffect()) {
-                connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::_onAniFinished);
+                connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
                 setEndValue(d->m_normalColor);
                 start();
             }
@@ -367,9 +367,9 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
     return QPropertyAnimation::eventFilter(obj, e);
 }
 
-void DropShadowAnimation::_onAniFinished() {
+void DropShadowAnimation::onAniFinished() {
     Q_D(DropShadowAnimation);
-    disconnect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::_onAniFinished);
+    disconnect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
     d->m_shadowEffect = nullptr;
     static_cast<QWidget*>(parent())->setGraphicsEffect(nullptr);
 }
@@ -644,9 +644,9 @@ void ScaleSlideAnimation::startAnimation(const QRectF &endRect, bool useCrossFad
     }
 
     if (sameLevel && !useCrossFade) {
-        _startSlideAnimation(startRect, endRect, start, end, dim);
+        startSlideAnimation(startRect, endRect, start, end, dim);
     } else {
-        _startCrossFadeAnimation(startRect, endRect);
+        startCrossFadeAnimation(startRect, endRect);
     }
 }
 
@@ -655,7 +655,7 @@ void ScaleSlideAnimation::stopAnimation() {
     clear();
 }
 
-void ScaleSlideAnimation::_startSlideAnimation(const QRectF &startRect, const QRectF &endRect,
+void ScaleSlideAnimation::startSlideAnimation(const QRectF &startRect, const QRectF &endRect,
                                               qreal from, qreal to, qreal dimension) {
     /* 使用 WinUI 3 的挤压和拉伸逻辑来动画化指示器
      *
@@ -729,7 +729,7 @@ void ScaleSlideAnimation::_startSlideAnimation(const QRectF &startRect, const QR
     start();
 }
 
-void ScaleSlideAnimation::_startCrossFadeAnimation(const QRectF &startRect, const QRectF &endRect) {
+void ScaleSlideAnimation::startCrossFadeAnimation(const QRectF &startRect, const QRectF &endRect) {
     setGeometry(endRect);
 
     // 根据相对位置确定增长方向
