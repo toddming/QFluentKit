@@ -10,8 +10,6 @@
 #include "FluentGlobal.h"
 #include "QFluent/ToolButton.h"
 
-using FIF = Fluent::IconType;
-
 class QHBoxLayout;
 class QVBoxLayout;
 class QPushButton;

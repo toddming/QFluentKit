@@ -293,9 +293,9 @@ void ScrollViewBase::mouseReleaseEvent(QMouseEvent* e) {
 CalendarViewBase::CalendarViewBase(QWidget* parent)
     : QFrame(parent),
       m_titleButton(new QPushButton(this)),
-      m_resetButton(new CalendarButton(FluentIcon(FIF::CANCEL), this)),
-      m_upButton(new CalendarButton(FluentIcon(FIF::CARE_UP_SOLID), this)),
-      m_downButton(new CalendarButton(FluentIcon(FIF::CARE_DOWN_SOLID), this)),
+      m_resetButton(new CalendarButton(FluentIcon(Fluent::IconType::CANCEL), this)),
+      m_upButton(new CalendarButton(FluentIcon(Fluent::IconType::CARE_UP_SOLID), this)),
+      m_downButton(new CalendarButton(FluentIcon(Fluent::IconType::CARE_DOWN_SOLID), this)),
       m_scrollView(nullptr),
       m_hBoxLayout(new QHBoxLayout()),
       m_vBoxLayout(new QVBoxLayout(this)) {

@@ -413,7 +413,7 @@ void PickerBase::onShowPanel()
     }
     
     panel->setValue(panelInitialValue());
-    panel->setResetEnabled(isRestEnabled());
+    panel->setResetEnabled(isResetEnabled());
     panel->setSelectedBackgroundColor(m_lightSelectedBackgroundColor, m_darkSelectedBackgroundColor);
     
     connect(panel, &PickerPanel::confirmed, this, &PickerBase::onConfirmed);

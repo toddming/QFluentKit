@@ -265,7 +265,7 @@ bool CycleListWidget::eventFilter(QObject* obj, QEvent* e)
     return QListWidget::eventFilter(obj, e);
 }
 
-QListWidgetItem* CycleListWidget::currentItem()
+QListWidgetItem* CycleListWidget::currentItem() const
 {
     return item(m_currentIndex);
 }

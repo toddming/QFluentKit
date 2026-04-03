@@ -208,9 +208,13 @@ void DatePicker::setMonthTight(bool tight)
 
 int DatePicker::monthColumnWidth()
 {
+    if (m_monthIndex < 0 || m_monthIndex >= m_columns.size()) {
+        return 80;
+    }
+
     QFontMetrics fontMetrics = this->fontMetrics();
     int maxWidth = 0;
-    
+
     QStringList items = m_columns[m_monthIndex]->items();
     for (const QString& item : items) {
         maxWidth = qMax(maxWidth, fontMetrics.horizontalAdvance(item));

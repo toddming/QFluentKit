@@ -139,7 +139,7 @@ public:
     
     void clearColumns();
     
-    bool isRestEnabled() const { return m_isResetEnabled; }
+    bool isResetEnabled() const { return m_isResetEnabled; }
     void setResetEnabled(bool isEnabled);
 
 signals:

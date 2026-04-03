@@ -36,7 +36,7 @@ public:
     void setSelectedItem(const QString& text);
     void scrollToItem(QListWidgetItem* item, QAbstractItemView::ScrollHint hint = QAbstractItemView::PositionAtCenter);
 
-    QListWidgetItem* currentItem();
+    QListWidgetItem* currentItem() const;
     int currentIndex() const { return m_currentIndex; }
     void setCurrentIndex(int index);
 

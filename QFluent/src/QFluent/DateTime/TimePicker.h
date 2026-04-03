@@ -77,9 +77,9 @@ protected:
     void onConfirmed(const QStringList& value) override;
     
 private:
-    static const int HOUR_INDEX = 0;
-    static const int MINUTE_INDEX = 1;
-    static const int SECOND_INDEX = 2;
+    static constexpr int HOUR_INDEX = 0;
+    static constexpr int MINUTE_INDEX = 1;
+    static constexpr int SECOND_INDEX = 2;
 };
 
 class QFLUENT_EXPORT AMTimePicker : public TimePickerBase
@@ -97,10 +97,10 @@ protected:
     void onConfirmed(const QStringList& value) override;
 
 private:
-    static const int HOUR_INDEX = 0;
-    static const int MINUTE_INDEX = 1;
-    static const int SECOND_INDEX = 2;
-    static const int AMPM_INDEX = 3;
+    static constexpr int HOUR_INDEX = 0;
+    static constexpr int MINUTE_INDEX = 1;
+    static constexpr int SECOND_INDEX = 2;
+    static constexpr int AMPM_INDEX = 3;
     
     QString m_amLabel;
     QString m_pmLabel;
