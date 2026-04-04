@@ -11,5 +11,7 @@ public:
 private:
     QWidget *createWidget(bool animation = false);
 
+    QWidget *createAdaptiveWidget();
+
     QWidget *createSplitterWidget();
 };

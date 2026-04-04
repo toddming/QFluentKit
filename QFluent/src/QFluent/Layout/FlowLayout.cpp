@@ -341,6 +341,16 @@ int FlowLayout::horizontalSpacing() const
     return m_horizontalSpacing;
 }
 
+bool FlowLayout::animationEnabled() const
+{
+    return m_animationEnabled;
+}
+
+bool FlowLayout::tightMode() const
+{
+    return m_tightMode;
+}
+
 void FlowLayout::setGeometry(const QRect &rect)
 {
     QLayout::setGeometry(rect);

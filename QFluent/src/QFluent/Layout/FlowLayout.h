@@ -96,6 +96,10 @@ public:
     void setHorizontalSpacing(int spacing);
     int horizontalSpacing() const;
 
+    // 状态查询
+    bool animationEnabled() const;
+    bool tightMode() const;
+
 protected:
     /**
      * @brief 事件过滤器，处理父窗口变化和显示事件
@@ -107,9 +111,24 @@ protected:
      */
     void setGeometry(const QRect &rect) override;
 
-private:
-    // 布局项和动画
+    /**
+     * @brief 执行实际的布局操作
+     * @param rect 布局区域
+     * @param applyGeometry 是否应用几何变化
+     * @return 计算得到的布局高度
+     */
+    virtual int doLayout(const QRect &rect, bool applyGeometry);
+
+    /**
+     * @brief 计算给定宽度下布局所需的高度
+     */
+    virtual int calculateHeight(const QRect &rect) const;
+
+    // 布局项（供子类访问）
     QVector<QLayoutItem *> m_items;
+
+private:
+    // 动画相关
     QVector<QPropertyAnimation *> m_animations;
     QParallelAnimationGroup *m_animationGroup;
 
@@ -135,19 +154,6 @@ private:
      * @param index 插入位置，-1 表示追加
      */
     void onWidgetAdded(QWidget *widget, int index = -1);
-
-    /**
-     * @brief 计算给定宽度下布局所需的高度（const 方法）
-     */
-    int calculateHeight(const QRect &rect) const;
-
-    /**
-     * @brief 执行实际的布局操作
-     * @param rect 布局区域
-     * @param applyGeometry 是否应用几何变化
-     * @return 计算得到的布局高度
-     */
-    int doLayout(const QRect &rect, bool applyGeometry);
 
     /**
      * @brief 清理控件关联的动画

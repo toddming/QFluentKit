@@ -5,6 +5,7 @@
 #include "QFluent/Splitter.h"
 #include "QFluent/PushButton.h"
 #include "QFluent/Layout/FlowLayout.h"
+#include "QFluent/Layout/AdaptiveFlowLayout.h"
 
 LayoutInterface::LayoutInterface(QWidget *parent)
     : GalleryInterface("布局", "", parent)
@@ -13,6 +14,8 @@ LayoutInterface::LayoutInterface(QWidget *parent)
 
     addExampleCard("不带动画效果的流式布局", createWidget(false), "", 1);
     addExampleCard("带动画效果的流式布局", createWidget(true), "", 1);
+
+    addExampleCard("自适应流式布局", createAdaptiveWidget(), "", 1);
 
     addExampleCard("拆分式布局", createSplitterWidget(), "", 1);
 }
@@ -42,6 +45,34 @@ QWidget *LayoutInterface::createWidget(bool animation)
     foreach (const QString &text, texts) {
         layout->addWidget(new PushButton(text, widget));
     }
+    return widget;
+}
+
+QWidget *LayoutInterface::createAdaptiveWidget()
+{
+    QStringList texts;
+    texts << "自适应布局"
+          << "自动换行"
+          << "宽度自适应"
+          << "均匀分布"
+          << "流式排列";
+
+    auto widget = new QWidget();
+    auto layout = new AdaptiveFlowLayout(widget, false);
+
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setVerticalSpacing(20);
+    layout->setHorizontalSpacing(10);
+    layout->setWidgetMinimumWidth(150);
+
+    foreach (const QString &text, texts) {
+        layout->addWidget(new PushButton(text, widget));
+    }
+
+    // 在索引 1 处插入一个主按钮
+    auto primaryBtn = new PrimaryPushButton("插入按钮", widget);
+    layout->insertWidget(1, primaryBtn);
+
     return widget;
 }
 

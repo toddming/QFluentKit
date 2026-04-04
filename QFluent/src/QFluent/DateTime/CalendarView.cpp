@@ -587,6 +587,7 @@ void DayScrollView::initItems()
         if (item) {
             item->setData(Qt::UserRole, dates[i - bias]);
             item->setSizeHint(QSize(44, 44));
+            item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         }
     }
 
