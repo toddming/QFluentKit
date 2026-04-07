@@ -16,7 +16,7 @@ private:
 
     QColor m_themeColor{0x0066b4};
 
-    bool m_sysIsDarkMode;
+    bool m_sysIsDarkMode{false};
 
     bool m_autoTheme{true};
 

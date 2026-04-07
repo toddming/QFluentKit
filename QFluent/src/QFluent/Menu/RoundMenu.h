@@ -14,7 +14,7 @@ class MenuActionListWidget;
 class QFLUENT_EXPORT RoundMenu : public QMenu
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE_D(dPtr, RoundMenu)
+    Q_DECLARE_PRIVATE_D(d_ptr, RoundMenu)
 
 public:
     explicit RoundMenu(const QString &title = QString(), QWidget *parent = nullptr);
@@ -68,5 +68,5 @@ protected:
     virtual int adjustItemText(QListWidgetItem *item, QAction *action);
 
 private:
-    QScopedPointer<RoundMenuPrivate> dPtr;
+    QScopedPointer<RoundMenuPrivate> d_ptr;
 };

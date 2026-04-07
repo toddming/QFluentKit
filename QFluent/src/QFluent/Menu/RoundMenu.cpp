@@ -17,7 +17,7 @@
 
 RoundMenu::RoundMenu(const QString &title, QWidget *parent)
     : QMenu(title, parent)
-    , dPtr(new RoundMenuPrivate(this))
+    , d_ptr(new RoundMenuPrivate(this))
 {
     Q_D(RoundMenu);
 
@@ -161,8 +161,8 @@ void RoundMenu::insertMenu(QAction *before, RoundMenu *menu)
     QListWidgetItem *beforeItem = itemData.value<QListWidgetItem *>();
     int index = d->m_view->row(beforeItem);
 
-    if (index >= 0 && menu->dPtr->m_menuItem) {
-        d->m_view->insertItem(index, menu->dPtr->m_menuItem);
+    if (index >= 0 && menu->d_ptr->m_menuItem) {
+        d->m_view->insertItem(index, menu->d_ptr->m_menuItem);
         adjustMenuSize();
     }
 }
@@ -174,7 +174,7 @@ void RoundMenu::removeMenu(RoundMenu *menu)
     if (!menu || !d->m_subMenus.contains(menu))
         return;
 
-    QListWidgetItem *item = menu->dPtr->m_menuItem;
+    QListWidgetItem *item = menu->d_ptr->m_menuItem;
     d->m_subMenus.removeOne(menu);
     d->removeItem(item);
     adjustMenuSize();

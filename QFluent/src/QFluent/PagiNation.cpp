@@ -12,7 +12,7 @@ Button::Button(const QString& text, QWidget *parent)
 {
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
     setSizePolicy(CL);
-    connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
+    connect(this, &Button::clicked, this, &Button::handleClick);
 }
 
 void Button::handleClick()
@@ -83,13 +83,13 @@ void PagiNation::init () {
     m_prevFBtn->setFocusPolicy(Qt::NoFocus);
     m_prevFBtn->setIconSize(QSize(10, 10));
     m_prevFBtn->setFixedSize(m_height, m_height);
-    connect(m_prevFBtn, SIGNAL(clicked()), this, SLOT(toPrev5()));
+    connect(m_prevFBtn, &TransparentToolButton::clicked, this, &PagiNation::toPrev5);
 
     m_prevBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Previous")), this);
     m_prevBtn->setFocusPolicy(Qt::NoFocus);
     m_prevBtn->setIconSize(QSize(10, 10));
     m_prevBtn->setFixedSize(m_height, m_height);
-    connect(m_prevBtn, SIGNAL(clicked()), this, SLOT(toPrev1()));
+    connect(m_prevBtn, &TransparentToolButton::clicked, this, &PagiNation::toPrev1);
 
     m_mainBox = new QFrame(this);
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
@@ -106,13 +106,13 @@ void PagiNation::init () {
     m_nextBtn->setFocusPolicy(Qt::NoFocus);
     m_nextBtn->setIconSize(QSize(10, 10));
     m_nextBtn->setFixedSize(m_height, m_height);
-    connect(m_nextBtn, SIGNAL(clicked()), this, SLOT(toNext1()));
+    connect(m_nextBtn, &TransparentToolButton::clicked, this, &PagiNation::toNext1);
 
     m_nextFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("End")), this);
     m_nextFBtn->setFocusPolicy(Qt::NoFocus);
     m_nextFBtn->setIconSize(QSize(10, 10));
     m_nextFBtn->setFixedSize(m_height, m_height);
-    connect(m_nextFBtn, SIGNAL(clicked()), this, SLOT(toNext5()));
+    connect(m_nextFBtn, &TransparentToolButton::clicked, this, &PagiNation::toNext5);
 
     setWidgetAlign();
     computePage();
@@ -237,7 +237,7 @@ void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
             Button *btn = new Button(QString::number(data.labelNum), m_mainBox);
             btn->setFocusPolicy(Qt::NoFocus);
             btn->setFixedHeight(m_height);
-            connect(btn, SIGNAL(cClick(Button*)), this, SLOT(handleClick(Button*)));
+            connect(btn, &Button::cClick, this, &PagiNation::handleClick);
             if (data.choosed) {
                 btn->setCheckable(true);
                 btn->setChecked(true);

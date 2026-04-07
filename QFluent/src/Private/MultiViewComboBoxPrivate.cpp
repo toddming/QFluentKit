@@ -6,6 +6,7 @@
 
 #include <QStyle>
 #include <QCursor>
+#include <QPointer>
 
 MultiViewComboBoxPrivate::MultiViewComboBoxPrivate(MultiViewComboBox *parent)
     : QObject(parent)
@@ -40,20 +41,22 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
 
     MultiViewComboBoxMenu *menu = new MultiViewComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
+    QPointer<MultiViewComboBox> qPtr = q;
 
     for (int i = 0; i < q->count(); ++i) {
         QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setCheckable(true);
         action->setChecked(m_selectedIndexes.contains(i));
         menu->addAction(action);
-        connect(action, &QAction::triggered, q, [=](bool checked) {
+        connect(action, &QAction::triggered, q, [this, i](bool checked) {
             handleCheckBoxToggled(i, checked);
         });
     }
 
-    connect(menu, &MultiViewComboBoxMenu::closed, q, [=]() {
-        QPoint pos = q->mapFromGlobal(QCursor::pos());
-        if (!q->rect().contains(pos)) {
+    connect(menu, &MultiViewComboBoxMenu::closed, q, [qPtr, this]() {
+        if (!qPtr) return;
+        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
+        if (!qPtr->rect().contains(pos)) {
             m_dropMenu = nullptr;
         }
     });

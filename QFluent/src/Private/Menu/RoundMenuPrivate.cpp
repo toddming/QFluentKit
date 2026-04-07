@@ -116,7 +116,7 @@ void RoundMenuPrivate::createSubMenuItem(RoundMenu *menu)
         width = 72 + fontMetrics.horizontalAdvance(displayText);
     }
 
-    menu->dPtr->setParentMenu(q, item);
+    menu->d_ptr->setParentMenu(q, item);
     item->setSizeHint(QSize(width, m_view->itemHeight()));
     m_view->addItem(item);
 

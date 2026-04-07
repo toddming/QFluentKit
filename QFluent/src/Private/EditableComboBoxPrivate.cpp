@@ -6,6 +6,7 @@
 #include <QStyle>
 #include <QCursor>
 #include <QAction>
+#include <QPointer>
 
 EditableComboBoxPrivate::EditableComboBoxPrivate(EditableComboBox *parent)
     : QObject(parent)
@@ -24,6 +25,7 @@ ComboBoxMenu* EditableComboBoxPrivate::createComboMenu()
 
     ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
+    QPointer<EditableComboBox> qPtr = q;
     for (int i = 0; i < q->count(); ++i) {
         QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setData(i);
@@ -32,18 +34,20 @@ ComboBoxMenu* EditableComboBoxPrivate::createComboMenu()
             action->setChecked(true);
         }
         menu->addAction(action);
-        connect(action, &QAction::triggered, q, [=]() {
+        connect(action, &QAction::triggered, q, [qPtr, action, this]() {
+            if (!qPtr) return;
             int index = action->data().toInt();
             if (index != m_currentIndex) {
-                q->setCurrentIndex(index);
-                emit q->activated(index);
-                emit q->textActivated(action->text());
+                qPtr->setCurrentIndex(index);
+                emit qPtr->activated(index);
+                emit qPtr->textActivated(action->text());
             }
         });
     }
-    connect(menu, &ComboBoxMenu::closed, q, [=]() {
-        QPoint pos = q->mapFromGlobal(QCursor::pos());
-        if (!q->rect().contains(pos)) {
+    connect(menu, &ComboBoxMenu::closed, q, [qPtr, this]() {
+        if (!qPtr) return;
+        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
+        if (!qPtr->rect().contains(pos)) {
             m_dropMenu = nullptr;
         }
     });
