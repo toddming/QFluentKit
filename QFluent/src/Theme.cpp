@@ -121,7 +121,7 @@ void Theme::setFont(QWidget *widget, int fontSize, QFont::Weight weight)
     widget->setFont(font(fontSize, weight));
 }
 
-QFont Theme::font(int fontSize, QFont::Weight weight)
+QFont Theme::font(int fontSize, QFont::Weight weight) const
 {
     QFont font;
     font.setFamilies({"Microsoft YaHei", "PingFang SC", "Segoe UI"});

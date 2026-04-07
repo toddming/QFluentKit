@@ -178,13 +178,12 @@ NavigationBar::NavigationBar(QWidget* parent)
 }
 
 NavigationBar::~NavigationBar() {
-    delete m_scrollLayout;
-    delete m_scrollWidget;
-    delete m_scrollArea;
-    delete m_topLayout;
-    delete m_bottomLayout;
-    delete m_vBoxLayout;
-    delete m_expandAni;
+    // 只删除没有 parent 的对象
+    // m_scrollArea, m_vBoxLayout, m_expandAni 有 parent=this，Qt 自动管理
+    delete m_scrollLayout;  // parent=m_scrollWidget
+    delete m_scrollWidget;  // 无 parent，需手动删除
+    delete m_topLayout;     // 无 parent，需手动删除
+    delete m_bottomLayout;  // 无 parent，需手动删除
 }
 
 void NavigationBar::initWidget() {

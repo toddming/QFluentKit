@@ -146,10 +146,10 @@ protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
 
 private slots:
-    void _onItemClicked(QListWidgetItem* item);
+    void onItemClicked(QListWidgetItem* item);
 
 private:
-    void _onCompletionItemSelected(const QString& text, int row);
+    void onCompletionItemSelected(const QString& text, int row);
 
     QPointer<LineEdit> lineEdit() const { return m_lineEdit; }
 

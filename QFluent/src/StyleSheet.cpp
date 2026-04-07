@@ -208,12 +208,12 @@ void StyleSheetHelper::addStyleSheet(QWidget* widget, const QString& source,
 
 // ==================== StyleSheetBase 实现 ====================
 
-QString StyleSheetBase::path(Fluent::ThemeMode theme) {
+QString StyleSheetBase::path(Fluent::ThemeMode theme) const {
     Q_UNUSED(theme);
     return QString();
 }
 
-QString StyleSheetBase::content(Fluent::ThemeMode theme) {
+QString StyleSheetBase::content(Fluent::ThemeMode theme) const {
     return StyleSheetHelper::styleSheetFromFile(path(theme));
 }
 
@@ -230,7 +230,7 @@ StyleSheetFile::StyleSheetFile(const QString& path)
 StyleSheetFile::StyleSheetFile(const QString& lightPath, const QString& darkPath)
     : m_lightPath(lightPath), m_darkPath(darkPath) {}
 
-QString StyleSheetFile::path(Fluent::ThemeMode theme) {
+QString StyleSheetFile::path(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
@@ -253,7 +253,7 @@ std::shared_ptr<StyleSheetBase> StyleSheetFile::clone() const {
 TemplateStyleSheetFile::TemplateStyleSheetFile(const QString& templatePath)
     : m_templatePath(templatePath) {}
 
-QString TemplateStyleSheetFile::path(Fluent::ThemeMode theme) {
+QString TemplateStyleSheetFile::path(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
@@ -328,7 +328,7 @@ const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::typeMap() {
     return typeMap;
 }
 
-QString FluentStyleSheet::path(Fluent::ThemeMode theme) {
+QString FluentStyleSheet::path(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
@@ -355,12 +355,12 @@ const char* CustomStyleSheet::LIGHT_QSS_KEY = "lightCustomQss";
 
 CustomStyleSheet::CustomStyleSheet(QWidget* widget) : m_widget(widget) {}
 
-QString CustomStyleSheet::path(Fluent::ThemeMode theme) {
+QString CustomStyleSheet::path(Fluent::ThemeMode theme) const {
     Q_UNUSED(theme)
     return QString();
 }
 
-QString CustomStyleSheet::content(Fluent::ThemeMode theme) {
+QString CustomStyleSheet::content(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
             ? Theme::instance()->theme() : theme;
 
@@ -431,7 +431,7 @@ StyleSheetCompose::StyleSheetCompose(const std::vector<std::shared_ptr<StyleShee
 StyleSheetCompose::StyleSheetCompose(std::vector<std::shared_ptr<StyleSheetBase>>&& sources)
     : m_sources(std::move(sources)) {}
 
-QString StyleSheetCompose::content(Fluent::ThemeMode theme) {
+QString StyleSheetCompose::content(Fluent::ThemeMode theme) const {
     if (m_sources.empty()) {
         return QString();
     }

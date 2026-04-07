@@ -342,7 +342,7 @@ CompleterMenu::CompleterMenu(LineEdit* lineEdit, QWidget* parent)
 
     this->installEventFilter(this);
 
-    connect(view(), &MenuActionListWidget::itemClicked, this, &CompleterMenu::_onItemClicked);
+    connect(view(), &MenuActionListWidget::itemClicked, this, &CompleterMenu::onItemClicked);
 
     setItemHeight(33);
 }
@@ -381,10 +381,10 @@ void CompleterMenu::setItems(const QStringList& items)
     }
 }
 
-void CompleterMenu::_onItemClicked(QListWidgetItem* item)
+void CompleterMenu::onItemClicked(QListWidgetItem* item)
 {
     hideMenu();
-    _onCompletionItemSelected(item->text(), view()->row(item));
+    onCompletionItemSelected(item->text(), view()->row(item));
 }
 
 bool CompleterMenu::eventFilter(QObject* obj, QEvent* event)
@@ -406,7 +406,7 @@ bool CompleterMenu::eventFilter(QObject* obj, QEvent* event)
             view()->currentRow() >= 0) {
         QListWidgetItem* currentItem = view()->currentItem();
         if (currentItem) {
-            _onCompletionItemSelected(currentItem->text(), view()->currentRow());
+            onCompletionItemSelected(currentItem->text(), view()->currentRow());
             close();
         }
     }
@@ -414,7 +414,7 @@ bool CompleterMenu::eventFilter(QObject* obj, QEvent* event)
     return RoundMenu::eventFilter(obj, event);
 }
 
-void CompleterMenu::_onCompletionItemSelected(const QString& text, int row)
+void CompleterMenu::onCompletionItemSelected(const QString& text, int row)
 {
     if (m_lineEdit) {
         m_lineEdit->setText(text);

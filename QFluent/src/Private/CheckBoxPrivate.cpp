@@ -22,7 +22,7 @@ QColor CheckBoxPrivate::borderColor() const {
         case CheckBox::State::NORMAL: return QColor(0, 0, 0, 122);
         case CheckBox::State::HOVER: return QColor(0, 0, 0, 143);
         case CheckBox::State::PRESSED: return QColor(0, 0, 0, 69);
-        case CheckBox::State::CHECKED: Theme::instance()->themeColor();
+        case CheckBox::State::CHECKED: return Theme::instance()->themeColor();
         case CheckBox::State::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
         case CheckBox::State::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2);
         case CheckBox::State::DISABLED: return QColor(0, 0, 0, 56);
@@ -38,7 +38,7 @@ QColor CheckBoxPrivate::backgroundColor() const {
         case CheckBox::State::NORMAL: return QColor(0, 0, 0, 26);
         case CheckBox::State::HOVER: return QColor(255, 255, 255, 11);
         case CheckBox::State::PRESSED: return QColor(255, 255, 255, 18);
-        case CheckBox::State::CHECKED: Theme::instance()->themeColor();
+        case CheckBox::State::CHECKED: return Theme::instance()->themeColor();
         case CheckBox::State::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_1);
         case CheckBox::State::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_2);
         case CheckBox::State::DISABLED: return QColor(0, 0, 0, 0);
@@ -49,7 +49,7 @@ QColor CheckBoxPrivate::backgroundColor() const {
         case CheckBox::State::NORMAL: return QColor(0, 0, 0, 6);
         case CheckBox::State::HOVER: return QColor(0, 0, 0, 13);
         case CheckBox::State::PRESSED: return QColor(0, 0, 0, 31);
-        case CheckBox::State::CHECKED: Theme::instance()->themeColor();
+        case CheckBox::State::CHECKED: return Theme::instance()->themeColor();
         case CheckBox::State::CHECKED_HOVER: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
         case CheckBox::State::CHECKED_PRESSED: return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2);
         case CheckBox::State::DISABLED: return QColor(0, 0, 0, 0);

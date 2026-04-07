@@ -52,8 +52,8 @@ private:
 class QFLUENT_EXPORT StyleSheetBase {
 public:
     virtual ~StyleSheetBase() = default;
-    virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
-    virtual QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    virtual QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const;
+    virtual QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const;
 
     // 应用样式表到控件 - 使用clone()避免切片问题
     virtual void apply(QWidget* widget, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
@@ -74,7 +74,7 @@ public:
     // 双路径构造函数 - 分别指定亮色和暗色样式文件
     StyleSheetFile(const QString& lightPath, const QString& darkPath);
 
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     inline bool hasSeparatePaths() const { return !m_lightPath.isEmpty() && !m_darkPath.isEmpty() && m_lightPath != m_darkPath; }
 
     const QString& lightPath() const { return m_lightPath; }
@@ -86,12 +86,12 @@ public:
 class QFLUENT_EXPORT TemplateStyleSheetFile : public StyleSheetBase {
 private:
     QString m_templatePath;
-    QString m_cachedLightPath;
-    QString m_cachedDarkPath;
+    mutable QString m_cachedLightPath;
+    mutable QString m_cachedDarkPath;
 
 public:
     explicit TemplateStyleSheetFile(const QString& templatePath);
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
 
     std::shared_ptr<StyleSheetBase> clone() const override;
 };
@@ -105,7 +105,7 @@ private:
 
 public:
     explicit FluentStyleSheet(Fluent::ThemeStyle type);
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     static QString typeToString(Fluent::ThemeStyle type);
 
     std::shared_ptr<StyleSheetBase> clone() const override;
@@ -117,8 +117,8 @@ private:
 
 public:
     explicit CustomStyleSheet(QWidget* widget);
-    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
-    QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    QString path(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
+    QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
 
     CustomStyleSheet* setCustomStyleSheet(const QString& lightQss, const QString& darkQss);
     CustomStyleSheet* setLightStyleSheet(const QString& qss);
@@ -145,7 +145,7 @@ public:
     // 移动构造函数
     StyleSheetCompose(std::vector<std::shared_ptr<StyleSheetBase>>&& sources);
 
-    QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+    QString content(Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) const override;
     void add(const std::shared_ptr<StyleSheetBase>& source);
     void remove(const std::shared_ptr<StyleSheetBase>& source);
 

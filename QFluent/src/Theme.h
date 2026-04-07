@@ -31,7 +31,7 @@ public:
     bool isDarkTheme() const;
 
     void setFont(QWidget *widget, int fontSize = 14, QFont::Weight weight = QFont::Normal);
-    QFont font(int fontSize = 14, QFont::Weight weight = QFont::Normal);
+    QFont font(int fontSize = 14, QFont::Weight weight = QFont::Normal) const;
 
 Q_SIGNALS:
     Q_SIGNAL void themeModeChanged(Fluent::ThemeMode themeType);

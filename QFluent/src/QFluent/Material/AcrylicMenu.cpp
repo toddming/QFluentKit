@@ -124,5 +124,5 @@ void AcrylicMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation an
 {
     QPoint p = MenuAnimationManager::make(this, aniType)->endPosition(pos);
     RoundMenu::exec(pos, animate, aniType);
-    m_listWidget->m_acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));
+    m_listWidget->acrylicBrush().grabImage(QRect(p, layout()->sizeHint()));
 }

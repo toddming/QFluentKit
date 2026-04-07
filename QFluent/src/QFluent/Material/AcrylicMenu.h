@@ -19,7 +19,8 @@ public:
     QListWidgetItem* createPlaceholderItem(int height = 2);
     QPainterPath clipPath() const;
 
-    AcrylicBrush m_acrylicBrush;
+    AcrylicBrush& acrylicBrush() { return m_acrylicBrush; }
+    const AcrylicBrush& acrylicBrush() const { return m_acrylicBrush; }
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -28,6 +29,7 @@ private:
     void updateAcrylicColor();
     int topMargin() const;
     int bottomMargin() const;
+    AcrylicBrush m_acrylicBrush;
 };
 
 class QFLUENT_EXPORT AcrylicMenu : public RoundMenu

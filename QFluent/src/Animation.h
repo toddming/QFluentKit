@@ -251,10 +251,10 @@ public:
     ~FluentAnimation() override;
 
     static QEasingCurve createBezierCurve(float x1, float y1, float x2, float y2);
-    virtual QEasingCurve curve();
+    virtual QEasingCurve curve() const;
 
     void setSpeed(FluentAnimationSpeed speed);
-    virtual int speedToDuration(FluentAnimationSpeed speed);
+    virtual int speedToDuration(FluentAnimationSpeed speed) const;
 
     void startAnimation(const QVariant &endValue, const QVariant &startValue = QVariant());
     QVariant value() const;
@@ -279,8 +279,8 @@ class QFLUENT_EXPORT FastInvokeAnimation : public FluentAnimation {
 public:
     explicit FastInvokeAnimation(QObject *parent = nullptr);
 
-    QEasingCurve curve() override;
-    int speedToDuration(FluentAnimationSpeed speed) override;
+    QEasingCurve curve() const override;
+    int speedToDuration(FluentAnimationSpeed speed) const override;
 };
 
 // StrongInvokeAnimation
@@ -289,8 +289,8 @@ class QFLUENT_EXPORT StrongInvokeAnimation : public FluentAnimation {
 public:
     explicit StrongInvokeAnimation(QObject *parent = nullptr);
 
-    QEasingCurve curve() override;
-    int speedToDuration(FluentAnimationSpeed speed) override;
+    QEasingCurve curve() const override;
+    int speedToDuration(FluentAnimationSpeed speed) const override;
 };
 
 // FastDismissAnimation
@@ -306,8 +306,8 @@ class QFLUENT_EXPORT SoftDismissAnimation : public FluentAnimation {
 public:
     explicit SoftDismissAnimation(QObject *parent = nullptr);
 
-    QEasingCurve curve() override;
-    int speedToDuration(FluentAnimationSpeed speed) override;
+    QEasingCurve curve() const override;
+    int speedToDuration(FluentAnimationSpeed speed) const override;
 };
 
 // PointToPointAnimation
@@ -316,7 +316,7 @@ class QFLUENT_EXPORT PointToPointAnimation : public FastDismissAnimation {
 public:
     explicit PointToPointAnimation(QObject *parent = nullptr);
 
-    QEasingCurve curve() override;
+    QEasingCurve curve() const override;
 };
 
 // FadeInOutAnimation
@@ -325,7 +325,7 @@ class QFLUENT_EXPORT FadeInOutAnimation : public FluentAnimation {
 public:
     explicit FadeInOutAnimation(QObject *parent = nullptr);
 
-    int speedToDuration(FluentAnimationSpeed speed) override;
+    int speedToDuration(FluentAnimationSpeed speed) const override;
 };
 
 // ScaleSlideAnimation

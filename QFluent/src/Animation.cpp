@@ -489,7 +489,7 @@ QEasingCurve FluentAnimation::createBezierCurve(float x1, float y1, float x2, fl
     return curve;
 }
 
-QEasingCurve FluentAnimation::curve() {
+QEasingCurve FluentAnimation::curve() const {
     return createBezierCurve(0, 0, 1, 1);
 }
 
@@ -497,7 +497,7 @@ void FluentAnimation::setSpeed(FluentAnimationSpeed speed) {
     setDuration(speedToDuration(speed));
 }
 
-int FluentAnimation::speedToDuration(FluentAnimationSpeed speed) {
+int FluentAnimation::speedToDuration(FluentAnimationSpeed speed) const {
     Q_UNUSED(speed);
     return 100;
 }
@@ -557,11 +557,11 @@ FluentAnimation *FluentAnimation::create(FluentAnimationType aniType,
 // ==================== Specific Animations ====================
 FastInvokeAnimation::FastInvokeAnimation(QObject *parent) : FluentAnimation(parent) {}
 
-QEasingCurve FastInvokeAnimation::curve() {
+QEasingCurve FastInvokeAnimation::curve() const {
     return createBezierCurve(0, 0, 0, 1);
 }
 
-int FastInvokeAnimation::speedToDuration(FluentAnimationSpeed speed) {
+int FastInvokeAnimation::speedToDuration(FluentAnimationSpeed speed) const {
     if (speed == FluentAnimationSpeed::FAST) return 187;
     if (speed == FluentAnimationSpeed::MEDIUM) return 333;
     return 500;
@@ -569,11 +569,11 @@ int FastInvokeAnimation::speedToDuration(FluentAnimationSpeed speed) {
 
 StrongInvokeAnimation::StrongInvokeAnimation(QObject *parent) : FluentAnimation(parent) {}
 
-QEasingCurve StrongInvokeAnimation::curve() {
+QEasingCurve StrongInvokeAnimation::curve() const {
     return createBezierCurve(0.13f, 1.62f, 0, 0.92f);
 }
 
-int StrongInvokeAnimation::speedToDuration(FluentAnimationSpeed speed) {
+int StrongInvokeAnimation::speedToDuration(FluentAnimationSpeed speed) const {
     Q_UNUSED(speed);
     return 667;
 }
@@ -582,24 +582,24 @@ FastDismissAnimation::FastDismissAnimation(QObject *parent) : FastInvokeAnimatio
 
 SoftDismissAnimation::SoftDismissAnimation(QObject *parent) : FluentAnimation(parent) {}
 
-QEasingCurve SoftDismissAnimation::curve() {
+QEasingCurve SoftDismissAnimation::curve() const {
     return createBezierCurve(1, 0, 1, 1);
 }
 
-int SoftDismissAnimation::speedToDuration(FluentAnimationSpeed speed) {
+int SoftDismissAnimation::speedToDuration(FluentAnimationSpeed speed) const {
     Q_UNUSED(speed);
     return 167;
 }
 
 PointToPointAnimation::PointToPointAnimation(QObject *parent) : FastDismissAnimation(parent) {}
 
-QEasingCurve PointToPointAnimation::curve() {
+QEasingCurve PointToPointAnimation::curve() const {
     return createBezierCurve(0.55f, 0.55f, 0, 1);
 }
 
 FadeInOutAnimation::FadeInOutAnimation(QObject *parent) : FluentAnimation(parent) {}
 
-int FadeInOutAnimation::speedToDuration(FluentAnimationSpeed speed) {
+int FadeInOutAnimation::speedToDuration(FluentAnimationSpeed speed) const {
     Q_UNUSED(speed);
     return 83;
 }

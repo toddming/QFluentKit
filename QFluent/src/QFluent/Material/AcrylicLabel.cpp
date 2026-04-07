@@ -319,6 +319,11 @@ BlurCoverThread::BlurCoverThread(QObject *parent)
 
 void BlurCoverThread::blur(const QString &imagePath, int blurRadius, const QSize &maxSize)
 {
+    // 如果线程正在运行，等待其完成
+    if (isRunning()) {
+        wait();
+    }
+
     m_imagePath = imagePath;
     m_blurRadius = blurRadius;
     if (!maxSize.isNull()) {

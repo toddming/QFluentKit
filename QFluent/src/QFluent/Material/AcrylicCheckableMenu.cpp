@@ -51,7 +51,7 @@ void AcrylicCheckableMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAni
 {
     QPoint p = MenuAnimationManager::make(this, aniType)->endPosition(pos);
     RoundMenu::exec(pos, animate, aniType);
-    m_listWidget->m_acrylicBrush.grabImage(QRect(p, layout()->sizeHint()));
+    m_listWidget->acrylicBrush().grabImage(QRect(p, layout()->sizeHint()));
 }
 
 int AcrylicCheckableMenu::adjustItemText(QListWidgetItem *item, QAction *action)
