@@ -41,7 +41,7 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
 
     MultiViewComboBoxMenu *menu = new MultiViewComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
-    QPointer<MultiViewComboBox> qPtr = q;
+    QPointer<MultiViewComboBox> q_ptr = q;
 
     for (int i = 0; i < q->count(); ++i) {
         QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
@@ -53,10 +53,10 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
         });
     }
 
-    connect(menu, &MultiViewComboBoxMenu::closed, q, [qPtr, this]() {
-        if (!qPtr) return;
-        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
-        if (!qPtr->rect().contains(pos)) {
+    connect(menu, &MultiViewComboBoxMenu::closed, q, [q_ptr, this]() {
+        if (!q_ptr) return;
+        QPoint pos = q_ptr->mapFromGlobal(QCursor::pos());
+        if (!q_ptr->rect().contains(pos)) {
             m_dropMenu = nullptr;
         }
     });

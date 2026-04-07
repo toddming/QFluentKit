@@ -26,7 +26,7 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
 
     ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
-    QPointer<ComboBox> qPtr = q;
+    QPointer<ComboBox> q_ptr = q;
     for (int i = 0; i < q->count(); ++i) {
         QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setData(i);
@@ -35,20 +35,20 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
             action->setChecked(true);
         }
         menu->addAction(action);
-        connect(action, &QAction::triggered, q, [qPtr, action, this]() {
-            if (!qPtr) return;
+        connect(action, &QAction::triggered, q, [q_ptr, action, this]() {
+            if (!q_ptr) return;
             int index = action->data().toInt();
             if (index != m_currentIndex) {
-                qPtr->setCurrentIndex(index);
-                emit qPtr->activated(index);
-                emit qPtr->textActivated(action->text());
+                q_ptr->setCurrentIndex(index);
+                emit q_ptr->activated(index);
+                emit q_ptr->textActivated(action->text());
             }
         });
     }
-    connect(menu, &ComboBoxMenu::closed, q, [qPtr, this]() {
-        if (!qPtr) return;
-        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
-        if (!qPtr->rect().contains(pos)) {
+    connect(menu, &ComboBoxMenu::closed, q, [q_ptr, this]() {
+        if (!q_ptr) return;
+        QPoint pos = q_ptr->mapFromGlobal(QCursor::pos());
+        if (!q_ptr->rect().contains(pos)) {
             m_dropMenu = nullptr;
         }
     });
