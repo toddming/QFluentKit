@@ -18,12 +18,16 @@ Theme::Theme(QObject* parent) : QObject(parent)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
     if (qApp) {
-        Qt::ColorScheme currentScheme = QApplication::styleHints()->colorScheme();
+        QStyleHints *styleHints = QApplication::styleHints();
+        if (!styleHints) {
+            return;
+        }
+
+        Qt::ColorScheme currentScheme = styleHints->colorScheme();
         d->m_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
         QPointer<Theme> self = this;
-        QStyleHints *styleHints = QApplication::styleHints();
-        connect(styleHints, &QStyleHints::colorSchemeChanged, [d, self](Qt::ColorScheme scheme) {
+        connect(styleHints, &QStyleHints::colorSchemeChanged, this, [d, self](Qt::ColorScheme scheme) {
             if (!self) {
                 return;
             }
@@ -42,11 +46,9 @@ Theme::Theme(QObject* parent) : QObject(parent)
 
 Theme::~Theme()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
-    if (qApp) {
-        disconnect(QApplication::styleHints(), nullptr, this, nullptr);
-    }
-#endif
+    // 注意：Q_GLOBAL_STATIC 单例在 QApplication 销毁之后析构
+    // 此时 qApp 已无效，无需手动断开连接
+    // Qt 会在 QApplication 析构时自动清理所有信号槽连接
 }
 
 Theme *Theme::instance()

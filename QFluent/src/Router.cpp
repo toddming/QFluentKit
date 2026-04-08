@@ -15,6 +15,11 @@ StackedHistory::StackedHistory(StackedWidget* stackedWidget, QObject* parent)
     m_history.append(m_defaultRouteKey);
 }
 
+bool StackedHistory::isValid() const
+{
+    return !m_stackedWidget.isNull();
+}
+
 bool StackedHistory::isEmpty() const
 {
     return depth() <= 1;
@@ -89,21 +94,13 @@ void StackedHistory::setDefaultRouteKey(const QString& routeKey)
 
 void StackedHistory::goToTop()
 {
-    if (top().isEmpty() || !m_stackedWidget) {
+    if (top().isEmpty() || m_stackedWidget.isNull()) {
         return;
     }
 
-
     QWidget* widget = m_stackedWidget->findChild<QWidget*>(top());
     if (widget) {
-        if (StackedWidget* stacked = qobject_cast<StackedWidget*>(m_stackedWidget)) {
-            stacked->setCurrentWidget(widget, false);
-        } else {
-            QList<QWidget*> children = m_stackedWidget->findChildren<QWidget*>();
-            for (QWidget* child : children) {
-                child->setVisible(child->objectName() == top());
-            }
-        }
+        m_stackedWidget->setCurrentWidget(widget, false);
     }
 }
 
@@ -183,9 +180,12 @@ void Router::pop()
     }
 
     RouteItem lastItem = m_history.takeLast();
-    StackedHistory* history = m_stackedHistories.value(lastItem.stackedWidget);
-    if (history) {
-        history->pop();
+    StackedWidget* widget = lastItem.stackedWidget.data();
+    if (widget) {
+        StackedHistory* history = m_stackedHistories.value(widget);
+        if (history) {
+            history->pop();
+        }
     }
 
     emit emptyChanged(m_history.isEmpty());
@@ -196,6 +196,9 @@ void Router::remove(const QString& routeKey)
     if (routeKey.isEmpty()) {
         return;
     }
+
+    // 先清理无效条目
+    cleanupInvalidEntries();
 
     // 从全局历史记录中移除
     QVector<RouteItem> newHistory;
@@ -211,13 +214,10 @@ void Router::remove(const QString& routeKey)
 
     emit emptyChanged(m_history.isEmpty());
 
-    // 从每个堆叠窗口的历史记录中移除
+    // 从所有有效的 StackedHistory 中移除该路由
     for (StackedHistory* history : m_stackedHistories) {
-        // 检查是否有对应路由键的部件
-        QWidget* widget = history->parent()->findChild<QWidget*>(routeKey);
-        if (widget) {
+        if (history && history->isValid()) {
             history->remove(routeKey);
-            break; // 找到了部件，无需继续检查
         }
     }
 }
@@ -243,6 +243,29 @@ void Router::removeConsecutiveDuplicates()
     }
 
     m_history = deduplicated;
+}
+
+void Router::cleanupInvalidEntries()
+{
+    // 清理全局历史记录中的无效条目
+    QVector<RouteItem> validHistory;
+    for (const RouteItem& item : m_history) {
+        if (!item.stackedWidget.isNull()) {
+            validHistory.append(item);
+        }
+    }
+    m_history = validHistory;
+
+    // 清理无效的 StackedHistory
+    for (auto it = m_stackedHistories.begin(); it != m_stackedHistories.end(); ) {
+        StackedHistory* history = it.value();
+        if (!history || !history->isValid()) {
+            delete history;
+            it = m_stackedHistories.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 StackedHistory* Router::ensureHistory(StackedWidget* stackedWidget)

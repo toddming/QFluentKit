@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QHash>
 #include <QGlobalStatic>
+#include <QPointer>
 
 #include "FluentGlobal.h"
 
@@ -28,11 +29,13 @@ public:
     QString defaultRouteKey() const;
     void setDefaultRouteKey(const QString& routeKey);
 
+    bool isValid() const;
+
 private:
     void goToTop();
     void removeConsecutiveDuplicates();
 
-    StackedWidget* m_stackedWidget;
+    QPointer<StackedWidget> m_stackedWidget;
     QString m_defaultRouteKey;
     QVector<QString> m_history;
 };
@@ -60,13 +63,13 @@ signals:
 
 private:
     struct RouteItem {
-        StackedWidget* stackedWidget;
+        QPointer<StackedWidget> stackedWidget;
         QString key;
 
         RouteItem(StackedWidget* stacked = nullptr, const QString& routeKey = QString())
             : stackedWidget(stacked), key(routeKey) {}
 
-        bool isNull() const { return stackedWidget == nullptr || key.isEmpty(); }
+        bool isNull() const { return stackedWidget.isNull() || key.isEmpty(); }
         bool operator==(const RouteItem& other) const {
             return stackedWidget == other.stackedWidget && key == other.key;
         }
@@ -74,6 +77,7 @@ private:
 
     void removeConsecutiveDuplicates();
     StackedHistory* ensureHistory(StackedWidget* stackedWidget);
+    void cleanupInvalidEntries();
 
     QVector<RouteItem> m_history;
     QHash<StackedWidget*, StackedHistory*> m_stackedHistories;
