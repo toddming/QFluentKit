@@ -331,6 +331,12 @@ void DropShadowAnimation::setColor(const QColor &color) {
 
 QGraphicsDropShadowEffect *DropShadowAnimation::createShadowEffect() {
     Q_D(DropShadowAnimation);
+
+    // 删除旧的 effect 避免内存泄漏
+    if (d->m_shadowEffect) {
+        delete d->m_shadowEffect;
+    }
+
     d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
     d->m_shadowEffect->setOffset(d->m_offset);
     d->m_shadowEffect->setBlurRadius(d->m_blurRadius);

@@ -111,7 +111,6 @@ private:
     void setWidgetCompacted(bool isCompacted);
 
 private:
-    QWidget* m_parent;
     ScrollArea* m_scrollArea;
     QWidget* m_scrollWidget;
     QVBoxLayout* m_vBoxLayout;

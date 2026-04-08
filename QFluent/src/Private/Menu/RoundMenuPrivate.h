@@ -43,7 +43,7 @@ public slots:
     void onShowMenuTimeout();
 
 public:
-    RoundMenu *q_ptr;
+    RoundMenu * const q_ptr;
 
     bool m_isSubMenu;
     bool m_isHideBySystem;

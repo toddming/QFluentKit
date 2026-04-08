@@ -131,8 +131,10 @@ void FlowLayout::onWidgetAdded(QWidget *widget, int index)
     if (!m_eventFilterInstalled) {
         if (QWidget *parent = widget->parentWidget()) {
             m_parentWidget = parent;
-            m_parentWidget->installEventFilter(this);
-            m_eventFilterInstalled = true;
+            if (m_parentWidget) {
+                m_parentWidget->installEventFilter(this);
+                m_eventFilterInstalled = true;
+            }
         } else {
             // 如果控件暂时没有父窗口，监听其父窗口变化
             widget->installEventFilter(this);
@@ -379,14 +381,16 @@ bool FlowLayout::eventFilter(QObject *object, QEvent *event)
                     QWidget *newParent = widget->parentWidget();
                     if (newParent && newParent != m_parentWidget) {
                         m_parentWidget = newParent;
-                        m_parentWidget->installEventFilter(this);
-                        m_eventFilterInstalled = true;
+                        if (m_parentWidget) {
+                            m_parentWidget->installEventFilter(this);
+                            m_eventFilterInstalled = true;
+                        }
                     }
                     break;
                 }
             }
         }
-    } else if (event->type() == QEvent::Show && object == m_parentWidget) {
+    } else if (event->type() == QEvent::Show && object == m_parentWidget.data()) {
         // 父窗口显示时重新布局
         doLayout(geometry(), true);
     }

@@ -2,6 +2,7 @@
 
 #include <QLayout>
 #include <QEasingCurve>
+#include <QPointer>
 #include "FluentGlobal.h"
 
 QT_BEGIN_NAMESPACE
@@ -145,7 +146,7 @@ private:
 
     // 辅助对象
     QTimer *m_layoutDebounceTimer;
-    QWidget *m_parentWidget;
+    QPointer<QWidget> m_parentWidget;
 
     // 内部方法
     /**

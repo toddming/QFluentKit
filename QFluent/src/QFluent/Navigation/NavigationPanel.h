@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QString>
 #include <QVariant>
+#include <QPointer>
 #include <functional>
 #include <exception>
 #include <QVBoxLayout>
@@ -205,8 +206,8 @@ private:
         NavigationFlyoutMenu* menu);
 
 private:
-    // 父窗口指针(不拥有)
-    QWidget* m_parentWidget;
+    // 父窗口指针(不拥有，使用 QPointer 防止悬空指针)
+    QPointer<QWidget> m_parentWidget;
 
     // 配置标志
     bool m_isMenuButtonVisible;

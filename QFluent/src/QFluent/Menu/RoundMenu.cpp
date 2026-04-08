@@ -15,6 +15,10 @@
 #include "Private/Menu/RoundMenuPrivate.h"
 #include "MenuActionListWidget.h"
 
+namespace {
+    constexpr int SUBMENU_SHOW_DELAY_MS = 400;  // 子菜单显示延迟(毫秒)
+}
+
 RoundMenu::RoundMenu(const QString &title, QWidget *parent)
     : QMenu(title, parent)
     , d_ptr(new RoundMenuPrivate(this))
@@ -43,7 +47,7 @@ RoundMenu::RoundMenu(const QString &title, QWidget *parent)
     connect(d->m_view, &QListWidget::itemEntered, this, &RoundMenu::onItemEntered);
 
     d->m_showTimer->setSingleShot(true);
-    d->m_showTimer->setInterval(400);
+    d->m_showTimer->setInterval(SUBMENU_SHOW_DELAY_MS);
     connect(d->m_showTimer, &QTimer::timeout, d, &RoundMenuPrivate::onShowMenuTimeout);
 }
 
