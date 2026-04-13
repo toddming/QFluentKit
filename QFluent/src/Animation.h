@@ -140,6 +140,9 @@ protected:
     void setHover(bool hover);
     void setPressed(bool pressed);
 
+private:
+    void init();
+
     QScopedPointer<BackgroundAnimationWidgetPrivate> d_ptr;
 };
 
@@ -151,7 +154,7 @@ public:
     explicit DropShadowAnimation(QWidget *parent,
                                 const QColor &normalColor = QColor(0, 0, 0, 0),
                                 const QColor &hoverColor = QColor(0, 0, 0, 75));
-    ~DropShadowAnimation();
+    ~DropShadowAnimation() override;
 
     void setBlurRadius(int radius);
     void setOffset(int dx, int dy);
@@ -175,7 +178,7 @@ class QFLUENT_EXPORT FluentAnimationProperObject : public QObject {
     Q_OBJECT
 public:
     explicit FluentAnimationProperObject(QObject *parent = nullptr);
-    virtual ~FluentAnimationProperObject();
+    virtual ~FluentAnimationProperObject() = default;
 
     virtual QVariant value() const = 0;
     virtual void setValue(const QVariant &value) = 0;

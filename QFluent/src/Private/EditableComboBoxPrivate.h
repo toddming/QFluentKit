@@ -48,11 +48,11 @@ public:
     void showComboMenu();
     void closeComboMenu();
 
-    bool m_isPressed;
-    bool m_isHover;
+    bool m_isPressed = false;
+    bool m_isHover = false;
     QString m_placeholderText;
-    int m_currentIndex;
-    int m_maxVisibleItems;
+    int m_currentIndex = -1;
+    int m_maxVisibleItems = -1;
 
     LineEditButton *m_dropButton = nullptr;
     ComboBoxMenu *m_dropMenu = nullptr;

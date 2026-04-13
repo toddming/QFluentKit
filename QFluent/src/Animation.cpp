@@ -26,7 +26,7 @@ AnimationBase::AnimationBase(AnimationBasePrivate &dd, QWidget *parent)
     }
 }
 
-AnimationBase::~AnimationBase() {}
+AnimationBase::~AnimationBase() = default;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 void AnimationBase::onHover(QEnterEvent *e) {
@@ -78,7 +78,7 @@ TranslateYAnimation::TranslateYAnimation(QWidget *parent, int offset)
     d->m_ani = new QPropertyAnimation(this, "y", this);
 }
 
-TranslateYAnimation::~TranslateYAnimation() {}
+TranslateYAnimation::~TranslateYAnimation() = default;
 
 float TranslateYAnimation::y() const {
     Q_D(const TranslateYAnimation);
@@ -117,17 +117,9 @@ BackgroundColorObject::BackgroundColorObject(QWidget *parent)
     : QObject(parent)
     , d_ptr(new BackgroundColorObjectPrivate())
 {
-    Q_D(BackgroundColorObject);
-
-    // QMetaObject::invokeMethod(this, [this, parent]() {
-    //     if (auto widget = qobject_cast<BackgroundAnimationWidget*>(parent)) {
-    //         Q_D(BackgroundColorObject);
-    //         d->_backgroundColor = widget->normalBackgroundColor();
-    //     }
-    // }, Qt::QueuedConnection);
 }
 
-BackgroundColorObject::~BackgroundColorObject() {}
+BackgroundColorObject::~BackgroundColorObject() = default;
 
 QColor BackgroundColorObject::backgroundColor() const {
     Q_D(const BackgroundColorObject);
@@ -147,16 +139,17 @@ BackgroundAnimationWidget::BackgroundAnimationWidget(QWidget *parent)
     : QWidget(parent)
     , d_ptr(new BackgroundAnimationWidgetPrivate())
 {
-    Q_D(BackgroundAnimationWidget);
-    d->m_bgColorObject = new BackgroundColorObject(this);
-    d->m_backgroundColorAni = new QPropertyAnimation(d->m_bgColorObject, "backgroundColor", this);
-    d->m_backgroundColorAni->setDuration(120);
-    installEventFilter(this);
+    init();
 }
 
 BackgroundAnimationWidget::BackgroundAnimationWidget(BackgroundAnimationWidgetPrivate &dd, QWidget *parent)
     : QWidget(parent)
     , d_ptr(&dd)
+{
+    init();
+}
+
+void BackgroundAnimationWidget::init()
 {
     Q_D(BackgroundAnimationWidget);
     d->m_bgColorObject = new BackgroundColorObject(this);
@@ -165,7 +158,7 @@ BackgroundAnimationWidget::BackgroundAnimationWidget(BackgroundAnimationWidgetPr
     installEventFilter(this);
 }
 
-BackgroundAnimationWidget::~BackgroundAnimationWidget() {}
+BackgroundAnimationWidget::~BackgroundAnimationWidget() = default;
 
 QColor BackgroundAnimationWidget::normalBackgroundColor() const {
     return QColor(0, 0, 0, 0);
@@ -308,7 +301,7 @@ DropShadowAnimation::DropShadowAnimation(QWidget *parent, const QColor &normalCo
     connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
 }
 
-DropShadowAnimation::~DropShadowAnimation() {}
+DropShadowAnimation::~DropShadowAnimation() = default;
 
 void DropShadowAnimation::setBlurRadius(int radius) {
     Q_D(DropShadowAnimation);
@@ -394,8 +387,6 @@ getFluentAnimationProperObjectObjects() {
 }
 
 FluentAnimationProperObject::FluentAnimationProperObject(QObject *parent) : QObject(parent) {}
-
-FluentAnimationProperObject::~FluentAnimationProperObject() {}
 
 void FluentAnimationProperObject::registerObject(FluentAnimationProperty name,
                                                  std::function<FluentAnimationProperObject*(QObject*)> creator) {
@@ -492,7 +483,7 @@ FluentAnimation::FluentAnimation(FluentAnimationPrivate &dd, QObject *parent)
     setEasingCurve(curve());
 }
 
-FluentAnimation::~FluentAnimation() {}
+FluentAnimation::~FluentAnimation() = default;
 
 QEasingCurve FluentAnimation::createBezierCurve(float x1, float y1, float x2, float y2) {
     QEasingCurve curve(QEasingCurve::BezierSpline);
@@ -635,7 +626,7 @@ ScaleSlideAnimation::ScaleSlideAnimation(QWidget *parent, Qt::Orientation orient
     }
 }
 
-ScaleSlideAnimation::~ScaleSlideAnimation() {}
+ScaleSlideAnimation::~ScaleSlideAnimation() = default;
 
 void ScaleSlideAnimation::startAnimation(const QRectF &endRect, bool useCrossFade) {
     stopAnimation();

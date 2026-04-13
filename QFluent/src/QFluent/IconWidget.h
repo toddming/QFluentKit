@@ -17,7 +17,7 @@ public:
     explicit IconWidget(const QIcon &icon, QWidget *parent = nullptr);
     explicit IconWidget(const QString &iconPath, QWidget *parent = nullptr);
     explicit IconWidget(const FluentIconBase &icon, QWidget* parent = nullptr);
-    ~IconWidget();
+    ~IconWidget() override;
 
     void setIcon(const QIcon &icon);
     void setIcon(const QString &iconPath);

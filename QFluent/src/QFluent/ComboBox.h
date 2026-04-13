@@ -2,7 +2,6 @@
 
 #include <QPushButton>
 #include <QVariant>
-#include <QVector>
 #include <QIcon>
 
 #include "FluentGlobal.h"
@@ -16,7 +15,7 @@ class QFLUENT_EXPORT ComboBox : public QPushButton
 
 public:
     explicit ComboBox(QWidget *parent = nullptr);
-    ~ComboBox();
+    ~ComboBox() override;
 
     // 添加项目
     void addItem(const QString &text,

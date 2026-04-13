@@ -77,9 +77,6 @@ public:
 class FluentAnimationPrivate {
 public:
     FluentAnimationPrivate() {}
-
-    static QMap<int, std::function<FluentAnimationProperObject*(QObject*)>> objects;
-    static QMap<int, std::function<class FluentAnimation*(QObject*)>> animations;
 };
 
 // ScaleSlideAnimationPrivate

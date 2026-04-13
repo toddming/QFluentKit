@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <QVector>
 #include <QIcon>
 
 #include "LineEdit.h"
@@ -15,7 +14,7 @@ class QFLUENT_EXPORT EditableComboBox : public LineEdit
 
 public:
     explicit EditableComboBox(QWidget *parent = nullptr);
-    ~EditableComboBox();
+    ~EditableComboBox() override;
 
     // 添加项目
     void addItem(const QString &text,
@@ -71,8 +70,6 @@ signals:
     void textActivated(const QString &text);
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:

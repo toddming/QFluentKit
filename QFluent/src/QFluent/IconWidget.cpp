@@ -34,9 +34,7 @@ IconWidget::IconWidget(const FluentIconBase &icon, QWidget* parent)
     setFluentIcon(icon);
 }
 
-IconWidget::~IconWidget()
-{
-}
+IconWidget::~IconWidget() = default;
 
 void IconWidget::setIcon(const QIcon &icon)
 {

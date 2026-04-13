@@ -27,9 +27,7 @@ ComboBox::ComboBox(QWidget *parent)
     d->m_arrowAni = new TranslateYAnimation(this);
 }
 
-ComboBox::~ComboBox()
-{
-}
+ComboBox::~ComboBox() = default;
 
 void ComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
 {

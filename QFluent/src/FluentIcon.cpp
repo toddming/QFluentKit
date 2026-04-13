@@ -710,6 +710,7 @@ QString FluentFontIconBase::path(Fluent::ThemeMode theme, bool reverse) const
 
 FluentFontIconBase FluentFontIconBase::fromName(const QString& name)
 {
+    QMutexLocker locker(&s_fontMutex);
     return FluentFontIconBase(s_iconNames.value(name, QChar()));
 }
 
@@ -811,6 +812,7 @@ void FluentFontIconBase::loadFont()
 
 void FluentFontIconBase::loadIconNames()
 {
+    QMutexLocker locker(&s_fontMutex);
     s_iconNames.clear();
 
     const QString mapPath = iconNameMapPath();

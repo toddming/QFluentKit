@@ -57,6 +57,8 @@ protected:
 private:
     // 初始化事件过滤器
     void setupEventFilters();
+    // 共享初始化逻辑
+    void init();
 
 protected:
     QScopedPointer<MaskDialogBasePrivate> d_ptr;

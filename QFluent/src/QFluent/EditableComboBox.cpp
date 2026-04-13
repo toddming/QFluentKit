@@ -32,9 +32,7 @@ EditableComboBox::EditableComboBox(QWidget *parent)
     connect(this, &EditableComboBox::returnPressed, d, &EditableComboBoxPrivate::onReturnPressed);
 }
 
-EditableComboBox::~EditableComboBox()
-{
-}
+EditableComboBox::~EditableComboBox() = default;
 
 void EditableComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
 {
@@ -246,16 +244,6 @@ void EditableComboBox::setCompleterMenu(CompleterMenu *menu)
 
     LineEdit::setCompleterMenu(menu);
     connect(menu, &CompleterMenu::activated, d, &EditableComboBoxPrivate::onActivated);
-}
-
-void EditableComboBox::paintEvent(QPaintEvent *event)
-{
-    LineEdit::paintEvent(event);
-}
-
-void EditableComboBox::mouseReleaseEvent(QMouseEvent *event)
-{
-    LineEdit::mouseReleaseEvent(event);
 }
 
 bool EditableComboBox::eventFilter(QObject *watched, QEvent *event)

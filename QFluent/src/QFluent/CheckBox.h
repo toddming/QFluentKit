@@ -25,7 +25,7 @@ public:
 
     explicit CheckBox(QWidget *parent = nullptr);
     CheckBox(const QString &text, QWidget *parent = nullptr);
-    ~CheckBox();
+    ~CheckBox() override;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

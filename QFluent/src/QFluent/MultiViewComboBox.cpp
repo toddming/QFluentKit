@@ -23,9 +23,7 @@ MultiViewComboBox::MultiViewComboBox(QWidget *parent)
     d->updateText();  // 初始化文本
 }
 
-MultiViewComboBox::~MultiViewComboBox()
-{
-}
+MultiViewComboBox::~MultiViewComboBox() = default;
 
 void MultiViewComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
 {

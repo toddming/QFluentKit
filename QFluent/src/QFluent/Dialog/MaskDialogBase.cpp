@@ -19,28 +19,7 @@ MaskDialogBase::MaskDialogBase(QWidget *parent)
 {
     Q_D(MaskDialogBase);
     d->q_ptr = this;
-
-    d->m_isClosableOnMaskClicked = false;
-
-    setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
-
-    d->m_hBoxLayout = new QHBoxLayout(this);
-    d->m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
-
-    d->m_windowMask = new QWidget(this);
-    d->m_windowMask->installEventFilter(this);
-
-    d->m_centerWidget = new QFrame(this);
-    d->m_centerWidget->setObjectName("centerWidget");
-    d->m_hBoxLayout->addWidget(d->m_centerWidget, 1, Qt::AlignCenter);
-
-    int c = Theme::instance()->isDarkTheme() ? 0 : 255;
-    d->m_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
-
-    setShadowEffect();
-
-    setupEventFilters();
+    init();
 }
 
 MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate &dd, QWidget *parent)
@@ -49,6 +28,12 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate &dd, QWidget *parent)
 {
     Q_D(MaskDialogBase);
     d->q_ptr = this;
+    init();
+}
+
+void MaskDialogBase::init()
+{
+    Q_D(MaskDialogBase);
 
     d->m_isClosableOnMaskClicked = false;
 

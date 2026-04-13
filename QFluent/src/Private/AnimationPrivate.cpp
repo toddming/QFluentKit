@@ -1,9 +1,7 @@
 ﻿#include "AnimationPrivate.h"
 #include "Animation.h"
 
-// 静态成员初始化
-QMap<int, std::function<FluentAnimationProperObject*(QObject*)>> FluentAnimationPrivate::objects;
-QMap<int, std::function<FluentAnimation*(QObject*)>> FluentAnimationPrivate::animations;
+// 静态成员初始化已移除 (FluentAnimationPrivate::objects/animations 未使用)
 
 // 匿名命名空间，用于注册
 namespace {

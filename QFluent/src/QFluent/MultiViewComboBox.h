@@ -2,7 +2,6 @@
 
 #include <QPushButton>
 #include <QVariant>
-#include <QVector>
 #include <QIcon>
 #include <QList>
 
@@ -17,7 +16,7 @@ class QFLUENT_EXPORT MultiViewComboBox : public QPushButton
 
 public:
     explicit MultiViewComboBox(QWidget *parent = nullptr);
-    ~MultiViewComboBox();
+    ~MultiViewComboBox() override;
 
     // 添加项目
     void addItem(const QString &text,

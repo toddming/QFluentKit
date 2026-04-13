@@ -30,7 +30,7 @@ CheckBox::CheckBox(const QString &text, QWidget *parent) : CheckBox(parent)
     setText(text);
 }
 
-CheckBox::~CheckBox() {}
+CheckBox::~CheckBox() = default;
 
 void CheckBox::mousePressEvent(QMouseEvent *event) {
     Q_D(CheckBox);
