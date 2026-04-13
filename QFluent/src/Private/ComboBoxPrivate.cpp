@@ -35,10 +35,10 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
             action->setChecked(true);
         }
         menu->addAction(action);
-        connect(action, &QAction::triggered, q, [q_ptr, action, this]() {
+        connect(action, &QAction::triggered, q, [q_ptr, action, currentIndex = m_currentIndex]() {
             if (!q_ptr) return;
             int index = action->data().toInt();
-            if (index != m_currentIndex) {
+            if (index != currentIndex) {
                 q_ptr->setCurrentIndex(index);
                 emit q_ptr->activated(index);
                 emit q_ptr->textActivated(action->text());

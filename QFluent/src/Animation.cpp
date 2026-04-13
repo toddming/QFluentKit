@@ -88,7 +88,9 @@ float TranslateYAnimation::y() const {
 void TranslateYAnimation::setY(float y) {
     Q_D(TranslateYAnimation);
     d->m_y = y;
-    static_cast<QWidget*>(parent())->update();
+    if (auto* w = qobject_cast<QWidget*>(parent())) {
+        w->update();
+    }
     emit valueChanged(y);
 }
 
@@ -301,6 +303,9 @@ DropShadowAnimation::DropShadowAnimation(QWidget *parent, const QColor &normalCo
     d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
     d->m_shadowEffect->setColor(normalColor);
     parent->installEventFilter(this);
+
+    // 构造函数中连接一次，避免事件处理中重复连接
+    connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
 }
 
 DropShadowAnimation::~DropShadowAnimation() {}
@@ -364,7 +369,6 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
         } else if (e->type() == QEvent::Leave || e->type() == QEvent::MouseButtonPress) {
             d->m_isHover = false;
             if (p->graphicsEffect()) {
-                connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
                 setEndValue(d->m_normalColor);
                 start();
             }
@@ -375,9 +379,10 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
 
 void DropShadowAnimation::onAniFinished() {
     Q_D(DropShadowAnimation);
-    disconnect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
     d->m_shadowEffect = nullptr;
-    static_cast<QWidget*>(parent())->setGraphicsEffect(nullptr);
+    if (auto* w = qobject_cast<QWidget*>(parent())) {
+        w->setGraphicsEffect(nullptr);
+    }
 }
 
 // ==================== FluentAnimationProperObject ====================
@@ -520,11 +525,15 @@ void FluentAnimation::startAnimation(const QVariant &endValue, const QVariant &s
 }
 
 QVariant FluentAnimation::value() const {
-    return static_cast<FluentAnimationProperObject*>(targetObject())->value();
+    auto* obj = qobject_cast<FluentAnimationProperObject*>(targetObject());
+    return obj ? obj->value() : QVariant();
 }
 
 void FluentAnimation::setValue(const QVariant &value) {
-    static_cast<FluentAnimationProperObject*>(targetObject())->setValue(value);
+    auto* obj = qobject_cast<FluentAnimationProperObject*>(targetObject());
+    if (obj) {
+        obj->setValue(value);
+    }
 }
 
 void FluentAnimation::registerAnimation(FluentAnimationType name,

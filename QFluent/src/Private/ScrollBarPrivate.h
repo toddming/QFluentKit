@@ -30,7 +30,7 @@ Q_SIGNALS:
 
 private:
     friend class ScrollBar;
-    ScrollBar* q_ptr;
+    ScrollBar* q_ptr = nullptr;
     Q_DECLARE_PUBLIC(ScrollBar)
 
     // 属性成员

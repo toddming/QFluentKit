@@ -723,7 +723,11 @@ void NavigationFlyoutMenu::adjustViewSize(bool emitSignal) {
 
     m_view->setFixedSize(width, m_view->sizeHint().height());
 
-    const int height = qMin(window()->parentWidget()->height() - 48, m_view->height());
+    QWidget* w = window();
+    QWidget* pw = w ? w->parentWidget() : nullptr;
+    if (!pw) return;
+
+    const int height = qMin(pw->height() - 48, m_view->height());
     setFixedSize(width, height);
 
     if (emitSignal)

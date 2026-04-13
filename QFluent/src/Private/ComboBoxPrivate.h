@@ -51,6 +51,6 @@ public:
     TranslateYAnimation *m_arrowAni = nullptr;
     QVector<ComboBoxDetail::ComboItem> m_items;
 
-private:
-    ComboBox * const q_ptr;
+protected:
+    ComboBox *q_ptr = nullptr;
 };

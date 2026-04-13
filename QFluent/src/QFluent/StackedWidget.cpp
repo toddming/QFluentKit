@@ -645,12 +645,16 @@ bool StackedWidget::isAnimationEnabled() const
         // OpacityAniStackedWidget 没有动画开关
         return true;
 
-    case AnimationType::PopUp:
-        return qobject_cast<PopUpAniStackedWidget*>(m_view)->isAnimationEnabled();
+    case AnimationType::PopUp: {
+        auto* view = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        return view ? view->isAnimationEnabled() : true;
+    }
 
     case AnimationType::EntranceTransition:
-    case AnimationType::DrillInTransition:
-        return qobject_cast<TransitionStackedWidget*>(m_view)->isAnimationEnabled();
+    case AnimationType::DrillInTransition: {
+        auto* view = qobject_cast<TransitionStackedWidget*>(m_view);
+        return view ? view->isAnimationEnabled() : true;
+    }
     }
 
     return true;
@@ -668,14 +672,18 @@ void StackedWidget::setAnimationEnabled(bool isEnabled)
         // OpacityAniStackedWidget 没有动画开关
         break;
 
-    case AnimationType::PopUp:
-        qobject_cast<PopUpAniStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
+    case AnimationType::PopUp: {
+        auto* view = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        if (view) view->setAnimationEnabled(isEnabled);
         break;
+    }
 
     case AnimationType::EntranceTransition:
-    case AnimationType::DrillInTransition:
-        qobject_cast<TransitionStackedWidget*>(m_view)->setAnimationEnabled(isEnabled);
+    case AnimationType::DrillInTransition: {
+        auto* view = qobject_cast<TransitionStackedWidget*>(m_view);
+        if (view) view->setAnimationEnabled(isEnabled);
         break;
+    }
     }
 }
 
@@ -687,13 +695,17 @@ void StackedWidget::addWidget(QWidget *widget, int deltaX, int deltaY)
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
-    case AnimationType::Opacity:
-        qobject_cast<OpacityAniStackedWidget*>(m_view)->addWidget(widget);
+    case AnimationType::Opacity: {
+        auto* view = qobject_cast<OpacityAniStackedWidget*>(m_view);
+        if (view) view->addWidget(widget);
         break;
+    }
 
-    case AnimationType::PopUp:
-        qobject_cast<PopUpAniStackedWidget*>(m_view)->addWidget(widget, deltaX, deltaY);
+    case AnimationType::PopUp: {
+        auto* view = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        if (view) view->addWidget(widget, deltaX, deltaY);
         break;
+    }
 
     case AnimationType::EntranceTransition:
     case AnimationType::DrillInTransition:
@@ -710,9 +722,11 @@ void StackedWidget::removeWidget(QWidget *widget)
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
-    case AnimationType::PopUp:
-        qobject_cast<PopUpAniStackedWidget*>(m_view)->removeWidget(widget);
+    case AnimationType::PopUp: {
+        auto* view = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        if (view) view->removeWidget(widget);
         break;
+    }
 
     default:
         m_view->removeWidget(widget);
@@ -736,7 +750,8 @@ void StackedWidget::setCurrentWidget(QWidget *widget, bool popOut,
     // 根据类型调用相应的方法
     switch (m_animationType) {
     case AnimationType::Opacity: {
-        qobject_cast<OpacityAniStackedWidget*>(m_view)->setCurrentWidget(widget);
+        auto* view = qobject_cast<OpacityAniStackedWidget*>(m_view);
+        if (view) view->setCurrentWidget(widget);
         // 延迟重置滚动条,在切换完成后执行
         QTimer::singleShot(0, this, [this, widget]() {
             resetScrollBars(widget);
@@ -746,6 +761,7 @@ void StackedWidget::setCurrentWidget(QWidget *widget, bool popOut,
 
     case AnimationType::PopUp: {
         auto popUpView = qobject_cast<PopUpAniStackedWidget*>(m_view);
+        if (!popUpView) break;
         if (!popOut) {
             popUpView->setCurrentWidget(widget, false, true,
                                         duration > 0 ? duration : 300);
@@ -765,6 +781,7 @@ void StackedWidget::setCurrentWidget(QWidget *widget, bool popOut,
     case AnimationType::EntranceTransition:
     case AnimationType::DrillInTransition: {
         auto transitionView = qobject_cast<TransitionStackedWidget*>(m_view);
+        if (!transitionView) break;
         transitionView->setCurrentWidget(widget, duration, isBack);
 
         // 延迟重置滚动条,在切换完成后执行

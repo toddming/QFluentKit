@@ -48,6 +48,6 @@ public:
     // 槽函数：处理 CheckBox toggled
     void handleCheckBoxToggled(int index, bool checked);
 
-private:
-    MultiViewComboBox * const q_ptr;
+protected:
+    MultiViewComboBox *q_ptr = nullptr;
 };

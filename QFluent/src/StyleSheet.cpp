@@ -126,7 +126,7 @@ QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        // qWarning() << "QSS文件打开失败:" << filePath;
+        qWarning("StyleSheetHelper: Failed to open QSS file: %s", qPrintable(filePath));
         return QString();
     }
 
@@ -538,21 +538,16 @@ void CustomStyleSheetWatcher::applyStyleSheetIfNeeded()
 
 // ==================== StyleSheetManager 实现 ====================
 
-StyleSheetManager* StyleSheetManager::m_instance = nullptr;
-QMutex StyleSheetManager::m_mutex;
+Q_GLOBAL_STATIC(StyleSheetManager, s_styleSheetManager)
 
 StyleSheetManager::StyleSheetManager() : QObject() {
     m_widgets.reserve(100); // 预留合理的初始容量
 }
 
+StyleSheetManager::~StyleSheetManager() = default;
+
 StyleSheetManager* StyleSheetManager::instance() {
-    if (!m_instance) {
-        QMutexLocker locker(&m_mutex);
-        if (!m_instance) { // 双重检查锁定
-            m_instance = new StyleSheetManager();
-        }
-    }
-    return m_instance;
+    return s_styleSheetManager();
 }
 
 void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& source,

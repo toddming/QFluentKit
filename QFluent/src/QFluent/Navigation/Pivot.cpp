@@ -219,7 +219,7 @@ void Pivot::adjustIndicatorPos() {
 
 PivotItem *Pivot::widget(const QString &routeKey) const {
     if (!m_items.contains(routeKey)) {
-        // qWarning() << "Route key" << routeKey << "is not valid";
+        qWarning("Pivot: Route key '%s' is not valid", qPrintable(routeKey));
         return nullptr;
     }
     return m_items[routeKey];

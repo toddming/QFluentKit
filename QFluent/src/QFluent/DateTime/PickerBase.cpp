@@ -165,6 +165,9 @@ void ItemMaskWidget::paintEvent(QPaintEvent* e)
     int h = height();
 
     PickerPanel *panel = qobject_cast<PickerPanel*>(this->parent());
+    if (!panel) {
+        return;
+    }
     m_listWidgets = panel->listWidgets();
 
     for (CycleListWidget* p : m_listWidgets) {

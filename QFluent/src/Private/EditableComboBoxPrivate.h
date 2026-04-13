@@ -59,6 +59,6 @@ public:
     TranslateYAnimation *m_arrowAni = nullptr;
     QVector<EditableComboBoxDetail::ComboItem> m_items;
 
-private:
-    EditableComboBox * const q_ptr;
+protected:
+    EditableComboBox *q_ptr = nullptr;
 };

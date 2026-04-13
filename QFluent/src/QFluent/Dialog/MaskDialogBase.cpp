@@ -75,6 +75,10 @@ MaskDialogBase::MaskDialogBase(MaskDialogBasePrivate &dd, QWidget *parent)
 
 MaskDialogBase::~MaskDialogBase()
 {
+    QWidget *tw = targetWidget();
+    if (tw) {
+        tw->removeEventFilter(this);
+    }
 }
 
 void MaskDialogBase::setupEventFilters()
@@ -124,11 +128,11 @@ void MaskDialogBase::setShadowEffect(int blurRadius, const QPoint &offset, const
 {
     Q_D(MaskDialogBase);
 
+    // Qt 的 setGraphicsEffect 会自动删除旧效果，直接设置新效果即可
     QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(d->m_centerWidget);
     shadowEffect->setBlurRadius(blurRadius);
     shadowEffect->setOffset(offset);
     shadowEffect->setColor(color);
-    d->m_centerWidget->setGraphicsEffect(nullptr);
     d->m_centerWidget->setGraphicsEffect(shadowEffect);
 }
 

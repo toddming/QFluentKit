@@ -342,11 +342,11 @@ ClickableSlider::ClickableSlider(Qt::Orientation orientation, QWidget *parent)
 
 void ClickableSlider::mousePressEvent(QMouseEvent *event)
 {
-    QSlider::mousePressEvent(event);
-
     if (!event) {
         return;
     }
+
+    QSlider::mousePressEvent(event);
 
     int newValue = 0;
 

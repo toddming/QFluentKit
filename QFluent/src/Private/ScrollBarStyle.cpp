@@ -256,8 +256,7 @@ QPropertyAnimation* ScrollBarStyle::createAnimation(
     animation->setStartValue(startValue);
     animation->setEndValue(endValue);
 
-    // 动画完成后自动删除
-    connect(animation, &QPropertyAnimation::finished, animation, &QObject::deleteLater);
+    // 注意：不在此处连接 deleteLater，由调用方通过 DeleteWhenStopped 管理生命周期
 
     return animation;
 }

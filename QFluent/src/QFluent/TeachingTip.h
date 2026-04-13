@@ -118,7 +118,7 @@ public:
                         QWidget* parent = nullptr,
                         bool isDeleteOnClose = true);
 
-    ~TeachingTip() override = default;
+    ~TeachingTip() override;
 
     void setShadowEffect(int blurRadius = 35, const QPoint& offset = QPoint(0, 8));
 

@@ -32,6 +32,9 @@ TeachingTipView::TeachingTipView(const QString& title,
     , m_hBoxLayout(nullptr)
 {
     m_manager = TeachingTipManager::make(tailPosition);
+    if (m_manager) {
+        m_manager->setParent(this);
+    }
     m_hBoxLayout = new QHBoxLayout();
     m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
 }
@@ -111,11 +114,11 @@ TeachTipBubble::TeachTipBubble(FlyoutViewBase* view,
     , m_view(view)
 {
     m_manager = TeachingTipManager::make(tailPosition);
-    m_hBoxLayout = new QHBoxLayout(this);
-
     if (m_manager) {
+        m_manager->setParent(this);
         m_manager->doLayout(this);
     }
+    m_hBoxLayout = new QHBoxLayout(this);
 
     if (m_hBoxLayout && m_view) {
         m_hBoxLayout->addWidget(m_view);
@@ -175,6 +178,9 @@ TeachingTip::TeachingTip(FlyoutViewBase* view,
     , m_isDeleteOnClose(isDeleteOnClose)
 {
     m_manager = TeachingTipManager::make(tailPosition);
+    if (m_manager) {
+        m_manager->setParent(this);
+    }
     m_hBoxLayout = new QHBoxLayout(this);
     m_opacityAni = new QPropertyAnimation(this, "windowOpacity", this);
     m_bubble = new TeachTipBubble(view, tailPosition, this);
@@ -192,6 +198,14 @@ TeachingTip::TeachingTip(FlyoutViewBase* view,
 
     if (parent && parent->window()) {
         parent->window()->installEventFilter(this);
+    }
+}
+
+TeachingTip::~TeachingTip()
+{
+    QWidget *p = qobject_cast<QWidget*>(parent());
+    if (p && p->window()) {
+        p->window()->removeEventFilter(this);
     }
 }
 

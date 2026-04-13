@@ -107,20 +107,12 @@ void SpinBoxBase::addUpDownButtons() {
 }
 
 void SpinBoxBase::connectButtons() {
-    if (qobject_cast<QSpinBox*>(m_parentWidget)) {
-        QObject::connect(m_upButton, &QToolButton::clicked, [this]() {
-            static_cast<QSpinBox*>(m_parentWidget)->stepUp();
-        });
-        QObject::connect(m_downButton, &QToolButton::clicked, [this]() {
-            static_cast<QSpinBox*>(m_parentWidget)->stepDown();
-        });
-    } else if (qobject_cast<QDoubleSpinBox*>(m_parentWidget)) {
-        QObject::connect(m_upButton, &QToolButton::clicked, [this]() {
-            static_cast<QDoubleSpinBox*>(m_parentWidget)->stepUp();
-        });
-        QObject::connect(m_downButton, &QToolButton::clicked, [this]() {
-            static_cast<QDoubleSpinBox*>(m_parentWidget)->stepDown();
-        });
+    if (auto* spin = qobject_cast<QSpinBox*>(m_parentWidget)) {
+        QObject::connect(m_upButton, &QToolButton::clicked, spin, &QSpinBox::stepUp);
+        QObject::connect(m_downButton, &QToolButton::clicked, spin, &QSpinBox::stepDown);
+    } else if (auto* spin = qobject_cast<QDoubleSpinBox*>(m_parentWidget)) {
+        QObject::connect(m_upButton, &QToolButton::clicked, spin, &QDoubleSpinBox::stepUp);
+        QObject::connect(m_downButton, &QToolButton::clicked, spin, &QDoubleSpinBox::stepDown);
     } else if (auto* te = qobject_cast<QTimeEdit*>(m_parentWidget)) {
         QObject::connect(m_upButton, &QToolButton::clicked, te, &QTimeEdit::stepUp);
         QObject::connect(m_downButton, &QToolButton::clicked, te, &QTimeEdit::stepDown);

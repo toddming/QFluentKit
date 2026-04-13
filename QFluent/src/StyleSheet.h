@@ -181,12 +181,16 @@ class QFLUENT_EXPORT StyleSheetManager : public QObject {
 
 private:
     QHash<QWidget*, std::shared_ptr<StyleSheetCompose>> m_widgets;
-    static StyleSheetManager* m_instance;
-    static QMutex m_mutex;
-
-    StyleSheetManager();
+    mutable QMutex m_mutex;
 
 public:
+    StyleSheetManager();
+    ~StyleSheetManager() override;
+
+    // 禁止拷贝和移动
+    StyleSheetManager(const StyleSheetManager&) = delete;
+    StyleSheetManager& operator=(const StyleSheetManager&) = delete;
+
     static StyleSheetManager* instance();
 
     // 控件注册管理

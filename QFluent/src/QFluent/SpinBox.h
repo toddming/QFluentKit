@@ -6,6 +6,7 @@
 #include <QDateEdit>
 #include <QDateTimeEdit>
 #include <QToolButton>
+#include <QPointer>
 
 #include "FluentGlobal.h"
 #include "FluentIcon.h"
@@ -47,13 +48,13 @@ public:
     QWidget* lineEdit() const;
 
     // 转发函数（不再是纯虚）
-    bool hasFocus() const { return m_parentWidget->hasFocus(); }
-    bool isEnabled() const { return m_parentWidget->isEnabled(); }
-    void update() { m_parentWidget->update(); }
-    void setProperty(const char* name, bool value) { m_parentWidget->setProperty(name, value); }
+    bool hasFocus() const { return m_parentWidget ? m_parentWidget->hasFocus() : false; }
+    bool isEnabled() const { return m_parentWidget ? m_parentWidget->isEnabled() : false; }
+    void update() { if (m_parentWidget) m_parentWidget->update(); }
+    void setProperty(const char* name, bool value) { if (m_parentWidget) m_parentWidget->setProperty(name, value); }
 
 private:
-    QWidget* m_parentWidget = nullptr;
+    QPointer<QWidget> m_parentWidget;
     QHBoxLayout* m_layout = nullptr;
     SpinButton* m_upButton = nullptr;
     SpinButton* m_downButton = nullptr;

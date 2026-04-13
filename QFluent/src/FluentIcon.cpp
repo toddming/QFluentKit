@@ -16,8 +16,9 @@
 
 #include "Theme.h"
 
-// Initialize static cache with thread safety in mind
+// Initialize static cache
 QCache<QString, QByteArray> FluentIconUtils::s_svgCache(500);
+QMutex FluentIconUtils::s_svgCacheMutex;
 
 QString FluentIconUtils::iconColor(Fluent::ThemeMode theme, bool reverse)
 {
@@ -87,10 +88,13 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
     }
 
     // Check cache
-    if (s_svgCache.contains(cacheKey)) {
-        QByteArray* cachedData = s_svgCache.object(cacheKey);
-        if (cachedData) {
-            return QString::fromUtf8(*cachedData);
+    {
+        QMutexLocker locker(&s_svgCacheMutex);
+        if (s_svgCache.contains(cacheKey)) {
+            QByteArray* cachedData = s_svgCache.object(cacheKey);
+            if (cachedData) {
+                return QString::fromUtf8(*cachedData);
+            }
         }
     }
 
@@ -146,7 +150,10 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
     // Cache the result
     const QString result = dom.toString(-1); // -1 = no indentation for compact output
     const QByteArray resultData = result.toUtf8();
-    s_svgCache.insert(cacheKey, new QByteArray(resultData), resultData.size());
+    {
+        QMutexLocker locker(&s_svgCacheMutex);
+        s_svgCache.insert(cacheKey, new QByteArray(resultData), resultData.size());
+    }
 
     return result;
 }
@@ -664,6 +671,8 @@ void FluentIconBase::render(QPainter* painter, const QRectF& rect,
             if (file.open(QIODevice::ReadOnly)) {
                 svgData = file.readAll();
                 file.close();
+            } else {
+                qWarning("FluentIconBase: Failed to open icon file: %s", qPrintable(iconPath));
             }
         }
 
@@ -677,6 +686,7 @@ void FluentIconBase::render(QPainter* painter, const QRectF& rect,
 
 // ====================== FluentFontIconBase ======================
 
+QMutex FluentFontIconBase::s_fontMutex;
 bool FluentFontIconBase::s_isFontLoaded = false;
 int FluentFontIconBase::s_fontId = -1;
 QString FluentFontIconBase::s_fontFamily;
@@ -759,17 +769,23 @@ std::unique_ptr<FluentIconBase> FluentFontIconBase::clone() const
 
 void FluentFontIconBase::loadFont()
 {
+    QMutexLocker locker(&s_fontMutex);
+
     if (s_isFontLoaded || !QApplication::instance()) {
         return;
     }
 
     const QString fontFilePath = fontPath();
     if (fontFilePath.isEmpty() || !QFile::exists(fontFilePath)) {
+        qWarning("FluentFontIconBase: Font file not found: %s", qPrintable(fontFilePath));
+        s_isFontLoaded = true;  // 标记为已尝试，防止重试循环
         return;
     }
 
     QFile file(fontFilePath);
     if (!file.open(QIODevice::ReadOnly)) {
+        qWarning("FluentFontIconBase: Failed to open font file: %s", qPrintable(fontFilePath));
+        s_isFontLoaded = true;  // 标记为已尝试，防止重试循环
         return;
     }
 
@@ -783,6 +799,9 @@ void FluentFontIconBase::loadFont()
             s_fontFamily = families.first();
             s_isFontLoaded = true;
         }
+    } else {
+        qWarning("FluentFontIconBase: Failed to load application font from data");
+        s_isFontLoaded = true;  // 标记为已尝试，防止重试循环
     }
 
     if (!iconNameMapPath().isEmpty()) {
