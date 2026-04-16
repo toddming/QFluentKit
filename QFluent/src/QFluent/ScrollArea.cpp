@@ -33,12 +33,6 @@ ScrollArea::ScrollArea(QWidget *parent)
 {
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
-
-    // 初始状态下隐藏滚动条（通过自定义样式控制显示）
-    QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    setViewportMargins(0, 0, 0, 20);
 }
 
 void ScrollArea::enableTransparentBackground()
@@ -183,6 +177,9 @@ SingleDirectionScrollArea::SingleDirectionScrollArea(QWidget *parent, Qt::Orient
     , m_orient(orient)
 {
     setWidgetResizable(true);
+    QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setViewportMargins(0, 0, 0, 20);
 }
 
 void SingleDirectionScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarPolicy policy)

@@ -12,7 +12,7 @@ class ComboBoxPrivate;
 class QFLUENT_EXPORT ComboBox : public QPushButton
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ComboBox)
+    Q_DECLARE_PRIVATE_D(d_ptr, ComboBox)
 
 public:
     explicit ComboBox(QWidget *parent = nullptr);

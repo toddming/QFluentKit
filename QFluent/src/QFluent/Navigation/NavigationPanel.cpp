@@ -73,6 +73,9 @@ void NavigationPanel::initWidget()
     // 创建滚动区域
     m_scrollArea = new ScrollArea(this);
     m_scrollArea->setWidgetResizable(true);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setViewportMargins(0, 0, 0, 20);
 
     m_scrollWidget = new QWidget();
     m_scrollWidget->setObjectName(QStringLiteral("scrollWidget"));
@@ -319,7 +322,11 @@ void NavigationPanel::registerWidget(
 
     if (!tooltip.isEmpty()) {
         widget->setToolTip(tooltip);
-        widget->installEventFilter(new NavigationToolTipFilter(widget, 1000));
+        // 避免重复安装 tooltip 事件过滤器
+        if (!widget->property("hasToolTipFilter").toBool()) {
+            widget->installEventFilter(new NavigationToolTipFilter(widget, 1000));
+            widget->setProperty("hasToolTipFilter", true);
+        }
     }
 
     m_items[routeKey] = NavigationItem(routeKey, parentRouteKey, widget);
@@ -498,7 +505,7 @@ void NavigationPanel::collapse()
             }
         }
         if (item.widget) {
-            item.widget->setCompacted(false);
+            item.widget->setCompacted(true);
         }
     }
 

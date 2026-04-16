@@ -452,7 +452,7 @@ void InfoBarManager::add(InfoBar* infoBar)
             }
         }
 
-        QPropertyAnimation* dropAnimation = new QPropertyAnimation(bar.data(), "pos");
+        QPropertyAnimation* dropAnimation = new QPropertyAnimation(bar.data(), "pos", bar.data());
         dropAnimation->setDuration(200);
         dropAnimation->setEasingCurve(QEasingCurve::OutQuad);
         m_dropAnimations.append(dropAnimation);
@@ -531,7 +531,7 @@ QPropertyAnimation* InfoBarManager::createSlideAnimation(InfoBar* infoBar)
         return nullptr;
     }
 
-    QPropertyAnimation* slideAnimation = new QPropertyAnimation(infoBar, "pos");
+    QPropertyAnimation* slideAnimation = new QPropertyAnimation(infoBar, "pos", infoBar);
     slideAnimation->setEasingCurve(QEasingCurve::OutQuad);
     slideAnimation->setDuration(200);
     slideAnimation->setStartValue(calculateSlideStartPosition(infoBar));
@@ -626,14 +626,11 @@ QString InfoBarManager::toString(InfoBar::Type type)
 // TopInfoBarManager 实现
 // ============================================================================
 
-TopInfoBarManager* TopInfoBarManager::s_instance = nullptr;
+Q_GLOBAL_STATIC(TopInfoBarManager, s_topInfoBarManager)
 
 TopInfoBarManager* TopInfoBarManager::instance()
 {
-    if (!s_instance) {
-        s_instance = new TopInfoBarManager();
-    }
-    return s_instance;
+    return s_topInfoBarManager;
 }
 
 QPoint TopInfoBarManager::calculatePosition(InfoBar* infoBar, const QSize& parentSize)
@@ -672,14 +669,11 @@ QPoint TopInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 // TopRightInfoBarManager 实现
 // ============================================================================
 
-TopRightInfoBarManager* TopRightInfoBarManager::s_instance = nullptr;
+Q_GLOBAL_STATIC(TopRightInfoBarManager, s_topRightInfoBarManager)
 
 TopRightInfoBarManager* TopRightInfoBarManager::instance()
 {
-    if (!s_instance) {
-        s_instance = new TopRightInfoBarManager();
-    }
-    return s_instance;
+    return s_topRightInfoBarManager;
 }
 
 QPoint TopRightInfoBarManager::calculatePosition(InfoBar* infoBar, const QSize& parentSize)
@@ -718,14 +712,11 @@ QPoint TopRightInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 // BottomRightInfoBarManager 实现
 // ============================================================================
 
-BottomRightInfoBarManager* BottomRightInfoBarManager::s_instance = nullptr;
+Q_GLOBAL_STATIC(BottomRightInfoBarManager, s_bottomRightInfoBarManager)
 
 BottomRightInfoBarManager* BottomRightInfoBarManager::instance()
 {
-    if (!s_instance) {
-        s_instance = new BottomRightInfoBarManager();
-    }
-    return s_instance;
+    return s_bottomRightInfoBarManager;
 }
 
 QPoint BottomRightInfoBarManager::calculatePosition(InfoBar* infoBar, const QSize& parentSize)
@@ -764,14 +755,11 @@ QPoint BottomRightInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 // TopLeftInfoBarManager 实现
 // ============================================================================
 
-TopLeftInfoBarManager* TopLeftInfoBarManager::s_instance = nullptr;
+Q_GLOBAL_STATIC(TopLeftInfoBarManager, s_topLeftInfoBarManager)
 
 TopLeftInfoBarManager* TopLeftInfoBarManager::instance()
 {
-    if (!s_instance) {
-        s_instance = new TopLeftInfoBarManager();
-    }
-    return s_instance;
+    return s_topLeftInfoBarManager;
 }
 
 QPoint TopLeftInfoBarManager::calculatePosition(InfoBar* infoBar, const QSize& parentSize)
@@ -809,14 +797,11 @@ QPoint TopLeftInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 // BottomLeftInfoBarManager 实现
 // ============================================================================
 
-BottomLeftInfoBarManager* BottomLeftInfoBarManager::s_instance = nullptr;
+Q_GLOBAL_STATIC(BottomLeftInfoBarManager, s_bottomLeftInfoBarManager)
 
 BottomLeftInfoBarManager* BottomLeftInfoBarManager::instance()
 {
-    if (!s_instance) {
-        s_instance = new BottomLeftInfoBarManager();
-    }
-    return s_instance;
+    return s_bottomLeftInfoBarManager;
 }
 
 QPoint BottomLeftInfoBarManager::calculatePosition(InfoBar* infoBar, const QSize& parentSize)
@@ -853,14 +838,11 @@ QPoint BottomLeftInfoBarManager::calculateSlideStartPosition(InfoBar* infoBar)
 // BottomInfoBarManager 实现
 // ============================================================================
 
-BottomInfoBarManager* BottomInfoBarManager::s_instance = nullptr;
+Q_GLOBAL_STATIC(BottomInfoBarManager, s_bottomInfoBarManager)
 
 BottomInfoBarManager* BottomInfoBarManager::instance()
 {
-    if (!s_instance) {
-        s_instance = new BottomInfoBarManager();
-    }
-    return s_instance;
+    return s_bottomInfoBarManager;
 }
 
 QPoint BottomInfoBarManager::calculatePosition(InfoBar* infoBar, const QSize& parentSize)

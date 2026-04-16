@@ -223,6 +223,8 @@ void IconCardView::initWidget() {
     m_scrollArea->setWidget(m_scrollWidget);
     m_scrollArea->setViewportMargins(0, 5, 0, 5);
     m_scrollArea->setWidgetResizable(true);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     m_vBoxLayout->setContentsMargins(0, 0, 0, 0);
     m_vBoxLayout->setSpacing(12);

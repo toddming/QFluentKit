@@ -7,15 +7,15 @@
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Button::Button(const QString& text, QWidget *parent)
+PaginationButton::PaginationButton(const QString& text, QWidget *parent)
     : TransparentTogglePushButton(text, parent)
 {
     QSizePolicy CL(QSizePolicy::Maximum, QSizePolicy::Expanding);
     setSizePolicy(CL);
-    connect(this, &Button::clicked, this, &Button::handleClick);
+    connect(this, &PaginationButton::clicked, this, &PaginationButton::handleClick);
 }
 
-void Button::handleClick()
+void PaginationButton::handleClick()
 {
     if (this->isCheckable()) {
         this->setChecked(true);
@@ -63,14 +63,14 @@ PagiNation::PagiNation (QRect rect, QWidget *parent, Fluent::Alignment align, in
 // PagiNation::~PagiNation() { ... } 已删除
 
 /** 验证按钮数量 */
-void PagiNation::validateButtonCount() {
+void PagiNation::validatePaginationButtonCount() {
     if (m_buttonCount % 2 != 1 || m_buttonCount < MIN_BUTTON_COUNT) {
         m_buttonCount = DEFAULT_BUTTON_COUNT;
     }
 }
 
 void PagiNation::init () {
-    validateButtonCount();
+    validatePaginationButtonCount();
 
     m_BJ = new QHBoxLayout(this);
     m_BJ->setSpacing(0);
@@ -134,8 +134,8 @@ void PagiNation::computePage () {
         m_nextBtn->setEnabled(false);
         m_nextFBtn->setEnabled(false);
 
-        QList<__PagiNation_DATA> list;
-        __PagiNation_DATA data = {PaginationItemType::Button, 1, true}; // 显示第1页
+        QList<PaginationData> list;
+        PaginationData data = {PaginationItemType::Button, 1, true}; // 显示第1页
         list.push_back(data);
         renderBtn(list, true); // 传入true禁用页码按钮
         return;
@@ -147,12 +147,12 @@ void PagiNation::computePage () {
     m_nextBtn->setEnabled(m_pageNow < totalNum);
     m_nextFBtn->setEnabled(m_pageNow < totalNum);
 
-    QList<__PagiNation_DATA> list;
+    QList<PaginationData> list;
 
     // 5. 处理页码列表逻辑
     if (totalNum <= m_buttonCount) {
         for (int i = 1; i <= totalNum; i ++) {
-            __PagiNation_DATA data = {PaginationItemType::Button, i, m_pageNow == i};
+            PaginationData data = {PaginationItemType::Button, i, m_pageNow == i};
             list.push_back(data);
         }
     } else {
@@ -170,7 +170,7 @@ void PagiNation::computePage () {
             midLabel = totalNum - midIndex;
         }
 
-        QVector<__PagiNation_DATA> leftArr(midIndex), rightArr(midIndex);
+        QVector<PaginationData> leftArr(midIndex), rightArr(midIndex);
         for (int i = 0; i < midIndex; i ++) {
             if (position == "left") {
                 leftArr[i] = {PaginationItemType::Button, i + 1, m_pageNow == i + 1};
@@ -187,7 +187,7 @@ void PagiNation::computePage () {
             }
         }
 
-        __PagiNation_DATA midBtnData = {PaginationItemType::Button, midLabel, position != "left" && position != "right"};
+        PaginationData midBtnData = {PaginationItemType::Button, midLabel, position != "left" && position != "right"};
 
         // 拼接列表并处理分隔点 ...
         if (position == "left") {
@@ -220,25 +220,25 @@ void PagiNation::computePage () {
 }
 
 /** 渲染按钮列表 */
-void PagiNation::renderBtn (QList<__PagiNation_DATA> list, bool allDisabled) {
+void PagiNation::renderBtn (QList<PaginationData> list, bool allDisabled) {
     // 先取消所有按钮的选中状态，避免闪烁
-    QList<Button*> buttons = m_mainBox->findChildren<Button*>();
-    for (Button* btn : buttons) {
+    QList<PaginationButton*> buttons = m_mainBox->findChildren<PaginationButton*>();
+    for (PaginationButton* btn : buttons) {
         if (btn->isCheckable()) {
             btn->setCheckable(false);
         }
     }
 
-    qDeleteAll(m_mainBox->findChildren<Button*>());
+    qDeleteAll(m_mainBox->findChildren<PaginationButton*>());
     qDeleteAll(m_mainBox->findChildren<QLabel*>());
 
     for (const auto& data : list) {
         if (data.type == PaginationItemType::Button) {
-            Button *btn = new Button(QString::number(data.labelNum), m_mainBox);
+            PaginationButton *btn = new PaginationButton(QString::number(data.labelNum), m_mainBox);
             btn->setFocusPolicy(Qt::NoFocus);
             btn->setFixedHeight(m_height);
-            connect(btn, &Button::cClick, this, &PagiNation::handleClick);
-            if (data.choosed) {
+            connect(btn, &PaginationButton::cClick, this, &PagiNation::handleClick);
+            if (data.chosen) {
                 btn->setCheckable(true);
                 btn->setChecked(true);
             }
@@ -293,7 +293,7 @@ void PagiNation::setWidgetAlign () {
     }
 }
 
-void PagiNation::handleClick (Button *self) {
+void PagiNation::handleClick (PaginationButton *self) {
     int pageNow = self->text().toInt();
     if (pageNow != m_pageNow) {
         setPage(pageNow, true);
@@ -324,29 +324,29 @@ void PagiNation::toNext5 () {
 }
 
 // ----------------- 公有接口 ---------------------
-int PagiNation::page () {
+int PagiNation::page () const {
     return m_pageNow;
 }
 
-int PagiNation::pageSize () {
+int PagiNation::pageSize () const {
     return m_pageSize;
 }
 
-int PagiNation::total () {
+int PagiNation::total () const {
     return m_total;
 }
 
-int PagiNation::buttonCount () {
+int PagiNation::buttonCount () const {
     return m_buttonCount;
 }
 
-Fluent::Alignment PagiNation::alignment () {
+Fluent::Alignment PagiNation::alignment () const {
     return m_align;
 }
 
-void PagiNation::setButtonCount (int buttonCount, bool needEmit) {
+void PagiNation::setPaginationButtonCount (int buttonCount, bool needEmit) {
     m_buttonCount = buttonCount;
-    validateButtonCount();
+    validatePaginationButtonCount();
     computePage();
     if (needEmit) emit pageChanged(m_pageNow, m_pageSize);
 }

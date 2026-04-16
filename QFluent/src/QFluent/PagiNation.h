@@ -5,26 +5,28 @@
 #include "FluentGlobal.h"
 #include "PushButton.h"
 
-using namespace std;
+#include <functional>
+
+using std::function;
 
 enum class PaginationItemType {
     Button = 1,
     Ellipsis = 2
 };
 
-struct __PagiNation_DATA {
+struct PaginationData {
     PaginationItemType type;  // 1: 按钮  2: 点
     int labelNum;
-    bool choosed;
+    bool chosen;
 };
 
-class QFLUENT_EXPORT Button: public TransparentTogglePushButton {
+class QFLUENT_EXPORT PaginationButton: public TransparentTogglePushButton {
     Q_OBJECT
 public:
-    explicit Button(const QString& text, QWidget *parent = nullptr);
+    explicit PaginationButton(const QString& text, QWidget *parent = nullptr);
 
 signals:
-    void cClick(Button*);
+    void cClick(PaginationButton*);
 
 private slots:
     void handleClick();
@@ -62,12 +64,12 @@ signals:
     void pageChanged (int pageNow, int pageSize);
 
 public:
-    int page ();
-    int pageSize ();
-    int total ();
-    int buttonCount ();
-    Fluent::Alignment alignment ();
-    void setButtonCount (int buttonCount, bool needEmit = false);
+    int page () const;
+    int pageSize () const;
+    int total () const;
+    int buttonCount () const;
+    Fluent::Alignment alignment () const;
+    void setPaginationButtonCount (int buttonCount, bool needEmit = false);
     void setAlign (Fluent::Alignment align, bool needEmit = false);
     void setPageSize (int pageSize, bool needEmit = false);
     void setTotal (int total, bool needEmit = false);
@@ -81,12 +83,12 @@ public:
 private:
     void init ();
     void computePage ();
-    void renderBtn (QList<__PagiNation_DATA> list, bool allDisabled = false);
+    void renderBtn (QList<PaginationData> list, bool allDisabled = false);
     void setWidgetAlign ();
-    void validateButtonCount();
+    void validatePaginationButtonCount();
 
 private slots:
-    void handleClick (Button *self);
+    void handleClick (PaginationButton *self);
     void toPrev1 ();
     void toPrev5 ();
     void toNext1 ();

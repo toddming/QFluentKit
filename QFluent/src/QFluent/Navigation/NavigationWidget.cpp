@@ -483,7 +483,7 @@ int NavigationTreeWidget::suitableWidth() const {
 }
 
 void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
-    NavigationTreeWidget* treeChild = dynamic_cast<NavigationTreeWidget*>(child);
+    NavigationTreeWidget* treeChild = qobject_cast<NavigationTreeWidget*>(child);
     if (!treeChild || std::find(m_treeChildren.begin(), m_treeChildren.end(), treeChild)
             != m_treeChildren.end())
         return;
@@ -501,13 +501,13 @@ void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
             this, &NavigationTreeWidget::expanded);
 
     // 递归连接高度变化信号到父级
-    NavigationTreeWidget* parentNode = dynamic_cast<NavigationTreeWidget*>(treeParent());
+    NavigationTreeWidget* parentNode = qobject_cast<NavigationTreeWidget*>(treeParent());
     while (parentNode) {
         connect(treeChild->m_expandAnimation, &QPropertyAnimation::valueChanged,
                 parentNode, [parentNode]() {
             parentNode->setFixedSize(parentNode->sizeHint());
         });
-        parentNode = dynamic_cast<NavigationTreeWidget*>(parentNode->treeParent());
+        parentNode = qobject_cast<NavigationTreeWidget*>(parentNode->treeParent());
     }
 
     if (index < 0) {
@@ -521,10 +521,10 @@ void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
     if (m_isExpanded) {
         setFixedHeight(height() + treeChild->height() + m_vBoxLayout->spacing());
 
-        NavigationTreeWidget* parentNode = dynamic_cast<NavigationTreeWidget*>(treeParent());
+        NavigationTreeWidget* parentNode = qobject_cast<NavigationTreeWidget*>(treeParent());
         while (parentNode) {
             parentNode->setFixedSize(parentNode->sizeHint());
-            parentNode = dynamic_cast<NavigationTreeWidget*>(parentNode->treeParent());
+            parentNode = qobject_cast<NavigationTreeWidget*>(parentNode->treeParent());
         }
     }
 
@@ -532,7 +532,7 @@ void NavigationTreeWidget::insertChild(int index, NavigationWidget* child) {
 }
 
 void NavigationTreeWidget::removeChild(NavigationWidget* child) {
-    NavigationTreeWidget* treeChild = dynamic_cast<NavigationTreeWidget*>(child);
+    NavigationTreeWidget* treeChild = qobject_cast<NavigationTreeWidget*>(child);
     if (!treeChild)
         return;
 

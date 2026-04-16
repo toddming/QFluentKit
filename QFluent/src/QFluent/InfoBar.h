@@ -249,14 +249,11 @@ class QFLUENT_EXPORT TopInfoBarManager : public InfoBarManager {
 
 public:
     static TopInfoBarManager* instance();
+    TopInfoBarManager() = default;
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
     QPoint calculateSlideStartPosition(InfoBar* infoBar) override;
-
-private:
-    TopInfoBarManager() = default;
-    static TopInfoBarManager* s_instance;
 };
 
 /**
@@ -267,14 +264,11 @@ class QFLUENT_EXPORT TopRightInfoBarManager : public InfoBarManager {
 
 public:
     static TopRightInfoBarManager* instance();
+    TopRightInfoBarManager() = default;
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
     QPoint calculateSlideStartPosition(InfoBar* infoBar) override;
-
-private:
-    TopRightInfoBarManager() = default;
-    static TopRightInfoBarManager* s_instance;
 };
 
 /**
@@ -285,14 +279,11 @@ class QFLUENT_EXPORT BottomRightInfoBarManager : public InfoBarManager {
 
 public:
     static BottomRightInfoBarManager* instance();
+    BottomRightInfoBarManager() = default;
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
     QPoint calculateSlideStartPosition(InfoBar* infoBar) override;
-
-private:
-    BottomRightInfoBarManager() = default;
-    static BottomRightInfoBarManager* s_instance;
 };
 
 /**
@@ -303,14 +294,11 @@ class QFLUENT_EXPORT TopLeftInfoBarManager : public InfoBarManager {
 
 public:
     static TopLeftInfoBarManager* instance();
+    TopLeftInfoBarManager() = default;
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
     QPoint calculateSlideStartPosition(InfoBar* infoBar) override;
-
-private:
-    TopLeftInfoBarManager() = default;
-    static TopLeftInfoBarManager* s_instance;
 };
 
 /**
@@ -321,14 +309,11 @@ class QFLUENT_EXPORT BottomLeftInfoBarManager : public InfoBarManager {
 
 public:
     static BottomLeftInfoBarManager* instance();
+    BottomLeftInfoBarManager() = default;
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
     QPoint calculateSlideStartPosition(InfoBar* infoBar) override;
-
-private:
-    BottomLeftInfoBarManager() = default;
-    static BottomLeftInfoBarManager* s_instance;
 };
 
 /**
@@ -339,12 +324,9 @@ class QFLUENT_EXPORT BottomInfoBarManager : public InfoBarManager {
 
 public:
     static BottomInfoBarManager* instance();
+    BottomInfoBarManager() = default;
 
 protected:
     QPoint calculatePosition(InfoBar* infoBar, const QSize& parentSize = QSize()) override;
     QPoint calculateSlideStartPosition(InfoBar* infoBar) override;
-
-private:
-    BottomInfoBarManager() = default;
-    static BottomInfoBarManager* s_instance;
 };

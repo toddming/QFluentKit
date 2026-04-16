@@ -160,7 +160,7 @@ void NavigationBarPushButton::drawText(QPainter& painter) {
 NavigationBar::NavigationBar(QWidget* parent)
     : QWidget(parent),
       m_scrollArea(new ScrollArea(this)),
-      m_scrollWidget(new QWidget()),
+      m_scrollWidget(new QWidget(this)),
       m_vBoxLayout(new QVBoxLayout(this)),
       m_topLayout(new QVBoxLayout()),
       m_bottomLayout(new QVBoxLayout()),
@@ -180,8 +180,8 @@ NavigationBar::NavigationBar(QWidget* parent)
 NavigationBar::~NavigationBar() {
     // 只删除没有 parent 的对象
     // m_scrollArea, m_vBoxLayout, m_expandAni 有 parent=this，Qt 自动管理
-    delete m_scrollLayout;  // parent=m_scrollWidget
-    delete m_scrollWidget;  // 无 parent，需手动删除
+    // m_scrollLayout 的 parent 是 m_scrollWidget，delete m_scrollWidget 时会自动级联删除
+    delete m_scrollWidget;  // 无 parent，需手动删除（会连带删除 m_scrollLayout）
     delete m_topLayout;     // 无 parent，需手动删除
     delete m_bottomLayout;  // 无 parent，需手动删除
 }
@@ -197,6 +197,7 @@ void NavigationBar::initWidget() {
     m_scrollWidget->setObjectName("scrollWidget");
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setViewportMargins(0, 0, 0, 20);
     m_scrollArea->setWidget(m_scrollWidget);
     m_scrollArea->setWidgetResizable(true);
 
@@ -361,6 +362,9 @@ QList<NavigationBarPushButton*> NavigationBar::buttons() const {
 
 void NavigationBar::onWidgetClicked() {
     NavigationWidget* widget = qobject_cast<NavigationWidget*>(sender());
+    if (!widget) {
+        return;
+    }
     if (widget->property("isSelectable").toBool()) {
         setCurrentItem(widget->property("routeKey").toString());
     }

@@ -49,7 +49,9 @@ void LinkCard::initWidget()
 void LinkCard::mouseReleaseEvent(QMouseEvent *event)
 {
     QFrame::mouseReleaseEvent(event);
-    QDesktopServices::openUrl(m_url);
+    if (event->button() == Qt::LeftButton && m_url.isValid()) {
+        QDesktopServices::openUrl(m_url);
+    }
 }
 
 LinkCardView::LinkCardView(QWidget *parent)
@@ -71,6 +73,7 @@ void LinkCardView::initWidget()
     setWidgetResizable(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setViewportMargins(0, 0, 0, 20);
 
     m_view->setObjectName("view");
     
