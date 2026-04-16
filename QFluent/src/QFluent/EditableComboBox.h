@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QIcon>
+#include <Qt>
 
 #include "LineEdit.h"
 #include "FluentGlobal.h"
@@ -17,16 +18,15 @@ public:
     ~EditableComboBox() override;
 
     // 添加项目
-    void addItem(const QString &text,
-                 const QIcon &icon = QIcon(),
-                 const QVariant &userData = QVariant());
+    void addItem(const QString &text, const QVariant &userData = QVariant());
+    void addItem(const QIcon &icon, const QString &text, const QVariant &userData = QVariant());
     void addItems(const QStringList &texts);
 
     // 插入项目
-    void insertItem(int index, const QString &text,
-                    const QIcon &icon = QIcon(),
-                    const QVariant &userData = QVariant());
+    void insertItem(int index, const QString &text, const QVariant &userData = QVariant());
+    void insertItem(int index, const QIcon &icon, const QString &text, const QVariant &userData = QVariant());
     void insertItems(int index, const QStringList &texts);
+    void insertSeparator(int index);
 
     // 移除项目
     void removeItem(int index);
@@ -35,7 +35,7 @@ public:
     // 当前选择
     int currentIndex() const;
     QString currentText() const;
-    QVariant currentData() const;
+    QVariant currentData(int role = Qt::UserRole) const;
 
     // 设置当前选择
     void setCurrentIndex(int index);
@@ -45,11 +45,16 @@ public:
     int count() const;
     QString itemText(int index) const;
     QIcon itemIcon(int index) const;
-    QVariant itemData(int index) const;
+    QVariant itemData(int index, int role = Qt::UserRole) const;
+
+    // 项目修改
+    void setItemText(int index, const QString &text);
+    void setItemIcon(int index, const QIcon &icon);
+    void setItemData(int index, const QVariant &value, int role = Qt::UserRole);
 
     // 查找
-    int findText(const QString &text) const;
-    int findData(const QVariant &data) const;
+    int findText(const QString &text, Qt::MatchFlags flags = Qt::MatchExactly | Qt::MatchCaseSensitive) const;
+    int findData(const QVariant &data, int role = Qt::UserRole, Qt::MatchFlags flags = Qt::MatchExactly | Qt::MatchCaseSensitive) const;
 
     // 设置占位文本
     void setPlaceholderText(const QString &text);

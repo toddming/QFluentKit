@@ -29,9 +29,14 @@ ComboBox::ComboBox(QWidget *parent)
 
 ComboBox::~ComboBox() = default;
 
-void ComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
+void ComboBox::addItem(const QString &text, const QVariant &userData)
 {
-    insertItem(count(), text, icon, userData);
+    insertItem(count(), text, userData);
+}
+
+void ComboBox::addItem(const QIcon &icon, const QString &text, const QVariant &userData)
+{
+    insertItem(count(), icon, text, userData);
 }
 
 void ComboBox::addItems(const QStringList &texts)
@@ -41,7 +46,21 @@ void ComboBox::addItems(const QStringList &texts)
     }
 }
 
-void ComboBox::insertItem(int index, const QString &text, const QIcon &icon, const QVariant &userData)
+void ComboBox::insertItem(int index, const QString &text, const QVariant &userData)
+{
+    Q_D(ComboBox);
+    if (index < 0 || index > count()) {
+        index = count();
+    }
+
+    d->m_items.insert(index, ComboBoxDetail::ComboItem(text, QIcon(), userData));
+
+    if (index <= d->m_currentIndex) {
+        setCurrentIndex(d->m_currentIndex + 1);
+    }
+}
+
+void ComboBox::insertItem(int index, const QIcon &icon, const QString &text, const QVariant &userData)
 {
     Q_D(ComboBox);
     if (index < 0 || index > count()) {
@@ -59,6 +78,22 @@ void ComboBox::insertItems(int index, const QStringList &texts)
 {
     for (const QString &text : texts) {
         insertItem(index++, text);
+    }
+}
+
+void ComboBox::insertSeparator(int index)
+{
+    Q_D(ComboBox);
+    if (index < 0 || index > count()) {
+        index = count();
+    }
+
+    ComboBoxDetail::ComboItem item;
+    item.isSeparator = true;
+    d->m_items.insert(index, item);
+
+    if (index <= d->m_currentIndex) {
+        setCurrentIndex(d->m_currentIndex + 1);
     }
 }
 
@@ -113,11 +148,11 @@ QString ComboBox::currentText() const
     return QString();
 }
 
-QVariant ComboBox::currentData() const
+QVariant ComboBox::currentData(int role) const
 {
     Q_D(const ComboBox);
 
-    if (d->m_currentIndex >= 0 && d->m_currentIndex < count()) {
+    if (role == Qt::UserRole && d->m_currentIndex >= 0 && d->m_currentIndex < count()) {
         return d->m_items[d->m_currentIndex].userData;
     }
     return QVariant();
@@ -127,6 +162,11 @@ void ComboBox::setCurrentIndex(int index)
 {
     Q_D(ComboBox);
     if (index < -1 || index >= count() || index == d->m_currentIndex) {
+        return;
+    }
+
+    // separator 不可选中
+    if (index >= 0 && d->m_items[index].isSeparator) {
         return;
     }
 
@@ -184,31 +224,68 @@ QIcon ComboBox::itemIcon(int index) const
     return QIcon();
 }
 
-QVariant ComboBox::itemData(int index) const
+QVariant ComboBox::itemData(int index, int role) const
 {
     Q_D(const ComboBox);
 
-    if (index >= 0 && index < count()) {
+    if (role == Qt::UserRole && index >= 0 && index < count()) {
         return d->m_items[index].userData;
     }
     return QVariant();
 }
 
-int ComboBox::findText(const QString &text) const
+void ComboBox::setItemText(int index, const QString &text)
+{
+    Q_D(ComboBox);
+    if (index >= 0 && index < count()) {
+        d->m_items[index].text = text;
+        if (index == d->m_currentIndex) {
+            setText(text);
+        }
+    }
+}
+
+void ComboBox::setItemIcon(int index, const QIcon &icon)
+{
+    Q_D(ComboBox);
+    if (index >= 0 && index < count()) {
+        d->m_items[index].icon = icon;
+    }
+}
+
+void ComboBox::setItemData(int index, const QVariant &value, int role)
+{
+    Q_D(ComboBox);
+    if (role == Qt::UserRole && index >= 0 && index < count()) {
+        d->m_items[index].userData = value;
+    }
+}
+
+int ComboBox::findText(const QString &text, Qt::MatchFlags flags) const
 {
     Q_D(const ComboBox);
 
     for (int i = 0; i < count(); ++i) {
-        if (d->m_items[i].text == text) {
-            return i;
+        if (flags & Qt::MatchCaseSensitive) {
+            if (d->m_items[i].text.compare(text, Qt::CaseSensitive) == 0) {
+                return i;
+            }
+        } else {
+            if (d->m_items[i].text.compare(text, Qt::CaseInsensitive) == 0) {
+                return i;
+            }
         }
     }
     return -1;
 }
 
-int ComboBox::findData(const QVariant &data) const
+int ComboBox::findData(const QVariant &data, int role, Qt::MatchFlags flags) const
 {
     Q_D(const ComboBox);
+
+    if (role != Qt::UserRole) {
+        return -1;
+    }
 
     for (int i = 0; i < count(); ++i) {
         if (d->m_items[i].userData == data) {

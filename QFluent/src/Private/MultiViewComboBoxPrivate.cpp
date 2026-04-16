@@ -44,6 +44,10 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
     QPointer<MultiViewComboBox> q_ptr = q;
 
     for (int i = 0; i < q->count(); ++i) {
+        if (m_items[i].isSeparator) {
+            menu->addSeparator();
+            continue;
+        }
         QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setCheckable(true);
         action->setChecked(m_selectedIndexes.contains(i));
@@ -61,10 +65,8 @@ MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
         }
     });
 
-    // 如果 m_maxVisibleItems > 0，设置最大高度（假设每个项高度约 30px，您可调整）
     if (m_maxVisibleItems > 0) {
-        int itemHeight = 30;  // 假设每个 CheckBox 高度
-        menu->setMaximumHeight(m_maxVisibleItems * itemHeight + menu->layout()->contentsMargins().top() + menu->layout()->contentsMargins().bottom());
+        menu->setMaxVisibleItems(m_maxVisibleItems);
     }
 
     return menu;

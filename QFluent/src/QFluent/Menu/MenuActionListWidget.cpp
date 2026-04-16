@@ -86,10 +86,7 @@ void MenuActionListWidget::adjustSize(const QPoint& pos, Fluent::MenuAnimation a
 
 void MenuActionListWidget::wheelEvent(QWheelEvent *event)
 {
-    QScrollBar *vBar = verticalScrollBar();
-    int step = event->angleDelta().y() / 10;
-    vBar->setValue(vBar->value() - step);
-    event->accept();
+    QApplication::sendEvent(verticalScrollBar(), event);
 }
 
 int MenuActionListWidget::heightForAnimation(const QPoint &pos, Fluent::MenuAnimation aniType)

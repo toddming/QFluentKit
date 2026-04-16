@@ -26,8 +26,15 @@ ComboBoxMenu* ComboBoxPrivate::createComboMenu()
 
     ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
+    if (m_maxVisibleItems > 0) {
+        menu->setMaxVisibleItems(m_maxVisibleItems);
+    }
     QPointer<ComboBox> q_ptr = q;
     for (int i = 0; i < q->count(); ++i) {
+        if (m_items[i].isSeparator) {
+            menu->addSeparator();
+            continue;
+        }
         QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
         action->setData(i);
         action->setCheckable(true);
@@ -84,7 +91,12 @@ void ComboBoxPrivate::showComboMenu()
     }
 
     if (q->currentIndex() >= 0 && q->currentIndex() < q->count()) {
-        m_dropMenu->setDefaultAction(m_dropMenu->menuActions().at(q->currentIndex()));
+        for (QAction *action : m_dropMenu->menuActions()) {
+            if (action->data().toInt() == q->currentIndex()) {
+                m_dropMenu->setDefaultAction(action);
+                break;
+            }
+        }
     }
 
     int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + q->width() / 2;

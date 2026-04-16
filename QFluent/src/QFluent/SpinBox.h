@@ -7,6 +7,7 @@
 #include <QDateTimeEdit>
 #include <QToolButton>
 #include <QPointer>
+#include <QPainter>
 
 #include "FluentGlobal.h"
 #include "FluentIcon.h"

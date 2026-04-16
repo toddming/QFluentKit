@@ -14,6 +14,7 @@ struct ComboItem
     QString text;
     QIcon icon;
     QVariant userData;
+    bool isSeparator = false;
 
     ComboItem(const QString &text = QString(),
               const QIcon &icon = QIcon(),

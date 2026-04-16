@@ -34,9 +34,14 @@ EditableComboBox::EditableComboBox(QWidget *parent)
 
 EditableComboBox::~EditableComboBox() = default;
 
-void EditableComboBox::addItem(const QString &text, const QIcon &icon, const QVariant &userData)
+void EditableComboBox::addItem(const QString &text, const QVariant &userData)
 {
-    insertItem(count(), text, icon, userData);
+    insertItem(count(), text, userData);
+}
+
+void EditableComboBox::addItem(const QIcon &icon, const QString &text, const QVariant &userData)
+{
+    insertItem(count(), icon, text, userData);
 }
 
 void EditableComboBox::addItems(const QStringList &texts)
@@ -46,7 +51,21 @@ void EditableComboBox::addItems(const QStringList &texts)
     }
 }
 
-void EditableComboBox::insertItem(int index, const QString &text, const QIcon &icon, const QVariant &userData)
+void EditableComboBox::insertItem(int index, const QString &text, const QVariant &userData)
+{
+    Q_D(EditableComboBox);
+    if (index < 0 || index > count()) {
+        index = count();
+    }
+
+    d->m_items.insert(index, EditableComboBoxDetail::ComboItem(text, QIcon(), userData));
+
+    if (index <= d->m_currentIndex) {
+        setCurrentIndex(d->m_currentIndex + 1);
+    }
+}
+
+void EditableComboBox::insertItem(int index, const QIcon &icon, const QString &text, const QVariant &userData)
 {
     Q_D(EditableComboBox);
     if (index < 0 || index > count()) {
@@ -64,6 +83,22 @@ void EditableComboBox::insertItems(int index, const QStringList &texts)
 {
     for (const QString &text : texts) {
         insertItem(index++, text);
+    }
+}
+
+void EditableComboBox::insertSeparator(int index)
+{
+    Q_D(EditableComboBox);
+    if (index < 0 || index > count()) {
+        index = count();
+    }
+
+    EditableComboBoxDetail::ComboItem item;
+    item.isSeparator = true;
+    d->m_items.insert(index, item);
+
+    if (index <= d->m_currentIndex) {
+        setCurrentIndex(d->m_currentIndex + 1);
     }
 }
 
@@ -113,11 +148,11 @@ QString EditableComboBox::currentText() const
     return text();
 }
 
-QVariant EditableComboBox::currentData() const
+QVariant EditableComboBox::currentData(int role) const
 {
     Q_D(const EditableComboBox);
 
-    if (d->m_currentIndex >= 0 && d->m_currentIndex < count()) {
+    if (role == Qt::UserRole && d->m_currentIndex >= 0 && d->m_currentIndex < count()) {
         return d->m_items[d->m_currentIndex].userData;
     }
     return QVariant();
@@ -128,6 +163,11 @@ void EditableComboBox::setCurrentIndex(int index)
     Q_D(EditableComboBox);
 
     if (index >= count() || index == d->m_currentIndex) {
+        return;
+    }
+
+    // separator 不可选中
+    if (index >= 0 && d->m_items[index].isSeparator) {
         return;
     }
 
@@ -181,31 +221,68 @@ QIcon EditableComboBox::itemIcon(int index) const
     return QIcon();
 }
 
-QVariant EditableComboBox::itemData(int index) const
+QVariant EditableComboBox::itemData(int index, int role) const
 {
     Q_D(const EditableComboBox);
 
-    if (index >= 0 && index < count()) {
+    if (role == Qt::UserRole && index >= 0 && index < count()) {
         return d->m_items[index].userData;
     }
     return QVariant();
 }
 
-int EditableComboBox::findText(const QString &text) const
+void EditableComboBox::setItemText(int index, const QString &text)
+{
+    Q_D(EditableComboBox);
+    if (index >= 0 && index < count()) {
+        d->m_items[index].text = text;
+        if (index == d->m_currentIndex) {
+            setText(text);
+        }
+    }
+}
+
+void EditableComboBox::setItemIcon(int index, const QIcon &icon)
+{
+    Q_D(EditableComboBox);
+    if (index >= 0 && index < count()) {
+        d->m_items[index].icon = icon;
+    }
+}
+
+void EditableComboBox::setItemData(int index, const QVariant &value, int role)
+{
+    Q_D(EditableComboBox);
+    if (role == Qt::UserRole && index >= 0 && index < count()) {
+        d->m_items[index].userData = value;
+    }
+}
+
+int EditableComboBox::findText(const QString &text, Qt::MatchFlags flags) const
 {
     Q_D(const EditableComboBox);
 
     for (int i = 0; i < count(); ++i) {
-        if (d->m_items[i].text == text) {
-            return i;
+        if (flags & Qt::MatchCaseSensitive) {
+            if (d->m_items[i].text.compare(text, Qt::CaseSensitive) == 0) {
+                return i;
+            }
+        } else {
+            if (d->m_items[i].text.compare(text, Qt::CaseInsensitive) == 0) {
+                return i;
+            }
         }
     }
     return -1;
 }
 
-int EditableComboBox::findData(const QVariant &data) const
+int EditableComboBox::findData(const QVariant &data, int role, Qt::MatchFlags flags) const
 {
     Q_D(const EditableComboBox);
+
+    if (role != Qt::UserRole) {
+        return -1;
+    }
 
     for (int i = 0; i < count(); ++i) {
         if (d->m_items[i].userData == data) {
