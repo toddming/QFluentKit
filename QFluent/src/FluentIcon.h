@@ -7,7 +7,7 @@
 #include <QRectF>
 #include <QAction>
 #include <QObject>
-#include <QHash>
+#include <QMap>
 #include <QMutex>
 #include <QSharedPointer>
 #include <QCache>
@@ -73,7 +73,7 @@ public:
     /**
      * @brief Get map of all fluent icons
      */
-    static const QHash<Fluent::IconType, QString>& fluentIconsMap();
+    static const QMap<Fluent::IconType, QString>& fluentIconsMap();
 
     /**
      * @brief Convert icon enum to string

@@ -271,11 +271,11 @@ Q_ENUM_NS(Alignment)
 } // namespace Fluent
 
 
-#ifndef FLUENT_QHASH_FUNCTIONS_DEFINED
-#define FLUENT_QHASH_FUNCTIONS_DEFINED
+// ========== Qt5/Qt6 qHash 兼容 ==========
+#ifndef FLUENT_QHASH_COMPAT_DEFINED
+#define FLUENT_QHASH_COMPAT_DEFINED
 
 #include <QtCore/qhashfunctions.h>
-#include <type_traits>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     using FluentQHashReturnType = size_t;
@@ -283,25 +283,5 @@ Q_ENUM_NS(Alignment)
     using FluentQHashReturnType = uint;
 #endif
 
-inline FluentQHashReturnType qHash(const Fluent::IconType key, FluentQHashReturnType seed = 0) noexcept
-{
-    return ::qHash(static_cast<std::underlying_type_t<Fluent::IconType>>(key), seed);
-}
-
-inline FluentQHashReturnType qHash(const Fluent::ThemeMode key, FluentQHashReturnType seed = 0) noexcept
-{
-    return ::qHash(static_cast<std::underlying_type_t<Fluent::ThemeMode>>(key), seed);
-}
-
-inline FluentQHashReturnType qHash(const Fluent::ThemeColor key, FluentQHashReturnType seed = 0) noexcept
-{
-    return ::qHash(static_cast<std::underlying_type_t<Fluent::ThemeColor>>(key), seed);
-}
-
-inline FluentQHashReturnType qHash(const Fluent::ThemeStyle key, FluentQHashReturnType seed = 0) noexcept
-{
-    return ::qHash(static_cast<std::underlying_type_t<Fluent::ThemeStyle>>(key), seed);
-}
-
-#endif // FLUENT_QHASH_FUNCTIONS_DEFINED
+#endif // FLUENT_QHASH_COMPAT_DEFINED
 

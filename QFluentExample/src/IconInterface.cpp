@@ -161,7 +161,7 @@ IconInfoPanel::IconInfoPanel(Fluent::IconType icon, QWidget* parent)
 }
 
 void IconInfoPanel::setIcon(Fluent::IconType icon) {
-    static QHash<Fluent::IconType, QString> icons = FluentIconUtils::fluentIconsMap();
+    static QMap<Fluent::IconType, QString> icons = FluentIconUtils::fluentIconsMap();
 
     m_iconWidget->setFluentIcon(FluentIcon(icon));
     m_nameLabel->setText(icons.value(icon));
@@ -246,7 +246,7 @@ void IconCardView::initWidget() {
     connect(m_searchLineEdit, &CustomLineEdit::search, this, &IconCardView::search);
     connect(m_searchLineEdit, &CustomLineEdit::clearSignal, this, &IconCardView::showAllIcons);
 
-    const QHash<Fluent::IconType, QString> allIcons = FluentIconUtils::fluentIconsMap();
+    const QMap<Fluent::IconType, QString> allIcons = FluentIconUtils::fluentIconsMap();
     QList<Fluent::IconType> sortedKeys = allIcons.keys();
     std::sort(sortedKeys.begin(), sortedKeys.end()); // 如果 Fluent::IconType 支持 operator<
 

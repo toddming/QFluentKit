@@ -281,12 +281,11 @@ std::shared_ptr<StyleSheetBase> TemplateStyleSheetFile::clone() const {
 
 FluentStyleSheet::FluentStyleSheet(Fluent::ThemeStyle type) : m_type(type) {}
 
-const QHash<Fluent::ThemeStyle, QString>& FluentStyleSheet::typeMap() {
-    static QHash<Fluent::ThemeStyle, QString> typeMap;
+const QMap<Fluent::ThemeStyle, QString>& FluentStyleSheet::typeMap() {
+    static QMap<Fluent::ThemeStyle, QString> typeMap;
     static bool initialized = false;
 
     if (!initialized) {
-        typeMap.reserve(35); // 预留足够空间
 
         typeMap.insert(Fluent::ThemeStyle::MENU, "menu");
         typeMap.insert(Fluent::ThemeStyle::LABEL, "label");

@@ -158,9 +158,9 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
     return result;
 }
 
-const QHash<Fluent::IconType, QString>& FluentIconUtils::fluentIconsMap()
+const QMap<Fluent::IconType, QString>& FluentIconUtils::fluentIconsMap()
 {
-    static const QHash<Fluent::IconType, QString> iconMap = {
+    static const QMap<Fluent::IconType, QString> iconMap = {
         {Fluent::IconType::UP, QStringLiteral("Up")},
         {Fluent::IconType::ADD, QStringLiteral("Add")},
         {Fluent::IconType::BUS, QStringLiteral("Bus")},

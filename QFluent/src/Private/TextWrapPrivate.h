@@ -6,6 +6,8 @@
 #include <QHash>
 #include <QChar>
 
+#include "FluentGlobal.h"
+
 class TextWrap;
 
 class TextWrapPrivate
@@ -42,9 +44,9 @@ public:
     };
 
     // 哈希函数友元声明
-    friend uint qHash(const WidthKey &key, uint seed);
-    friend uint qHash(const TokenizeKey &key, uint seed);
-    friend uint qHash(const SplitKey &key, uint seed);
+    friend FluentQHashReturnType qHash(const WidthKey &key, FluentQHashReturnType seed);
+    friend FluentQHashReturnType qHash(const TokenizeKey &key, FluentQHashReturnType seed);
+    friend FluentQHashReturnType qHash(const SplitKey &key, FluentQHashReturnType seed);
 
     // 缓存实例
     QCache<WidthKey, int> m_widthCache;
@@ -68,6 +70,6 @@ private:
 };
 
 // 哈希函数声明
-uint qHash(const TextWrapPrivate::WidthKey &key, uint seed = 0);
-uint qHash(const TextWrapPrivate::TokenizeKey &key, uint seed = 0);
-uint qHash(const TextWrapPrivate::SplitKey &key, uint seed = 0);
+FluentQHashReturnType qHash(const TextWrapPrivate::WidthKey &key, FluentQHashReturnType seed = 0);
+FluentQHashReturnType qHash(const TextWrapPrivate::TokenizeKey &key, FluentQHashReturnType seed = 0);
+FluentQHashReturnType qHash(const TextWrapPrivate::SplitKey &key, FluentQHashReturnType seed = 0);

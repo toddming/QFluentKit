@@ -101,7 +101,7 @@ private:
     Fluent::ThemeStyle m_type;
 
     // 静态缓存类型到字符串的映射
-    static const QHash<Fluent::ThemeStyle, QString>& typeMap();
+    static const QMap<Fluent::ThemeStyle, QString>& typeMap();
 
 public:
     explicit FluentStyleSheet(Fluent::ThemeStyle type);

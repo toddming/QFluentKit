@@ -2,17 +2,17 @@
 #include "TextWrap.h"
 
 // ================ 哈希函数实现 ================
-uint qHash(const TextWrapPrivate::WidthKey &key, uint seed)
+FluentQHashReturnType qHash(const TextWrapPrivate::WidthKey &key, FluentQHashReturnType seed)
 {
     return qHash(key.str, seed);
 }
 
-uint qHash(const TextWrapPrivate::TokenizeKey &key, uint seed)
+FluentQHashReturnType qHash(const TextWrapPrivate::TokenizeKey &key, FluentQHashReturnType seed)
 {
     return qHash(key.line, seed);
 }
 
-uint qHash(const TextWrapPrivate::SplitKey &key, uint seed)
+FluentQHashReturnType qHash(const TextWrapPrivate::SplitKey &key, FluentQHashReturnType seed)
 {
     seed = qHash(key.token, seed);
     seed = qHash(key.width, seed);
