@@ -1,24 +1,6 @@
 ﻿#include "TextWrapPrivate.h"
 #include "TextWrap.h"
 
-// ================ 哈希函数实现 ================
-FluentQHashReturnType qHash(const TextWrapPrivate::WidthKey &key, FluentQHashReturnType seed)
-{
-    return qHash(key.str, seed);
-}
-
-FluentQHashReturnType qHash(const TextWrapPrivate::TokenizeKey &key, FluentQHashReturnType seed)
-{
-    return qHash(key.line, seed);
-}
-
-FluentQHashReturnType qHash(const TextWrapPrivate::SplitKey &key, FluentQHashReturnType seed)
-{
-    seed = qHash(key.token, seed);
-    seed = qHash(key.width, seed);
-    return seed;
-}
-
 // ================ TextWrapPrivate 实现 ================
 TextWrapPrivate::TextWrapPrivate(TextWrap *q)
     : q_ptr(q)
@@ -96,8 +78,7 @@ int TextWrapPrivate::getTextWidth(const QString &str)
 {
     if (str.isEmpty()) return 0;
 
-    WidthKey key{str};
-    if (int* cached = m_widthCache.object(key)) {
+    if (int* cached = m_widthCache.object(str)) {
         return *cached;
     }
 
@@ -107,7 +88,7 @@ int TextWrapPrivate::getTextWidth(const QString &str)
     }
 
     auto *value = new int(width);
-    m_widthCache.insert(key, value);
+    m_widthCache.insert(str, value);
     return width;
 }
 
@@ -129,7 +110,7 @@ QString TextWrapPrivate::processWhitespace(const QString &text)
 
 QVector<QString> TextWrapPrivate::splitLongToken(const QString &token, int width)
 {
-    SplitKey key{token, width};
+    QString key = token + QChar(0x01) + QString::number(width);
     if (auto* cached = m_splitCache.object(key)) {
         return *cached;
     }
@@ -158,8 +139,7 @@ QVector<QString> TextWrapPrivate::tokenize(const QString &line)
 {
     if (line.isEmpty()) return {};
 
-    TokenizeKey key{line};
-    if (auto* cached = m_tokenizeCache.object(key)) {
+    if (auto* cached = m_tokenizeCache.object(line)) {
         return *cached;
     }
 
@@ -185,7 +165,7 @@ QVector<QString> TextWrapPrivate::tokenize(const QString &line)
     }
 
     auto *value = new QVector<QString>(tokens);
-    m_tokenizeCache.insert(key, value);
+    m_tokenizeCache.insert(line, value);
     return tokens;
 }
 

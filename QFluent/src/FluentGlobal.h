@@ -270,18 +270,3 @@ Q_ENUM_NS(Alignment)
 
 } // namespace Fluent
 
-
-// ========== Qt5/Qt6 qHash 兼容 ==========
-#ifndef FLUENT_QHASH_COMPAT_DEFINED
-#define FLUENT_QHASH_COMPAT_DEFINED
-
-#include <QtCore/qhashfunctions.h>
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    using FluentQHashReturnType = size_t;
-#else
-    using FluentQHashReturnType = uint;
-#endif
-
-#endif // FLUENT_QHASH_COMPAT_DEFINED
-
