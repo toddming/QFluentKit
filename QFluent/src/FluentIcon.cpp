@@ -18,7 +18,6 @@
 
 // Initialize static cache
 QCache<QString, QByteArray> FluentIconUtils::s_svgCache(500);
-QMutex FluentIconUtils::s_svgCacheMutex;
 
 QString FluentIconUtils::iconColor(Fluent::ThemeMode theme, bool reverse)
 {
@@ -88,13 +87,10 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
     }
 
     // Check cache
-    {
-        QMutexLocker locker(&s_svgCacheMutex);
-        if (s_svgCache.contains(cacheKey)) {
-            QByteArray* cachedData = s_svgCache.object(cacheKey);
-            if (cachedData) {
-                return QString::fromUtf8(*cachedData);
-            }
+    if (s_svgCache.contains(cacheKey)) {
+        QByteArray* cachedData = s_svgCache.object(cacheKey);
+        if (cachedData) {
+            return QString::fromUtf8(*cachedData);
         }
     }
 
@@ -150,10 +146,7 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
     // Cache the result
     const QString result = dom.toString(-1); // -1 = no indentation for compact output
     const QByteArray resultData = result.toUtf8();
-    {
-        QMutexLocker locker(&s_svgCacheMutex);
-        s_svgCache.insert(cacheKey, new QByteArray(resultData), resultData.size());
-    }
+    s_svgCache.insert(cacheKey, new QByteArray(resultData), resultData.size());
 
     return result;
 }
@@ -686,7 +679,6 @@ void FluentIconBase::render(QPainter* painter, const QRectF& rect,
 
 // ====================== FluentFontIconBase ======================
 
-QMutex FluentFontIconBase::s_fontMutex;
 bool FluentFontIconBase::s_isFontLoaded = false;
 int FluentFontIconBase::s_fontId = -1;
 QString FluentFontIconBase::s_fontFamily;
@@ -710,7 +702,6 @@ QString FluentFontIconBase::path(Fluent::ThemeMode theme, bool reverse) const
 
 FluentFontIconBase FluentFontIconBase::fromName(const QString& name)
 {
-    QMutexLocker locker(&s_fontMutex);
     return FluentFontIconBase(s_iconNames.value(name, QChar()));
 }
 
@@ -770,8 +761,6 @@ std::unique_ptr<FluentIconBase> FluentFontIconBase::clone() const
 
 void FluentFontIconBase::loadFont()
 {
-    QMutexLocker locker(&s_fontMutex);
-
     if (s_isFontLoaded || !QApplication::instance()) {
         return;
     }
@@ -812,7 +801,6 @@ void FluentFontIconBase::loadFont()
 
 void FluentFontIconBase::loadIconNames()
 {
-    QMutexLocker locker(&s_fontMutex);
     s_iconNames.clear();
 
     const QString mapPath = iconNameMapPath();

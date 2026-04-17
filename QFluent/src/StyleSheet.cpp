@@ -8,8 +8,6 @@
 #include <QString>
 #include <QEvent>
 #include <QFile>
-#include <QMutex>
-#include <QMutexLocker>
 #include <memory>
 #include <vector>
 #include <algorithm>
@@ -115,13 +113,9 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
 
 QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
     static QHash<QString, QString> s_cache;
-    static QMutex s_cacheMutex;
 
-    {
-        QMutexLocker locker(&s_cacheMutex);
-        if (s_cache.contains(filePath)) {
-            return s_cache[filePath];
-        }
+    if (s_cache.contains(filePath)) {
+        return s_cache[filePath];
     }
 
     QFile file(filePath);
@@ -133,10 +127,7 @@ QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
     QString content = file.readAll();
     file.close();
 
-    {
-        QMutexLocker locker(&s_cacheMutex);
-        s_cache[filePath] = content;
-    }
+    s_cache[filePath] = content;
     return content;
 }
 
@@ -556,8 +547,6 @@ void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& so
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
-
     if (!m_widgets.contains(widget)) {
         connect(widget, &QWidget::destroyed, this, [this, widget]() {
             deregisterWidget(widget);
@@ -593,8 +582,6 @@ void StyleSheetManager::deregisterWidget(QWidget* widget) {
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
-
     // 移除所有 CustomStyleSheetWatcher 事件过滤器
     QList<CustomStyleSheetWatcher*> watchers = widget->findChildren<CustomStyleSheetWatcher*>();
     for (auto* watcher : watchers) {
@@ -610,7 +597,6 @@ void StyleSheetManager::registerWidget(QWidget* widget, Fluent::ThemeStyle type,
 }
 
 std::shared_ptr<StyleSheetCompose> StyleSheetManager::source(QWidget* widget) const {
-    QMutexLocker locker(&m_mutex);
     auto it = m_widgets.constFind(widget);
     if (it != m_widgets.constEnd()) {
         return it.value();
@@ -619,12 +605,10 @@ std::shared_ptr<StyleSheetCompose> StyleSheetManager::source(QWidget* widget) co
 }
 
 QList<QWidget*> StyleSheetManager::widgets() const {
-    QMutexLocker locker(&m_mutex);
     return m_widgets.keys();
 }
 
 bool StyleSheetManager::isRegistered(QWidget* widget) const {
-    QMutexLocker locker(&m_mutex);
     return m_widgets.contains(widget);
 }
 
@@ -632,17 +616,11 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
     QList<QWidget*> widgetsToRemove;
     widgetsToRemove.reserve(10);
 
-    // 复制数据以避免持有锁时进行复杂操作
-    QList<QWidget*> widgetKeys;
+    QList<QWidget*> widgetKeys = m_widgets.keys();
     QList<std::shared_ptr<StyleSheetCompose>> widgetValues;
-
-    {
-        QMutexLocker locker(&m_mutex);
-        widgetKeys = m_widgets.keys();
-        widgetValues.reserve(widgetKeys.size());
-        for (const auto& widget : widgetKeys) {
-            widgetValues.append(m_widgets.value(widget));
-        }
+    widgetValues.reserve(widgetKeys.size());
+    for (const auto& widget : widgetKeys) {
+        widgetValues.append(m_widgets.value(widget));
     }
 
     for (int i = 0; i < widgetKeys.size(); ++i) {

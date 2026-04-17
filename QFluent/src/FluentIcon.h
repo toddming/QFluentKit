@@ -8,7 +8,6 @@
 #include <QAction>
 #include <QObject>
 #include <QMap>
-#include <QMutex>
 #include <QSharedPointer>
 #include <QCache>
 
@@ -98,9 +97,8 @@ public:
                                  QString& cachedDarkPath);
 
 private:
-    // Cache for colored SVG data (access must be protected by s_svgCacheMutex)
+    // Cache for colored SVG data
     static QCache<QString, QByteArray> s_svgCache;
-    static QMutex s_svgCacheMutex;
 };
 
 /**
@@ -262,7 +260,6 @@ protected:
     QColor m_darkColor;
     bool m_isBold;
 
-    static QMutex s_fontMutex;
     static bool s_isFontLoaded;
     static int s_fontId;
     static QString s_fontFamily;
