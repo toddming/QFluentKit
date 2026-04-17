@@ -12,6 +12,8 @@
 AcrylicWidget::AcrylicWidget(int blurRadius)
     : m_acrylicBrush(nullptr)
     , m_blurRadius(blurRadius)
+    , m_cachedTintColor(Qt::transparent)
+    , m_cachedLuminosityColor(Qt::transparent)
 {
     // 注意：由于 AcrylicBrush 需要一个 QWidget* 作为设备参数
     // 这里暂时传入 nullptr，子类需要在构造函数中调用 initializeAcrylicBrush
@@ -90,8 +92,15 @@ void AcrylicWidget::updateAcrylicColor()
         luminosityColor = QColor(255, 255, 255, 0);
     }
 
-    m_acrylicBrush->setTintColor(tintColor);
-    m_acrylicBrush->setLuminosityColor(luminosityColor);
+    // Only update if colors actually changed (avoid triggering widget->update() in paintEvent)
+    if (tintColor != m_cachedTintColor) {
+        m_cachedTintColor = tintColor;
+        m_acrylicBrush->setTintColor(tintColor);
+    }
+    if (luminosityColor != m_cachedLuminosityColor) {
+        m_cachedLuminosityColor = luminosityColor;
+        m_acrylicBrush->setLuminosityColor(luminosityColor);
+    }
 }
 
 QPainterPath AcrylicWidget::acrylicClipPath() const

@@ -5,6 +5,7 @@
 // 3. 优化边界处理
 
 #include "AcrylicLabel.h"
+#include <QMutexLocker>
 #include <QPainter>
 #include <QBrush>
 #include <QScreen>
@@ -111,6 +112,9 @@ void GaussianBlur::adjustBrightness(QImage &image, double factor)
         image = image.convertToFormat(QImage::Format_ARGB32);
     }
 
+    // 确保 QImage 数据独占（避免 detach 导致悬空指针）
+    image.detach();
+
     uint32_t* pixels = reinterpret_cast<uint32_t*>(image.bits());
     int totalPixels = image.width() * image.height();
 
@@ -152,6 +156,9 @@ void GaussianBlur::boxBlur(QImage &image, int radius)
         image.format() != QImage::Format_ARGB32_Premultiplied) {
         image = image.convertToFormat(QImage::Format_ARGB32);
     }
+
+    // 确保 QImage 数据独占（避免 detach 导致悬空指针）
+    image.detach();
 
     uint32_t* pixels = reinterpret_cast<uint32_t*>(image.bits());
     std::vector<uint32_t> buffer(size);
@@ -319,27 +326,56 @@ BlurCoverThread::BlurCoverThread(QObject *parent)
 
 void BlurCoverThread::blur(const QString &imagePath, int blurRadius, const QSize &maxSize)
 {
-    // 如果线程正在运行，等待其完成
-    if (isRunning()) {
-        wait();
+    {
+        QMutexLocker locker(&m_mutex);
+        m_imagePath = imagePath;
+        m_blurRadius.store(blurRadius);
+        if (!maxSize.isNull()) {
+            m_maxSize = maxSize;
+        }
+        m_dirty.store(true);
     }
 
-    m_imagePath = imagePath;
-    m_blurRadius = blurRadius;
-    if (!maxSize.isNull()) {
-        m_maxSize = maxSize;
+    if (isRunning()) {
+        // Thread is already running; it will pick up the new parameters
+        // in the next iteration of the loop. No need to wait().
+        return;
     }
     start();
 }
 
 void BlurCoverThread::run()
 {
-    if (m_imagePath.isEmpty()) {
-        return;
-    }
+    forever {
+        {
+            QMutexLocker locker(&m_mutex);
+            if (m_imagePath.isEmpty()) {
+                return;
+            }
+        }
 
-    QPixmap pixmap = GaussianBlur::blur(m_imagePath, m_blurRadius, 0.85, m_maxSize);
-    emit blurFinished(pixmap);
+        // Clear dirty flag before processing
+        m_dirty.store(false);
+
+        QString path;
+        int radius;
+        QSize maxSize;
+        {
+            QMutexLocker locker(&m_mutex);
+            path = m_imagePath;
+            radius = m_blurRadius.load();
+            maxSize = m_maxSize;
+        }
+
+        QPixmap pixmap = GaussianBlur::blur(path, radius, 0.85, maxSize);
+        emit blurFinished(pixmap);
+
+        // If no new request came in during processing, we're done
+        if (!m_dirty.load()) {
+            return;
+        }
+        // Otherwise loop again with the updated parameters
+    }
 }
 
 // ==================== AcrylicTextureLabel 实现 ====================

@@ -5,7 +5,6 @@
 #include <QHash>
 #include <memory>
 #include <vector>
-#include <QMutex>
 
 #include "FluentGlobal.h"
 
@@ -181,7 +180,8 @@ class QFLUENT_EXPORT StyleSheetManager : public QObject {
 
 private:
     QHash<QWidget*, std::shared_ptr<StyleSheetCompose>> m_widgets;
-    mutable QMutex m_mutex;
+    // 注意：Qt GUI 操作必须在主线程执行，不使用 mutex
+    // 所有 registerWidget/deregisterWidget/updateStyleSheet 调用必须在主线程
 
 public:
     StyleSheetManager();

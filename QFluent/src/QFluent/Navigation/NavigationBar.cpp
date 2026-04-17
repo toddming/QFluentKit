@@ -235,7 +235,8 @@ void NavigationBar::initLayout() {
 
 NavigationWidget* NavigationBar::widget(const QString& routeKey) {
     if (!m_items.contains(routeKey)) {
-        throw RouteKeyError(QString("`%1` is illegal.").arg(routeKey));
+        qWarning("NavigationBar::widget: Route key '%s' is not registered.", qPrintable(routeKey));
+        return nullptr;
     }
     return m_items[routeKey].widget;
 }

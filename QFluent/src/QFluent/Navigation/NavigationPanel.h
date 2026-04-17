@@ -23,20 +23,6 @@ class NavigationUserCard;
 class Flyout;
 class FluentIconBase;
 
-// 自定义异常类
-class RouteKeyError : public std::exception {
-public:
-    explicit RouteKeyError(const QString& message)
-        : m_message(message.toUtf8()) {}
-
-    const char* what() const noexcept override {
-        return m_message.constData();
-    }
-
-private:
-    QByteArray m_message;
-};
-
 // 导航项结构
 struct NavigationItem {
     QString routeKey;

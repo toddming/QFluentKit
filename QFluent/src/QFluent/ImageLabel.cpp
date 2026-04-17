@@ -71,6 +71,15 @@ void ImageLabel::setImage(const QVariant &image)
     }
     else if (image.userType() == QMetaType::QString) {
         QString filePath = image.toString();
+
+        // 验证文件路径：防止路径遍历攻击
+        if (filePath.contains("..")) {
+            qWarning("ImageLabel::setImage: Path traversal detected in '%s'", qPrintable(filePath));
+            m_image = QImage();
+            update();
+            return;
+        }
+
         QImageReader reader(filePath);
 
         if (reader.supportsAnimation()) {

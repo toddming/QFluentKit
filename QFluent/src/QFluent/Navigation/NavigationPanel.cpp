@@ -144,7 +144,8 @@ void NavigationPanel::updateAcrylicColor()
 NavigationWidget* NavigationPanel::widget(const QString& routeKey)
 {
     if (!m_items.contains(routeKey)) {
-        throw RouteKeyError(QString("Route key '%1' is not registered.").arg(routeKey));
+        qWarning("NavigationPanel::widget: Route key '%s' is not registered.", qPrintable(routeKey));
+        return nullptr;
     }
 
     return m_items[routeKey].widget;

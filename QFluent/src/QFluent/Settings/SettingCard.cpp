@@ -155,7 +155,10 @@ HyperlinkCard::HyperlinkCard(const QString &url,
     hBoxLayout()->addSpacing(16);
 
     connect(linkButton, &HyperlinkButton::clicked, this, [url](){
-        QDesktopServices::openUrl(QUrl(url));
+        QUrl targetUrl(url);
+        if (targetUrl.isValid() && !targetUrl.scheme().isEmpty()) {
+            QDesktopServices::openUrl(targetUrl);
+        }
     });
 }
 

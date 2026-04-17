@@ -2,6 +2,7 @@
 
 #include <QLabel>
 #include <QThread>
+#include <QMutex>
 #include <QPainterPath>
 
 #include "FluentGlobal.h"
@@ -51,9 +52,11 @@ protected:
     void run() override;
 
 private:
+    QMutex m_mutex;
     QString m_imagePath;
-    int m_blurRadius;
+    std::atomic<int> m_blurRadius{6};
     QSize m_maxSize;
+    std::atomic<bool> m_dirty{false};  // 标记是否有新的模糊请求
 };
 
 // 亚克力纹理标签
