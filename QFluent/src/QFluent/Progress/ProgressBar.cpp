@@ -132,12 +132,12 @@ void ProgressBar::setCustomBackgroundColor(const QColor &light, const QColor &da
 QColor ProgressBar::barColor() const
 {
     if (isPaused()) {
-        return Theme::instance()->isDarkTheme() ? QColor(252, 225, 0) : QColor(157, 93, 0);
+        return Theme::isDark() ? QColor(252, 225, 0) : QColor(157, 93, 0);
     }
     if (isError()) {
-        return Theme::instance()->isDarkTheme() ? QColor(255, 153, 164) : QColor(196, 43, 28);
+        return Theme::isDark() ? QColor(255, 153, 164) : QColor(196, 43, 28);
     }
-    QColor color = Theme::instance()->isDarkTheme() ? m_darkBarColor : m_lightBarColor;
+    QColor color = Theme::isDark() ? m_darkBarColor : m_lightBarColor;
     color = color.isValid() ? color : Theme::instance()->themeColor();
     return color;
 }
@@ -149,7 +149,7 @@ void ProgressBar::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::Antialiasing);
 
     // 绘制背景线
-    QColor bc = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
+    QColor bc = Theme::isDark() ? m_darkBackgroundColor : m_lightBackgroundColor;
     painter.setPen(bc);
     int y = height() / 2;
     painter.drawLine(0, y, width(), y);

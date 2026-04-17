@@ -166,7 +166,7 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
         attrs["fill"] = Theme::instance()->themeColor().name();
         FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     } else {
-        painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.3628 : 0.36);
+        painter->setOpacity(Theme::isDark() ? 0.3628 : 0.36);
     }
 }
 
@@ -196,7 +196,7 @@ ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWid
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
     Fluent::ThemeMode theme;
-    if (!Theme::instance()->isDarkTheme()) {
+    if (!Theme::isDark()) {
         theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
         theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
@@ -274,7 +274,7 @@ void DropDownButtonBase::hideMenu()
 
 void DropDownButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
     } else {
         QHash<QString, QString> attrs;
@@ -338,7 +338,7 @@ void PillPushButton::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     QRect rect;
     QColor borderColor;

@@ -50,7 +50,7 @@ void MaskDialogBase::init()
     d->m_centerWidget->setObjectName("centerWidget");
     d->m_hBoxLayout->addWidget(d->m_centerWidget, 1, Qt::AlignCenter);
 
-    int c = Theme::instance()->isDarkTheme() ? 0 : 255;
+    int c = Theme::isDark() ? 0 : 255;
     d->m_windowMask->setStyleSheet(QString("background: rgba(%1, %1, %1, 153);").arg(c));
 
     setShadowEffect();

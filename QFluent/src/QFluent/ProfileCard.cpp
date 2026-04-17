@@ -22,11 +22,11 @@ ProfileCard::ProfileCard(const QString& avatarPath,
     );
 
     // 设置 m_emailLabel 颜色
-    QColor emailColor = Theme::instance()->isDarkTheme() ? QColor(206, 206, 206) : QColor(96, 96, 96);
+    QColor emailColor = Theme::isDark() ? QColor(206, 206, 206) : QColor(96, 96, 96);
     m_emailLabel->setStyleSheet(QStringLiteral("QLabel{color: %1}").arg(emailColor.name()));
 
     // 设置 m_nameLabel 颜色
-    QColor nameColor = Theme::instance()->isDarkTheme() ? QColor(255, 255, 255) : QColor(0, 0, 0);
+    QColor nameColor = Theme::isDark() ? QColor(255, 255, 255) : QColor(0, 0, 0);
     m_nameLabel->setStyleSheet(QStringLiteral("QLabel{color: %1}").arg(nameColor.name()));
 
     // 设置按钮字体

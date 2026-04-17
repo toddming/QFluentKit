@@ -152,13 +152,13 @@ void ItemMaskWidget::paintEvent(QPaintEvent* e)
     
     // 绘制背景
     painter.setPen(Qt::NoPen);
-    QColor color = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
+    QColor color = Theme::isDark() ? m_darkBackgroundColor : m_lightBackgroundColor;
     color = color.isValid() ? color : Theme::instance()->themeColor();
     painter.setBrush(color);
     painter.drawRoundedRect(rect().adjusted(4, 0, -3, 0), 5, 5);
     
     // 绘制文本
-    painter.setPen(Theme::instance()->isDarkTheme() ? Qt::black : Qt::white);
+    painter.setPen(Theme::isDark() ? Qt::black : Qt::white);
     painter.setFont(font());
     
     int w = 0;

@@ -57,7 +57,7 @@ void SplitterHandle::drawHandle(QPainter *painter)
     // 设置画笔颜色（浅灰色）
     painter->setPen(Qt::NoPen);
 
-    QColor color = Theme::instance()->isDarkTheme() ? QColor(159, 159, 159) : QColor(138, 138, 138);
+    QColor color = Theme::isDark() ? QColor(159, 159, 159) : QColor(138, 138, 138);
     painter->setBrush(color);
 
     // 计算小方块的位置和大小
@@ -97,7 +97,7 @@ void SplitterHandle::drawFullLine(QPainter *painter)
     }
 
     int alpha = m_isPressed ? 23 : 15;
-    QColor color = Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, alpha) : QColor(0, 0, 0, alpha);
+    QColor color = Theme::isDark() ? QColor(255, 255, 255, alpha) : QColor(0, 0, 0, alpha);
     painter->setBrush(color);
     painter->setPen(Qt::NoPen);
 

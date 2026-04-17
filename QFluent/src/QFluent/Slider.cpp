@@ -104,7 +104,7 @@ void SliderHandle::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     // 绘制外圆
     painter.setPen(QColor(0, 0, 0, isDark ? 90 : 25));
@@ -247,7 +247,7 @@ void Slider::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
     painter.setBrush(isDark ? QColor(255, 255, 255, 115) : QColor(0, 0, 0, 100));
 
     if (orientation() == Qt::Horizontal) {
@@ -286,7 +286,7 @@ void Slider::drawHorizontalGroove(QPainter *painter)
         return;
     }
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     QColor color = Theme::instance()->themeColor();
     m_darkGrooveColor = m_darkGrooveColor.isValid() ? m_darkGrooveColor : color;
@@ -312,7 +312,7 @@ void Slider::drawVerticalGroove(QPainter *painter)
         return;
     }
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
     QColor color = Theme::instance()->themeColor();
     m_darkGrooveColor = m_darkGrooveColor.isValid() ? m_darkGrooveColor : color;
     m_lightGrooveColor = m_lightGrooveColor.isValid() ? m_lightGrooveColor : color;

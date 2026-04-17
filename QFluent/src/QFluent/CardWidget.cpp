@@ -37,17 +37,17 @@ bool CardWidget::isClickEnabled() const
 
 QColor CardWidget::normalBackgroundColor() const
 {
-    return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 13 : 170);
+    return QColor(255, 255, 255, Theme::isDark() ? 13 : 170);
 }
 
 QColor CardWidget::hoverBackgroundColor() const
 {
-    return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 21 : 64);
+    return QColor(255, 255, 255, Theme::isDark() ? 21 : 64);
 }
 
 QColor CardWidget::pressedBackgroundColor() const
 {
-    return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 8 : 64);
+    return QColor(255, 255, 255, Theme::isDark() ? 8 : 64);
 }
 
 int CardWidget::borderRadius() const
@@ -71,7 +71,7 @@ void CardWidget::paintEvent(QPaintEvent *e)
     int r = m_borderRadius;
     int d = 2 * r;
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     // 绘制顶部边框
     QPainterPath path;
@@ -127,7 +127,7 @@ void SimpleCardWidget::paintEvent(QPaintEvent *e)
 
     painter.setBrush(this->backgroundColor());
 
-    if (Theme::instance()->isDarkTheme())
+    if (Theme::isDark())
         painter.setPen(QColor(0, 0, 0, 48));
     else
         painter.setPen(QColor(0, 0, 0, 12));
@@ -138,7 +138,7 @@ void SimpleCardWidget::paintEvent(QPaintEvent *e)
 
 QColor SimpleCardWidget::normalBackgroundColor() const
 {
-    return QColor(255, 255, 255, Theme::instance()->isDarkTheme() ? 13 : 170);
+    return QColor(255, 255, 255, Theme::isDark() ? 13 : 170);
 }
 
 QColor SimpleCardWidget::hoverBackgroundColor() const

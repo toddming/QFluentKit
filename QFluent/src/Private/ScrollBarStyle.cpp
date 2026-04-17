@@ -16,7 +16,7 @@ namespace {
      * @note 实际项目中应从系统或配置中获取主题信息
      */
     bool isDarkTheme() {
-        return Theme::instance()->isDarkTheme();
+        return Theme::isDark();
     }
 
     /**

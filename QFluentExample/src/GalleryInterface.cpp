@@ -18,7 +18,7 @@ void SeparatorWidget::paintEvent(QPaintEvent *e)
     QPen pen(Qt::SolidLine);
     pen.setCosmetic(true);
 
-    QColor c = Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, 21) : QColor(0, 0, 0, 15);
+    QColor c = Theme::isDark() ? QColor(255, 255, 255, 21) : QColor(0, 0, 0, 15);
     pen.setColor(c);
     painter.setPen(pen);
 

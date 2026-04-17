@@ -86,7 +86,7 @@ void BannerWidget::paintEvent(QPaintEvent *event)
     QLinearGradient gradient(0, 0, 0, h);
 
     // 绘制背景颜色
-    if (!Theme::instance()->isDarkTheme()) {
+    if (!Theme::isDark()) {
         gradient.setColorAt(0, QColor(243, 243, 243, 0));
         gradient.setColorAt(1, QColor(247, 249, 252, 255));
     } else {

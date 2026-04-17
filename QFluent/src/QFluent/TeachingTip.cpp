@@ -151,7 +151,7 @@ void TeachTipBubble::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
     painter.setBrush(isDark ? QColor(40, 40, 40) : QColor(248, 248, 248));
     painter.setPen(isDark ? QColor(23, 23, 23) : QColor(0, 0, 0, 17));
 
@@ -215,7 +215,7 @@ void TeachingTip::setShadowEffect(int blurRadius, const QPoint& offset)
         return;
     }
 
-    QColor color = Theme::instance()->isDarkTheme()
+    QColor color = Theme::isDark()
         ? QColor(0, 0, 0, 80)
         : QColor(0, 0, 0, 30);
 

@@ -99,7 +99,7 @@ void NavigationBarPushButton::paintEvent(QPaintEvent* e) {
 
 void NavigationBarPushButton::drawBackground(QPainter& painter) {
     if (property("isSelected").toBool()) {
-        QColor bg = Theme::instance()->isDarkTheme() ? QColor(255, 255, 255, 42) : Qt::white;
+        QColor bg = Theme::isDark() ? QColor(255, 255, 255, 42) : Qt::white;
         painter.setBrush(bg);
         painter.drawRoundedRect(rect(), 5, 5);
         // draw indicator
@@ -112,7 +112,7 @@ void NavigationBarPushButton::drawBackground(QPainter& painter) {
             painter.drawRoundedRect(0, 19, 4, 18, 2, 2);
         }
     } else if (property("isPressed").toBool() || property("isEnter").toBool()) {
-        int c = Theme::instance()->isDarkTheme() ? 255 : 0;
+        int c = Theme::isDark() ? 255 : 0;
         int alpha = property("isEnter").toBool() ? 9 : 6;
         painter.setBrush(QColor(c, c, c, alpha));
         painter.drawRoundedRect(rect(), 5, 5);
@@ -149,7 +149,7 @@ void NavigationBarPushButton::drawText(QPainter& painter) {
         return;
     }
 
-    QColor textColor = property("isSelected").toBool() ? Theme::instance()->themeColor() : (Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
+    QColor textColor = property("isSelected").toBool() ? Theme::instance()->themeColor() : (Theme::isDark() ? Qt::white : Qt::black);
     painter.setPen(textColor);
     painter.setFont(font());
     QRect rect(0, 32, width(), 26);

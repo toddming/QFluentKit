@@ -534,6 +534,14 @@ Q_GLOBAL_STATIC(StyleSheetManager, s_styleSheetManager)
 
 StyleSheetManager::StyleSheetManager() : QObject() {
     m_widgets.reserve(100); // 预留合理的初始容量
+
+    // 监听 Theme 信号，自行更新样式表（消除 Theme 主动调用 StyleSheetManager 的双向依赖）
+    connect(Theme::instance(), &Theme::themeModeChanged, this, [this]() {
+        updateStyleSheet(false);
+    });
+    connect(Theme::instance(), &Theme::themeColorChanged, this, [this]() {
+        updateStyleSheet(false);
+    });
 }
 
 StyleSheetManager::~StyleSheetManager() = default;

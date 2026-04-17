@@ -82,7 +82,7 @@ void AcrylicWidget::updateAcrylicColor()
     QColor tintColor;
     QColor luminosityColor;
 
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         tintColor = QColor(32, 32, 32, 200);
         luminosityColor = QColor(0, 0, 0, 0);
     } else {

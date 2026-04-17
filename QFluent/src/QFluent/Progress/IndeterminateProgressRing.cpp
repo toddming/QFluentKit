@@ -155,7 +155,7 @@ void IndeterminateProgressRing::paintEvent(QPaintEvent *event)
     int size = qMin(height(), width()) - cw;
     QRectF rc(cw/2.0, height()/2.0 - size/2.0, size, size);
 
-    QColor bc = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
+    QColor bc = Theme::isDark() ? m_darkBackgroundColor : m_lightBackgroundColor;
 
     QPen pen(bc, cw, Qt::SolidLine);
     pen.setCapStyle(Qt::RoundCap);
@@ -163,7 +163,7 @@ void IndeterminateProgressRing::paintEvent(QPaintEvent *event)
     painter.setPen(pen);
     painter.drawArc(rc, 0, 360 * 16);
 
-    QColor barColor = Theme::instance()->isDarkTheme() ? darkBarColor() : lightBarColor();
+    QColor barColor = Theme::isDark() ? darkBarColor() : lightBarColor();
 
     pen.setColor(barColor);
     painter.setPen(pen);

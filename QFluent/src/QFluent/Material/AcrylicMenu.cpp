@@ -26,7 +26,7 @@ AcrylicMenuActionListWidget::AcrylicMenuActionListWidget(QWidget *parent)
 void AcrylicMenuActionListWidget::updateAcrylicColor()
 {
     QColor tintColor, luminosityColor;
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         tintColor = QColor(32, 32, 32, 200);
         luminosityColor = QColor(0, 0, 0, 0);
     } else {

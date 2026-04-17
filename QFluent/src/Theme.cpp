@@ -5,7 +5,6 @@
 #include <QStyleHints>
 #include <QPointer>
 
-#include "StyleSheet.h"
 #include "Private/ThemePrivate.h"
 
 Q_GLOBAL_STATIC(Theme, qtheme)
@@ -74,7 +73,6 @@ void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
     if (d->m_currentTheme != theme) {
         d->m_currentTheme = theme;
         if (!lazy) {
-            StyleSheetManager::instance()->updateStyleSheet(lazy);
             emit themeModeChanged(theme);
         }
     }
@@ -103,7 +101,6 @@ void Theme::setThemeColor(const QColor& color, bool lazy) {
     if (d->m_themeColor != color) {
         d->m_themeColor = color;
         if (!lazy) {
-            StyleSheetManager::instance()->updateStyleSheet(lazy);
             emit themeColorChanged(color);
         }
     }

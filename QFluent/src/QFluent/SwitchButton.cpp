@@ -54,7 +54,7 @@ void Indicator::drawCircle(QPainter &painter) {
 }
 
 QColor Indicator::backgroundColor() const {
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     if (isChecked()) {
         QColor color = Theme::instance()->themeColor();
@@ -83,7 +83,7 @@ QColor Indicator::backgroundColor() const {
 }
 
 QColor Indicator::borderColor() const {
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     if (isChecked()) {
         return isEnabled() ? backgroundColor() : QColor(0, 0, 0, 0);
@@ -96,7 +96,7 @@ QColor Indicator::borderColor() const {
 }
 
 QColor Indicator::sliderColor() const {
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     if (isChecked()) {
         if (isEnabled()) {

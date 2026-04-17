@@ -202,7 +202,7 @@ void Pivot::paintEvent(QPaintEvent *event) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    QColor color = Theme::instance()->isDarkTheme() ? m_darkIndicatorColor : m_lightIndicatorColor;
+    QColor color = Theme::isDark() ? m_darkIndicatorColor : m_lightIndicatorColor;
     color = color.isValid() ? color : Theme::instance()->themeColor();
     painter.setBrush(color);
     int x = currentItem()->width() / 2 - 8 + m_slideAni->value().toFloat();

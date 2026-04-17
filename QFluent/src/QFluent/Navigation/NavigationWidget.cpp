@@ -119,7 +119,7 @@ void NavigationWidget::setSelected(bool isSelected) {
 }
 
 QColor NavigationWidget::textColor() const {
-    return Theme::instance()->isDarkTheme() ? m_darkTextColor : m_lightTextColor;
+    return Theme::isDark() ? m_darkTextColor : m_lightTextColor;
 }
 
 void NavigationWidget::setLightTextColor(const QColor& color) {
@@ -204,7 +204,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
         painter.setOpacity(0.4);
 
     // 绘制背景
-    const int colorValue = Theme::instance()->isDarkTheme() ? 255 : 0;
+    const int colorValue = Theme::isDark() ? 255 : 0;
     const QMargins m = margins();
     const int leftMargin = m.left();
     const int rightMargin = m.right();
@@ -275,7 +275,7 @@ void NavigationSeparator::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
 
     QPainter painter(this);
-    const int colorValue = Theme::instance()->isDarkTheme() ? 255 : 0;
+    const int colorValue = Theme::isDark() ? 255 : 0;
     QPen pen(QColor(colorValue, colorValue, colorValue, 15));
     pen.setCosmetic(true);
     painter.setPen(pen);
@@ -843,7 +843,7 @@ void NavigationAvatarWidget::paintEvent(QPaintEvent *event)
 
     // 绘制悬停背景
     if (property("isEnter").toBool()) {
-        const int colorValue = Theme::instance()->isDarkTheme() ? 255 : 0;
+        const int colorValue = Theme::isDark() ? 255 : 0;
         painter.setBrush(QColor(colorValue, colorValue, colorValue, 10));
         painter.drawRoundedRect(rect(), 5, 5);
     }
@@ -1049,7 +1049,7 @@ void NavigationUserCard::paintEvent(QPaintEvent *event)
 
     // 绘制悬停背景
     if (property("isEnter").toBool()) {
-        const int colorValue = Theme::instance()->isDarkTheme() ? 255 : 0;
+        const int colorValue = Theme::isDark() ? 255 : 0;
         painter.setBrush(QColor(colorValue, colorValue, colorValue, 10));
         painter.setPen(Qt::NoPen);
         painter.drawRoundedRect(rect(), 5, 5);
@@ -1160,7 +1160,7 @@ void NavigationIndicator::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    QColor color = Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor;
+    QColor color = Theme::isDark() ? m_darkColor : m_lightColor;
     if (!color.isValid()) {
         color = Theme::instance()->themeColor();
     }

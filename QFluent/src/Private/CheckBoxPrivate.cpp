@@ -6,7 +6,7 @@
 #include "QFluent/CheckBox.h"
 
 QColor CheckBoxPrivate::borderColor() const {
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         switch (state()) {
         case CheckBox::State::NORMAL: return QColor(255, 255, 255, 141);
         case CheckBox::State::HOVER: return QColor(255, 255, 255, 141);
@@ -33,7 +33,7 @@ QColor CheckBoxPrivate::borderColor() const {
 }
 
 QColor CheckBoxPrivate::backgroundColor() const {
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         switch (state()) {
         case CheckBox::State::NORMAL: return QColor(0, 0, 0, 26);
         case CheckBox::State::HOVER: return QColor(255, 255, 255, 11);

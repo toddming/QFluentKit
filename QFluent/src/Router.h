@@ -46,6 +46,17 @@ class QFLUENT_EXPORT Router : public QObject
     Q_PROPERTY(bool empty READ isEmpty NOTIFY emptyChanged)
 
 public:
+    /**
+     * @brief 构造函数 — Router 可独立实例化，不限于全局单例
+     *
+     * 多窗口场景下，每个窗口可持有自己的 Router 实例：
+     *   auto* router = new Router(this);  // this = 窗口
+     *   router->setDefaultRouteKey(stacked, "home");
+     *   router->push(stacked, "settings");
+     *
+     * 单窗口场景可继续使用全局默认实例：
+     *   Router::instance()->push(stacked, "home");
+     */
     explicit Router(QObject* parent = nullptr);
     ~Router();
 
@@ -56,6 +67,10 @@ public:
     void pop();
     void remove(const QString& routeKey);
 
+    /**
+     * @brief 全局默认实例 — 适用于单窗口应用
+     * 多窗口应用建议为每个窗口创建独立 Router 实例
+     */
     static Router* instance();
 
 signals:

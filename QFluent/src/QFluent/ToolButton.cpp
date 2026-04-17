@@ -166,7 +166,7 @@ ToggleToolButton::ToggleToolButton(const FluentIconBase &icon, QWidget* parent)
 void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
     Fluent::ThemeMode iconTheme;
-    if (!Theme::instance()->isDarkTheme()) {
+    if (!Theme::isDark()) {
         iconTheme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
     } else {
         iconTheme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
@@ -180,7 +180,7 @@ void PillToolButton::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     QRect rect;
     QColor borderColor;
@@ -285,7 +285,7 @@ void DropDownToolButtonBase::hideMenu()
 
 void DropDownToolButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
     } else {
         QHash<QString, QString> attrs;

@@ -425,7 +425,7 @@ void AvatarWidget::drawTextAvatar(QPainter &painter)
     }
 
     // 根据主题选择背景色
-    const bool isDark = Theme::instance()->isDarkTheme();
+    const bool isDark = Theme::isDark();
     const QColor bgColor = isDark ? m_darkBackgroundColor : m_lightBackgroundColor;
 
     // 绘制圆形背景

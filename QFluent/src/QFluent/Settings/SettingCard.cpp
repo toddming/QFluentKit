@@ -96,7 +96,7 @@ void SettingCard::paintEvent(QPaintEvent *event)
 
     QColor brushColor, penColor;
 
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         brushColor = QColor(255, 255, 255, 13);
         penColor = QColor(0, 0, 0, 50);
     } else {

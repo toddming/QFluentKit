@@ -74,14 +74,14 @@ void FlyoutViewBase::addWidget(QWidget* widget, int stretch, Qt::Alignment align
 
 QColor FlyoutViewBase::backgroundColor() const
 {
-    return Theme::instance()->isDarkTheme()
+    return Theme::isDark()
         ? QColor(40, 40, 40)
         : QColor(248, 248, 248);
 }
 
 QColor FlyoutViewBase::borderColor() const
 {
-    return Theme::instance()->isDarkTheme()
+    return Theme::isDark()
         ? QColor(0, 0, 0, 45)
         : QColor(0, 0, 0, 17);
 }

@@ -150,7 +150,7 @@ QPixmap ColorCard::createTitledBackground()
     pixmap.fill(Qt::transparent);
     QPainter painter(&pixmap);
 
-    int c = Theme::instance()->isDarkTheme() ? 255 : 0;
+    int c = Theme::isDark() ? 255 : 0;
     QColor color(c, c, c, 26);
     painter.fillRect(4, 0, 4, 4, color);
     painter.fillRect(0, 4, 4, 4, color);

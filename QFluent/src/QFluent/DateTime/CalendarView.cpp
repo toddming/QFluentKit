@@ -86,7 +86,7 @@ void CalendarButton::paintEvent(QPaintEvent* event)
     int x = (width() - w) / 2;
 
     QHash<QString, QString> attrs;
-    attrs["fill"] = Theme::instance()->isDarkTheme() ? "#5e5e5e" : "#9c9c9c";
+    attrs["fill"] = Theme::isDark() ? "#5e5e5e" : "#9c9c9c";
     FluentIconUtils::drawIcon(*fluentIcon(), &painter, QRectF(x, y, w, h), Fluent::ThemeMode::AUTO, false, attrs);
 }
 
@@ -135,7 +135,7 @@ void ScrollItemDelegate::drawBackground(QPainter* painter, const QStyleOptionVie
             painter->setBrush(Theme::instance()->themeColor());
         }
     } else {
-        int c = Theme::instance()->isDarkTheme() ? 255 : 0;
+        int c = Theme::isDark() ? 255 : 0;
         if (index == m_pressedIndex) {
             painter->setBrush(QColor(c, c, c, 7));
         } else if (option.state & QStyle::State_MouseOver) {
@@ -155,9 +155,9 @@ void ScrollItemDelegate::drawText(QPainter* painter, const QStyleOptionViewItem&
     painter->setFont(m_font);
 
     if (index == m_currentIndex) {
-        painter->setPen(Theme::instance()->isDarkTheme() ? Qt::black : Qt::white);
+        painter->setPen(Theme::isDark() ? Qt::black : Qt::white);
     } else {
-        painter->setPen(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
+        painter->setPen(Theme::isDark() ? Qt::white : Qt::black);
         if (!((m_minDate <= index.data(Qt::UserRole).toDate() && index.data(Qt::UserRole).toDate() <= m_maxDate) ||
               (option.state & QStyle::State_MouseOver)) || index == m_pressedIndex) {
             painter->setOpacity(0.6);

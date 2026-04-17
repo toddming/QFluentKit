@@ -68,13 +68,13 @@ void RadioButton::drawText(QPainter &painter)
     }
 
     painter.setFont(font());
-    painter.setPen(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
+    painter.setPen(Theme::isDark() ? Qt::white : Qt::black);
     painter.drawText(QRect(29, 0, width(), height()), Qt::AlignVCenter, text());
 }
 
 void RadioButton::drawIndicator(QPainter &painter)
 {
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     QColor borderColor, filledColor;
 

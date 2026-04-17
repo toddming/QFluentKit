@@ -26,7 +26,7 @@ QString FluentIconUtils::iconColor(Fluent::ThemeMode theme, bool reverse)
     const QString darkColor = reverse ? QStringLiteral("black") : QStringLiteral("white");
 
     if (theme == Fluent::ThemeMode::AUTO) {
-        return Theme::instance()->isDarkTheme() ? darkColor : lightColor;
+        return Theme::isDark() ? darkColor : lightColor;
     }
     return (theme == Fluent::ThemeMode::DARK) ? darkColor : lightColor;
 }
@@ -355,7 +355,7 @@ QString FluentIconUtils::buildIconPath(Fluent::IconType iconEnum,
     // Determine effective theme considering reverse
     Fluent::ThemeMode effectiveTheme = theme;
     if (reverse && theme == Fluent::ThemeMode::AUTO) {
-        effectiveTheme = Theme::instance()->isDarkTheme()
+        effectiveTheme = Theme::isDark()
                 ? Fluent::ThemeMode::LIGHT
                 : Fluent::ThemeMode::DARK;
     }
@@ -851,13 +851,13 @@ QColor FluentFontIconBase::iconColor(Fluent::ThemeMode theme, bool reverse) cons
 {
     Fluent::ThemeMode effectiveTheme = theme;
     if (reverse && theme == Fluent::ThemeMode::AUTO) {
-        effectiveTheme = Theme::instance()->isDarkTheme()
+        effectiveTheme = Theme::isDark()
                 ? Fluent::ThemeMode::LIGHT
                 : Fluent::ThemeMode::DARK;
     }
 
     if (effectiveTheme == Fluent::ThemeMode::AUTO) {
-        return Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor;
+        return Theme::isDark() ? m_darkColor : m_lightColor;
     }
     return (effectiveTheme == Fluent::ThemeMode::DARK) ? m_darkColor : m_lightColor;
 }
@@ -912,13 +912,13 @@ void ColoredFluentIcon::render(QPainter* painter, const QRectF& rect,
     // Determine effective theme for color selection
     Fluent::ThemeMode effectiveTheme = theme;
     if (reverse && theme == Fluent::ThemeMode::AUTO) {
-        effectiveTheme = Theme::instance()->isDarkTheme()
+        effectiveTheme = Theme::isDark()
                 ? Fluent::ThemeMode::LIGHT
                 : Fluent::ThemeMode::DARK;
     }
 
     const QColor color = (effectiveTheme == Fluent::ThemeMode::AUTO)
-            ? (Theme::instance()->isDarkTheme() ? m_darkColor : m_lightColor)
+            ? (Theme::isDark() ? m_darkColor : m_lightColor)
             : (effectiveTheme == Fluent::ThemeMode::DARK ? m_darkColor : m_lightColor);
 
     QHash<QString, QString> modifiedAttributes = attributes;

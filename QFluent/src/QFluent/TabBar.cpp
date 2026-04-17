@@ -31,7 +31,7 @@ TabToolButton::TabToolButton(QWidget *parent)
 void TabToolButton::drawIcon(QPainter *painter, const QRectF &rect,
                              Fluent::ThemeMode theme)
 {
-    const QString color = Theme::instance()->isDarkTheme() ?
+    const QString color = Theme::isDark() ?
                          QStringLiteral("#eaeaea") : QStringLiteral("#484848");
     QHash<QString, QString> attrs;
     attrs[QStringLiteral("fill")] = color;
@@ -242,7 +242,7 @@ void TabItem::paintEvent(QPaintEvent *event)
 
     // 绘制图标
     if (!m_isSelected) {
-        painter.setOpacity(Theme::instance()->isDarkTheme() ? 0.79 : 0.61);
+        painter.setOpacity(Theme::isDark() ? 0.79 : 0.61);
     }
 
     m_icon.paint(&painter, 10, 10, 16, 16, Qt::AlignCenter);
@@ -258,7 +258,7 @@ void TabItem::drawSelectedBackground(QPainter *painter)
     const int r = m_borderRadius;
     const int d = 2 * r;
 
-    const bool isDark = Theme::instance()->isDarkTheme();
+    const bool isDark = Theme::isDark();
 
     // 绘制顶部边框
     QPainterPath path;
@@ -309,7 +309,7 @@ void TabItem::drawNotSelectedBackground(QPainter *painter)
     if (!m_isPressed && !m_isHover)
         return;
 
-    const bool isDark = Theme::instance()->isDarkTheme();
+    const bool isDark = Theme::isDark();
     QColor color;
 
     if (m_isPressed)
@@ -338,7 +338,7 @@ void TabItem::drawText(QPainter *painter)
     }
 
     QPen pen;
-    QColor color = Theme::instance()->isDarkTheme() ? Qt::white : Qt::black;
+    QColor color = Theme::isDark() ? Qt::white : Qt::black;
     if (m_textColor.isValid())
         color = m_textColor;
 
@@ -728,7 +728,7 @@ void TabBar::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
 
     // 绘制分隔线
-    const QColor color = Theme::instance()->isDarkTheme() ?
+    const QColor color = Theme::isDark() ?
                         QColor(255, 255, 255, 21) : QColor(0, 0, 0, 15);
     painter.setPen(color);
 

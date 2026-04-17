@@ -337,7 +337,7 @@ void InfoBar::paintEvent(QPaintEvent* event)
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        QColor backgroundColor = Theme::instance()->isDarkTheme() ? m_darkBackgroundColor : m_lightBackgroundColor;
+        QColor backgroundColor = Theme::isDark() ? m_darkBackgroundColor : m_lightBackgroundColor;
         if (backgroundColor.isValid()) {
             painter.setBrush(backgroundColor);
             painter.setPen(Qt::NoPen);

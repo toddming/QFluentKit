@@ -78,7 +78,7 @@ void TableItemDelegate::initStyleOption(QStyleOptionViewItem* option, const QMod
     // 字体设置示例
     // option->font = Theme::instance()->font(13);
 
-    QColor textColor = Theme::instance()->isDarkTheme() ? Qt::white : Qt::black;
+    QColor textColor = Theme::isDark() ? Qt::white : Qt::black;
     QVariant textBrushVar = index.data(Qt::ForegroundRole);
 
     if (textBrushVar.canConvert<QBrush>()) {
@@ -111,7 +111,7 @@ void TableItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     // 修正:检查 parent 是否存在
     const auto* tableView = qobject_cast<const QTableView*>(parent());
     bool isAlternate = tableView && (index.row() % 2 == 0) && tableView->alternatingRowColors();
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
     bool isSelected = m_selectedRows.contains(index.row());
 
     // 背景色 Alpha 值计算
@@ -197,7 +197,7 @@ void TableItemDelegate::drawCheckBox(QPainter* painter, const QStyleOptionViewIt
     painter->save();
 
     Qt::CheckState checkState = static_cast<Qt::CheckState>(index.data(Qt::CheckStateRole).toInt());
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
 
     qreal r = 4.5; // 圆角
     // 居中计算

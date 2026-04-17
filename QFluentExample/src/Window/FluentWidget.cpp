@@ -52,7 +52,7 @@ FluentWidget::FluentWidget(QWidget *parent)
     connect(_windowBar, &FluentTitleBar::closeRequested, this, &QWidget::close);
     _windowAgent = agent;
 
-    _windowBar->themeButton()->setChecked(Theme::instance()->isDarkTheme());
+    _windowBar->themeButton()->setChecked(Theme::isDark());
 
     connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
         agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
@@ -99,7 +99,7 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     if (agent == nullptr) {
         return;
     }
-    bool dark = Theme::instance()->isDarkTheme();
+    bool dark = Theme::isDark();
     _windowBar->themeButton()->setChecked(!dark);
 
     QStringList names = {"none", "dwm-blur", "acrylic-material", "mica", "mica-alt"};
@@ -140,7 +140,7 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
     }
 
     // 设置暗色模式 (Windows 11, 属性 20: DWMWA_USE_IMMERSIVE_DARK_MODE)
-    BOOL darkMode = Theme::instance()->isDarkTheme() ? TRUE : FALSE;
+    BOOL darkMode = Theme::isDark() ? TRUE : FALSE;
     HRESULT hr = DwmSetWindowAttribute(hwnd, 20, &darkMode, sizeof(darkMode));
     if (FAILED(hr)) {
         qDebug("Failed to set dark mode: 0x%08X", hr);
@@ -216,7 +216,7 @@ void FluentWidget::setWindowEffect(WindowEffect effect)
         DwmExtendFrameIntoClientArea(hwnd, &margins);
 
         // 设置标题栏颜色 (属性 35: DWMWA_CAPTION_COLOR)
-        BOOL isDark = Theme::instance()->isDarkTheme();
+        BOOL isDark = Theme::isDark();
         QColor color(isDark ? "#202020" : "#F0F4F9");
         COLORREF captionColor = RGB(color.red(), color.green(), color.blue());
         hr = DwmSetWindowAttribute(hwnd, 35, &captionColor, sizeof(captionColor));

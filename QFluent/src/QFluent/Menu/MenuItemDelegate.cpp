@@ -27,7 +27,7 @@ void MenuItemDelegate::paint(QPainter *painter,
     painter->save();
 
     // 根据主题设置分隔符颜色（亮色主题：黑色25%透明度；暗色主题：白色25%透明度）
-    int c = Theme::instance()->isDarkTheme() ? 255 : 0;
+    int c = Theme::isDark() ? 255 : 0;
     QPen pen(QColor(c, c, c, 25), 1);
     pen.setCosmetic(true);  // 保持1像素不受缩放影响
     painter->setPen(pen);
@@ -73,12 +73,12 @@ void ShortcutMenuItemDelegate::paint(QPainter *painter,
     painter->save();
 
     if (!(option.state & QStyle::State_Enabled)) {
-        painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.5 : 0.6);  // 深色/浅色主题不同透明度
+        painter->setOpacity(Theme::isDark() ? 0.5 : 0.6);  // 深色/浅色主题不同透明度
     }
 
     QFont font = painter->font();
     painter->setFont(font);
-    painter->setPen(Theme::instance()->isDarkTheme() ?
+    painter->setPen(Theme::isDark() ?
                         QColor(255, 255, 255, 200) :  // 深色主题：白色80%透明度
                         QColor(0, 0, 0, 153));        // 浅色主题：黑色60%透明度
 
@@ -162,11 +162,11 @@ void RadioIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
 
     painter->setRenderHints(QPainter::Antialiasing);
     if (!(option.state & QStyle::State_MouseOver)) {
-        painter->setOpacity(Theme::instance()->isDarkTheme() ? 0.75 : 0.65);
+        painter->setOpacity(Theme::isDark() ? 0.75 : 0.65);
     }
 
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Theme::instance()->isDarkTheme() ? Qt::white : Qt::black);
+    painter->setBrush(Theme::isDark() ? Qt::white : Qt::black);
     painter->drawEllipse(QRectF(x, y, r, r));
 }
 
@@ -190,7 +190,7 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
         painter->setOpacity(0.75);
     }
 
-    bool isDark = Theme::instance()->isDarkTheme();
+    bool isDark = Theme::isDark();
     painter->setPen(isDark ? (checked ? Theme::instance()->themeColor() : QColor(255, 255, 255, 141))
                            : (checked ? Theme::instance()->themeColor(): QColor(0, 0, 0, 122)));
     painter->setBrush(checked ? Theme::instance()->themeColor() : QColor(0, 0, 0, 6));

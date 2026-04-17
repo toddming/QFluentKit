@@ -40,7 +40,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.setPen(Qt::NoPen);
 
     // draw background
-    int r = Theme::instance()->isDarkTheme() ? 255 : 0;
+    int r = Theme::isDark() ? 255 : 0;
     QColor color = Qt::transparent;
 
     if (isEnabled()) {
@@ -163,7 +163,7 @@ void HeaderSettingCard::paintEvent(QPaintEvent *e) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         painter.setBrush(QColor(255, 255, 255, 13));
     } else {
         painter.setBrush(QColor(255, 255, 255, 170));
@@ -198,7 +198,7 @@ void ExpandBorderWidget::paintEvent(QPaintEvent *e) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(Qt::NoBrush);
 
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         painter.setPen(QColor(0, 0, 0, 50));
     } else {
         painter.setPen(QColor(0, 0, 0, 19));
@@ -335,7 +335,7 @@ void GroupSeparator::paintEvent(QPaintEvent *e) {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
-    if (Theme::instance()->isDarkTheme()) {
+    if (Theme::isDark()) {
         painter.setPen(QColor(0, 0, 0, 50));
     } else {
         painter.setPen(QColor(0, 0, 0, 19));

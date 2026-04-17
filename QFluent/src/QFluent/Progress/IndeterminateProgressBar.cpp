@@ -164,14 +164,14 @@ bool IndeterminateProgressBar::isError() const
 QColor IndeterminateProgressBar::barColor() const
 {
     if (m_isError) {
-        return Theme::instance()->isDarkTheme() ? QColor(255, 153, 164) : QColor(196, 43, 28);
+        return Theme::isDark() ? QColor(255, 153, 164) : QColor(196, 43, 28);
     }
 
     if (isPaused()) {
-        return Theme::instance()->isDarkTheme() ? QColor(252, 225, 0) : QColor(157, 93, 0);
+        return Theme::isDark() ? QColor(252, 225, 0) : QColor(157, 93, 0);
     }
 
-    return Theme::instance()->isDarkTheme() ? darkBarColor() : lightBarColor();
+    return Theme::isDark() ? darkBarColor() : lightBarColor();
 }
 
 void IndeterminateProgressBar::paintEvent(QPaintEvent *e)
