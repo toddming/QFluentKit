@@ -18,8 +18,8 @@ set(PROJECT_SOURCES
         widget.cpp
         widget.h
         widget.ui
-        AcrylicWidget.cpp
-        AcrylicWidget.h
+        acrylicwidget.cpp
+        acrylicwidget.h
 )
 
 # Application icon

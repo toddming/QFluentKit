@@ -1,7 +1,7 @@
 ﻿#ifndef WIDGET_H
 #define WIDGET_H
 
-#include "AcrylicWidget.h"
+#include "acrylicwidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
