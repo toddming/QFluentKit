@@ -15,6 +15,7 @@ MultiViewComboBox::MultiViewComboBox(QWidget *parent)
 {
     Q_D(MultiViewComboBox);
 
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     installEventFilter(this);
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
@@ -116,6 +117,8 @@ void MultiViewComboBox::removeItem(int index)
         return;
     }
 
+    bool wasSelected = d->m_selectedIndexes.contains(index);
+
     d->m_items.removeAt(index);
 
     // 移除选中
@@ -129,15 +132,23 @@ void MultiViewComboBox::removeItem(int index)
     }
 
     d->updateText();
+    if (wasSelected) {
+        emit selectionChanged();
+    }
 }
 
 void MultiViewComboBox::clear()
 {
     Q_D(MultiViewComboBox);
 
+    bool hadSelection = !d->m_selectedIndexes.isEmpty();
     d->m_items.clear();
     d->m_selectedIndexes.clear();
     d->updateText();
+
+    if (hadSelection) {
+        emit selectionChanged();
+    }
 }
 
 void MultiViewComboBox::setItemSelected(int index, bool selected)

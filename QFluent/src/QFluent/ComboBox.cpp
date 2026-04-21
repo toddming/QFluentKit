@@ -16,9 +16,10 @@ ComboBox::ComboBox(QWidget *parent)
 {
     Q_D(ComboBox);
 
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setCurrentIndex(-1);
 
-    setMaxVisibleItems(-1);
+    setMaxVisibleItems(10);
 
     installEventFilter(this);
 
@@ -125,10 +126,18 @@ void ComboBox::clear()
     Q_D(ComboBox);
 
     if (d->m_currentIndex >= 0) {
-        setText(QString());
+        QString oldText = currentText();
         d->m_currentIndex = -1;
+        setText(QString());
+        d->updateTextState(true);
+        d->m_items.clear();
+        emit currentIndexChanged(-1);
+        if (!oldText.isEmpty()) {
+            emit currentTextChanged(QString());
+        }
+    } else {
+        d->m_items.clear();
     }
-    d->m_items.clear();
 }
 
 int ComboBox::currentIndex() const
@@ -314,7 +323,10 @@ QString ComboBox::placeholderText() const
 void ComboBox::setText(const QString &text)
 {
     QPushButton::setText(text);
-    adjustSize();
+    auto policy = sizePolicy().horizontalPolicy();
+    if (!(policy & QSizePolicy::ExpandFlag) && policy != QSizePolicy::Ignored) {
+        adjustSize();
+    }
 }
 
 void ComboBox::paintEvent(QPaintEvent *event)

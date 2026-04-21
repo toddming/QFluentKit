@@ -46,7 +46,7 @@ public:
     bool m_isHover = false;
     QString m_placeholderText;
     int m_currentIndex = -1;
-    int m_maxVisibleItems = -1;
+    int m_maxVisibleItems = 10;
 
     ComboBoxMenu *m_dropMenu = nullptr;
     TranslateYAnimation *m_arrowAni = nullptr;

@@ -32,7 +32,11 @@ void MultiViewComboBoxPrivate::updateText()
 
     q->style()->unpolish(q);
     q->style()->polish(q);
-    q->adjustSize();
+
+    auto policy = q->sizePolicy().horizontalPolicy();
+    if (!(policy & QSizePolicy::ExpandFlag) && policy != QSizePolicy::Ignored) {
+        q->adjustSize();
+    }
 }
 
 MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()

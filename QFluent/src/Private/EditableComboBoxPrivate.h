@@ -51,9 +51,10 @@ public:
 
     bool m_isPressed = false;
     bool m_isHover = false;
+    bool m_settingCurrentIndex = false;
     QString m_placeholderText;
     int m_currentIndex = -1;
-    int m_maxVisibleItems = -1;
+    int m_maxVisibleItems = 10;
 
     LineEditButton *m_dropButton = nullptr;
     ComboBoxMenu *m_dropMenu = nullptr;

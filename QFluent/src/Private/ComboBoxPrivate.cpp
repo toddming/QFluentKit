@@ -16,7 +16,7 @@ ComboBoxPrivate::ComboBoxPrivate(ComboBox *parent)
     , m_isHover(false)
     , m_placeholderText(QString())
     , m_currentIndex(-1)
-    , m_maxVisibleItems(-1)
+    , m_maxVisibleItems(10)
 {
 }
 

@@ -15,7 +15,7 @@ EditableComboBoxPrivate::EditableComboBoxPrivate(EditableComboBox *parent)
     , m_isHover(false)
     , m_placeholderText(QString())
     , m_currentIndex(-1)
-    , m_maxVisibleItems(-1)
+    , m_maxVisibleItems(10)
 {
 }
 
@@ -153,7 +153,7 @@ void EditableComboBoxPrivate::onClearButtonClicked()
     Q_Q(EditableComboBox);
 
     m_currentIndex = -1;
-    q->clear();
+    q->setText(QString());
 }
 
 void EditableComboBoxPrivate::onDropMenuClosed()
@@ -163,6 +163,8 @@ void EditableComboBoxPrivate::onDropMenuClosed()
 
 void EditableComboBoxPrivate::onComboTextChanged(const QString &text)
 {
+    if (m_settingCurrentIndex) return;
+
     Q_Q(EditableComboBox);
 
     m_currentIndex = -1;
@@ -195,7 +197,7 @@ void EditableComboBoxPrivate::onReturnPressed()
         return;
     }
     int index = q->findText(q->text());
-    if (index > 0 && index != m_currentIndex) {
+    if (index >= 0 && index != m_currentIndex) {
         m_currentIndex = index;
         emit q->currentIndexChanged(index);
     } else if (index == -1) {

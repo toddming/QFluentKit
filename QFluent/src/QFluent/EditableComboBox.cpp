@@ -13,10 +13,11 @@ EditableComboBox::EditableComboBox(QWidget *parent)
 {
     Q_D(EditableComboBox);
 
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     installEventFilter(this);
 
     d->m_currentIndex = -1;
-    d->m_maxVisibleItems = -1;
+    d->m_maxVisibleItems = 10;
     d->m_arrowAni = new TranslateYAnimation(this);
 
     d->m_dropButton = new LineEditButton(FluentIcon(Fluent::IconType::ARROW_DOWN).qicon(), this);
@@ -130,10 +131,19 @@ void EditableComboBox::clear()
     Q_D(EditableComboBox);
 
     if (d->m_currentIndex >= 0) {
-        setText(QString());
+        QString oldText = currentText();
         d->m_currentIndex = -1;
+        d->m_settingCurrentIndex = true;
+        setText(QString());
+        d->m_settingCurrentIndex = false;
+        d->m_items.clear();
+        emit currentIndexChanged(-1);
+        if (!oldText.isEmpty()) {
+            emit currentTextChanged(QString());
+        }
+    } else {
+        d->m_items.clear();
     }
-    d->m_items.clear();
 }
 
 int EditableComboBox::currentIndex() const
@@ -162,7 +172,7 @@ void EditableComboBox::setCurrentIndex(int index)
 {
     Q_D(EditableComboBox);
 
-    if (index >= count() || index == d->m_currentIndex) {
+    if (index < -1 || index >= count() || index == d->m_currentIndex) {
         return;
     }
 
@@ -171,15 +181,28 @@ void EditableComboBox::setCurrentIndex(int index)
         return;
     }
 
-    if (index < 0) {
+    QString oldText = currentText();
+
+    d->m_settingCurrentIndex = true;
+
+    if (index == -1) {
         d->m_currentIndex = -1;
-        setText(QString());
         setPlaceholderText(d->m_placeholderText);
+        setText(QString());
+        d->updateTextState(true);
     } else {
         d->m_currentIndex = index;
         setText(d->m_items.at(index).text);
         d->updateTextState(false);
     }
+
+    d->m_settingCurrentIndex = false;
+
+    if (oldText != currentText()) {
+        emit currentTextChanged(currentText());
+    }
+
+    emit currentIndexChanged(index);
 }
 
 void EditableComboBox::setCurrentText(const QString &text)
@@ -312,7 +335,10 @@ QString EditableComboBox::placeholderText() const
 void EditableComboBox::setText(const QString &text)
 {
     LineEdit::setText(text);
-    adjustSize();
+    auto policy = sizePolicy().horizontalPolicy();
+    if (!(policy & QSizePolicy::ExpandFlag) && policy != QSizePolicy::Ignored) {
+        adjustSize();
+    }
 }
 
 void EditableComboBox::setCompleterMenu(CompleterMenu *menu)
