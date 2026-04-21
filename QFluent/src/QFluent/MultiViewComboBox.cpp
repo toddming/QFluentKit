@@ -121,8 +121,11 @@ void MultiViewComboBox::removeItem(int index)
 
     d->m_items.removeAt(index);
 
-    // 移除选中
-    d->m_selectedIndexes.removeAll(index);
+    // 移除选中并发射信号
+    if (wasSelected) {
+        d->m_selectedIndexes.removeAll(index);
+        emit itemDeselected(index);
+    }
 
     // 调整剩余选中索引
     for (int &selIndex : d->m_selectedIndexes) {
@@ -142,6 +145,12 @@ void MultiViewComboBox::clear()
     Q_D(MultiViewComboBox);
 
     bool hadSelection = !d->m_selectedIndexes.isEmpty();
+
+    // 发射 itemDeselected 信号
+    for (int selIndex : d->m_selectedIndexes) {
+        emit itemDeselected(selIndex);
+    }
+
     d->m_items.clear();
     d->m_selectedIndexes.clear();
     d->updateText();
@@ -164,13 +173,24 @@ void MultiViewComboBox::setItemSelected(int index, bool selected)
         return;
     }
 
+    bool wasSelected = d->m_selectedIndexes.contains(index);
+    if (selected == wasSelected) {
+        return;
+    }
+
+    // 超过最大选择数限制时禁止选中
+    if (selected && d->m_maxSelectedCount > 0
+        && d->m_selectedIndexes.size() >= d->m_maxSelectedCount) {
+        return;
+    }
+
     if (selected) {
-        if (!d->m_selectedIndexes.contains(index)) {
-            d->m_selectedIndexes.append(index);
-            std::sort(d->m_selectedIndexes.begin(), d->m_selectedIndexes.end());
-        }
+        d->m_selectedIndexes.append(index);
+        std::sort(d->m_selectedIndexes.begin(), d->m_selectedIndexes.end());
+        emit itemSelected(index);
     } else {
         d->m_selectedIndexes.removeAll(index);
+        emit itemDeselected(index);
     }
 
     d->updateText();
@@ -187,6 +207,32 @@ QList<int> MultiViewComboBox::selectedIndexes() const
 {
     Q_D(const MultiViewComboBox);
     return d->m_selectedIndexes;
+}
+
+int MultiViewComboBox::maxSelectedCount() const
+{
+    Q_D(const MultiViewComboBox);
+    return d->m_maxSelectedCount;
+}
+
+void MultiViewComboBox::setMaxSelectedCount(int max)
+{
+    Q_D(MultiViewComboBox);
+    if (d->m_maxSelectedCount == max) {
+        return;
+    }
+
+    d->m_maxSelectedCount = max;
+
+    // 如果当前选中数已超过新限制，移除多余的选中项
+    if (max > 0 && d->m_selectedIndexes.size() > max) {
+        while (d->m_selectedIndexes.size() > max) {
+            int index = d->m_selectedIndexes.takeLast();
+            emit itemDeselected(index);
+        }
+        d->updateText();
+        emit selectionChanged();
+    }
 }
 
 QStringList MultiViewComboBox::selectedTexts() const

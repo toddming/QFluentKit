@@ -35,7 +35,8 @@ public:
     bool m_isHover = false;
     QString m_placeholderText;
     int m_maxVisibleItems = 10;
-    QList<int> m_selectedIndexes;  // 选中的索引列表
+    QList<int> m_selectedIndexes;
+    int m_maxSelectedCount = -1;  // 最大选择数限制，-1 为不限制
 
     MultiViewComboBoxMenu *m_dropMenu = nullptr;
     TranslateYAnimation *m_arrowAni = nullptr;

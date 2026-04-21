@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <QPushButton>
 #include <QVariant>
@@ -41,6 +41,10 @@ public:
     QStringList selectedTexts() const;
     QList<QVariant> selectedDatas() const;
 
+    // 最大选择数限制，-1 为不限制
+    int maxSelectedCount() const;
+    void setMaxSelectedCount(int max);
+
     // 项目访问
     int count() const;
     QString itemText(int index) const;
@@ -65,6 +69,8 @@ public:
 
 signals:
     void selectionChanged();
+    void itemSelected(int index);
+    void itemDeselected(int index);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

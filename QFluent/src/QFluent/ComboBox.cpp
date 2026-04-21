@@ -58,6 +58,8 @@ void ComboBox::insertItem(int index, const QString &text, const QVariant &userDa
 
     if (index <= d->m_currentIndex) {
         setCurrentIndex(d->m_currentIndex + 1);
+    } else if (d->m_currentIndex < 0 && count() > 0) {
+        setCurrentIndex(0);
     }
 }
 
@@ -72,6 +74,8 @@ void ComboBox::insertItem(int index, const QIcon &icon, const QString &text, con
 
     if (index <= d->m_currentIndex) {
         setCurrentIndex(d->m_currentIndex + 1);
+    } else if (d->m_currentIndex < 0 && count() > 0) {
+        setCurrentIndex(0);
     }
 }
 
@@ -186,7 +190,7 @@ void ComboBox::setCurrentIndex(int index)
         setPlaceholderText(d->m_placeholderText);
     } else {
         d->m_currentIndex = index;
-        setText(d->m_items[index].text);
+        QPushButton::setText(d->m_items[index].text);
         d->updateTextState(false);
     }
 
@@ -322,11 +326,7 @@ QString ComboBox::placeholderText() const
 
 void ComboBox::setText(const QString &text)
 {
-    QPushButton::setText(text);
-    auto policy = sizePolicy().horizontalPolicy();
-    if (!(policy & QSizePolicy::ExpandFlag) && policy != QSizePolicy::Ignored) {
-        adjustSize();
-    }
+    setCurrentText(text);
 }
 
 void ComboBox::paintEvent(QPaintEvent *event)

@@ -1,4 +1,4 @@
-#include "EditableComboBox.h"
+﻿#include "EditableComboBox.h"
 #include <QApplication>
 #include <QScreen>
 #include <QActionGroup>
@@ -168,6 +168,17 @@ QVariant EditableComboBox::currentData(int role) const
     return QVariant();
 }
 
+void EditableComboBox::setCurrentText(const QString &text)
+{
+    int index = findText(text);
+    if (index >= 0) {
+        setCurrentIndex(index);
+    } else {
+        addItem(text);
+        setCurrentIndex(count() - 1);
+    }
+}
+
 void EditableComboBox::setCurrentIndex(int index)
 {
     Q_D(EditableComboBox);
@@ -203,18 +214,6 @@ void EditableComboBox::setCurrentIndex(int index)
     }
 
     emit currentIndexChanged(index);
-}
-
-void EditableComboBox::setCurrentText(const QString &text)
-{
-    if (text == currentText()) {
-        return;
-    }
-
-    int index = findText(text);
-    if (index >= 0) {
-        setCurrentIndex(index);
-    }
 }
 
 int EditableComboBox::count() const
@@ -319,8 +318,9 @@ void EditableComboBox::setPlaceholderText(const QString &text)
 {
     Q_D(EditableComboBox);
     d->m_placeholderText = text;
+    LineEdit::setPlaceholderText(text);
     if (d->m_currentIndex == -1) {
-        setText(text);
+        setText(QString());
         d->updateTextState(true);
     }
 }
