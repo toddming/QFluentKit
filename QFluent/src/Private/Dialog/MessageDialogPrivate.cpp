@@ -17,8 +17,8 @@ void MessageDialogPrivate::setQss()
     m_buttonGroup->setObjectName("buttonGroup");
     m_cancelButton->setObjectName("cancelButton");
 
-    StyleSheetManager::instance()->registerWidget(m_dialog, Fluent::ThemeStyle::DIALOG);
-    StyleSheetManager::instance()->registerWidget(m_contentLabel, Fluent::ThemeStyle::DIALOG);
+    StyleSheet::registerWidget(m_dialog, Fluent::ThemeStyle::DIALOG);
+    StyleSheet::registerWidget(m_contentLabel, Fluent::ThemeStyle::DIALOG);
 
     m_yesButton->adjustSize();
     m_cancelButton->adjustSize();

@@ -402,8 +402,8 @@ void TabBar::initWidget()
             this, &TabBar::tabAddRequested);
 
     m_view->setObjectName(QStringLiteral("view"));
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TAB_VIEW);
-    StyleSheetManager::instance()->registerWidget(m_view, Fluent::ThemeStyle::TAB_VIEW);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::TAB_VIEW);
+    StyleSheet::registerWidget(m_view, Fluent::ThemeStyle::TAB_VIEW);
 
     initLayout();
 }

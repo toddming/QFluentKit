@@ -19,7 +19,7 @@ PivotItem::PivotItem(const QString &text, QWidget *parent)
     setAttribute(Qt::WA_LayoutUsesWidgetRect);
     setProperty("isSelected", false);
     Theme::setFont(this, 18);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::PIVOT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::PIVOT);
     connect(this, &PivotItem::clicked, [this]() {
         emit itemClicked(true);
     });
@@ -68,7 +68,7 @@ Pivot::Pivot(QWidget *parent)
         this
     );
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::PIVOT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::PIVOT);
 }
 
 Pivot::~Pivot() {

@@ -257,8 +257,8 @@ void ExpandSettingCard::initWidget() {
     m_scrollWidget->setObjectName("scrollWidget");
     setProperty("isExpand", false);
 
-    StyleSheetManager::instance()->registerWidget(m_card, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
+    StyleSheet::registerWidget(m_card, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::EXPAND_SETTING_CARD);
 
     m_card->installEventFilter(this);
     connect(m_expandAni, &QPropertyAnimation::valueChanged, this, &ExpandSettingCard::onExpandValueChanged);

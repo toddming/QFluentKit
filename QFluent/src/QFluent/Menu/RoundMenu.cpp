@@ -41,7 +41,7 @@ RoundMenu::RoundMenu(const QString &title, QWidget *parent)
 
     d->setShadowEffect();
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::MENU);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::MENU);
 
     connect(d->m_view, &QListWidget::itemClicked, this, &RoundMenu::onItemClicked);
     connect(d->m_view, &QListWidget::itemEntered, this, &RoundMenu::onItemEntered);

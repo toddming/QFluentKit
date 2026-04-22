@@ -95,8 +95,8 @@ void NavigationPanel::initWidget()
 
     // 设置样式
     setProperty("menu", false);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
-    StyleSheetManager::instance()->registerWidget(m_scrollWidget, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
+    StyleSheet::registerWidget(m_scrollWidget, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
 
     initLayout();
 }

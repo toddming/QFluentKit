@@ -54,7 +54,7 @@ public:
         , m_isRightClickSelection(false)
     {
         // 样式注册
-        StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LIST_VIEW);
+        StyleSheet::registerWidget(this, Fluent::ThemeStyle::LIST_VIEW);
 
         // 初始化UI
         this->setItemDelegate(m_delegate);

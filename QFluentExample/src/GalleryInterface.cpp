@@ -173,8 +173,7 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
 
     view->setObjectName("view");
 
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/gallery_interface.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/gallery_interface.qss");
 }
 
 ExampleCard* GalleryInterface::addExampleCard(const QString &title, QWidget *widget,

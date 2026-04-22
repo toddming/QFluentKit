@@ -27,7 +27,7 @@ LineEditButton::LineEditButton(const QIcon& icon, QWidget* parent)
     setCursor(Qt::PointingHandCursor);
     setIconSize(QSize(10, 10));
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 }
 
 void LineEditButton::setAction(QAction* action) {
@@ -100,7 +100,7 @@ LineEdit::LineEdit(QWidget* parent)
     setClearButtonEnabled(true);
     setProperty("transparent", true);
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
     
     m_layout->setSpacing(3);
     m_layout->setContentsMargins(4, 4, 4, 4);

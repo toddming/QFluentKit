@@ -65,7 +65,7 @@ public:
         , m_isRightClickSelection(false)
     {
         // 注册样式
-        StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TABLE_VIEW);
+        StyleSheet::registerWidget(this, Fluent::ThemeStyle::TABLE_VIEW);
 
         setupUI();
         setupConnections();

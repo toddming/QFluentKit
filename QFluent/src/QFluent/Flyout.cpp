@@ -160,7 +160,7 @@ void FlyoutView::initWidgets()
     m_titleLabel->setObjectName("titleLabel");
     m_contentLabel->setObjectName("contentLabel");
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TEACHING_TIP);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::TEACHING_TIP);
 
     initLayout();
 }

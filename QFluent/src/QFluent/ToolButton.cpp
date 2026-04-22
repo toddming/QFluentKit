@@ -46,7 +46,7 @@ ToolButton::ToolButton(const FluentIconBase &icon, QWidget *parent)
 
 void ToolButton::init()
 {
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::BUTTON);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::BUTTON);
 }
 
 void ToolButton::setFluentIcon(const FluentIconBase &icon)

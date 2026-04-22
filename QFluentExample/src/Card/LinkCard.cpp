@@ -77,9 +77,7 @@ void LinkCardView::initWidget()
 
     m_view->setObjectName("view");
     
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/link_card.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
-
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/link_card.qss");
 }
 
 void LinkCardView::addCard(const QIcon &icon, const QString &title, const QString &content, const QString &url)

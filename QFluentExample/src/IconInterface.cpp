@@ -289,12 +289,10 @@ void IconCardView::setQss() {
     m_scrollWidget->setObjectName("scrollWidget");
 
     {
-        auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/icon_interface.qss");
-        StyleSheetManager::instance()->registerWidget(styleSource, this);
+        StyleSheet::registerWidget(this, ":/res/style/{theme}/icon_interface.qss");
     }
     {
-        auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/icon_interface.qss");
-        StyleSheetManager::instance()->registerWidget(styleSource, m_scrollWidget);
+        StyleSheet::registerWidget(m_scrollWidget, ":/res/style/{theme}/icon_interface.qss");
     }
 
     if (m_currentIndex >= 0 && m_currentIndex < m_cards.size()) {

@@ -71,8 +71,7 @@ void SampleCardView::initWidget()
     
     m_titleLabel->setObjectName("viewTitleLabel");
     
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/sample_card.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/sample_card.qss");
 }
 
 void SampleCardView::createFlowLayout()

@@ -47,7 +47,7 @@ void PushButton::init()
 {
     installEventFilter(this);
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::BUTTON);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::BUTTON);
 
     setProperty("hasIcon", false);
 

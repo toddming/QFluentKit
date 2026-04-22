@@ -131,7 +131,7 @@ void SwitchButton::initWidget() {
     installEventFilter(this);
     setFixedHeight(22);
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SWITCH_BUTTON);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::SWITCH_BUTTON);
 
     m_hBox = new QHBoxLayout(this);
     m_indicator = new Indicator(this);

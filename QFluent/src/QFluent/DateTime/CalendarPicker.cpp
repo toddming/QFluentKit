@@ -19,7 +19,7 @@ CalendarPicker::CalendarPicker(QWidget* parent)
 {
     setText("选择日期");
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
     connect(this, &QPushButton::clicked, this, &CalendarPicker::onShowCalendarView);
 }
 

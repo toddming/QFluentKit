@@ -19,7 +19,7 @@ CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
     Q_D(CheckBox);
     d->q_ptr = this;
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CHECK_BOX);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::CHECK_BOX);
 
     d->m_isPressed = false;
     d->m_isHover = false;

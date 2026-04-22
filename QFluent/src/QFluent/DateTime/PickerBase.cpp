@@ -127,7 +127,7 @@ DateSeparatorWidget::DateSeparatorWidget(Qt::Orientation orient, QWidget* parent
         setFixedWidth(1);
     }
     setAttribute(Qt::WA_StyledBackground);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
 }
 
 // ItemMaskWidget 实现
@@ -230,7 +230,7 @@ PickerBase::PickerBase(QWidget* parent)
     m_hBoxLayout->setSpacing(0);
     m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
     m_hBoxLayout->setSizeConstraint(QHBoxLayout::SetFixedSize);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
     
     connect(this, &QPushButton::clicked, this, &PickerBase::onShowPanel);
 }
@@ -503,7 +503,7 @@ void PickerPanel::initWidget()
     setResetEnabled(false);
     
     m_view->setObjectName("view");
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::TIME_PICKER);
 }
 
 void PickerPanel::setShadowEffect(int blurRadius, const QPoint& offset, const QColor& color)

@@ -123,6 +123,5 @@ void Frame::addWidget(QWidget *widget)
 
 void Frame::applyStyleSheet()
 {
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/view_interface.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/view_interface.qss");
 }

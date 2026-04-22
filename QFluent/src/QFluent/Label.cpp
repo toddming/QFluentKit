@@ -12,14 +12,14 @@ FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* pa
     : QLabel(parent) {
     setFont(Theme::font(fontSize, weight));
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
 
 FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(text, parent) {
     setFont(Theme::font(fontSize, weight));
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
 
 
@@ -33,7 +33,7 @@ void FluentLabelBase::setTextColor(const QColor& lightColor, const QColor& darkC
         QString("FluentLabelBase{color:%1}").arg(darkColorStr)
         );
 
-    StyleSheetManager::instance()->registerWidget(customStyle, this);
+    StyleSheet::registerWidget(this, customStyle);
 
 }
 
@@ -122,7 +122,7 @@ void HyperlinkLabel::init()
 {
     Theme::setFont(this, 14);
     setUnderlineVisible(false);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LABEL);
 
     setCursor(Qt::PointingHandCursor);
     connect(this, &HyperlinkLabel::clicked, this, &HyperlinkLabel::onClicked);

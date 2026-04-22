@@ -26,7 +26,7 @@ SettingCardGroup::SettingCardGroup(const QString &title, QWidget *parent)
     m_vBoxLayout->addSpacing(12);
     m_vBoxLayout->addLayout(m_cardLayout, 1);
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SETTING_CARD_GROUP);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::SETTING_CARD_GROUP);
 
     // 设置字体大小为 20
     QFont font = m_titleLabel->font();

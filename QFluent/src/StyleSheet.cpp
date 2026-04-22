@@ -1,4 +1,4 @@
-﻿#include "StyleSheet.h"
+#include "StyleSheet.h"
 #include <QApplication>
 #include <QRegularExpression>
 #include <QTextStream>
@@ -19,7 +19,7 @@ namespace {
     static int s_cacheVersion = 0;
 }
 
-QHash<QString, QString> StyleSheetHelper::themeColorMap() {
+QHash<QString, QString> StyleSheet::themeColorMap() {
     // 真正的静态缓存，只在第一次调用时初始化
     static QHash<QString, QString> s_colorMap;
 
@@ -50,13 +50,13 @@ QHash<QString, QString> StyleSheetHelper::themeColorMap() {
 }
 
 // 清除主题色缓存（在主题色改变时调用）
-void StyleSheetHelper::clearThemeColorCache()
+void StyleSheet::clearThemeColorCache()
 {
     // 递增版本号以强制缓存更新
     ++s_cacheVersion;
 }
 
-QString StyleSheetHelper::applyThemeColor(const QString& qss) {
+QString StyleSheet::applyThemeColor(const QString& qss) {
     if (qss.isEmpty()) {
         return qss;
     }
@@ -110,7 +110,7 @@ QString StyleSheetHelper::applyThemeColor(const QString& qss) {
     return result;
 }
 
-QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
+QString StyleSheet::styleSheetFromFile(const QString& filePath) {
     static QHash<QString, QString> s_cache;
 
     if (s_cache.contains(filePath)) {
@@ -119,7 +119,7 @@ QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("StyleSheetHelper: Failed to open QSS file: %s", qPrintable(filePath));
+        qWarning("StyleSheet: Failed to open QSS file: %s", qPrintable(filePath));
         return QString();
     }
 
@@ -130,7 +130,7 @@ QString StyleSheetHelper::styleSheetFromFile(const QString& filePath) {
     return content;
 }
 
-QString StyleSheetHelper::styleSheet(const std::shared_ptr<StyleSheetBase>& source,
+QString StyleSheet::styleSheet(const std::shared_ptr<StyleSheetBase>& source,
                                         Fluent::ThemeMode theme) {
     if (!source) {
         return QString();
@@ -138,11 +138,11 @@ QString StyleSheetHelper::styleSheet(const std::shared_ptr<StyleSheetBase>& sour
     return applyThemeColor(source->content(theme));
 }
 
-QString StyleSheetHelper::styleSheet(const QString& source, Fluent::ThemeMode theme) {
+QString StyleSheet::styleSheet(const QString& source, Fluent::ThemeMode theme) {
     return styleSheet(std::make_shared<StyleSheetFile>(source), theme);
 }
 
-void StyleSheetHelper::setStyleSheet(QWidget* widget,
+void StyleSheet::setStyleSheet(QWidget* widget,
                                      const std::shared_ptr<StyleSheetBase>& source,
                                      Fluent::ThemeMode theme, bool registerWidget) {
     if (!widget) {
@@ -151,19 +151,19 @@ void StyleSheetHelper::setStyleSheet(QWidget* widget,
 
     if (registerWidget) {
         // 注册到管理器，管理器会负责设置样式表
-        StyleSheetManager::instance()->registerWidget(source, widget);
+        StyleSheetManager::instance()->registerWidget(widget, source);
     } else {
         // 直接设置样式表，不注册
         widget->setStyleSheet(styleSheet(source, theme));
     }
 }
 
-void StyleSheetHelper::setStyleSheet(QWidget* widget, const QString& source,
+void StyleSheet::setStyleSheet(QWidget* widget, const QString& source,
                                      Fluent::ThemeMode theme, bool registerWidget) {
     setStyleSheet(widget, std::make_shared<StyleSheetFile>(source), theme, registerWidget);
 }
 
-void StyleSheetHelper::setCustomStyleSheet(QWidget* widget, const QString& lightQss,
+void StyleSheet::setCustomStyleSheet(QWidget* widget, const QString& lightQss,
                                            const QString& darkQss) {
     if (!widget) {
         return;
@@ -171,7 +171,7 @@ void StyleSheetHelper::setCustomStyleSheet(QWidget* widget, const QString& light
     CustomStyleSheet(widget).setCustomStyleSheet(lightQss, darkQss);
 }
 
-void StyleSheetHelper::addStyleSheet(QWidget* widget,
+void StyleSheet::addStyleSheet(QWidget* widget,
                                      const std::shared_ptr<StyleSheetBase>& source,
                                      Fluent::ThemeMode theme, bool registerWidget) {
     if (!widget) {
@@ -179,7 +179,7 @@ void StyleSheetHelper::addStyleSheet(QWidget* widget,
     }
 
     if (registerWidget) {
-        StyleSheetManager::instance()->registerWidget(source, widget, false);
+        StyleSheetManager::instance()->registerWidget(widget, source, false);
         QString qss = styleSheet(StyleSheetManager::instance()->source(widget), theme);
         widget->setStyleSheet(qss);
     } else {
@@ -191,9 +191,39 @@ void StyleSheetHelper::addStyleSheet(QWidget* widget,
     }
 }
 
-void StyleSheetHelper::addStyleSheet(QWidget* widget, const QString& source,
+void StyleSheet::addStyleSheet(QWidget* widget, const QString& source,
                                      Fluent::ThemeMode theme, bool registerWidget) {
     addStyleSheet(widget, std::make_shared<StyleSheetFile>(source), theme, registerWidget);
+}
+
+// ==================== StyleSheet 公开便捷方法 ====================
+
+void StyleSheet::registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset) {
+    StyleSheetManager::instance()->registerWidget(widget, type, reset);
+}
+
+void StyleSheet::registerWidget(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source, bool reset) {
+    StyleSheetManager::instance()->registerWidget(widget, source, reset);
+}
+
+void StyleSheet::registerWidget(QWidget* widget, const QString& templatePath, bool reset) {
+    StyleSheetManager::instance()->registerWidget(widget, std::make_shared<TemplateStyleSheetFile>(templatePath), reset);
+}
+
+void StyleSheet::deregisterWidget(QWidget* widget) {
+    StyleSheetManager::instance()->deregisterWidget(widget);
+}
+
+bool StyleSheet::isRegistered(QWidget* widget) {
+    return StyleSheetManager::instance()->isRegistered(widget);
+}
+
+std::shared_ptr<StyleSheetCompose> StyleSheet::source(QWidget* widget) {
+    return StyleSheetManager::instance()->source(widget);
+}
+
+void StyleSheet::updateStyleSheet(bool lazy) {
+    StyleSheetManager::instance()->updateStyleSheet(lazy);
 }
 
 // ==================== StyleSheetBase 实现 ====================
@@ -204,11 +234,11 @@ QString StyleSheetBase::path(Fluent::ThemeMode theme) const {
 }
 
 QString StyleSheetBase::content(Fluent::ThemeMode theme) const {
-    return StyleSheetHelper::styleSheetFromFile(path(theme));
+    return StyleSheet::styleSheetFromFile(path(theme));
 }
 
 void StyleSheetBase::apply(QWidget* widget, Fluent::ThemeMode theme) {
-    StyleSheetHelper::setStyleSheet(widget, clone(), theme);
+    StyleSheet::setStyleSheet(widget, clone(), theme);
 }
 
 
@@ -272,41 +302,34 @@ std::shared_ptr<StyleSheetBase> TemplateStyleSheetFile::clone() const {
 FluentStyleSheet::FluentStyleSheet(Fluent::ThemeStyle type) : m_type(type) {}
 
 const QMap<Fluent::ThemeStyle, QString>& FluentStyleSheet::typeMap() {
-    static QMap<Fluent::ThemeStyle, QString> typeMap;
-    static bool initialized = false;
-
-    if (!initialized) {
-
-        typeMap.insert(Fluent::ThemeStyle::MENU, "menu");
-        typeMap.insert(Fluent::ThemeStyle::LABEL, "label");
-        typeMap.insert(Fluent::ThemeStyle::PIVOT, "pivot");
-        typeMap.insert(Fluent::ThemeStyle::BUTTON, "button");
-        typeMap.insert(Fluent::ThemeStyle::DIALOG, "dialog");
-        typeMap.insert(Fluent::ThemeStyle::SLIDER, "slider");
-        typeMap.insert(Fluent::ThemeStyle::INFO_BAR, "info_bar");
-        typeMap.insert(Fluent::ThemeStyle::SPIN_BOX, "spin_box");
-        typeMap.insert(Fluent::ThemeStyle::TAB_VIEW, "tab_view");
-        typeMap.insert(Fluent::ThemeStyle::TOOL_TIP, "tool_tip");
-        typeMap.insert(Fluent::ThemeStyle::CHECK_BOX, "check_box");
-        typeMap.insert(Fluent::ThemeStyle::COMBO_BOX, "combo_box");
-        typeMap.insert(Fluent::ThemeStyle::LINE_EDIT, "line_edit");
-        typeMap.insert(Fluent::ThemeStyle::LIST_VIEW, "list_view");
-        typeMap.insert(Fluent::ThemeStyle::TABLE_VIEW, "table_view");
-        typeMap.insert(Fluent::ThemeStyle::CARD_WIDGET, "card_widget");
-        typeMap.insert(Fluent::ThemeStyle::TIME_PICKER, "time_picker");
-        typeMap.insert(Fluent::ThemeStyle::COLOR_DIALOG, "color_dialog");
-        typeMap.insert(Fluent::ThemeStyle::SETTING_CARD, "setting_card");
-        typeMap.insert(Fluent::ThemeStyle::TEACHING_TIP, "teaching_tip");
-        typeMap.insert(Fluent::ThemeStyle::SWITCH_BUTTON, "switch_button");
-        typeMap.insert(Fluent::ThemeStyle::MESSAGE_DIALOG, "message_dialog");
-        typeMap.insert(Fluent::ThemeStyle::CALENDAR_PICKER, "calendar_picker");
-        typeMap.insert(Fluent::ThemeStyle::SETTING_CARD_GROUP, "setting_card_group");
-        typeMap.insert(Fluent::ThemeStyle::EXPAND_SETTING_CARD, "expand_setting_card");
-        typeMap.insert(Fluent::ThemeStyle::NAVIGATION_INTERFACE, "navigation_interface");
-
-        initialized = true;
-    }
-
+    static const QMap<Fluent::ThemeStyle, QString> typeMap = {
+        {Fluent::ThemeStyle::MENU,                   QStringLiteral("menu")},
+        {Fluent::ThemeStyle::LABEL,                  QStringLiteral("label")},
+        {Fluent::ThemeStyle::PIVOT,                  QStringLiteral("pivot")},
+        {Fluent::ThemeStyle::BUTTON,                 QStringLiteral("button")},
+        {Fluent::ThemeStyle::DIALOG,                 QStringLiteral("dialog")},
+        {Fluent::ThemeStyle::SLIDER,                 QStringLiteral("slider")},
+        {Fluent::ThemeStyle::INFO_BAR,               QStringLiteral("info_bar")},
+        {Fluent::ThemeStyle::SPIN_BOX,               QStringLiteral("spin_box")},
+        {Fluent::ThemeStyle::TAB_VIEW,               QStringLiteral("tab_view")},
+        {Fluent::ThemeStyle::TOOL_TIP,               QStringLiteral("tool_tip")},
+        {Fluent::ThemeStyle::CHECK_BOX,              QStringLiteral("check_box")},
+        {Fluent::ThemeStyle::COMBO_BOX,              QStringLiteral("combo_box")},
+        {Fluent::ThemeStyle::LINE_EDIT,              QStringLiteral("line_edit")},
+        {Fluent::ThemeStyle::LIST_VIEW,              QStringLiteral("list_view")},
+        {Fluent::ThemeStyle::TABLE_VIEW,             QStringLiteral("table_view")},
+        {Fluent::ThemeStyle::CARD_WIDGET,            QStringLiteral("card_widget")},
+        {Fluent::ThemeStyle::TIME_PICKER,            QStringLiteral("time_picker")},
+        {Fluent::ThemeStyle::COLOR_DIALOG,           QStringLiteral("color_dialog")},
+        {Fluent::ThemeStyle::SETTING_CARD,           QStringLiteral("setting_card")},
+        {Fluent::ThemeStyle::TEACHING_TIP,           QStringLiteral("teaching_tip")},
+        {Fluent::ThemeStyle::SWITCH_BUTTON,          QStringLiteral("switch_button")},
+        {Fluent::ThemeStyle::MESSAGE_DIALOG,         QStringLiteral("message_dialog")},
+        {Fluent::ThemeStyle::CALENDAR_PICKER,        QStringLiteral("calendar_picker")},
+        {Fluent::ThemeStyle::SETTING_CARD_GROUP,     QStringLiteral("setting_card_group")},
+        {Fluent::ThemeStyle::EXPAND_SETTING_CARD,    QStringLiteral("expand_setting_card")},
+        {Fluent::ThemeStyle::NAVIGATION_INTERFACE,   QStringLiteral("navigation_interface")},
+    };
     return typeMap;
 }
 
@@ -398,7 +421,7 @@ void CustomStyleSheet::apply(QWidget* widget, Fluent::ThemeMode theme) {
     }
 
     // 创建新的CustomStyleSheet实例并应用
-    StyleSheetHelper::setStyleSheet(widget, std::make_shared<CustomStyleSheet>(widget), theme);
+    StyleSheet::setStyleSheet(widget, std::make_shared<CustomStyleSheet>(widget), theme);
 }
 
 // ==================== StyleSheetCompose 实现 ====================
@@ -511,7 +534,7 @@ void CustomStyleSheetWatcher::applyStyleSheetIfNeeded()
     auto* widget = m_watchedWidget;
     auto compose = StyleSheetManager::instance()->source(widget);
     if (compose && compose->size() > 0) {
-        const QString qss = StyleSheetHelper::styleSheet(compose, Theme::themeMode());
+        const QString qss = StyleSheet::styleSheet(compose, Theme::themeMode());
         widget->setStyleSheet(qss);
     }
 
@@ -540,8 +563,9 @@ StyleSheetManager* StyleSheetManager::instance() {
     return s_styleSheetManager();
 }
 
-void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& source,
-                                       QWidget* widget, bool reset) {
+void StyleSheetManager::registerWidget(QWidget* widget,
+                                       const std::shared_ptr<StyleSheetBase>& source,
+                                       bool reset) {
     if (!widget || !source) {
         return;
     }
@@ -573,7 +597,11 @@ void StyleSheetManager::registerWidget(const std::shared_ptr<StyleSheetBase>& so
     }
 
     // 立即应用样式
-    widget->setStyleSheet(StyleSheetHelper::styleSheet(m_widgets[widget]));
+    widget->setStyleSheet(StyleSheet::styleSheet(m_widgets[widget]));
+}
+
+void StyleSheetManager::registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset) {
+    registerWidget(widget, std::make_shared<FluentStyleSheet>(type), reset);
 }
 
 void StyleSheetManager::deregisterWidget(QWidget* widget) {
@@ -589,10 +617,6 @@ void StyleSheetManager::deregisterWidget(QWidget* widget) {
     }
 
     m_widgets.remove(widget);
-}
-
-void StyleSheetManager::registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset) {
-    registerWidget(std::make_shared<FluentStyleSheet>(type), widget, reset);
 }
 
 std::shared_ptr<StyleSheetCompose> StyleSheetManager::source(QWidget* widget) const {
@@ -633,9 +657,9 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
 
         if (!lazy || widget->isVisible()) {
             // 可见或非懒加载模式：立即更新样式表
-            setStyleSheet(widget, source, Theme::themeMode(), false);
+            StyleSheet::setStyleSheet(widget, source, Theme::themeMode(), false);
         } else {
-            // 修复：懒加载模式 - 设置 dirty 标记，等待 widget 变为可见时更新
+            // 懒加载模式 - 设置 dirty 标记，等待 widget 变为可见时更新
             // 通过 CustomStyleSheetWatcher 的 eventFilter 在 showEvent 时触发更新
             if (auto* watcher = widget->findChild<CustomStyleSheetWatcher*>()) {
                 watcher->markDirty();
@@ -646,32 +670,4 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
     for (QWidget* widget : widgetsToRemove) {
         deregisterWidget(widget);
     }
-}
-
-// StyleSheetManager 的静态便捷方法
-void StyleSheetManager::setStyleSheet(QWidget* widget,
-                                      const std::shared_ptr<StyleSheetBase>& source,
-                                      Fluent::ThemeMode theme, bool registerWidget) {
-    StyleSheetHelper::setStyleSheet(widget, source, theme, registerWidget);
-}
-
-void StyleSheetManager::setStyleSheet(QWidget* widget, const QString& source,
-                                      Fluent::ThemeMode theme, bool registerWidget) {
-    StyleSheetHelper::setStyleSheet(widget, source, theme, registerWidget);
-}
-
-void StyleSheetManager::setCustomStyleSheet(QWidget* widget, const QString& lightQss,
-                                            const QString& darkQss) {
-    StyleSheetHelper::setCustomStyleSheet(widget, lightQss, darkQss);
-}
-
-void StyleSheetManager::addStyleSheet(QWidget* widget,
-                                      const std::shared_ptr<StyleSheetBase>& source,
-                                      Fluent::ThemeMode theme, bool registerWidget) {
-    StyleSheetHelper::addStyleSheet(widget, source, theme, registerWidget);
-}
-
-void StyleSheetManager::addStyleSheet(QWidget* widget, const QString& source,
-                                      Fluent::ThemeMode theme, bool registerWidget) {
-    StyleSheetHelper::addStyleSheet(widget, source, theme, registerWidget);
 }

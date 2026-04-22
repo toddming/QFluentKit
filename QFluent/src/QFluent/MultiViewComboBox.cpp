@@ -18,7 +18,7 @@ MultiViewComboBox::MultiViewComboBox(QWidget *parent)
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     installEventFilter(this);
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
 
     d->m_arrowAni = new TranslateYAnimation(this);
     d->updateText();  // 初始化文本

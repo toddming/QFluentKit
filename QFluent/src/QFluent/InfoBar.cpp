@@ -215,7 +215,7 @@ void InfoBar::setStyleSheet()
     }
 
     setProperty("type", InfoBarManager::toString(m_type));
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::INFO_BAR);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::INFO_BAR);
 }
 
 void InfoBar::fadeOut()

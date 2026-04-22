@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include <QObject>
 #include <QMap>
 #include <QHash>
+#include <QPointer>
 #include <memory>
 #include <vector>
 
@@ -10,20 +11,20 @@
 
 class QWidget;
 class StyleSheetBase;
+class StyleSheetCompose;
 class StyleSheetManager;
 
-class QFLUENT_EXPORT StyleSheetHelper {
+class QFLUENT_EXPORT StyleSheet {
 public:
-    // 样式表内容处理
-    static QString applyThemeColor(const QString& qss);
-    static QString styleSheetFromFile(const QString& filePath);
+    // 注册 — widget 永远在第一个参数
+    static void registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset = true);
+    static void registerWidget(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source, bool reset = true);
+    static void registerWidget(QWidget* widget, const QString& templatePath, bool reset = true);
 
-    // 样式表应用 - 获取样式表内容
-    static QString styleSheet(const std::shared_ptr<StyleSheetBase>& source,
-                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
-    static QString styleSheet(const QString& source,
-                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    // 反注册
+    static void deregisterWidget(QWidget* widget);
 
+    // 设置/添加样式表
     static void setStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
@@ -41,8 +42,24 @@ public:
                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
                              bool registerWidget = true);
 
-    // 主题色缓存管理
+    // 查询
+    static bool isRegistered(QWidget* widget);
+    static std::shared_ptr<StyleSheetCompose> source(QWidget* widget);
+
+    // 全局更新
+    static void updateStyleSheet(bool lazy = false);
+
+    // 缓存管理
     static void clearThemeColorCache();
+
+    // 样式表内容处理
+    static QString applyThemeColor(const QString& qss);
+    static QString styleSheetFromFile(const QString& filePath);
+
+    static QString styleSheet(const std::shared_ptr<StyleSheetBase>& source,
+                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
+    static QString styleSheet(const QString& source,
+                              Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
 
 private:
     static QHash<QString, QString> themeColorMap();
@@ -112,7 +129,7 @@ public:
 
 class QFLUENT_EXPORT CustomStyleSheet : public StyleSheetBase {
 private:
-    QWidget* m_widget;
+    QPointer<QWidget> m_widget;
 
 public:
     explicit CustomStyleSheet(QWidget* widget);
@@ -180,8 +197,6 @@ class QFLUENT_EXPORT StyleSheetManager : public QObject {
 
 private:
     QHash<QWidget*, std::shared_ptr<StyleSheetCompose>> m_widgets;
-    // 注意：Qt GUI 操作必须在主线程执行，不使用 mutex
-    // 所有 registerWidget/deregisterWidget/updateStyleSheet 调用必须在主线程
 
 public:
     StyleSheetManager();
@@ -193,40 +208,16 @@ public:
 
     static StyleSheetManager* instance();
 
-    // 控件注册管理
-    void registerWidget(const std::shared_ptr<StyleSheetBase>& source,
-                       QWidget* widget, bool reset = true);
-    void deregisterWidget(QWidget* widget);
-
-    // 使用预定义Fluent样式注册
+    // 控件注册管理（widget 在第一个参数）
+    void registerWidget(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source, bool reset = true);
     void registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset = true);
+    void deregisterWidget(QWidget* widget);
 
     // 查询方法
     std::shared_ptr<StyleSheetCompose> source(QWidget* widget) const;
     QList<QWidget*> widgets() const;
-
-    // 检查widget是否已注册
     bool isRegistered(QWidget* widget) const;
 
     // 样式表更新
     void updateStyleSheet(bool lazy = false);
-
-    // 便捷方法
-    static void setStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
-                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
-                             bool registerWidget = true);
-    static void setStyleSheet(QWidget* widget, const QString& source,
-                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
-                             bool registerWidget = true);
-
-    static void setCustomStyleSheet(QWidget* widget, const QString& lightQss,
-                                   const QString& darkQss);
-
-    static void addStyleSheet(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source,
-                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
-                             bool registerWidget = true);
-    static void addStyleSheet(QWidget* widget, const QString& source,
-                             Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO,
-                             bool registerWidget = true);
 };
-

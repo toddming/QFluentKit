@@ -62,8 +62,7 @@ FluentWidget::FluentWidget(QWidget *parent)
         setWindowEffect(windowEffect());
     });
 
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/fluent_window.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/fluent_window.qss");
 }
 
 

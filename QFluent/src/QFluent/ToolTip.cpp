@@ -90,7 +90,7 @@ void ToolTip::setStyleSheet()
 {
     m_container->setObjectName("container");
     m_label->setObjectName("contentLabel");
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::TOOL_TIP);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::TOOL_TIP);
     m_label->adjustSize();
     adjustSize();
 }

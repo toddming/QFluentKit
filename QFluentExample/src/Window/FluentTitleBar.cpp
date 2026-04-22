@@ -139,9 +139,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     connect(_maxButton,   &QAbstractButton::clicked, this, &FluentTitleBar::maximizeRequested);
     connect(_closeButton, &QAbstractButton::clicked, this, &FluentTitleBar::closeRequested);
 
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/title_bar.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
-
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/title_bar.qss");
 
     const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
     _backButton->setIcon(FluentIcon(Fluent::IconType::LEFT_ARROW).qicon());

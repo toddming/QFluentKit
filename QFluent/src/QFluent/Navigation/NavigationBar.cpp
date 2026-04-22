@@ -225,8 +225,8 @@ void NavigationBar::initWidget() {
     m_bottomLayout->setAlignment(Qt::AlignBottom);
 
     // Register styles
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
-    StyleSheetManager::instance()->registerWidget(m_scrollWidget, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
+    StyleSheet::registerWidget(m_scrollWidget, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
 }
 
 void NavigationBar::initLayout() {

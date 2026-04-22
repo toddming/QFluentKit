@@ -58,7 +58,7 @@ SettingCard::SettingCard(const QIcon &icon, const QString &title,
 
     m_contentLabel->setObjectName("contentLabel");
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::SETTING_CARD);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::SETTING_CARD);
 }
 
 void SettingCard::setTitle(const QString &title)

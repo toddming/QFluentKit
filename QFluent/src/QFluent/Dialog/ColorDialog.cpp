@@ -387,7 +387,7 @@ void ColorDialog::setQss()
     m_cancelButton->setObjectName("cancelButton");
     m_buttonGroup->setObjectName("buttonGroup");
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::COLOR_DIALOG);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::COLOR_DIALOG);
 
     m_titleLabel->adjustSize();
     m_editLabel->adjustSize();

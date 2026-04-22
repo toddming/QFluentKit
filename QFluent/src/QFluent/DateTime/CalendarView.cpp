@@ -324,7 +324,7 @@ void CalendarViewBase::initWidget() {
     m_vBoxLayout->setAlignment(Qt::AlignTop);
 
     m_titleButton->setObjectName("titleButton");
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::CALENDAR_PICKER);
 
     connect(m_titleButton, &QPushButton::clicked, this, &CalendarViewBase::titleClicked);
     connect(m_resetButton, &QPushButton::clicked, this, &CalendarViewBase::resetted);

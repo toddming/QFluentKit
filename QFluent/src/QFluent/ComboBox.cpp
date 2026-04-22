@@ -23,7 +23,7 @@ ComboBox::ComboBox(QWidget *parent)
 
     installEventFilter(this);
 
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::COMBO_BOX);
 
     d->m_arrowAni = new TranslateYAnimation(this);
 }

@@ -30,8 +30,7 @@ SettingInterface::SettingInterface(QWidget *parent)
     settingLabel->setObjectName("settingLabel");
     settingLabel->move(36, 30);
 
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/setting_interface.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/setting_interface.qss");
 
     SettingCardGroup *personalGroup = new SettingCardGroup("个性化", m_scrollWidget);
     SettingCardGroup *aboutGroup = new SettingCardGroup("关于", m_scrollWidget);

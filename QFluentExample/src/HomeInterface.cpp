@@ -124,8 +124,7 @@ void HomeInterface::initWidget()
     m_view->setObjectName("view");
     setObjectName("homeInterface");
 
-    auto styleSource = std::make_shared<TemplateStyleSheetFile>(":/res/style/{theme}/home_interface.qss");
-    StyleSheetManager::instance()->registerWidget(styleSource, this);
+    StyleSheet::registerWidget(this, ":/res/style/{theme}/home_interface.qss");
 
     setWidget(m_view);
     setWidgetResizable(true);

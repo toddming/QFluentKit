@@ -58,7 +58,7 @@ TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
     m_layer = new EditLayer(this);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
@@ -76,7 +76,7 @@ PlainTextEdit::PlainTextEdit(QWidget *parent)
     : QPlainTextEdit(parent)
 {
     m_layer = new EditLayer(this);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
@@ -96,7 +96,7 @@ TextBrowser::TextBrowser(QWidget *parent)
     : QTextBrowser(parent)
 {
     m_layer = new EditLayer(this);
-    StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
+    StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 
     setHorizontalScrollBar(new ScrollBar(this));
     setVerticalScrollBar(new ScrollBar(this));
