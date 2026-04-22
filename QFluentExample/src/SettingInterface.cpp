@@ -55,10 +55,10 @@ SettingInterface::SettingInterface(QWidget *parent)
                                                             QVector<QString>() << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt",
                                                             aboutGroup);
 
-    HyperlinkCard *helpCard = new HyperlinkCard("https://github.com/toddming/QFluentExample",
+    HyperlinkCard *helpCard = new HyperlinkCard("https://github.com/toddming/QFluentKit",
                                                 "项目地址", FluentIcon(Fluent::IconType::GITHUB).qicon(),
                                                 "GitHub",
-                                                "https://github.com/toddming/QFluentExample");
+                                                "https://github.com/toddming/QFluentKit");
 
     personalGroup->addSettingCard(colorCard);
     personalGroup->addSettingCard(themeCard);
@@ -71,9 +71,9 @@ SettingInterface::SettingInterface(QWidget *parent)
 
     connect(colorCard, &PrimaryPushSettingCard::clicked, this, [this](){
         if (m_colorDialog == nullptr) {
-            m_colorDialog = new ColorDialog(Theme::instance()->themeColor(), "选择颜色", this->window());
+            m_colorDialog = new ColorDialog(Theme::themeColor(), "选择颜色", this->window());
             connect(m_colorDialog, &ColorDialog::colorChanged, this, [=](const QColor &color) {
-                Theme::instance()->setThemeColor(color);
+                Theme::setThemeColor(color);
                 ConfigManager::instance().setValue("Window/color", color.name());
             });
         }
@@ -102,7 +102,7 @@ SettingInterface::SettingInterface(QWidget *parent)
 
     connect(themeCard, &ComboBoxSettingCard::currentIndexChanged, this, [=]
             (int index) {
-        Theme::instance()->setTheme(static_cast<Fluent::ThemeMode>(index));
+        Theme::setThemeMode(static_cast<Fluent::ThemeMode>(index));
         ConfigManager::instance().setValue("Window/theme", index);
     });
 }

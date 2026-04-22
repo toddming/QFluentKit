@@ -159,7 +159,7 @@ void SpinBoxBase::drawFocusBorder(QPainter* painter, const QRect& rect) {
     QPainterPath rectPath;
     rectPath.addRect(0, h-10, w, 8);
     path = path.subtracted(rectPath);
-    painter->fillPath(path, Theme::instance()->themeColor());
+    painter->fillPath(path, Theme::themeColor(Fluent::ThemeColor::PRIMARY));
 }
 
 

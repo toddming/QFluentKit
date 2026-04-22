@@ -52,12 +52,12 @@ IndeterminateProgressBar::~IndeterminateProgressBar()
 
 QColor IndeterminateProgressBar::lightBarColor() const
 {
-    return m_lightBarColor.isValid() ? m_lightBarColor : Theme::instance()->themeColor();
+    return m_lightBarColor.isValid() ? m_lightBarColor : Theme::themeColor(Fluent::ThemeColor::PRIMARY);
 }
 
 QColor IndeterminateProgressBar::darkBarColor() const
 {
-    return m_darkBarColor.isValid() ? m_darkBarColor : Theme::instance()->themeColor();
+    return m_darkBarColor.isValid() ? m_darkBarColor : Theme::themeColor(Fluent::ThemeColor::PRIMARY);
 }
 
 void IndeterminateProgressBar::setCustomBarColor(const QColor &light, const QColor &dark)

@@ -119,7 +119,7 @@ QColor IndeterminateProgressRing::lightBarColor() const
     if (m_lightBarColor.isValid()) {
         return m_lightBarColor;
     }
-    return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
+    return Theme::themeColor(Fluent::ThemeColor::LIGHT_1);
 }
 
 QColor IndeterminateProgressRing::darkBarColor() const
@@ -127,7 +127,7 @@ QColor IndeterminateProgressRing::darkBarColor() const
     if (m_darkBarColor.isValid()) {
         return m_darkBarColor;
     }
-    return Theme::instance()->themeColor(Fluent::ThemeColor::DARK_1);
+    return Theme::themeColor(Fluent::ThemeColor::DARK_1);
 }
 
 void IndeterminateProgressRing::setCustomBarColor(const QColor &light, const QColor &dark)

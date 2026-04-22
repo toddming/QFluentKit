@@ -1,10 +1,11 @@
-﻿#pragma once
+#pragma once
 
 #include <QtGlobal>
 #include <QObject>
 #include <QFont>
 #include <QScopedPointer>
 #include <QColor>
+#include <functional>
 
 #include "FluentGlobal.h"
 
@@ -18,43 +19,26 @@ class QFLUENT_EXPORT Theme : public QObject
 public:
     explicit Theme(QObject* parent = nullptr);
     ~Theme() override;
-    static Theme *instance();
 
-    Fluent::ThemeMode theme() const;
-    void setTheme(Fluent::ThemeMode theme, bool lazy = false);
-    void toggleTheme(bool lazy = false);
+    static Fluent::ThemeMode themeMode();
+    static void setThemeMode(Fluent::ThemeMode mode, bool lazy = false);
+    static void toggleTheme(bool lazy = false);
 
-    // 颜色管理
-    QColor themeColor() const;
-    QColor themeColor(Fluent::ThemeColor type) const;
-    void setThemeColor(const QColor& color, bool lazy = false);
+    static bool isDark();
 
-    bool isDarkTheme() const;
+    static QColor themeColor();
+    static QColor themeColor(Fluent::ThemeColor type);
+    static void setThemeColor(const QColor& color, bool lazy = false);
 
-    /**
-     * @brief 静态便捷方法 — 减少组件对 Theme::instance() 的直接调用
-     *
-     * 组件 paintEvent 中可直接调用 Theme::isDark() 代替 Theme::isDark()
-     * 未来可扩展为从线程局部存储或上下文获取，便于测试替换
-     */
-    static bool isDark() { return instance()->isDarkTheme(); }
+    static QFont font(int fontSize = 14, QFont::Weight weight = QFont::Normal);
+    static void setFont(QWidget *widget, int fontSize = 14, QFont::Weight weight = QFont::Normal);
 
-    /**
-     * @brief 静态便捷方法 — 获取当前主题色
-     */
-    static QColor color() { return instance()->themeColor(); }
-
-    /**
-     * @brief 静态便捷方法 — 获取指定类型主题色
-     */
-    static QColor color(Fluent::ThemeColor type) { return instance()->themeColor(type); }
-
-    void setFont(QWidget *widget, int fontSize = 14, QFont::Weight weight = QFont::Normal);
-    QFont font(int fontSize = 14, QFont::Weight weight = QFont::Normal) const;
+    static void onThemeModeChanged(QObject* receiver, const std::function<void(Fluent::ThemeMode)>& slot);
+    static void onThemeColorChanged(QObject* receiver, const std::function<void(const QColor&)>& slot);
 
 Q_SIGNALS:
-    Q_SIGNAL void themeModeChanged(Fluent::ThemeMode themeType);
-    Q_SIGNAL void themeColorChanged(const QColor& color);
+    void themeModeChanged(Fluent::ThemeMode themeType);
+    void themeColorChanged(const QColor& color);
 
 private:
     QScopedPointer<ThemePrivate> d_ptr;

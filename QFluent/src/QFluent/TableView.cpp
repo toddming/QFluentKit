@@ -75,9 +75,6 @@ void TableItemDelegate::updateEditorGeometry(QWidget* editor, const QStyleOption
 void TableItemDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const {
     QStyledItemDelegate::initStyleOption(option, index);
 
-    // 字体设置示例
-    // option->font = Theme::instance()->font(13);
-
     QColor textColor = Theme::isDark() ? Qt::white : Qt::black;
     QVariant textBrushVar = index.data(Qt::ForegroundRole);
 
@@ -188,7 +185,7 @@ void TableItemDelegate::drawIndicator(QPainter* painter, const QStyleOptionViewI
     // 根据按下状态调整指示器高度
     int ph = (m_pressedRow == index.row()) ? qRound(0.35 * h) : qRound(0.257 * h);
 
-    painter->setBrush(Theme::instance()->themeColor());
+    painter->setBrush(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
     // 居中绘制小的指示条
     painter->drawRoundedRect(4, ph + y, 3, h - 2 * ph, 1.5, 1.5);
 }
@@ -211,9 +208,8 @@ void TableItemDelegate::drawCheckBox(QPainter* painter, const QStyleOptionViewIt
         painter->drawRoundedRect(rect, r, r);
     } else {
         // 选中或半选状态
-        QColor themeColor = Theme::instance()->themeColor();
-        painter->setPen(themeColor);
-        painter->setBrush(themeColor);
+        painter->setPen(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
+        painter->setBrush(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
         painter->drawRoundedRect(rect, r, r);
 
         // TODO: 绘制具体的对勾图标

@@ -15,7 +15,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
 
     setDarkTheme(false);
-    Theme::instance()->setTheme(Fluent::ThemeMode::LIGHT);
+    Theme::setThemeMode(Fluent::ThemeMode::LIGHT);
     setWindowEffect(AcrylicWidget::WindowEffect::Normal);
 
     // 设置 RadioButton 组
@@ -49,7 +49,7 @@ Widget::Widget(QWidget *parent)
     // 深色主题切换
     connect(ui->darkCheckBox, &CheckBox::clicked, this, [this](bool checked) {
         setDarkTheme(checked);
-        Theme::instance()->toggleTheme();
+        Theme::toggleTheme();
     });
 }
 

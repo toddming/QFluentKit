@@ -80,7 +80,7 @@ void RadioButton::drawIndicator(QPainter &painter)
 
     if (isChecked()) {
         if (isEnabled()) {
-            borderColor = Theme::instance()->themeColor();
+            borderColor = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
         } else {
             borderColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         }

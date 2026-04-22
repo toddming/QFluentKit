@@ -62,8 +62,8 @@ NavigationBarPushButton::NavigationBarPushButton(const FluentIconBase& icon, con
 
     setFixedSize(64, 58);
 
-    setIndicatorColor(Theme::instance()->themeColor(), Theme::instance()->themeColor());
-    Theme::instance()->setFont(this, 12);
+    setIndicatorColor(Theme::themeColor(Fluent::ThemeColor::PRIMARY), Theme::themeColor(Fluent::ThemeColor::PRIMARY));
+    Theme::setFont(this, 12);
 }
 
 void NavigationBarPushButton::setSelectedColor(const QColor& light, const QColor& dark) {
@@ -103,7 +103,7 @@ void NavigationBarPushButton::drawBackground(QPainter& painter) {
         painter.setBrush(bg);
         painter.drawRoundedRect(rect(), 5, 5);
         // draw indicator
-        QColor indicatorColor = Theme::instance()->themeColor();
+        QColor indicatorColor = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
         if (!property("isPressed").toBool()) {
             painter.setBrush(indicatorColor);
             painter.drawRoundedRect(0, 16, 4, 24, 2, 2);
@@ -136,7 +136,7 @@ void NavigationBarPushButton::drawIcon(QPainter& painter) {
 
     if (property("isSelected").toBool()) {
             QHash<QString, QString> attrs;
-            attrs["fill"] = Theme::instance()->themeColor().name();
+            attrs["fill"] = Theme::themeColor(Fluent::ThemeColor::PRIMARY).name();
 
             FluentIconUtils::drawIcon(*m_fluentIcon, &painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     } else {
@@ -149,7 +149,7 @@ void NavigationBarPushButton::drawText(QPainter& painter) {
         return;
     }
 
-    QColor textColor = property("isSelected").toBool() ? Theme::instance()->themeColor() : (Theme::isDark() ? Qt::white : Qt::black);
+    QColor textColor = property("isSelected").toBool() ? Theme::themeColor(Fluent::ThemeColor::PRIMARY) : (Theme::isDark() ? Qt::white : Qt::black);
     painter.setPen(textColor);
     painter.setFont(font());
     QRect rect(0, 32, width(), 26);

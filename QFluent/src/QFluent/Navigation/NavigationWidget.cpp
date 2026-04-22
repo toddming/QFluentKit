@@ -218,7 +218,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
         painter.drawRoundedRect(rect(), 5, 5);
 
         // 绘制指示器
-        painter.setBrush(Theme::instance()->themeColor());
+        painter.setBrush(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
         painter.drawRoundedRect(leftMargin, 10, 3, 16, 1.5, 1.5);
     } else if (property("isEnter").toBool() && isEnabled() &&
                globalRect.contains(QCursor::pos())) {
@@ -1162,7 +1162,7 @@ void NavigationIndicator::paintEvent(QPaintEvent *event)
 
     QColor color = Theme::isDark() ? m_darkColor : m_lightColor;
     if (!color.isValid()) {
-        color = Theme::instance()->themeColor();
+        color = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     }
 
     painter.setBrush(color);
@@ -1177,7 +1177,7 @@ NavigationItemHeader::NavigationItemHeader(const QString &text, QWidget *parent)
     : NavigationWidget(false, parent)
     , m_text(text)
 {
-    Theme::instance()->setFont(this, 12);
+    Theme::setFont(this, 12);
 
     // 设置标题样式的灰色文本颜色
     setLightTextColor(QColor(96, 96, 96));

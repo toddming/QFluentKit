@@ -87,7 +87,7 @@ IconCard::IconCard(Fluent::IconType icon, const QString &name, QWidget* parent)
     QString elidedText = metrics.elidedText(name, Qt::ElideRight, 90);
     m_nameLabel->setText(elidedText);
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode theme){
+    Theme::onThemeModeChanged(this, [=](Fluent::ThemeMode theme){
          if (m_isSelected) {
              m_iconWidget->setIconTheme(theme);
          }
@@ -199,7 +199,7 @@ IconCardView::IconCardView(QWidget* parent)
 
     m_trie = new Trie();
     m_iconLibraryLabel = new StrongBodyLabel("流畅图标库", this);
-    Theme::instance()->setFont(m_iconLibraryLabel, 14, QFont::Normal);
+    Theme::setFont(m_iconLibraryLabel, 14, QFont::Normal);
     m_searchLineEdit = new CustomLineEdit(this);
 
     m_view = new QFrame(this);

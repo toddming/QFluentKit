@@ -18,7 +18,7 @@ PivotItem::PivotItem(const QString &text, QWidget *parent)
 {
     setAttribute(Qt::WA_LayoutUsesWidgetRect);
     setProperty("isSelected", false);
-    Theme::instance()->setFont(this, 18);
+    Theme::setFont(this, 18);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::PIVOT);
     connect(this, &PivotItem::clicked, [this]() {
         emit itemClicked(true);
@@ -203,7 +203,7 @@ void Pivot::paintEvent(QPaintEvent *event) {
     painter.setPen(Qt::NoPen);
 
     QColor color = Theme::isDark() ? m_darkIndicatorColor : m_lightIndicatorColor;
-    color = color.isValid() ? color : Theme::instance()->themeColor();
+    color = color.isValid() ? color : Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     painter.setBrush(color);
     int x = currentItem()->width() / 2 - 8 + m_slideAni->value().toFloat();
     painter.drawRoundedRect(x, height() - 3, 16, 3, 1.5, 1.5);

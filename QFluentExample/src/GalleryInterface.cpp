@@ -30,7 +30,7 @@ ToolBar::ToolBar(const QString &title, const QString &subtitle, QWidget *parent)
     : QWidget(parent)
 {
     titleLabel = new TitleLabel(title, this);
-    Theme::instance()->setFont(titleLabel, 28, QFont::Normal);
+    Theme::setFont(titleLabel, 28, QFont::Normal);
     subtitleLabel = new CaptionLabel(subtitle, this);
     subtitleLabel->setTextColor(QColor(96, 96, 96), QColor(216, 216, 216));
     subtitleLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -84,7 +84,7 @@ ExampleCard::ExampleCard(const QString &title, QWidget *widget, const QString &s
     , sourcePath(sourcePath)
 {
     titleLabel = new StrongBodyLabel(title, this);
-    Theme::instance()->setFont(titleLabel, 14, QFont::Normal);
+    Theme::setFont(titleLabel, 14, QFont::Normal);
     card = new QFrame(this);
     sourceWidget = new QFrame(card);
     sourcePathLabel = new BodyLabel("源代码", sourceWidget);
@@ -160,7 +160,7 @@ GalleryInterface::GalleryInterface(const QString &title, const QString &subtitle
     overlayVerticalScrollBar->setAnimationEnabled(true);
 
     view = new QWidget(this);
-    toolBar = new ToolBar(title, subtitle.isEmpty() ? "遇到问题可以告诉我哦，看到就会及时处理。🐧1912229135" : subtitle, this);
+    toolBar = new ToolBar(title, subtitle.isEmpty() ? "欢迎加入 QQ 群: 1084320682" : subtitle, this);
     vBoxLayout = new QVBoxLayout(view);
 
     setViewportMargins(0, toolBar->height(), 0, 0);

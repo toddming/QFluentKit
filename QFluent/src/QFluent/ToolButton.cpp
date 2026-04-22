@@ -201,11 +201,11 @@ void PillToolButton::paintEvent(QPaintEvent* event)
         if (!isEnabled()) {
             bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         } else if (isPressed()) {
-            bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
+            bgColor =  Theme::themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
         } else if (isHover()) {
-            bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
+            bgColor =  Theme::themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
         } else {
-            bgColor = Theme::instance()->themeColor();
+            bgColor = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
         }
 
         borderColor = Qt::transparent;

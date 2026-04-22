@@ -1,4 +1,4 @@
-#include "PickerBase.h"
+﻿#include "PickerBase.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPainter>
@@ -153,7 +153,7 @@ void ItemMaskWidget::paintEvent(QPaintEvent* e)
     // 绘制背景
     painter.setPen(Qt::NoPen);
     QColor color = Theme::isDark() ? m_darkBackgroundColor : m_lightBackgroundColor;
-    color = color.isValid() ? color : Theme::instance()->themeColor();
+    color = color.isValid() ? color : Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     painter.setBrush(color);
     painter.drawRoundedRect(rect().adjusted(4, 0, -3, 0), 5, 5);
     

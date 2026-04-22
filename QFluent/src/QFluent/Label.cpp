@@ -10,14 +10,14 @@
 
 FluentLabelBase::FluentLabelBase(int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(parent) {
-    setFont(Theme::instance()->font(fontSize, weight));
+    setFont(Theme::font(fontSize, weight));
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
 
 FluentLabelBase::FluentLabelBase(const QString& text, int fontSize, QFont::Weight weight, QWidget* parent)
     : QLabel(text, parent) {
-    setFont(Theme::instance()->font(fontSize, weight));
+    setFont(Theme::font(fontSize, weight));
 
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 }
@@ -120,7 +120,7 @@ HyperlinkLabel::HyperlinkLabel(const QUrl &url, const QString &text, QWidget *pa
 
 void HyperlinkLabel::init()
 {
-    Theme::instance()->setFont(this, 14);
+    Theme::setFont(this, 14);
     setUnderlineVisible(false);
     StyleSheetManager::instance()->registerWidget(this, Fluent::ThemeStyle::LABEL);
 

@@ -123,16 +123,16 @@ void ScrollItemDelegate::drawBackground(QPainter* painter, const QStyleOptionVie
     if (index != m_selectedIndex) {
         painter->setPen(Qt::NoPen);
     } else {
-        painter->setPen(Theme::instance()->themeColor());
+        painter->setPen(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
     }
 
     if (index == m_currentIndex) {
         if (index == m_pressedIndex) {
-            painter->setBrush(Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2));
+            painter->setBrush(Theme::themeColor(Fluent::ThemeColor::LIGHT_2));
         } else if (option.state & QStyle::State_MouseOver) {
-            painter->setBrush(Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1));
+            painter->setBrush(Theme::themeColor(Fluent::ThemeColor::LIGHT_1));
         } else {
-            painter->setBrush(Theme::instance()->themeColor());
+            painter->setBrush(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
         }
     } else {
         int c = Theme::isDark() ? 255 : 0;

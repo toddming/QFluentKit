@@ -54,11 +54,11 @@ FluentWidget::FluentWidget(QWidget *parent)
 
     _windowBar->themeButton()->setChecked(Theme::isDark());
 
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [agent](Fluent::ThemeMode theme) {
+    Theme::onThemeModeChanged(this, [agent](Fluent::ThemeMode theme) {
         agent->setWindowAttribute("dark-mode", theme == Fluent::ThemeMode::DARK);
     });
 #endif
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [=](Fluent::ThemeMode theme) {
+    Theme::onThemeModeChanged(this, [=](Fluent::ThemeMode theme) {
         setWindowEffect(windowEffect());
     });
 
@@ -296,5 +296,5 @@ void FluentWidget::setDarkTheme(bool dark) {
     agent->setWindowAttribute("dark-mode", dark);
 #endif
 
-    Theme::instance()->setTheme(dark ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+    Theme::setThemeMode(dark ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
 }

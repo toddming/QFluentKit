@@ -11,7 +11,7 @@ CardWidget::CardWidget(QWidget *parent)
     , m_borderRadius(5)
 {
     setBackgroundColor(normalBackgroundColor());
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [this](){
+    Theme::onThemeModeChanged(this, [this](Fluent::ThemeMode) {
         this->updateBackgroundColor();
     });
 }

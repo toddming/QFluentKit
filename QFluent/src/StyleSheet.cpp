@@ -27,8 +27,7 @@ QHash<QString, QString> StyleSheetHelper::themeColorMap() {
     static QColor s_cachedPrimaryColor;
     static int s_localVersion = -1;  // 初始化为 -1，确保第一次必定更新
 
-    Theme* theme = Theme::instance();
-    const QColor currentPrimaryColor = theme->themeColor(Fluent::ThemeColor::PRIMARY);
+    const QColor currentPrimaryColor = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
 
     // 如果主题色改变或版本号变化，更新缓存
     if (s_colorMap.isEmpty() || s_cachedPrimaryColor != currentPrimaryColor || s_localVersion != s_cacheVersion) {
@@ -36,12 +35,12 @@ QHash<QString, QString> StyleSheetHelper::themeColorMap() {
         s_colorMap.reserve(7);
 
         s_colorMap.insert("--ThemeColorPrimary", currentPrimaryColor.name());
-        s_colorMap.insert("--ThemeColorDark1", theme->themeColor(Fluent::ThemeColor::DARK_1).name());
-        s_colorMap.insert("--ThemeColorDark2", theme->themeColor(Fluent::ThemeColor::DARK_2).name());
-        s_colorMap.insert("--ThemeColorDark3", theme->themeColor(Fluent::ThemeColor::DARK_3).name());
-        s_colorMap.insert("--ThemeColorLight1", theme->themeColor(Fluent::ThemeColor::LIGHT_1).name());
-        s_colorMap.insert("--ThemeColorLight2", theme->themeColor(Fluent::ThemeColor::LIGHT_2).name());
-        s_colorMap.insert("--ThemeColorLight3", theme->themeColor(Fluent::ThemeColor::LIGHT_3).name());
+        s_colorMap.insert("--ThemeColorDark1", Theme::themeColor(Fluent::ThemeColor::DARK_1).name());
+        s_colorMap.insert("--ThemeColorDark2", Theme::themeColor(Fluent::ThemeColor::DARK_2).name());
+        s_colorMap.insert("--ThemeColorDark3", Theme::themeColor(Fluent::ThemeColor::DARK_3).name());
+        s_colorMap.insert("--ThemeColorLight1", Theme::themeColor(Fluent::ThemeColor::LIGHT_1).name());
+        s_colorMap.insert("--ThemeColorLight2", Theme::themeColor(Fluent::ThemeColor::LIGHT_2).name());
+        s_colorMap.insert("--ThemeColorLight3", Theme::themeColor(Fluent::ThemeColor::LIGHT_3).name());
 
         s_cachedPrimaryColor = currentPrimaryColor;
         s_localVersion = s_cacheVersion;
@@ -223,7 +222,7 @@ StyleSheetFile::StyleSheetFile(const QString& lightPath, const QString& darkPath
 
 QString StyleSheetFile::path(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
-            ? Theme::instance()->theme() : theme;
+            ? Theme::themeMode() : theme;
 
     // 如果有分别的亮色和暗色路径，根据主题返回对应路径
     if (hasSeparatePaths()) {
@@ -246,7 +245,7 @@ TemplateStyleSheetFile::TemplateStyleSheetFile(const QString& templatePath)
 
 QString TemplateStyleSheetFile::path(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
-            ? Theme::instance()->theme() : theme;
+            ? Theme::themeMode() : theme;
 
     if (actualTheme == Fluent::ThemeMode::LIGHT) {
         if (m_cachedLightPath.isEmpty()) {
@@ -313,7 +312,7 @@ const QMap<Fluent::ThemeStyle, QString>& FluentStyleSheet::typeMap() {
 
 QString FluentStyleSheet::path(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
-            ? Theme::instance()->theme() : theme;
+            ? Theme::themeMode() : theme;
 
     const QString& themeStr = (actualTheme == Fluent::ThemeMode::LIGHT) ?
                 QStringLiteral("light") : QStringLiteral("dark");
@@ -345,7 +344,7 @@ QString CustomStyleSheet::path(Fluent::ThemeMode theme) const {
 
 QString CustomStyleSheet::content(Fluent::ThemeMode theme) const {
     Fluent::ThemeMode actualTheme = (theme == Fluent::ThemeMode::AUTO)
-            ? Theme::instance()->theme() : theme;
+            ? Theme::themeMode() : theme;
 
     return (actualTheme == Fluent::ThemeMode::LIGHT) ?
                 lightStyleSheet() : darkStyleSheet();
@@ -512,7 +511,7 @@ void CustomStyleSheetWatcher::applyStyleSheetIfNeeded()
     auto* widget = m_watchedWidget;
     auto compose = StyleSheetManager::instance()->source(widget);
     if (compose && compose->size() > 0) {
-        const QString qss = StyleSheetHelper::styleSheet(compose, Theme::instance()->theme());
+        const QString qss = StyleSheetHelper::styleSheet(compose, Theme::themeMode());
         widget->setStyleSheet(qss);
     }
 
@@ -527,10 +526,10 @@ StyleSheetManager::StyleSheetManager() : QObject() {
     m_widgets.reserve(100); // 预留合理的初始容量
 
     // 监听 Theme 信号，自行更新样式表（消除 Theme 主动调用 StyleSheetManager 的双向依赖）
-    connect(Theme::instance(), &Theme::themeModeChanged, this, [this]() {
+    Theme::onThemeModeChanged(this, [this](Fluent::ThemeMode) {
         updateStyleSheet(false);
     });
-    connect(Theme::instance(), &Theme::themeColorChanged, this, [this]() {
+    Theme::onThemeColorChanged(this, [this](const QColor&) {
         updateStyleSheet(false);
     });
 }
@@ -634,7 +633,7 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
 
         if (!lazy || widget->isVisible()) {
             // 可见或非懒加载模式：立即更新样式表
-            setStyleSheet(widget, source, Theme::instance()->theme(), false);
+            setStyleSheet(widget, source, Theme::themeMode(), false);
         } else {
             // 修复：懒加载模式 - 设置 dirty 标记，等待 widget 变为可见时更新
             // 通过 CustomStyleSheetWatcher 的 eventFilter 在 showEvent 时触发更新

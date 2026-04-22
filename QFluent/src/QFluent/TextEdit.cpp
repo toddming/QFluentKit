@@ -48,7 +48,7 @@ void EditLayer::paintEvent(QPaintEvent *)
     rectPath.addRect(QRectF(m.left(), h - 10, w, 7.5));
     path = path.subtracted(rectPath);
 
-    painter.fillPath(path, Theme::instance()->themeColor());
+    painter.fillPath(path, Theme::themeColor(Fluent::ThemeColor::PRIMARY));
 }
 
 // ============================================================

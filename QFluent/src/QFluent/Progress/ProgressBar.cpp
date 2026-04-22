@@ -138,7 +138,7 @@ QColor ProgressBar::barColor() const
         return Theme::isDark() ? QColor(255, 153, 164) : QColor(196, 43, 28);
     }
     QColor color = Theme::isDark() ? m_darkBarColor : m_lightBarColor;
-    color = color.isValid() ? color : Theme::instance()->themeColor();
+    color = color.isValid() ? color : Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     return color;
 }
 

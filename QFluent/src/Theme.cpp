@@ -1,4 +1,4 @@
-﻿#include "Theme.h"
+#include "Theme.h"
 
 #include <QWidget>
 #include <QApplication>
@@ -36,7 +36,7 @@ Theme::Theme(QObject* parent) : QObject(parent)
                 d->m_sysIsDarkMode = false;
             }
             if (d->m_autoTheme) {
-                self->setTheme(Fluent::ThemeMode::AUTO);
+                self->setThemeMode(Fluent::ThemeMode::AUTO);
             }
         });
     }
@@ -45,86 +45,87 @@ Theme::Theme(QObject* parent) : QObject(parent)
 
 Theme::~Theme()
 {
-    // 注意：Q_GLOBAL_STATIC 单例在 QApplication 销毁之后析构
-    // 此时 qApp 已无效，无需手动断开连接
-    // Qt 会在 QApplication 析构时自动清理所有信号槽连接
 }
 
-Theme *Theme::instance()
-{
-    return qtheme();
+Fluent::ThemeMode Theme::themeMode() {
+    auto *self = qtheme();
+    return self->d_func()->m_currentTheme;
 }
 
-Fluent::ThemeMode Theme::theme() const {
-    Q_D(const Theme);
-    return d->m_currentTheme;
-}
+void Theme::setThemeMode(Fluent::ThemeMode mode, bool lazy) {
+    auto *self = qtheme();
+    auto *d = self->d_func();
 
-void Theme::setTheme(Fluent::ThemeMode theme, bool lazy) {
-    Q_D(Theme);
-
-    if(theme == Fluent::ThemeMode::AUTO) {
+    if(mode == Fluent::ThemeMode::AUTO) {
         d->m_autoTheme = true;
-        theme = (d->m_sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
+        mode = (d->m_sysIsDarkMode ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT);
     } else {
         d->m_autoTheme = false;
     }
 
-    if (d->m_currentTheme != theme) {
-        d->m_currentTheme = theme;
+    if (d->m_currentTheme != mode) {
+        d->m_currentTheme = mode;
         if (!lazy) {
-            emit themeModeChanged(theme);
+            emit self->themeModeChanged(mode);
         }
     }
 }
 
 void Theme::toggleTheme(bool lazy) {
-    Fluent::ThemeMode newTheme = isDarkTheme() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
-    Q_D(Theme);
+    Fluent::ThemeMode newMode = isDark() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
+    auto *d = qtheme()->d_func();
     d->m_autoTheme = false;
-    setTheme(newTheme, lazy);
+    setThemeMode(newMode, lazy);
 }
 
-QColor Theme::themeColor() const {
-    Q_D(const Theme);
-    return d->m_themeColor;
+QColor Theme::themeColor() {
+    return qtheme()->d_func()->m_themeColor;
 }
 
-QColor Theme::themeColor(Fluent::ThemeColor type) const {
-    Q_D(const Theme);
-    return d->calculateThemeColor(type);
+QColor Theme::themeColor(Fluent::ThemeColor type) {
+    return qtheme()->d_func()->calculateThemeColor(type);
 }
 
 void Theme::setThemeColor(const QColor& color, bool lazy) {
-    Q_D(Theme);
+    auto *self = qtheme();
+    auto *d = self->d_func();
 
     if (d->m_themeColor != color) {
         d->m_themeColor = color;
         if (!lazy) {
-            emit themeColorChanged(color);
+            emit self->themeColorChanged(color);
         }
     }
 }
 
-bool Theme::isDarkTheme() const {
-    Q_D(const Theme);
+bool Theme::isDark() {
+    auto *d = qtheme()->d_func();
     if (d->m_autoTheme) {
         return d->m_sysIsDarkMode;
     }
     return d->m_currentTheme == Fluent::ThemeMode::DARK;
 }
 
-
-void Theme::setFont(QWidget *widget, int fontSize, QFont::Weight weight)
-{
-    widget->setFont(font(fontSize, weight));
-}
-
-QFont Theme::font(int fontSize, QFont::Weight weight) const
+QFont Theme::font(int fontSize, QFont::Weight weight)
 {
     QFont font;
     font.setFamilies({"Microsoft YaHei", "PingFang SC", "Segoe UI"});
     font.setPixelSize(fontSize);
     font.setWeight(weight);
     return font;
+}
+
+void Theme::setFont(QWidget *widget, int fontSize, QFont::Weight weight)
+{
+    widget->setFont(font(fontSize, weight));
+}
+
+void Theme::onThemeModeChanged(QObject* receiver, const std::function<void(Fluent::ThemeMode)>& slot)
+{
+    connect(qtheme(), &Theme::themeModeChanged, receiver, slot);
+}
+
+void Theme::onThemeColorChanged(QObject* receiver, const std::function<void(const QColor&)>& slot)
+{
+    connect(qtheme(), &Theme::themeColorChanged, receiver, slot);
 }

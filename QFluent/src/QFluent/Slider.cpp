@@ -112,7 +112,7 @@ void SliderHandle::paintEvent(QPaintEvent *event)
     painter.drawEllipse(rect().adjusted(1, 1, -1, -1));
 
     // 绘制内圆
-    QColor color = Theme::instance()->themeColor();
+    QColor color = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     m_darkHandleColor = m_darkHandleColor.isValid() ? m_darkHandleColor : color;
     m_lightHandleColor = m_lightHandleColor.isValid() ? m_lightHandleColor : color;
     painter.setBrush(isDark ? m_darkHandleColor : m_lightHandleColor);
@@ -288,7 +288,7 @@ void Slider::drawHorizontalGroove(QPainter *painter)
 
     bool isDark = Theme::isDark();
 
-    QColor color = Theme::instance()->themeColor();
+    QColor color = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     m_darkGrooveColor = m_darkGrooveColor.isValid() ? m_darkGrooveColor : color;
     m_lightGrooveColor = m_lightGrooveColor.isValid() ? m_lightGrooveColor : color;
 
@@ -313,7 +313,7 @@ void Slider::drawVerticalGroove(QPainter *painter)
     }
 
     bool isDark = Theme::isDark();
-    QColor color = Theme::instance()->themeColor();
+    QColor color = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
     m_darkGrooveColor = m_darkGrooveColor.isValid() ? m_darkGrooveColor : color;
     m_lightGrooveColor = m_lightGrooveColor.isValid() ? m_lightGrooveColor : color;
 

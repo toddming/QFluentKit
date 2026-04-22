@@ -112,7 +112,7 @@ void IndicatorMenuItemDelegate::paint(QPainter *painter,
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
 
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Theme::instance()->themeColor());
+    painter->setBrush(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
     qreal y_offset = (option.rect.height() - 15) / 2.0 + 2;
     painter->drawRoundedRect(6.0, option.rect.y() + y_offset, 3.0, 15.0, 1.5, 1.5);
 
@@ -179,6 +179,8 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
                                                    const QStyleOptionViewItem &option,
                                                    const QModelIndex &index, bool checked) const
 {
+    Q_UNUSED(index);
+
     QRect rect = option.rect;
 
     int s = 16;
@@ -186,14 +188,11 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
     int y = rect.center().y() - s / 2 + 2;
 
     painter->setRenderHints(QPainter::Antialiasing);
-    if (!(option.state & QStyle::State_MouseOver)) {
-        painter->setOpacity(0.75);
-    }
 
     bool isDark = Theme::isDark();
-    painter->setPen(isDark ? (checked ? Theme::instance()->themeColor() : QColor(255, 255, 255, 141))
-                           : (checked ? Theme::instance()->themeColor(): QColor(0, 0, 0, 122)));
-    painter->setBrush(checked ? Theme::instance()->themeColor() : QColor(0, 0, 0, 6));
+    painter->setPen(isDark ? (checked ? Theme::themeColor(Fluent::ThemeColor::PRIMARY) : QColor(255, 255, 255, 141))
+                           : (checked ? Theme::themeColor(Fluent::ThemeColor::PRIMARY): QColor(0, 0, 0, 122)));
+    painter->setBrush(checked ? Theme::themeColor(Fluent::ThemeColor::PRIMARY) : QColor(0, 0, 0, 6));
     painter->drawRoundedRect(QRectF(x, y, s, s), 2.5, 2.5);
 
     const QString fillPath = ":/qfluent/images/check_box/%1_{color}.svg";

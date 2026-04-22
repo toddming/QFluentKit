@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
     app.setFont(font);
 
     int theme = ConfigManager::instance().getValue("Window/theme", 0).toInt();
-    Theme::instance()->setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()), true);
-    Theme::instance()->setTheme(static_cast<Fluent::ThemeMode>(theme), true);
+    Theme::setThemeColor(QColor(ConfigManager::instance().getValue("Window/color", "#0066b4").toString()), true);
+    Theme::setThemeMode(static_cast<Fluent::ThemeMode>(theme), true);
 
     MainWindow w;
     w.show();

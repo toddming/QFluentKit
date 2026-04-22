@@ -1,5 +1,4 @@
 ﻿#include "ThemePrivate.h"
-
 #include "Theme.h"
 
 ThemePrivate::ThemePrivate()

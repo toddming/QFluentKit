@@ -30,7 +30,7 @@ ProfileCard::ProfileCard(const QString& avatarPath,
     m_nameLabel->setStyleSheet(QStringLiteral("QLabel{color: %1}").arg(nameColor.name()));
 
     // 设置按钮字体
-    Theme::instance()->setFont(m_logoutButton, 13);
+    Theme::setFont(m_logoutButton, 13);
 
     // 设置固定大小
     setFixedSize(307, 82);

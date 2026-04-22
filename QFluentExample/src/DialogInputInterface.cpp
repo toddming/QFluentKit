@@ -48,7 +48,7 @@ DialogInputInterface::DialogInputInterface(QWidget *parent)
 
     auto colorDialogBtn = new PushButton("显示对话框", this);
     connect(colorDialogBtn, &PushButton::clicked, this, [=](){
-        static auto colorDialog = new ColorDialog(Theme::instance()->themeColor(), "选择颜色", this->window());
+        static auto colorDialog = new ColorDialog(Theme::themeColor(), "选择颜色", this->window());
         colorDialog->exec();
     });
     addExampleCard("颜色对话框", colorDialogBtn);

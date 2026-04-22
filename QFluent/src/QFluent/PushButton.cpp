@@ -163,7 +163,7 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
     if (isEnabled()) {
         QHash<QString, QString> attrs;
-        attrs["fill"] = Theme::instance()->themeColor().name();
+        attrs["fill"] = Theme::themeColor(Fluent::ThemeColor::PRIMARY).name();
         FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     } else {
         painter->setOpacity(Theme::isDark() ? 0.3628 : 0.36);
@@ -359,11 +359,11 @@ void PillPushButton::paintEvent(QPaintEvent* event)
         if (!isEnabled()) {
             bgColor = isDark ? QColor(255, 255, 255, 40) : QColor(0, 0, 0, 55);
         } else if (isPressed()) {
-            bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
+            bgColor =  Theme::themeColor(isDark ? Fluent::ThemeColor::DARK_2 : Fluent::ThemeColor::LIGHT_3);
         } else if (isHover()) {
-            bgColor =  Theme::instance()->themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
+            bgColor =  Theme::themeColor(isDark ? Fluent::ThemeColor::DARK_1 : Fluent::ThemeColor::LIGHT_1);
         } else {
-            bgColor = Theme::instance()->themeColor();
+            bgColor = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
         }
 
         borderColor = Qt::transparent;

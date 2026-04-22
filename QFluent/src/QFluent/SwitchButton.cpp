@@ -57,15 +57,15 @@ QColor Indicator::backgroundColor() const {
     bool isDark = Theme::isDark();
 
     if (isChecked()) {
-        QColor color = Theme::instance()->themeColor();
+        QColor color = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
         if (!isEnabled()) {
             return isDark ? QColor(255, 255, 255, 41) : QColor(0, 0, 0, 56);
         }
         if (property("isPressed").toBool()) {
-            return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_2);
+            return Theme::themeColor(Fluent::ThemeColor::LIGHT_2);
         }
         if (property("isHover").toBool()) {
-            return Theme::instance()->themeColor(Fluent::ThemeColor::LIGHT_1);
+            return Theme::themeColor(Fluent::ThemeColor::LIGHT_1);
         }
         return color;
     } else {
