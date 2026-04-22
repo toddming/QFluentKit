@@ -12,7 +12,7 @@ CardWidget::CardWidget(QWidget *parent)
 {
     setBackgroundColor(normalBackgroundColor());
     Theme::onThemeModeChanged(this, [this](Fluent::ThemeMode) {
-        this->updateBackgroundColor();
+        updateBackgroundColor();
     });
 }
 
@@ -63,6 +63,8 @@ void CardWidget::setBorderRadius(int radius)
 
 void CardWidget::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e);
+
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
@@ -122,6 +124,8 @@ void CardWidget::paintEvent(QPaintEvent *e)
 
 void SimpleCardWidget::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e);
+
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
