@@ -9,7 +9,9 @@
 
 #include "Theme.h"
 #include "QFluent/LineEdit.h"
-#include "QFluent/ScrollBar.h"=============================
+#include "QFluent/ScrollBar.h"
+
+// ==========================================
 // TableItemDelegate Implementation
 // ==========================================
 
@@ -139,7 +141,7 @@ void TableItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     if (isSelected && index.column() == 0) {
         QScrollBar* hScrollBar = nullptr;
 
-        if (const auto* tableView = qobject_cast<const QTableView*>(parent())) {
+        if (tableView) {
             hScrollBar = tableView->horizontalScrollBar();
         } else if (const auto* listView = qobject_cast<const QListView*>(parent())) {
             hScrollBar = listView->horizontalScrollBar();

@@ -24,7 +24,8 @@ class TableItemDelegate;
 /**
  * @brief 自定义表格项代理，处理绘制和编辑
  */
-class TableItemDelegate : public QStyledItemDelegate {
+class TableItemDelegate : public QStyledItemDelegate
+{
     Q_OBJECT
 public:
     explicit TableItemDelegate(QAbstractItemView* parent = nullptr);
@@ -222,7 +223,8 @@ protected:
 
 // 导出类定义
 
-class QFLUENT_EXPORT TableWidget : public TableBase<QTableWidget> {
+class QFLUENT_EXPORT TableWidget : public TableBase<QTableWidget>
+{
     Q_OBJECT
 public:
     explicit TableWidget(QWidget* parent = nullptr);
@@ -231,7 +233,8 @@ public:
     void setCurrentItem(QTableWidgetItem* item, QItemSelectionModel::SelectionFlags command = QItemSelectionModel::NoUpdate);
 };
 
-class QFLUENT_EXPORT TableView : public TableBase<QTableView> {
+class QFLUENT_EXPORT TableView : public TableBase<QTableView>
+{
     Q_OBJECT
 public:
     explicit TableView(QWidget* parent = nullptr);

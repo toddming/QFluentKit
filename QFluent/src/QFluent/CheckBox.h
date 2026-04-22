@@ -6,7 +6,8 @@
 
 class QEnterEvent;
 class CheckBoxPrivate;
-class QFLUENT_EXPORT CheckBox : public QCheckBox {
+class QFLUENT_EXPORT CheckBox : public QCheckBox
+{
     Q_OBJECT
     Q_DECLARE_PRIVATE_D(d_ptr, CheckBox)
 

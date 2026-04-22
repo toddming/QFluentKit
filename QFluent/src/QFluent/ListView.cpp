@@ -14,14 +14,7 @@
 
 ListItemDelegate::ListItemDelegate(QAbstractItemView* parent)
     : TableItemDelegate(parent)
-    , m_lightCheckedColor(Qt::white) // 默认值
-    , m_darkCheckedColor(Qt::black)  // 默认值
 {
-}
-
-void ListItemDelegate::setCheckedColor(const QColor& lightColor, const QColor& darkColor) {
-    m_lightCheckedColor = lightColor;
-    m_darkCheckedColor = darkColor;
 }
 
 void ListItemDelegate::drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {

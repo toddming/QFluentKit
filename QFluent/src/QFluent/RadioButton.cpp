@@ -5,10 +5,13 @@
 #include <QPainter>
 #include <QPoint>
 #include <QEvent>
-#include <QEnterEvent>
 
 #include "Theme.h"
 #include "StyleSheet.h"
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QEnterEvent>
+#endif
 
 
 RadioButton::RadioButton(QWidget *parent)
@@ -32,6 +35,7 @@ void RadioButton::init()
 
 void RadioButton::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     drawIndicator(painter);
@@ -69,7 +73,8 @@ void RadioButton::drawText(QPainter &painter)
 
     painter.setFont(font());
     painter.setPen(Theme::isDark() ? Qt::white : Qt::black);
-    painter.drawText(QRect(29, 0, width(), height()), Qt::AlignVCenter, text());
+    int textX = m_indicatorPos.x() + 10 + 8;
+    painter.drawText(QRect(textX, 0, width(), height()), Qt::AlignVCenter, text());
 }
 
 void RadioButton::drawIndicator(QPainter &painter)

@@ -8,6 +8,10 @@
 #include <QStyledItemDelegate>
 #include <QItemSelectionModel>
 
+#include "FluentGlobal.h"
+#include "StyleSheet.h"
+#include "TableView.h"
+
 class QPainter;
 class QEvent;
 class QKeyEvent;
@@ -17,27 +21,18 @@ class QStyleOptionViewItem;
 class QWidget;
 class QListWidgetItem;
 
-#include "TableView.h"
-#include "StyleSheet.h"
-#include "FluentGlobal.h"
-
 /**
  * @brief 自定义列表项代理，继承自 TableItemDelegate 以复用大部分逻辑
  */
-class ListItemDelegate : public TableItemDelegate {
+class ListItemDelegate : public TableItemDelegate
+{
     Q_OBJECT
 public:
     explicit ListItemDelegate(QAbstractItemView* parent = nullptr);
 
-    void setCheckedColor(const QColor& lightColor, const QColor& darkColor);
-
 protected:
     void drawBackground(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
     void drawIndicator(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-
-private:
-    QColor m_lightCheckedColor;
-    QColor m_darkCheckedColor;
 };
 
 
@@ -129,10 +124,6 @@ public:
 
     // --- 属性 & Setters ---
 
-    void setCheckedColor(const QColor& light, const QColor& dark) {
-        m_delegate->setCheckedColor(light, dark);
-    }
-
     bool isRightClickSelectionEnabled() const {
         return m_isRightClickSelection;
     }
@@ -174,7 +165,8 @@ protected:
 };
 
 
-class QFLUENT_EXPORT ListWidget : public ListBase<QListWidget> {
+class QFLUENT_EXPORT ListWidget : public ListBase<QListWidget>
+{
     Q_OBJECT
     Q_PROPERTY(bool selectRightClickedRow READ isRightClickSelectionEnabled WRITE setRightClickSelectionEnabled)
 
@@ -185,7 +177,8 @@ public:
     void setCurrentRow(int row, QItemSelectionModel::SelectionFlags command = QItemSelectionModel::NoUpdate);
 };
 
-class QFLUENT_EXPORT ListView : public ListBase<QListView> {
+class QFLUENT_EXPORT ListView : public ListBase<QListView>
+{
     Q_OBJECT
     Q_PROPERTY(bool selectRightClickedRow READ isRightClickSelectionEnabled WRITE setRightClickSelectionEnabled)
 
