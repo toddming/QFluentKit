@@ -1,4 +1,5 @@
-﻿#include "LineEdit.h"
+#include "LineEdit.h"
+
 #include <QPainter>
 #include <QStyleOption>
 #include <QApplication>
@@ -9,28 +10,30 @@
 #include <QAction>
 #include <QHBoxLayout>
 #include <QEvent>
-#include <QCompleter>
 #include <QPainterPath>
 #include <QTimer>
 
 #include "Theme.h"
 #include "FluentIcon.h"
 #include "StyleSheet.h"
-
 #include "Menu/MenuItemDelegate.h"
 #include "Menu/MenuActionListWidget.h"
 
-LineEditButton::LineEditButton(const QIcon& icon, QWidget* parent)
-    : QToolButton(parent), m_icon(icon) {
+// --- LineEditButton ---
+
+LineEditButton::LineEditButton(const QIcon &icon, QWidget *parent)
+    : QToolButton(parent)
+    , m_icon(icon)
+{
     setObjectName("lineEditButton");
     setFixedSize(31, 23);
     setCursor(Qt::PointingHandCursor);
     setIconSize(QSize(10, 10));
-
     StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
 }
 
-void LineEditButton::setAction(QAction* action) {
+void LineEditButton::setAction(QAction *action)
+{
     if (m_action) {
         disconnect(m_action, nullptr, this, nullptr);
         disconnect(this, nullptr, m_action, nullptr);
@@ -44,11 +47,13 @@ void LineEditButton::setAction(QAction* action) {
     }
 }
 
-QAction* LineEditButton::action() const {
+QAction *LineEditButton::action() const
+{
     return m_action;
 }
 
-void LineEditButton::paintEvent(QPaintEvent* event) {
+void LineEditButton::paintEvent(QPaintEvent *event)
+{
     Q_UNUSED(event);
     QToolButton::paintEvent(event);
 
@@ -57,11 +62,10 @@ void LineEditButton::paintEvent(QPaintEvent* event) {
 
     const QRect rect = this->rect();
     const QSize iconSize = this->iconSize();
-    const QRect iconRect(rect.center() - QPoint(iconSize.width()/2, iconSize.height()/2), iconSize);
+    const QRect iconRect(rect.center() - QPoint(iconSize.width() / 2, iconSize.height() / 2), iconSize);
 
-    if (property("isPressed").toBool()) {
+    if (property("isPressed").toBool())
         painter.setOpacity(0.7);
-    }
 
     m_icon.paint(&painter, iconRect, Qt::AlignCenter);
 }
@@ -78,9 +82,11 @@ void LineEditButton::mouseReleaseEvent(QMouseEvent *e)
     QToolButton::mouseReleaseEvent(e);
 }
 
-void LineEditButton::updateButtonState() {
-    if (!m_action) return;
-    
+void LineEditButton::updateButtonState()
+{
+    if (!m_action)
+        return;
+
     setEnabled(m_action->isEnabled());
     setCheckable(m_action->isCheckable());
     setChecked(m_action->isChecked());
@@ -89,61 +95,69 @@ void LineEditButton::updateButtonState() {
     update();
 }
 
-LineEdit::LineEdit(QWidget* parent) 
-    : QLineEdit(parent),
-      m_layout(new QHBoxLayout(this)),
-      m_clearButton(new LineEditButton(FluentIcon(Fluent::IconType::CLOSE).qicon(), this)),
-      m_completerTimer(new QTimer(this)) {
-    
+// --- LineEdit ---
+
+LineEdit::LineEdit(QWidget *parent)
+    : QLineEdit(parent)
+    , m_layout(new QHBoxLayout(this))
+    , m_clearButton(new LineEditButton(FluentIcon(Fluent::IconType::CLOSE).qicon(), this))
+    , m_completerTimer(new QTimer(this))
+{
     setFixedHeight(33);
     setAttribute(Qt::WA_MacShowFocusRect, false);
     setClearButtonEnabled(true);
     setProperty("transparent", true);
-
+    setContextMenuPolicy(Qt::NoContextMenu);
     StyleSheet::registerWidget(this, Fluent::ThemeStyle::LINE_EDIT);
-    
+
     m_layout->setSpacing(3);
     m_layout->setContentsMargins(4, 4, 4, 4);
     m_layout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    
+
     initClearButton();
-    
+
     connect(this, &LineEdit::textChanged, this, &LineEdit::handleTextChanged);
     connect(this, &LineEdit::textEdited, this, &LineEdit::handleTextEdited);
     m_completerTimer->setSingleShot(true);
     connect(m_completerTimer, &QTimer::timeout, this, &LineEdit::showCompleterMenu);
 }
 
-void LineEdit::initClearButton() {
+void LineEdit::initClearButton()
+{
     m_clearButton->setFixedSize(29, 25);
     m_clearButton->hide();
     m_layout->addWidget(m_clearButton, 0, Qt::AlignRight);
     connect(m_clearButton, &LineEditButton::clicked, this, &LineEdit::clear);
 }
 
-void LineEdit::setClearButtonEnabled(bool enable) {
+void LineEdit::setClearButtonEnabled(bool enable)
+{
     m_clearButtonEnabled = enable;
     m_clearButton->setVisible(enable && !text().isEmpty() && hasFocus());
     adjustTextMargins();
 }
 
-bool LineEdit::isClearButtonEnabled() const {
+bool LineEdit::isClearButtonEnabled() const
+{
     return m_clearButtonEnabled;
 }
 
-void LineEdit::setCompleter(QCompleter* completer) {
-    if (m_completer) {
+void LineEdit::setCompleter(QCompleter *completer)
+{
+    if (m_completer)
         m_completer->deleteLater();
-    }
+
     m_completer = completer;
 }
 
-QCompleter* LineEdit::completer() const {
+QCompleter *LineEdit::completer() const
+{
     return m_completer;
 }
 
-void LineEdit::addAction(QAction* action, QLineEdit::ActionPosition position) {
-    auto button = new LineEditButton(action->icon(), this);
+void LineEdit::addAction(QAction *action, QLineEdit::ActionPosition position)
+{
+    auto *button = new LineEditButton(action->icon(), this);
     button->setAction(action);
     button->setFixedWidth(29);
 
@@ -158,38 +172,41 @@ void LineEdit::addAction(QAction* action, QLineEdit::ActionPosition position) {
     adjustTextMargins();
 }
 
-void LineEdit::addActions(QList<QAction*> actions, QLineEdit::ActionPosition position) {
-    for (auto action : actions) {
+void LineEdit::addActions(QList<QAction *> actions, QLineEdit::ActionPosition position)
+{
+    for (auto *action : actions)
         addAction(action, position);
-    }
 }
 
-void LineEdit::adjustTextMargins() {
+void LineEdit::adjustTextMargins()
+{
     const int leftMargin = m_leftButtons.size() * 30;
     const int rightMargin = m_rightButtons.size() * 30 + (m_clearButtonEnabled ? 28 : 0);
     setTextMargins(leftMargin, 0, rightMargin, 0);
 }
 
-void LineEdit::focusOutEvent(QFocusEvent* e) {
+void LineEdit::focusOutEvent(QFocusEvent *e)
+{
     QLineEdit::focusOutEvent(e);
     m_clearButton->hide();
 }
 
-void LineEdit::focusInEvent(QFocusEvent* e) {
+void LineEdit::focusInEvent(QFocusEvent *e)
+{
     QLineEdit::focusInEvent(e);
-    if (m_clearButtonEnabled) {
+    if (m_clearButtonEnabled)
         m_clearButton->setVisible(!text().isEmpty());
-    }
 }
 
-void LineEdit::handleTextChanged(const QString& text) {
+void LineEdit::handleTextChanged(const QString &text)
+{
     Q_UNUSED(text);
-    if (m_clearButtonEnabled) {
+    if (m_clearButtonEnabled)
         m_clearButton->setVisible(!text.isEmpty() && hasFocus());
-    }
 }
 
-void LineEdit::handleTextEdited(const QString& text) {
+void LineEdit::handleTextEdited(const QString &text)
+{
     Q_UNUSED(text);
     if (m_completer) {
         if (!this->text().isEmpty()) {
@@ -202,51 +219,49 @@ void LineEdit::handleTextEdited(const QString& text) {
 
 void LineEdit::setCompleterMenu(CompleterMenu *menu)
 {
-    if (m_completerMenu == menu) {
+    if (m_completerMenu == menu)
         return;
-    }
 
-    if (!m_completerMenu.isNull()) {
+    if (!m_completerMenu.isNull())
         disconnect(m_completerMenu, nullptr, m_completer, nullptr);
-    }
 
-    if (!menu) {
+    if (!menu)
         return;
-    }
+
     m_completerMenu = menu;
 
     connect(menu, &CompleterMenu::activated,
-            m_completer, static_cast<void(QCompleter::*)(const QString&)>(&QCompleter::activated));
+            m_completer, static_cast<void (QCompleter::*)(const QString &)>(&QCompleter::activated));
 
     connect(menu, &CompleterMenu::indexActivated,
-            [this](const QModelIndex& idx) {
+            [this](const QModelIndex &idx) {
         QMetaObject::invokeMethod(m_completer, "activated", Qt::DirectConnection,
                                   Q_ARG(QModelIndex, idx));
     });
 }
 
-void LineEdit::showCompleterMenu() {
-    if (!m_completer || text().isEmpty()) return;
+void LineEdit::showCompleterMenu()
+{
+    if (!m_completer || text().isEmpty())
+        return;
 
-    if (m_completerMenu.isNull()) {
+    if (m_completerMenu.isNull())
         setCompleterMenu(new CompleterMenu(this));
-    }
 
     m_completer->setCompletionPrefix(this->text());
     bool changed = m_completerMenu->setCompletion(m_completer->completionModel(), m_completer->completionColumn());
     m_completerMenu->setMaxVisibleItems(m_completer->maxVisibleItems());
 
-    if (changed) m_completerMenu->popup();
+    if (changed)
+        m_completerMenu->popup();
 }
 
-void LineEdit::contextMenuEvent(QContextMenuEvent* e) {
-    return;
-}
-
-void LineEdit::paintEvent(QPaintEvent* e) {
+void LineEdit::paintEvent(QPaintEvent *e)
+{
     QLineEdit::paintEvent(e);
-    
-    if (!hasFocus()) return;
+
+    if (!hasFocus())
+        return;
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
@@ -266,19 +281,21 @@ void LineEdit::paintEvent(QPaintEvent* e) {
     painter.fillPath(path, Theme::themeColor(Fluent::ThemeColor::PRIMARY));
 }
 
-LineEditButton* LineEdit::clearButton()
+LineEditButton *LineEdit::clearButton()
 {
     return m_clearButton;
 }
 
+QHBoxLayout *LineEdit::hBoxLayout() const
+{
+    return m_layout;
+}
 
-
-
+// --- SearchLineEdit ---
 
 SearchLineEdit::SearchLineEdit(QWidget *parent)
     : LineEdit(parent)
     , m_searchButton(nullptr)
-    , m_clearButton(nullptr)
     , m_hBoxLayout(nullptr)
 {
     initWidgets();
@@ -289,67 +306,47 @@ void SearchLineEdit::initWidgets()
     setClearButtonEnabled(true);
     setTextMargins(0, 0, 59, 0);
 
-    m_clearButton = LineEdit::clearButton();
-    m_hBoxLayout = qobject_cast<QHBoxLayout*>(layout());
-
+    m_hBoxLayout = qobject_cast<QHBoxLayout *>(layout());
     m_searchButton = new LineEditButton(FluentIcon(Fluent::IconType::SEARCH).qicon(), this);
     m_hBoxLayout->addWidget(m_searchButton);
 
     connect(m_searchButton, &LineEditButton::clicked, this, &SearchLineEdit::search);
     connect(m_searchButton, &LineEditButton::clicked, this, &SearchLineEdit::onClearButtonClicked);
-
-    // connect(this, &SearchLineEdit::textChanged, [this](const QString &text) {
-    //     clearButton->setVisible(!text.isEmpty());
-    //     updateTextMargins();
-    // });
-
-    // updateTextMargins();
-}
-
-void SearchLineEdit::updateTextMargins()
-{
-    // int rightMargin = searchButton->sizeHint().width() + clearButton->sizeHint().width();
-    // setTextMargins(0, 0, rightMargin, 0);
 }
 
 void SearchLineEdit::search()
 {
     QString text = this->text().trimmed();
-    if (!text.isEmpty()) {
+    if (!text.isEmpty())
         emit searchSignal(text);
-    } else {
+    else
         emit clearSignal();
-    }
 }
 
 void SearchLineEdit::onClearButtonClicked()
 {
-    emit clearSignal();  // 发出清除信号
+    emit clearSignal();
 }
 
+// --- CompleterMenu ---
 
-
-
-
-CompleterMenu::CompleterMenu(LineEdit* lineEdit, QWidget* parent)
+CompleterMenu::CompleterMenu(LineEdit *lineEdit, QWidget *parent)
     : RoundMenu("menu", parent)
     , m_lineEdit(lineEdit)
 {
-    setItemHeight(36);
+    setItemHeight(33);
     view()->setObjectName("completerListWidget");
     view()->setItemDelegate(new IndicatorMenuItemDelegate(this));
     view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-    this->installEventFilter(this);
+    installEventFilter(this);
 
     connect(view(), &MenuActionListWidget::itemClicked, this, &CompleterMenu::onItemClicked);
-
-    setItemHeight(33);
 }
 
-bool CompleterMenu::setCompletion(QAbstractItemModel* model, int column)
+bool CompleterMenu::setCompletion(QAbstractItemModel *model, int column)
 {
-    if (!model) return false;
+    if (!model)
+        return false;
 
     QStringList items;
     m_indexes.clear();
@@ -361,50 +358,45 @@ bool CompleterMenu::setCompletion(QAbstractItemModel* model, int column)
         m_indexes.append(index);
     }
 
-    if (m_items == items && isVisible()) {
+    if (m_items == items && isVisible())
         return false;
-    }
 
     setItems(items);
     return true;
 }
 
-void CompleterMenu::setItems(const QStringList& items)
+void CompleterMenu::setItems(const QStringList &items)
 {
     view()->clear();
     m_items = items;
     view()->addItems(items);
 
     for (int i = 0; i < view()->count(); ++i) {
-        QListWidgetItem* item = view()->item(i);
+        QListWidgetItem *item = view()->item(i);
         item->setSizeHint(QSize(1, 33));
     }
 }
 
-void CompleterMenu::onItemClicked(QListWidgetItem* item)
+void CompleterMenu::onItemClicked(QListWidgetItem *item)
 {
     hideMenu();
     onCompletionItemSelected(item->text(), view()->row(item));
 }
 
-bool CompleterMenu::eventFilter(QObject* obj, QEvent* event)
+bool CompleterMenu::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() != QEvent::KeyPress) {
+    if (event->type() != QEvent::KeyPress)
         return RoundMenu::eventFilter(obj, event);
-    }
 
-    QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+    auto *keyEvent = static_cast<QKeyEvent *>(event);
+    m_lineEdit->event(event);
 
-    m_lineEdit->event(event); // Direct call (may not capture all side effects)
-    // view()->event(event);
-
-    if (keyEvent->key() == Qt::Key_Escape) {
+    if (keyEvent->key() == Qt::Key_Escape)
         close();
-    }
 
-    if ((keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) &&
-            view()->currentRow() >= 0) {
-        QListWidgetItem* currentItem = view()->currentItem();
+    if ((keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
+            && view()->currentRow() >= 0) {
+        QListWidgetItem *currentItem = view()->currentItem();
         if (currentItem) {
             onCompletionItemSelected(currentItem->text(), view()->currentRow());
             close();
@@ -414,16 +406,15 @@ bool CompleterMenu::eventFilter(QObject* obj, QEvent* event)
     return RoundMenu::eventFilter(obj, event);
 }
 
-void CompleterMenu::onCompletionItemSelected(const QString& text, int row)
+void CompleterMenu::onCompletionItemSelected(const QString &text, int row)
 {
-    if (m_lineEdit) {
+    if (m_lineEdit)
         m_lineEdit->setText(text);
-    }
+
     emit activated(text);
 
-    if (row >= 0 && row < m_indexes.size()) {
+    if (row >= 0 && row < m_indexes.size())
         emit indexActivated(m_indexes.at(row));
-    }
 }
 
 void CompleterMenu::popup()
@@ -433,17 +424,16 @@ void CompleterMenu::popup()
         return;
     }
 
-    LineEdit* p = m_lineEdit;
-    if (!p) return;
+    LineEdit *p = m_lineEdit;
+    if (!p)
+        return;
 
-    // Adjust menu size
     if (view()->width() < p->width()) {
         view()->setMinimumWidth(p->width());
         adjustSize();
     }
 
     int x = 0;
-    //int x = -width() / 2 + layout()->contentsMargins().left() + p->width() / 2;
     int y_drop = p->height() - layout()->contentsMargins().top() + 2;
     QPoint pos_drop = p->mapToGlobal(QPoint(x, y_drop));
     int height_drop = view()->heightForAnimation(pos_drop, Fluent::MenuAnimation::DROP_DOWN);
@@ -475,10 +465,12 @@ void CompleterMenu::popup()
     p->setFocus(Qt::OtherFocusReason);
 }
 
+LineEdit *CompleterMenu::lineEdit() const
+{
+    return m_lineEdit;
+}
 
-
-
-
+// --- PasswordLineEdit ---
 
 PasswordLineEdit::PasswordLineEdit(QWidget *parent)
     : LineEdit(parent)
@@ -486,7 +478,6 @@ PasswordLineEdit::PasswordLineEdit(QWidget *parent)
     m_viewButton = new LineEditButton(FluentIcon(Fluent::IconType::VIEW).qicon(), this);
 
     setEchoMode(QLineEdit::Password);
-    setContextMenuPolicy(Qt::NoContextMenu);
     setClearButtonEnabled(false);
     hBoxLayout()->addWidget(m_viewButton, 0, Qt::AlignRight);
 
@@ -517,22 +508,19 @@ void PasswordLineEdit::setClearButtonEnabled(bool enable)
 void PasswordLineEdit::setViewPasswordButtonVisible(bool isVisible)
 {
     m_viewButton->setVisible(isVisible);
-    // 重新调整边距
     setClearButtonEnabled(isClearButtonEnabled());
 }
 
 bool PasswordLineEdit::eventFilter(QObject *obj, QEvent *e)
 {
-    if (obj != m_viewButton || !isEnabled()) {
+    if (obj != m_viewButton || !isEnabled())
         return LineEdit::eventFilter(obj, e);
-    }
 
     if (e->type() == QEvent::MouseButtonPress) {
         m_viewButton->setProperty("isPressed", true);
         setPasswordVisible(true);
         return true;
-    }
-    else if (e->type() == QEvent::MouseButtonRelease) {
+    } else if (e->type() == QEvent::MouseButtonRelease) {
         m_viewButton->setProperty("isPressed", false);
         setPasswordVisible(false);
         return true;
@@ -543,8 +531,8 @@ bool PasswordLineEdit::eventFilter(QObject *obj, QEvent *e)
 
 QVariant PasswordLineEdit::inputMethodQuery(Qt::InputMethodQuery query) const
 {
-    if (query == Qt::ImEnabled) {
-        return false;  // 禁用输入法（如拼音）
-    }
+    if (query == Qt::ImEnabled)
+        return false;
+
     return LineEdit::inputMethodQuery(query);
 }

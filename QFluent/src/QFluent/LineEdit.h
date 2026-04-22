@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <QLineEdit>
 #include <QToolButton>
@@ -11,86 +11,78 @@ class QAction;
 class QEvent;
 class QCompleter;
 class QHBoxLayout;
-class LineEditButton;
-class CompleterMenu;
 class QAbstractItemModel;
-class QFLUENT_EXPORT LineEdit : public QLineEdit {
+
+class CompleterMenu;
+
+class LineEditButton : public QToolButton
+{
     Q_OBJECT
 
 public:
-    explicit LineEdit(QWidget* parent = nullptr);
+    explicit LineEditButton(const QIcon &icon, QWidget *parent = nullptr);
+
+    void setAction(QAction *action);
+    QAction *action() const;
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+
+private slots:
+    void updateButtonState();
+
+private:
+    QAction *m_action = nullptr;
+    QIcon m_icon;
+};
+
+class QFLUENT_EXPORT LineEdit : public QLineEdit
+{
+    Q_OBJECT
+
+public:
+    explicit LineEdit(QWidget *parent = nullptr);
     ~LineEdit() = default;
 
     void setClearButtonEnabled(bool enable);
     bool isClearButtonEnabled() const;
 
-    void setCompleter(QCompleter* completer);
-    QCompleter* completer() const;
+    void setCompleter(QCompleter *completer);
+    QCompleter *completer() const;
 
-    void addAction(QAction* action, QLineEdit::ActionPosition position = QLineEdit::TrailingPosition);
-    void addActions(QList<QAction*> actions, QLineEdit::ActionPosition position = QLineEdit::TrailingPosition);
+    void addAction(QAction *action, QLineEdit::ActionPosition position = QLineEdit::TrailingPosition);
+    void addActions(QList<QAction *> actions, QLineEdit::ActionPosition position = QLineEdit::TrailingPosition);
 
     LineEditButton *clearButton();
-
-    QHBoxLayout* hBoxLayout() const { return m_layout; }
+    QHBoxLayout *hBoxLayout() const;
 
     void setCompleterMenu(CompleterMenu *menu);
 
-
 protected:
-    void focusOutEvent(QFocusEvent* e) override;
-    void focusInEvent(QFocusEvent* e) override;
-    void contextMenuEvent(QContextMenuEvent* e) override;
-    void paintEvent(QPaintEvent* e) override;
+    void focusOutEvent(QFocusEvent *e) override;
+    void focusInEvent(QFocusEvent *e) override;
+    void paintEvent(QPaintEvent *e) override;
 
 private slots:
-    void handleTextChanged(const QString& text);
-    void handleTextEdited(const QString& text);
+    void handleTextChanged(const QString &text);
+    void handleTextEdited(const QString &text);
     void showCompleterMenu();
 
 private:
     void adjustTextMargins();
     void initClearButton();
 
-    QHBoxLayout* m_layout;
-    LineEditButton* m_clearButton;
-    QCompleter* m_completer = nullptr;
-    QTimer* m_completerTimer;
-    QList<LineEditButton*> m_leftButtons;
-    QList<LineEditButton*> m_rightButtons;
+    QHBoxLayout *m_layout;
+    LineEditButton *m_clearButton;
+    QCompleter *m_completer = nullptr;
+    QTimer *m_completerTimer;
+    QList<LineEditButton *> m_leftButtons;
+    QList<LineEditButton *> m_rightButtons;
     bool m_clearButtonEnabled = false;
     QPointer<CompleterMenu> m_completerMenu;
 };
-
-
-
-
-class LineEditButton : public QToolButton {
-    Q_OBJECT
-
-public:
-    explicit LineEditButton(const QIcon& icon, QWidget* parent = nullptr);
-    void setAction(QAction* action);
-    QAction* action() const;
-
-protected:
-    void paintEvent(QPaintEvent* event) override;
-    void mousePressEvent(QMouseEvent* e) override;
-    void mouseReleaseEvent(QMouseEvent* e) override;
-
-private slots:
-    void updateButtonState();
-
-private:
-    QAction* m_action = nullptr;
-    QIcon m_icon;
-};
-
-
-
-
-
-
 
 class QFLUENT_EXPORT SearchLineEdit : public LineEdit
 {
@@ -111,60 +103,40 @@ private slots:
 
 private:
     LineEditButton *m_searchButton;
-    LineEditButton *m_clearButton;
     QHBoxLayout *m_hBoxLayout;
 
     void initWidgets();
-    void updateTextMargins();
 };
-
-
-
-
-
-
-
 
 class QFLUENT_EXPORT CompleterMenu : public RoundMenu
 {
     Q_OBJECT
 
 public:
-    explicit CompleterMenu(LineEdit* lineEdit, QWidget* parent = nullptr);
+    explicit CompleterMenu(LineEdit *lineEdit, QWidget *parent = nullptr);
 
-    bool setCompletion(QAbstractItemModel* model, int column = 0);
-
-    void setItems(const QStringList& items);
-
+    bool setCompletion(QAbstractItemModel *model, int column = 0);
+    void setItems(const QStringList &items);
     void popup();
 
 signals:
-    void activated(const QString& text);
-    void indexActivated(const QModelIndex& index);
+    void activated(const QString &text);
+    void indexActivated(const QModelIndex &index);
 
 protected:
-    bool eventFilter(QObject* obj, QEvent* event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
-    void onItemClicked(QListWidgetItem* item);
+    void onItemClicked(QListWidgetItem *item);
 
 private:
-    void onCompletionItemSelected(const QString& text, int row);
+    void onCompletionItemSelected(const QString &text, int row);
+    LineEdit *lineEdit() const;
 
-    QPointer<LineEdit> lineEdit() const { return m_lineEdit; }
-
-private:
     QPointer<LineEdit> m_lineEdit;
-
     QStringList m_items;
     QVector<QModelIndex> m_indexes;
-
 };
-
-
-
-
-
 
 class QFLUENT_EXPORT PasswordLineEdit : public LineEdit
 {
@@ -173,13 +145,10 @@ class QFLUENT_EXPORT PasswordLineEdit : public LineEdit
 public:
     explicit PasswordLineEdit(QWidget *parent = nullptr);
 
-    // 设置/获取密码是否可见
     void setPasswordVisible(bool isVisible);
     bool isPasswordVisible() const;
 
     void setClearButtonEnabled(bool enable);
-
-    // 控制“查看密码”按钮是否显示
     void setViewPasswordButtonVisible(bool isVisible);
 
 protected:
