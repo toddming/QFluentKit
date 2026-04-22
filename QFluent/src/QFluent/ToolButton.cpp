@@ -384,7 +384,7 @@ void SplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Fluent::Th
     } else {
         painter->setOpacity(0.63);
     }
-    ToolButton::drawIcon(painter, rect, theme);
+    ToolButton::drawIcon(painter, r, theme);
 }
 
 
@@ -410,12 +410,14 @@ void PrimarySplitDropButton::drawIcon(QPainter *painter, const QRectF &rect, Flu
     } else {
         painter->setOpacity(0.63);
     }
-    PrimaryToolButton::drawIcon(painter, rect, theme);
+    PrimaryToolButton::drawIcon(painter, r, theme);
 }
 
 
 // SplitToolBase
-SplitToolBase::SplitToolBase(QWidget* parent) : QWidget(parent) {
+SplitToolBase::SplitToolBase(QWidget *parent)
+    : QWidget(parent)
+{
     m_hBoxLayout = new QHBoxLayout(this);
     m_hBoxLayout->setSpacing(0);
     m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
@@ -430,35 +432,35 @@ SplitToolBase::SplitToolBase(QWidget* parent) : QWidget(parent) {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-SplitToolBase::~SplitToolBase() {
-}
-
-void SplitToolBase::setWidget(QWidget* widget) {
-    // 插入到索引 0，拉伸因子 1，左对齐
+void SplitToolBase::setWidget(QWidget *widget)
+{
     m_hBoxLayout->insertWidget(0, widget, 1, Qt::AlignLeft);
 }
 
-void SplitToolBase::setDropButton(ToolButton* button) {
+void SplitToolBase::setDropButton(ToolButton *button)
+{
     m_hBoxLayout->removeWidget(m_dropButton);
     m_dropButton->deleteLater();
 
     m_dropButton = button;
-    // 重新连接信号
     connect(m_dropButton, &QAbstractButton::clicked, this, &SplitToolBase::dropDownClicked);
     connect(m_dropButton, &QAbstractButton::clicked, this, &SplitToolBase::showFlyout);
 
     m_hBoxLayout->addWidget(button);
 }
 
-void SplitToolBase::setDropIconSize(const QSize& size) {
+void SplitToolBase::setDropIconSize(const QSize &size)
+{
     m_dropButton->setIconSize(size);
 }
 
-void SplitToolBase::setFlyout(QWidget* flyout) {
+void SplitToolBase::setFlyout(QWidget *flyout)
+{
     m_flyout = flyout;
 }
 
-void SplitToolBase::showFlyout() {
+void SplitToolBase::showFlyout()
+{
     if (!m_flyout) return;
 
     QWidget* w = m_flyout;
@@ -509,7 +511,8 @@ SplitToolButton::SplitToolButton(const FluentIconBase& icon, QWidget* parent)
     m_button->setFluentIcon(icon);
 }
 
-void SplitToolButton::init() {
+void SplitToolButton::init()
+{
     m_button = new ToolButton(this);
     m_button->setObjectName("splitToolButton");
     connect(m_button, &QToolButton::clicked, this, &SplitToolButton::clicked);
@@ -542,7 +545,8 @@ PrimarySplitToolButton::PrimarySplitToolButton(const FluentIconBase& icon, QWidg
     m_button->setFluentIcon(icon);
 }
 
-void PrimarySplitToolButton::init() {
+void PrimarySplitToolButton::init()
+{
     setDropButton(new PrimarySplitDropButton(this));
 
     m_button = new PrimaryToolButton(this);

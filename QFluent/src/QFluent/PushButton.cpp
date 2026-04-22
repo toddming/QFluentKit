@@ -172,22 +172,22 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
 
 
 // ToggleButton
-ToggleButton::ToggleButton(QWidget *parent) :
-    PushButton(parent)
+ToggleButton::ToggleButton(QWidget *parent)
+    : PushButton(parent)
 {
     setCheckable(true);
     setChecked(false);
 }
 
-ToggleButton::ToggleButton(const QString &text, QWidget* parent) :
-    PushButton(text, parent)
+ToggleButton::ToggleButton(const QString &text, QWidget *parent)
+    : PushButton(text, parent)
 {
     setCheckable(true);
     setChecked(false);
 }
 
-ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWidget* parent) :
-    PushButton(text, icon, parent)
+ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
+    : PushButton(text, icon, parent)
 {
     setCheckable(true);
     setChecked(false);
@@ -206,24 +206,24 @@ void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 
 
 // DropDownButtonBase
-DropDownButtonBase::DropDownButtonBase(QWidget *parent) :
-    PushButton(parent)
-  , m_menu(nullptr)
-  , m_arrowAni(new TranslateYAnimation(this))
+DropDownButtonBase::DropDownButtonBase(QWidget *parent)
+    : PushButton(parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
 {
 }
 
-DropDownButtonBase::DropDownButtonBase(const QString &text, QWidget* parent) :
-    PushButton(text, parent)
-  , m_menu(nullptr)
-  , m_arrowAni(new TranslateYAnimation(this))
+DropDownButtonBase::DropDownButtonBase(const QString &text, QWidget *parent)
+    : PushButton(text, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
 {
 }
 
-DropDownButtonBase::DropDownButtonBase(const QString &text, const FluentIconBase &icon, QWidget* parent) :
-    PushButton(text, parent)
-  , m_menu(nullptr)
-  , m_arrowAni(new TranslateYAnimation(this))
+DropDownButtonBase::DropDownButtonBase(const QString &text, const FluentIconBase &icon, QWidget *parent)
+    : PushButton(text, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
 {
 }
 
@@ -405,7 +405,9 @@ void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 
 
 // SplitButtonBase
-SplitButtonBase::SplitButtonBase(QWidget* parent) : QWidget(parent) {
+SplitButtonBase::SplitButtonBase(QWidget *parent)
+    : QWidget(parent)
+{
     m_hBoxLayout = new QHBoxLayout(this);
     m_hBoxLayout->setSpacing(0);
     m_hBoxLayout->setContentsMargins(0, 0, 0, 0);
@@ -420,35 +422,35 @@ SplitButtonBase::SplitButtonBase(QWidget* parent) : QWidget(parent) {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-SplitButtonBase::~SplitButtonBase() {
-}
-
-void SplitButtonBase::setWidget(QWidget* widget) {
-    // 插入到索引 0，拉伸因子 1，左对齐
+void SplitButtonBase::setWidget(QWidget *widget)
+{
     m_hBoxLayout->insertWidget(0, widget, 1, Qt::AlignLeft);
 }
 
-void SplitButtonBase::setDropButton(ToolButton* button) {
+void SplitButtonBase::setDropButton(ToolButton *button)
+{
     m_hBoxLayout->removeWidget(m_dropButton);
     m_dropButton->deleteLater();
 
     m_dropButton = button;
-    // 重新连接信号
     connect(m_dropButton, &QAbstractButton::clicked, this, &SplitButtonBase::dropDownClicked);
     connect(m_dropButton, &QAbstractButton::clicked, this, &SplitButtonBase::showFlyout);
 
     m_hBoxLayout->addWidget(button);
 }
 
-void SplitButtonBase::setDropIconSize(const QSize& size) {
+void SplitButtonBase::setDropIconSize(const QSize &size)
+{
     m_dropButton->setIconSize(size);
 }
 
-void SplitButtonBase::setFlyout(QWidget* flyout) {
+void SplitButtonBase::setFlyout(QWidget *flyout)
+{
     m_flyout = flyout;
 }
 
-void SplitButtonBase::showFlyout() {
+void SplitButtonBase::showFlyout()
+{
     if (!m_flyout) return;
 
     QWidget* w = m_flyout;

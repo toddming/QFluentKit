@@ -216,7 +216,7 @@ class QFLUENT_EXPORT SplitToolBase : public QWidget
 
 public:
     explicit SplitToolBase(QWidget *parent = nullptr);
-    virtual ~SplitToolBase();
+    ~SplitToolBase() override = default;
 
     void setWidget(QWidget *widget);
     void setDropButton(ToolButton *button);
