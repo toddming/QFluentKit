@@ -25,7 +25,7 @@ public:
     QIcon icon() const;
 
     void setIconTheme(Fluent::ThemeMode theme);
-    Fluent::ThemeMode iconTheme();
+    Fluent::ThemeMode iconTheme() const;
 
     QSize sizeHint() const override;
 

@@ -95,8 +95,8 @@ void IconWidget::setIconTheme(Fluent::ThemeMode theme)
     d->m_iconTheme = theme;
 }
 
-Fluent::ThemeMode IconWidget::iconTheme()
+Fluent::ThemeMode IconWidget::iconTheme() const
 {
-    Q_D(IconWidget);
+    Q_D(const IconWidget);
     return d->m_iconTheme;
 }

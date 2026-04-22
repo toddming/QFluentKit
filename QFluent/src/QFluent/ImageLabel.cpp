@@ -72,23 +72,13 @@ void ImageLabel::setImage(const QVariant &image)
     else if (image.userType() == QMetaType::QString) {
         QString filePath = image.toString();
 
-        // 验证文件路径：防止路径遍历攻击
-        if (filePath.contains("..")) {
-            qWarning("ImageLabel::setImage: Path traversal detected in '%s'", qPrintable(filePath));
-            m_image = QImage();
-            update();
-            return;
-        }
-
         QImageReader reader(filePath);
 
         if (reader.supportsAnimation()) {
-            // 处理动画GIF
             QMovie *newMovie = new QMovie(filePath, QByteArray(), this);
             setMovie(newMovie);
-            return; // movie设置会更新m_image
-        }
-        else {
+            return;
+        } else {
             m_image = reader.read();
         }
     }
@@ -190,8 +180,6 @@ void ImageLabel::onFrameChanged(int frameNumber)
 
 void ImageLabel::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event);
-
     if (isNull()) {
         QLabel::paintEvent(event);
         return;
