@@ -1,4 +1,5 @@
 ﻿#include "PushButton.h"
+#include "FluentIcon.h"
 #include <QApplication>
 #include <QStyle>
 #include <QMouseEvent>
@@ -33,14 +34,17 @@ PushButton::PushButton(const QString &text, QWidget *parent)
     init();
 }
 
-PushButton::PushButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
-    : QPushButton(text, parent)
-    , m_isPressed(false)
-    , m_isHover(false)
-    , m_fluentIcon(icon.clone())
+PushButton::PushButton(const QString &text, const QIcon &icon, QWidget *parent)
+    : PushButton(text, parent)
 {
-    init();
-    setProperty("hasIcon", true);
+    setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
+}
+
+PushButton::PushButton(const QString &text, Fluent::IconType type, QWidget *parent)
+    : PushButton(text, parent)
+{
+    setIcon(type);
 }
 
 void PushButton::init()
@@ -52,21 +56,6 @@ void PushButton::init()
     setProperty("hasIcon", false);
 
     setIconSize(QSize(16, 16));
-}
-
-void PushButton::setFluentIcon(const FluentIconBase &icon)
-{
-    m_fluentIcon = icon.clone();
-
-    setProperty("hasIcon", m_fluentIcon != nullptr);
-    style()->unpolish(this);
-    style()->polish(this);
-    update();
-}
-
-FluentIconBase* PushButton::fluentIcon() const
-{
-    return m_fluentIcon.get();
 }
 
 bool PushButton::isPressed() const
@@ -116,9 +105,21 @@ void PushButton::leaveEvent(QEvent *event)
 
 void PushButton::paintEvent(QPaintEvent *event)
 {
+    // Temporarily clear the icon so QPushButton::paintEvent doesn't draw it
+    // (we draw it ourselves via drawIcon with custom opacity)
+    QIcon savedIcon;
+    if (!icon().isNull()) {
+        savedIcon = icon();
+        QPushButton::setIcon(QIcon());
+    }
+
     QPushButton::paintEvent(event);
 
-    if (!m_fluentIcon)
+    if (!savedIcon.isNull()) {
+        QPushButton::setIcon(savedIcon);
+    }
+
+    if (savedIcon.isNull())
         return;
 
     QPainter painter(this);
@@ -146,14 +147,70 @@ void PushButton::paintEvent(QPaintEvent *event)
 
 void PushButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    FluentIconUtils::drawIcon(*m_fluentIcon, painter, rect);
+    icon().paint(painter, rect.toRect());
+}
+
+void PushButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    QPushButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void PushButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    QPushButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
 }
 
 
 // PrimaryPushButton
+PrimaryPushButton::PrimaryPushButton(QWidget *parent)
+    : PushButton(parent)
+{
+
+}
+
+PrimaryPushButton::PrimaryPushButton(const QString &text, QWidget *parent)
+    : PushButton(text, parent)
+{
+
+}
+
+PrimaryPushButton::PrimaryPushButton(const QString &text, Fluent::IconType type, QWidget *parent)
+    : PushButton(text, parent)
+{
+    setIcon(type);
+}
+
+PrimaryPushButton::PrimaryPushButton(const QString &text, const QIcon &icon, QWidget *parent)
+    : PushButton(text, parent)
+{
+    setIcon(icon);
+}
+
+void PrimaryPushButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    PushButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void PrimaryPushButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    PushButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
+}
+
 void PrimaryPushButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, true);
+    if (m_fluentIcon.hasType()) {
+        m_fluentIcon.reversed().paint(painter, rect.toRect());
+    } else {
+        icon().paint(painter, rect.toRect());
+    }
 }
 
 
@@ -161,13 +218,10 @@ void PrimaryPushButton::drawIcon(QPainter* painter, const QRectF& rect)
 // HyperlinkButton
 void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    if (isEnabled()) {
-        QHash<QString, QString> attrs;
-        attrs["fill"] = Theme::themeColor(Fluent::ThemeColor::PRIMARY).name();
-        FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
-    } else {
+    if (!isEnabled()) {
         painter->setOpacity(Theme::isDark() ? 0.3628 : 0.36);
     }
+    icon().paint(painter, rect.toRect());
 }
 
 
@@ -186,22 +240,52 @@ ToggleButton::ToggleButton(const QString &text, QWidget *parent)
     setChecked(false);
 }
 
-ToggleButton::ToggleButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
-    : PushButton(text, icon, parent)
+ToggleButton::ToggleButton(const QString &text, const QIcon &icon, QWidget *parent)
+    : PushButton(text, parent)
 {
     setCheckable(true);
     setChecked(false);
+    setIcon(icon);
+}
+
+// 新增：IconType 构造
+ToggleButton::ToggleButton(Fluent::IconType type, QWidget *parent)
+    : PushButton(parent)
+{
+    setCheckable(true);
+    setChecked(false);
+    setIcon(type);
+}
+
+ToggleButton::ToggleButton(const QString &text, Fluent::IconType type, QWidget *parent)
+    : PushButton(text, parent)
+{
+    setCheckable(true);
+    setChecked(false);
+    setIcon(type);
+}
+
+void ToggleButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    PushButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void ToggleButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    PushButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
 }
 
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    Fluent::ThemeMode theme;
-    if (!Theme::isDark()) {
-        theme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
+    if (m_fluentIcon.hasType()) {
+        (isChecked() ? m_fluentIcon.reversed() : m_fluentIcon).paint(painter, rect.toRect());
     } else {
-        theme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
+        icon().paint(painter, rect.toRect());
     }
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, theme);
 }
 
 
@@ -220,8 +304,15 @@ DropDownButtonBase::DropDownButtonBase(const QString &text, QWidget *parent)
 {
 }
 
-DropDownButtonBase::DropDownButtonBase(const QString &text, const FluentIconBase &icon, QWidget *parent)
-    : PushButton(text, parent)
+DropDownButtonBase::DropDownButtonBase(const QString &text, const QIcon &icon, QWidget *parent)
+    : PushButton(text, icon, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+}
+
+DropDownButtonBase::DropDownButtonBase(const QString &text, Fluent::IconType type, QWidget *parent)
+    : PushButton(text, type, parent)
     , m_menu(nullptr)
     , m_arrowAni(new TranslateYAnimation(this))
 {
@@ -275,7 +366,7 @@ void DropDownButtonBase::hideMenu()
 void DropDownButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
     if (Theme::isDark()) {
-        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
+        FluentIconUtils::drawThemeIcon(Fluent::IconType::ARROW_DOWN, painter, rect);
     } else {
         QHash<QString, QString> attrs;
         attrs["fill"] = "#646464";
@@ -381,6 +472,28 @@ void PillPushButton::paintEvent(QPaintEvent* event)
 
 
 // PrimaryDropDownPushButton
+PrimaryDropDownPushButton::PrimaryDropDownPushButton(QWidget *parent)
+    : DropDownButtonBase(parent)
+{
+}
+
+PrimaryDropDownPushButton::PrimaryDropDownPushButton(const QString &text, QWidget *parent)
+    : DropDownButtonBase(text, parent)
+{
+}
+
+PrimaryDropDownPushButton::PrimaryDropDownPushButton(const QString &text, Fluent::IconType type, QWidget *parent)
+    : DropDownButtonBase(text, parent)
+{
+    setIcon(type);
+}
+
+PrimaryDropDownPushButton::PrimaryDropDownPushButton(const QString &text, const QIcon &icon, QWidget *parent)
+    : DropDownButtonBase(text, parent)
+{
+    setIcon(icon);
+}
+
 void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
 {
     PushButton::paintEvent(event);
@@ -389,7 +502,7 @@ void PrimaryDropDownPushButton::paintEvent(QPaintEvent *event)
 
 void PrimaryDropDownPushButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Fluent::ThemeMode::AUTO, true);
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::ARROW_DOWN, painter, rect, Fluent::ThemeMode::AUTO, true);
 }
 
 void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
@@ -398,9 +511,27 @@ void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
     showMenu();
 }
 
+void PrimaryDropDownPushButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    DropDownButtonBase::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void PrimaryDropDownPushButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    DropDownButtonBase::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
+}
+
 void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO);
+    if (m_fluentIcon.hasType()) {
+        m_fluentIcon.reversed().paint(painter, rect.toRect());
+    } else {
+        icon().paint(painter, rect.toRect());
+    }
 }
 
 
@@ -494,12 +625,22 @@ SplitPushButton::SplitPushButton(const QString &text, QWidget *parent)
     m_button->setText(text);
 }
 
-SplitPushButton::SplitPushButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
+SplitPushButton::SplitPushButton(const QString &text, const QIcon &icon, QWidget *parent)
     : SplitButtonBase(parent)
 {
     init();
     m_button->setText(text);
-    m_button->setFluentIcon(icon);
+    m_button->setIcon(icon);
+    m_button->setProperty("hasIcon", !icon.isNull());
+}
+
+SplitPushButton::SplitPushButton(const QString &text, Fluent::IconType type, QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+    m_button->setText(text);
+    m_button->setIcon(type);
+    m_button->setProperty("hasIcon", true);
 }
 
 void SplitPushButton::init()
@@ -540,12 +681,22 @@ PrimarySplitPushButton::PrimarySplitPushButton(const QString &text, QWidget *par
     m_button->setText(text);
 }
 
-PrimarySplitPushButton::PrimarySplitPushButton(const QString &text, const FluentIconBase &icon, QWidget *parent)
+PrimarySplitPushButton::PrimarySplitPushButton(const QString &text, const QIcon &icon, QWidget *parent)
     : SplitButtonBase(parent)
 {
     init();
     m_button->setText(text);
-    m_button->setFluentIcon(icon);
+    m_button->setIcon(icon);
+    m_button->setProperty("hasIcon", !icon.isNull());
+}
+
+PrimarySplitPushButton::PrimarySplitPushButton(const QString &text, Fluent::IconType type, QWidget *parent)
+    : SplitButtonBase(parent)
+{
+    init();
+    m_button->setText(text);
+    m_button->setIcon(type);
+    m_button->setProperty("hasIcon", true);
 }
 
 void PrimarySplitPushButton::init()

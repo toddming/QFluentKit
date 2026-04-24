@@ -13,10 +13,10 @@ MenuInterface::MenuInterface(QWidget *parent)
 {
     setObjectName("MenuInterface");
 
-    createTimeAction = new Action(FluentIcon(Fluent::IconType::CALENDAR).qicon(), "创建日期", this);
-    shootTimeAction = new Action(FluentIcon(Fluent::IconType::CAMERA).qicon(), "拍摄日期", this);
-    modifiedTimeAction = new Action(FluentIcon(Fluent::IconType::EDIT).qicon(), "修改日期", this);
-    nameAction = new Action(FluentIcon(Fluent::IconType::FONT).qicon(), "名称", this);
+    createTimeAction = new Action(Fluent::icon(Fluent::IconType::CALENDAR), "创建日期", this);
+    shootTimeAction = new Action(Fluent::icon(Fluent::IconType::CAMERA), "拍摄日期", this);
+    modifiedTimeAction = new Action(Fluent::icon(Fluent::IconType::EDIT), "修改日期", this);
+    nameAction = new Action(Fluent::icon(Fluent::IconType::FONT), "名称", this);
     createTimeAction->setCheckable(true);
     shootTimeAction->setCheckable(true);
     modifiedTimeAction->setCheckable(true);
@@ -29,8 +29,8 @@ MenuInterface::MenuInterface(QWidget *parent)
     actionGroup1->addAction(modifiedTimeAction);
     actionGroup1->addAction(nameAction);
 
-    ascendAction = new Action(FluentIcon(Fluent::IconType::UP).qicon(), "升序", this);
-    descendAction = new Action(FluentIcon(Fluent::IconType::DOWN).qicon(), "降序", this);
+    ascendAction = new Action(Fluent::icon(Fluent::IconType::UP), "升序", this);
+    descendAction = new Action(Fluent::icon(Fluent::IconType::DOWN), "降序", this);
     ascendAction->setCheckable(true);
     descendAction->setCheckable(true);
     ascendAction->setChecked(true);
@@ -64,22 +64,22 @@ MenuInterface::MenuInterface(QWidget *parent)
 void MenuInterface::createMenu(QPoint pos)
 {
     RoundMenu *menu = new RoundMenu("menu", this);
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::COPY).qicon(), "复制", this));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::CUT).qicon(), "剪贴", this));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::COPY), "复制", this));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::CUT), "剪贴", this));
 
     RoundMenu *submenu = new RoundMenu("添加到", this);
-    submenu->setIcon(FluentIcon(Fluent::IconType::ADD).qicon());
-    submenu->addAction(new Action(FluentIcon(Fluent::IconType::VIDEO).qicon(), "视频"));
-    submenu->addAction(new Action(FluentIcon(Fluent::IconType::MUSIC).qicon(), "音乐"));
+    submenu->setIcon(Fluent::icon(Fluent::IconType::ADD));
+    submenu->addAction(new Action(Fluent::icon(Fluent::IconType::VIDEO), "视频"));
+    submenu->addAction(new Action(Fluent::icon(Fluent::IconType::MUSIC), "音乐"));
     menu->addMenu(submenu);
 
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::PASTE).qicon(), "粘贴"));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::CANCEL).qicon(), "撤回"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::PASTE), "粘贴"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::CANCEL), "撤回"));
     menu->addSeparator();
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::SETTING).qicon(), "设置"));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::HELP).qicon(), "帮助"));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::FEEDBACK).qicon(), "反馈"));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::NONE).qicon(), "全选"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::SETTING), "设置"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::HELP), "帮助"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::FEEDBACK), "反馈"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::NONE), "全选"));
 
     menu->exec(pos);
 }
@@ -106,11 +106,11 @@ void MenuInterface::createCustomWidgetMenu(QPoint pos)
 
     menu->addWidget(card);
     menu->addSeparator();
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::PEOPLE).qicon(), "管理账户和设置"));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::SHOPPING_CART).qicon(), "支付方式"));
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::CODE).qicon(), "兑换代码和礼品卡"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::PEOPLE), "管理账户和设置"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::SHOPPING_CART), "支付方式"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::CODE), "兑换代码和礼品卡"));
     menu->addSeparator();
-    menu->addAction(new Action(FluentIcon(Fluent::IconType::SETTING).qicon(), "设置"));
+    menu->addAction(new Action(Fluent::icon(Fluent::IconType::SETTING), "设置"));
 
     menu->exec(pos);
 }

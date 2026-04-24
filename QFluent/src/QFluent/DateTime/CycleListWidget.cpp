@@ -7,10 +7,10 @@
 #include "QFluent/ScrollBar.h"
 
 // ScrollButton 实现
-ScrollButton::ScrollButton(const FluentIconBase &icon, QWidget* parent)
+ScrollButton::ScrollButton(const QIcon &icon, QWidget* parent)
     : QToolButton(parent)
     , m_isPressed(false)
-    , m_fluentIcon(icon.clone())
+    , m_icon(icon)
 {
     installEventFilter(this);
 }
@@ -40,14 +40,7 @@ void ScrollButton::paintEvent(QPaintEvent* e)
     qreal x = (width() - w) / 2.0;
     qreal y = (height() - h) / 2.0;
 
-    if (!Theme::isDark()) {
-        QHash<QString, QString> attrs;
-        attrs["fill"] = "#5e5e5e";
-        FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, y, w, h),
-                                 Fluent::ThemeMode::AUTO, false, attrs);
-    } else {
-        FluentIconUtils::drawIcon(*m_fluentIcon, &painter, QRectF(x, y, w, h));
-    }
+    m_icon.paint(&painter, QRectF(x, y, w, h).toRect());
 }
 
 
@@ -66,8 +59,8 @@ CycleListWidget::CycleListWidget(const QStringList& items, const QSize& itemSize
     m_originItems = items;
 
     // 创建滚动按钮（设置this为父对象，Qt会自动管理内存）
-    m_upButton = new ScrollButton(FluentIcon(Fluent::IconType::CARE_UP_SOLID), this);
-    m_downButton = new ScrollButton(FluentIcon(Fluent::IconType::CARE_DOWN_SOLID), this);
+    m_upButton = new ScrollButton(Fluent::icon(Fluent::IconType::CARE_UP_SOLID), this);
+    m_downButton = new ScrollButton(Fluent::icon(Fluent::IconType::CARE_DOWN_SOLID), this);
 
     // 设置自定义滚动条（Qt会接管所有权）
     setVerticalScrollBar(new ScrollBar(this));

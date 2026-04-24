@@ -142,14 +142,14 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
     StyleSheet::registerWidget(this, ":/res/style/{theme}/title_bar.qss");
 
     const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
-    _backButton->setIcon(FluentIcon(Fluent::IconType::LEFT_ARROW).qicon());
-    _themeButton->setIcon(FluentIcon(fillPath.arg("theme")).qicon());
-    _minButton->setIcon(FluentIcon(fillPath.arg("minimize")).qicon());
-    _maxButton->setIcon(FluentIcon(fillPath.arg("maximize")).qicon());
-    _closeButton->setIcon(FluentIcon(fillPath.arg("close")).qicon());
+    _backButton->setIcon(Fluent::icon(Fluent::IconType::LEFT_ARROW));
+    _themeButton->setIcon(Fluent::icon(fillPath.arg("theme")));
+    _minButton->setIcon(Fluent::icon(fillPath.arg("minimize")));
+    _maxButton->setIcon(Fluent::icon(fillPath.arg("maximize")));
+    _closeButton->setIcon(Fluent::icon(fillPath.arg("close")));
 
     connect(_maxButton, &QAbstractButton::clicked, this, [=](bool max) {
-        _maxButton->setIcon(FluentIcon(fillPath.arg(max ? "restore" : "maximize")).qicon());
+        _maxButton->setIcon(Fluent::icon(fillPath.arg(max ? "restore" : "maximize")));
         emulateLeaveEvent(_maxButton);
     });
 }
@@ -251,7 +251,7 @@ bool FluentTitleBar::eventFilter(QObject *obj, QEvent *event) {
             if (maxBtn) {
                 maxBtn->setChecked(w->isMaximized());
                 const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
-                maxBtn->setIcon(FluentIcon(fillPath.arg(w->isMaximized() ? "restore" : "maximize")).qicon());
+                maxBtn->setIcon(Fluent::icon(fillPath.arg(w->isMaximized() ? "restore" : "maximize")));
             }
             break;
         }

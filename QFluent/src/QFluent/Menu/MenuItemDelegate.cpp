@@ -197,6 +197,6 @@ void CheckIndicatorMenuItemDelegate::drawIndicator(QPainter *painter,
 
     const QString fillPath = ":/qfluent/images/check_box/%1_{color}.svg";
     if (checked) {
-        FluentIconUtils::drawIcon(FluentIcon(fillPath.arg("Accept")), painter, QRectF(x, y, s, s));
+        FluentIconUtils::drawTemplateIcon(fillPath.arg("Accept"), painter, QRectF(x, y, s, s));
     }
 }

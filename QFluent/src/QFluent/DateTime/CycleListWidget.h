@@ -10,7 +10,7 @@ class ScrollButton : public QToolButton
     Q_OBJECT
 
 public:
-    explicit ScrollButton(const FluentIconBase &icon, QWidget* parent = nullptr);
+    explicit ScrollButton(const QIcon &icon, QWidget* parent = nullptr);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* e) override;
@@ -18,7 +18,7 @@ protected:
 
 private:
     bool m_isPressed;
-    std::unique_ptr<FluentIconBase> m_fluentIcon;
+    QIcon m_icon;
 };
 
 

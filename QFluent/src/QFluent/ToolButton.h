@@ -1,17 +1,15 @@
 ﻿#pragma once
 
-#include <memory>
 #include <QToolButton>
 #include <QPointer>
+#include "FluentIcon.h"
 
 #include "FluentGlobal.h"
-#include "FluentIcon.h"
 
 class QHBoxLayout;
 class QPainter;
 class QRectF;
 class QSize;
-class QIcon;
 class QMouseEvent;
 class QPaintEvent;
 class QEvent;
@@ -27,13 +25,13 @@ class QFLUENT_EXPORT ToolButton : public QToolButton
 public:
     explicit ToolButton(QWidget *parent = nullptr);
     explicit ToolButton(const QIcon &icon, QWidget *parent = nullptr);
-    explicit ToolButton(const FluentIconBase &icon, QWidget *parent = nullptr);
-
-    void setFluentIcon(const FluentIconBase &icon);
-    FluentIconBase* fluentIcon() const;
+    explicit ToolButton(Fluent::IconType type, QWidget *parent = nullptr);
 
     bool isPressed() const;
     bool isHover() const;
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -49,11 +47,10 @@ protected:
 
     bool m_isPressed;
     bool m_isHover;
+    FluentQIcon m_fluentIcon;
 
 private:
     void init();
-
-    std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
 // PrimaryToolButton
@@ -62,10 +59,17 @@ class QFLUENT_EXPORT PrimaryToolButton : public ToolButton
     Q_OBJECT
 
 public:
-    using ToolButton::ToolButton;
+    explicit PrimaryToolButton(QWidget *parent = nullptr);
+    explicit PrimaryToolButton(Fluent::IconType type, QWidget *parent = nullptr);
+    explicit PrimaryToolButton(const QIcon &icon, QWidget *parent = nullptr);
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+
+private:
+    FluentQIcon m_fluentIcon;
 };
 
 // TransparentToolButton
@@ -85,10 +89,16 @@ class QFLUENT_EXPORT ToggleToolButton : public ToolButton
 public:
     explicit ToggleToolButton(QWidget *parent = nullptr);
     explicit ToggleToolButton(const QIcon &icon, QWidget *parent = nullptr);
-    explicit ToggleToolButton(const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit ToggleToolButton(Fluent::IconType type, QWidget *parent = nullptr);
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
+
+private:
+    FluentQIcon m_fluentIcon;
 };
 
 // TransparentToggleToolButton
@@ -119,7 +129,8 @@ class QFLUENT_EXPORT DropDownToolButtonBase : public ToolButton
 
 public:
     explicit DropDownToolButtonBase(QWidget *parent = nullptr);
-    explicit DropDownToolButtonBase(const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit DropDownToolButtonBase(const QIcon &icon, QWidget *parent = nullptr);
+    explicit DropDownToolButtonBase(Fluent::IconType type, QWidget *parent = nullptr);
 
     void setMenu(RoundMenu *menu);
     RoundMenu* menu() const;
@@ -160,11 +171,19 @@ class QFLUENT_EXPORT PrimaryDropDownToolButton : public DropDownToolButton
     Q_OBJECT
 
 public:
-    using DropDownToolButton::DropDownToolButton;
+    explicit PrimaryDropDownToolButton(QWidget *parent = nullptr);
+    explicit PrimaryDropDownToolButton(Fluent::IconType type, QWidget *parent = nullptr);
+    explicit PrimaryDropDownToolButton(const QIcon &icon, QWidget *parent = nullptr);
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
     void drawDropDownIcon(QPainter *painter, const QRectF &rect) override;
+
+private:
+    FluentQIcon m_fluentIcon;
 };
 
 
@@ -244,7 +263,7 @@ class QFLUENT_EXPORT SplitToolButton : public SplitToolBase
 public:
     explicit SplitToolButton(QWidget *parent = nullptr);
     explicit SplitToolButton(const QIcon &icon, QWidget *parent = nullptr);
-    explicit SplitToolButton(const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit SplitToolButton(Fluent::IconType type, QWidget *parent = nullptr);
 
     void setIconSize(const QSize &size);
 
@@ -265,7 +284,7 @@ class QFLUENT_EXPORT PrimarySplitToolButton : public SplitToolBase
 public:
     explicit PrimarySplitToolButton(QWidget *parent = nullptr);
     explicit PrimarySplitToolButton(const QIcon &icon, QWidget *parent = nullptr);
-    explicit PrimarySplitToolButton(const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit PrimarySplitToolButton(Fluent::IconType type, QWidget *parent = nullptr);
 
     void setIconSize(const QSize &size);
 

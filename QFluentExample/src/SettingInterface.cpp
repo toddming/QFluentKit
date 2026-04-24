@@ -37,25 +37,25 @@ SettingInterface::SettingInterface(QWidget *parent)
 
 
     ComboBoxSettingCard *themeCard = new ComboBoxSettingCard({"自动", "浅色", "深色"},
-                                                                FluentIcon(Fluent::IconType::BRUSH).qicon(),
+                                                                Fluent::icon(Fluent::IconType::BRUSH),
                                                                 "应用主题",
                                                                 "调整你的应用的外观",
                                                                 aboutGroup);
 
     PrimaryPushSettingCard *colorCard = new PrimaryPushSettingCard("选择颜色",
-                                                                   FluentIcon(Fluent::IconType::PALETTE).qicon(),
+                                                                   Fluent::icon(Fluent::IconType::PALETTE),
                                                                    "主题色",
                                                                    "调整你的应用的主题色",
                                                                    aboutGroup);
 
-    OptionsSettingCard *effectCard = new OptionsSettingCard(FluentIcon(Fluent::IconType::ZOOM).qicon(),
+    OptionsSettingCard *effectCard = new OptionsSettingCard(Fluent::icon(Fluent::IconType::ZOOM),
                                                             "窗口效果",
                                                             "改变窗口的显示效果",
                                                             QVector<QString>() << "none" << "dwm-blur" << "acrylic-material" << "mica" << "miac-alt",
                                                             aboutGroup);
 
     HyperlinkCard *helpCard = new HyperlinkCard("https://github.com/toddming/QFluentKit",
-                                                "项目地址", FluentIcon(Fluent::IconType::GITHUB).qicon(),
+                                                "项目地址", Fluent::icon(Fluent::IconType::GITHUB),
                                                 "GitHub",
                                                 "https://github.com/toddming/QFluentKit");
 

@@ -345,7 +345,7 @@ void ComboBox::paintEvent(QPaintEvent *event)
     }
 
     QRectF rect = QRectF(width() - 22, height() / 2 - 5 + d->m_arrowAni->y(), 10, 10);
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, rect);
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::ARROW_DOWN, &painter, rect);
 }
 
 void ComboBox::mouseReleaseEvent(QMouseEvent *event)

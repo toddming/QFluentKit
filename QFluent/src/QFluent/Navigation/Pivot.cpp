@@ -47,7 +47,7 @@ void PivotItem::drawIcon(QPainter* painter, const QRectF& rect)
         painter->setOpacity(0.63);
     }
 
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, Fluent::ThemeMode::AUTO);
+    icon().paint(painter, rect.toRect());
 }
 
 Pivot::Pivot(QWidget *parent)
@@ -75,21 +75,37 @@ Pivot::~Pivot() {
     clear();
 }
 
-void Pivot::addItem(const QString &routeKey, const QString &text, const FluentIconBase &icon) {
+void Pivot::addItem(const QString &routeKey, const QString &text, const QIcon &icon) {
     insertItem(-1, routeKey, text, icon);
+}
+
+void Pivot::addItem(const QString &routeKey, const QString &text, Fluent::IconType type) {
+    insertItem(-1, routeKey, text, type);
 }
 
 void Pivot::addWidget(const QString &routeKey, PivotItem *widget) {
     insertWidget(-1, routeKey, widget);
 }
 
-void Pivot::insertItem(int index, const QString &routeKey, const QString &text, const FluentIconBase &icon) {
+void Pivot::insertItem(int index, const QString &routeKey, const QString &text, const QIcon &icon) {
     if (m_items.contains(routeKey)) {
         return;
     }
 
     PivotItem *item = new PivotItem(text, this);
-    item->setFluentIcon(icon);
+    item->setIcon(icon);
+    item->setProperty("hasIcon", !icon.isNull());
+    insertWidget(index, routeKey, item);
+}
+
+void Pivot::insertItem(int index, const QString &routeKey, const QString &text, Fluent::IconType type) {
+    if (m_items.contains(routeKey)) {
+        return;
+    }
+
+    PivotItem *item = new PivotItem(text, this);
+    item->setIcon(type);
+    item->setProperty("hasIcon", true);
     insertWidget(index, routeKey, item);
 }
 

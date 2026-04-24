@@ -1,11 +1,10 @@
 ﻿#pragma once
 
-#include <memory>
 #include <QPushButton>
 #include <QPointer>
+#include "FluentIcon.h"
 
 #include "FluentGlobal.h"
-#include "FluentIcon.h"
 
 class QEnterEvent;
 class QHBoxLayout;
@@ -29,13 +28,14 @@ class QFLUENT_EXPORT PushButton : public QPushButton
 public:
     explicit PushButton(QWidget *parent = nullptr);
     explicit PushButton(const QString &text, QWidget *parent = nullptr);
-    explicit PushButton(const QString &text, const FluentIconBase &icon, QWidget *parent = nullptr);
-
-    void setFluentIcon(const FluentIconBase &icon);
-    FluentIconBase* fluentIcon() const;
+    explicit PushButton(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+    explicit PushButton(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
 
     bool isPressed() const;
     bool isHover() const;
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -51,11 +51,10 @@ protected:
 
     bool m_isPressed;
     bool m_isHover;
+    FluentQIcon m_fluentIcon;
 
 private:
     void init();
-
-    std::unique_ptr<FluentIconBase> m_fluentIcon;
 };
 
 
@@ -65,10 +64,19 @@ class QFLUENT_EXPORT PrimaryPushButton : public PushButton
     Q_OBJECT
 
 public:
-    using PushButton::PushButton;
+    explicit PrimaryPushButton(QWidget *parent = nullptr);
+    explicit PrimaryPushButton(const QString &text, QWidget *parent = nullptr);
+    explicit PrimaryPushButton(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
+    explicit PrimaryPushButton(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect) override;
+
+private:
+    FluentQIcon m_fluentIcon;
 };
 
 // TransparentPushButton
@@ -101,10 +109,18 @@ class QFLUENT_EXPORT ToggleButton : public PushButton
 public:
     explicit ToggleButton(QWidget *parent = nullptr);
     explicit ToggleButton(const QString &text, QWidget *parent = nullptr);
-    explicit ToggleButton(const QString &text, const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit ToggleButton(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+    explicit ToggleButton(Fluent::IconType type, QWidget *parent = nullptr);
+    explicit ToggleButton(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect) override;
+
+private:
+    FluentQIcon m_fluentIcon;
 };
 
 // TransparentTogglePushButton
@@ -125,7 +141,8 @@ class QFLUENT_EXPORT DropDownButtonBase : public PushButton
 public:
     explicit DropDownButtonBase(QWidget *parent = nullptr);
     explicit DropDownButtonBase(const QString &text, QWidget *parent = nullptr);
-    explicit DropDownButtonBase(const QString &text, const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit DropDownButtonBase(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+    explicit DropDownButtonBase(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
 
     void setMenu(RoundMenu *menu);
     RoundMenu* menu() const;
@@ -189,13 +206,22 @@ class QFLUENT_EXPORT PrimaryDropDownPushButton : public DropDownButtonBase
     Q_OBJECT
 
 public:
-    using DropDownButtonBase::DropDownButtonBase;
+    explicit PrimaryDropDownPushButton(QWidget *parent = nullptr);
+    explicit PrimaryDropDownPushButton(const QString &text, QWidget *parent = nullptr);
+    explicit PrimaryDropDownPushButton(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
+    explicit PrimaryDropDownPushButton(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+
+    void setIcon(Fluent::IconType type);
+    void setIcon(const QIcon &icon);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
     void drawDropDownIcon(QPainter *painter, const QRectF &rect) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void drawIcon(QPainter *painter, const QRectF &rect) override;
+
+private:
+    FluentQIcon m_fluentIcon;
 };
 
 
@@ -234,7 +260,8 @@ class QFLUENT_EXPORT SplitPushButton : public SplitButtonBase
 public:
     explicit SplitPushButton(QWidget *parent = nullptr);
     explicit SplitPushButton(const QString &text, QWidget *parent = nullptr);
-    explicit SplitPushButton(const QString &text, const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit SplitPushButton(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+    explicit SplitPushButton(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
 
     QString text() const;
     void setText(const QString &text);
@@ -257,7 +284,8 @@ class QFLUENT_EXPORT PrimarySplitPushButton : public SplitButtonBase
 public:
     explicit PrimarySplitPushButton(QWidget *parent = nullptr);
     explicit PrimarySplitPushButton(const QString &text, QWidget *parent = nullptr);
-    explicit PrimarySplitPushButton(const QString &text, const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit PrimarySplitPushButton(const QString &text, const QIcon &icon, QWidget *parent = nullptr);
+    explicit PrimarySplitPushButton(const QString &text, Fluent::IconType type, QWidget *parent = nullptr);
 
     QString text() const;
     void setText(const QString &text);

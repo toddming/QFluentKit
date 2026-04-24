@@ -47,5 +47,5 @@ void SubMenuItemWidget::paintEvent(QPaintEvent *event)
 
     // draw right arrow
     QRectF arrowRect(width() - 10, height() / 2.0 - 9.0 / 2.0, 9, 9);
-    FluentIcon(Fluent::IconType::CHEVRON_RIGHT).render(&painter, arrowRect);
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::CHEVRON_RIGHT, &painter, arrowRect);
 }

@@ -1,38 +1,33 @@
-﻿#pragma once
+#pragma once
 
 #include <QWidget>
+#include <QIcon>
 
 #include "FluentGlobal.h"
 #include "FluentIcon.h"
 
-class QIcon;
-class IconWidgetPrivate;
+class QPainter;
+class QRectF;
+
 class QFLUENT_EXPORT IconWidget : public QWidget
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE_D(d_ptr, IconWidget)
 
 public:
     explicit IconWidget(QWidget *parent = nullptr);
     explicit IconWidget(const QIcon &icon, QWidget *parent = nullptr);
-    explicit IconWidget(const QString &iconPath, QWidget *parent = nullptr);
-    explicit IconWidget(const FluentIconBase &icon, QWidget* parent = nullptr);
-    ~IconWidget() override;
+    explicit IconWidget(Fluent::IconType type, QWidget *parent = nullptr);
 
     void setIcon(const QIcon &icon);
-    void setIcon(const QString &iconPath);
-    void setFluentIcon(const FluentIconBase &icon);
+    void setIcon(Fluent::IconType type);
     QIcon icon() const;
-
-    void setIconTheme(Fluent::ThemeMode theme);
-    Fluent::ThemeMode iconTheme() const;
 
     QSize sizeHint() const override;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    virtual void drawIcon(QPainter *painter, const QRectF &rect);
 
 private:
-    QScopedPointer<IconWidgetPrivate> d_ptr;
-
+    QIcon m_icon;
 };

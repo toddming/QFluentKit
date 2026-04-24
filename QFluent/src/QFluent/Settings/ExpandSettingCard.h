@@ -54,6 +54,7 @@ class HeaderSettingCard : public SettingCard {
 
 public:
     explicit HeaderSettingCard(const QIcon &icon, const QString &title, const QString &content = QString(), QWidget *parent = nullptr);
+    explicit HeaderSettingCard(Fluent::IconType type, const QString &title, const QString &content = QString(), QWidget *parent = nullptr);
 
     void addWidget(QWidget *widget);
     ExpandButton *expandButton() const { return m_expandButton; }
@@ -64,6 +65,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
 
 private:
+    void initHeader();
     ExpandButton *m_expandButton;
 
 };
@@ -84,6 +86,7 @@ class QFLUENT_EXPORT ExpandSettingCard : public QScrollArea {
 
 public:
     explicit ExpandSettingCard(const QIcon &icon, const QString &title, const QString &content = QString(), QWidget *parent = nullptr);
+    explicit ExpandSettingCard(Fluent::IconType type, const QString &title, const QString &content = QString(), QWidget *parent = nullptr);
 
     void addWidget(QWidget *widget);
     void setExpand(bool isExpand);
@@ -105,6 +108,7 @@ protected:
 
 private:
     void initWidget();
+    void initCard();
     void onExpandValueChanged(const QVariant &value);
     void adjustViewSize();
 
@@ -134,11 +138,13 @@ class ExpandGroupSettingCard : public ExpandSettingCard {
 
 public:
     explicit ExpandGroupSettingCard(const QIcon &icon, const QString &title, const QString &content = QString(), QWidget *parent = nullptr);
+    explicit ExpandGroupSettingCard(Fluent::IconType type, const QString &title, const QString &content = QString(), QWidget *parent = nullptr);
 
     void addGroupWidget(QWidget *widget);
     void removeGroupWidget(QWidget *widget);
 
 private:
+    void initGroup();
     void adjustViewSize();
 
     QList<QWidget *> m_widgets;

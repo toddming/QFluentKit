@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "GalleryInterface.h"
+#include "FluentIcon.h"
+#include "FluentIcon.h"
 
 class MenuInterface : public GalleryInterface
 {

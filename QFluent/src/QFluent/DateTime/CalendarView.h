@@ -35,7 +35,7 @@ private:
 class CalendarButton : public TransparentToolButton {
     Q_OBJECT
 public:
-    CalendarButton(const FluentIconBase &icon, QWidget* parent = nullptr);
+    CalendarButton(const QIcon &icon, QWidget* parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent* event) override;

@@ -105,5 +105,5 @@ void CalendarPicker::paintEvent(QPaintEvent* e)
 
     int w = 12;
     QRectF rect(this->width() - 23, this->height() / 2 - w / 2, w, w);
-    FluentIcon(Fluent::IconType::CALENDAR).render(&painter, rect);
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::CALENDAR, &painter, rect);
 }

@@ -456,9 +456,9 @@ void PickerPanel::initWidget()
     m_view = new QFrame(this);
     m_itemMaskWidget = new ItemMaskWidget(this);
     m_hSeparatorWidget = new DateSeparatorWidget(Qt::Horizontal, m_view);
-    m_yesButton = new PickerToolButton(FluentIcon(Fluent::IconType::ACCEPT), m_view);
-    m_resetButton = new PickerToolButton(FluentIcon(Fluent::IconType::CANCEL), m_view);
-    m_cancelButton = new PickerToolButton(FluentIcon(Fluent::IconType::CLOSE), m_view);
+    m_yesButton = new PickerToolButton(Fluent::icon(Fluent::IconType::ACCEPT), m_view);
+    m_resetButton = new PickerToolButton(Fluent::icon(Fluent::IconType::CANCEL), m_view);
+    m_cancelButton = new PickerToolButton(Fluent::icon(Fluent::IconType::CLOSE), m_view);
     
     m_hBoxLayout = new QHBoxLayout(this);
     m_listLayout = new QHBoxLayout();

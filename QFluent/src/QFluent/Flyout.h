@@ -43,7 +43,9 @@ class QFLUENT_EXPORT FlyoutIconWidget : public QWidget {
     Q_OBJECT
 public:
     explicit FlyoutIconWidget(const QIcon& icon, QWidget* parent = nullptr);
+    explicit FlyoutIconWidget(Fluent::IconType type, QWidget* parent = nullptr);
     void setIcon(const QIcon& icon);
+    void setIcon(Fluent::IconType type);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -83,6 +85,13 @@ public:
                        bool isClosable = false,
                        QWidget* parent = nullptr);
 
+    explicit FlyoutView(const QString& title,
+                       const QString& content,
+                       Fluent::IconType type,
+                       const QPixmap& image = QPixmap(),
+                       bool isClosable = false,
+                       QWidget* parent = nullptr);
+
     ~FlyoutView() override = default;
 
     void addWidget(QWidget* widget, int stretch = 0, Qt::Alignment align = Qt::AlignLeft) override;
@@ -103,6 +112,7 @@ protected:
 private:
     void initWidgets();
     void initLayout();
+    void initFlyoutView(const QIcon& icon);
     void adjustText();
 
 private:
@@ -150,6 +160,17 @@ public:
     static Flyout* create(const QString& title,
                          const QString& content,
                          const QIcon& icon = QIcon(),
+                         const QPixmap& image = QPixmap(),
+                         bool isClosable = false,
+                         QWidget* target = nullptr,
+                         QWidget* parent = nullptr,
+                         FlyoutAnimationType aniType = FlyoutAnimationType::PULL_UP,
+                         bool isDeleteOnClose = true,
+                         bool isMacInputMethodEnabled = false);
+
+    static Flyout* create(const QString& title,
+                         const QString& content,
+                         Fluent::IconType type,
                          const QPixmap& image = QPixmap(),
                          bool isClosable = false,
                          QWidget* target = nullptr,

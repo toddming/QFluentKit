@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 
 #include "StyleSheet.h"
+#include "FluentIcon.h"
 #include "QFluent/Label.h"
 #include "QFluent/StackedWidget.h"
 #include "QFluent/Navigation/NavigationBar.h"
@@ -54,20 +55,20 @@ SplitWidget::SplitWidget()
 void SplitWidget::initWidget()
 {
 
-    addSubInterface("1", FluentIcon(FIT::HOME), "主页", createWidget("主页", this), true, NIP::TOP);
+    addSubInterface("1", Fluent::icon(FIT::HOME), "主页", createWidget("主页", this), true, NIP::TOP);
     m_navPanel->addSeparator();
     m_navPanel->addItemHeader("基础", NIP::SCROLL);
-    addSubInterface("3", FluentIcon(FIT::CHAT), "对话", createWidget("对话", this), true, NIP::SCROLL);
-    addSubInterface("4", FluentIcon(FIT::GAME), "游戏", createWidget("游戏", this), true, NIP::SCROLL);
+    addSubInterface("3", Fluent::icon(FIT::CHAT), "对话", createWidget("对话", this), true, NIP::SCROLL);
+    addSubInterface("4", Fluent::icon(FIT::GAME), "游戏", createWidget("游戏", this), true, NIP::SCROLL);
 
     m_navPanel->addItemHeader("进阶", NIP::SCROLL);
-    addSubInterface("5", FluentIcon(FIT::LEAF), "能效", createWidget("能效", this), true, NIP::SCROLL);
-    addSubInterface("6", FluentIcon(FIT::FINGERPRINT), "加密", createWidget("加密", this), true, NIP::SCROLL);
+    addSubInterface("5", Fluent::icon(FIT::LEAF), "能效", createWidget("能效", this), true, NIP::SCROLL);
+    addSubInterface("6", Fluent::icon(FIT::FINGERPRINT), "加密", createWidget("加密", this), true, NIP::SCROLL);
     m_navPanel->addSeparator(NIP::BOTTOM);
     auto avatarWidget = new NavigationAvatarWidget("Administrator", QImage(":/res/avatar.png"), this);
     m_navPanel->addWidget("7", avatarWidget, nullptr, NIP::BOTTOM);
 
-    addSubInterface("8", FluentIcon(FIT::SETTING), "设置", createWidget("设置", this), true, NIP::BOTTOM);
+    addSubInterface("8", Fluent::icon(FIT::SETTING), "设置", createWidget("设置", this), true, NIP::BOTTOM);
 
     m_navPanel->setCurrentItem("1");
 }
@@ -82,7 +83,7 @@ QWidget* SplitWidget::createWidget(const QString &text, QWidget* parent)
     return w;
 }
 
-void SplitWidget::addSubInterface(const QString& routeKey, const FluentIconBase& icon, const QString& text,
+void SplitWidget::addSubInterface(const QString& routeKey, const QIcon& icon, const QString& text,
                                    QWidget* widget, bool selectable,
                                    NavigationPanel::ItemPosition position, const QString& tooltip,
                                    const QString& parentRouteKey)

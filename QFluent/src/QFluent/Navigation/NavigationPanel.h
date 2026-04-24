@@ -21,7 +21,6 @@ class NavigationTreeWidget;
 class NavigationFlyoutMenu;
 class NavigationUserCard;
 class Flyout;
-class FluentIconBase;
 
 // 导航项结构
 struct NavigationItem {
@@ -81,7 +80,7 @@ public:
     // 添加导航项
     void addItem(
         const QString& routeKey,
-        const FluentIconBase& icon,
+        const QIcon& icon,
         const QString& text,
         const std::function<void()>& onClick = nullptr,
         bool selectable = true,
@@ -101,7 +100,7 @@ public:
     void insertItem(
         int index,
         const QString& routeKey,
-        const FluentIconBase& icon,
+        const QIcon& icon,
         const QString& text,
         const std::function<void()>& onClick = nullptr,
         bool selectable = true,

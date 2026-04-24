@@ -100,7 +100,7 @@ void LineEditButton::updateButtonState()
 LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
     , m_layout(new QHBoxLayout(this))
-    , m_clearButton(new LineEditButton(FluentIcon(Fluent::IconType::CLOSE).qicon(), this))
+    , m_clearButton(new LineEditButton(Fluent::icon(Fluent::IconType::CLOSE), this))
     , m_completerTimer(new QTimer(this))
 {
     setFixedHeight(33);
@@ -307,7 +307,7 @@ void SearchLineEdit::initWidgets()
     setTextMargins(0, 0, 59, 0);
 
     m_hBoxLayout = qobject_cast<QHBoxLayout *>(layout());
-    m_searchButton = new LineEditButton(FluentIcon(Fluent::IconType::SEARCH).qicon(), this);
+    m_searchButton = new LineEditButton(Fluent::icon(Fluent::IconType::SEARCH), this);
     m_hBoxLayout->addWidget(m_searchButton);
 
     connect(m_searchButton, &LineEditButton::clicked, this, &SearchLineEdit::search);
@@ -475,7 +475,7 @@ LineEdit *CompleterMenu::lineEdit() const
 PasswordLineEdit::PasswordLineEdit(QWidget *parent)
     : LineEdit(parent)
 {
-    m_viewButton = new LineEditButton(FluentIcon(Fluent::IconType::VIEW).qicon(), this);
+    m_viewButton = new LineEditButton(Fluent::icon(Fluent::IconType::VIEW), this);
 
     setEchoMode(QLineEdit::Password);
     setClearButtonEnabled(false);

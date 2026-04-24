@@ -14,7 +14,7 @@
 
 // ==================== TabToolButton ====================
 
-TabToolButton::TabToolButton(const FluentIconBase &icon, QWidget *parent)
+TabToolButton::TabToolButton(const QIcon &icon, QWidget *parent)
     : TransparentToolButton(icon, parent)
 {
     setFixedSize(32, 24);
@@ -31,12 +31,8 @@ TabToolButton::TabToolButton(QWidget *parent)
 void TabToolButton::drawIcon(QPainter *painter, const QRectF &rect,
                              Fluent::ThemeMode theme)
 {
-    const QString color = Theme::isDark() ?
-                         QStringLiteral("#eaeaea") : QStringLiteral("#484848");
-    QHash<QString, QString> attrs;
-    attrs[QStringLiteral("fill")] = color;
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect,
-                             Fluent::ThemeMode::AUTO, QIcon::Off, attrs);
+    Q_UNUSED(theme);
+    icon().paint(painter, rect.toRect());
 }
 
 // ==================== TabItem ====================
@@ -56,11 +52,16 @@ TabItem::TabItem(const QString &text, QWidget *parent, const QIcon &icon)
     , m_isShadowEnabled(true)
     , m_closeButtonDisplayMode(TabCloseButtonDisplayMode::Always)
 {
-    m_closeButton = new TabToolButton(FluentIcon(Fluent::IconType::CLOSE), this);
+    m_closeButton = new TabToolButton(Fluent::icon(Fluent::IconType::CLOSE), this);
     m_shadowEffect = new QGraphicsDropShadowEffect(this);
     m_slideAnimation = new QPropertyAnimation(this, "pos", this);
 
     initWidget();
+}
+
+TabItem::TabItem(const QString &text, Fluent::IconType type, QWidget *parent)
+    : TabItem(text, parent, Fluent::icon(type))
+{
 }
 
 void TabItem::initWidget()
@@ -385,7 +386,7 @@ TabBar::TabBar(QWidget *parent)
     m_hBoxLayout = new QHBoxLayout(m_view);
     m_itemLayout = new QHBoxLayout();
     m_widgetLayout = new QHBoxLayout();
-    m_addButton = new TabToolButton(FluentIcon(Fluent::IconType::ADD), this);
+    m_addButton = new TabToolButton(Fluent::icon(Fluent::IconType::ADD), this);
 
     initWidget();
 }
@@ -442,6 +443,12 @@ TabItem *TabBar::addTab(const QString &routeKey, const QString &text,
     return insertTab(-1, routeKey, text, icon, onClick);
 }
 
+TabItem *TabBar::addTab(const QString &routeKey, const QString &text,
+                        Fluent::IconType type, std::function<void()> onClick)
+{
+    return insertTab(-1, routeKey, text, type, onClick);
+}
+
 TabItem *TabBar::insertTab(int index, const QString &routeKey,
                            const QString &text, const QIcon &icon,
                            std::function<void()> onClick)
@@ -489,6 +496,13 @@ TabItem *TabBar::insertTab(int index, const QString &routeKey,
         setCurrentIndex(0);
 
     return item;
+}
+
+TabItem *TabBar::insertTab(int index, const QString &routeKey,
+                           const QString &text, Fluent::IconType type,
+                           std::function<void()> onClick)
+{
+    return insertTab(index, routeKey, text, Fluent::icon(type), onClick);
 }
 
 void TabBar::removeTab(int index)

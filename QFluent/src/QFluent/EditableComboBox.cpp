@@ -20,7 +20,7 @@ EditableComboBox::EditableComboBox(QWidget *parent)
     d->m_maxVisibleItems = 10;
     d->m_arrowAni = new TranslateYAnimation(this);
 
-    d->m_dropButton = new LineEditButton(FluentIcon(Fluent::IconType::ARROW_DOWN).qicon(), this);
+    d->m_dropButton = new LineEditButton(Fluent::icon(Fluent::IconType::ARROW_DOWN), this);
     d->m_dropButton->setFixedSize(30, 25);
     hBoxLayout()->addWidget(d->m_dropButton, 0, Qt::AlignRight);
     setClearButtonEnabled(false);

@@ -35,9 +35,22 @@ FlyoutIconWidget::FlyoutIconWidget(const QIcon& icon, QWidget* parent)
     setFixedSize(36, 54);
 }
 
+FlyoutIconWidget::FlyoutIconWidget(Fluent::IconType type, QWidget* parent)
+    : QWidget(parent)
+    , m_icon(Fluent::icon(type))
+{
+    setFixedSize(36, 54);
+}
+
 void FlyoutIconWidget::setIcon(const QIcon& icon)
 {
     m_icon = icon;
+    update();
+}
+
+void FlyoutIconWidget::setIcon(Fluent::IconType type)
+{
+    m_icon = Fluent::icon(type);
     update();
 }
 
@@ -124,15 +137,44 @@ FlyoutView::FlyoutView(const QString& title,
     , m_imageLabel(nullptr)
     , m_closeButton(nullptr)
 {
+    initFlyoutView(icon);
+}
+
+FlyoutView::FlyoutView(const QString& title,
+                       const QString& content,
+                       Fluent::IconType type,
+                       const QPixmap& image,
+                       bool isClosable,
+                       QWidget* parent)
+    : FlyoutViewBase(parent)
+    , m_title(title)
+    , m_content(content)
+    , m_icon(Fluent::icon(type))
+    , m_image(image)
+    , m_isClosable(isClosable)
+    , m_vBoxLayout(nullptr)
+    , m_viewLayout(nullptr)
+    , m_widgetLayout(nullptr)
+    , m_titleLabel(nullptr)
+    , m_contentLabel(nullptr)
+    , m_iconWidget(nullptr)
+    , m_imageLabel(nullptr)
+    , m_closeButton(nullptr)
+{
+    initFlyoutView(m_icon);
+}
+
+void FlyoutView::initFlyoutView(const QIcon& icon)
+{
     m_vBoxLayout = new QVBoxLayout(this);
     m_viewLayout = new QHBoxLayout();
     m_widgetLayout = new QVBoxLayout();
 
-    m_titleLabel = new QLabel(title, this);
-    m_contentLabel = new QLabel(content, this);
+    m_titleLabel = new QLabel(m_title, this);
+    m_contentLabel = new QLabel(m_content, this);
     m_iconWidget = new FlyoutIconWidget(icon, this);
     m_imageLabel = new ImageLabel(this);
-    m_closeButton = new TransparentToolButton(FluentIcon(Fluent::IconType::CLOSE), this);
+    m_closeButton = new TransparentToolButton(Fluent::icon(Fluent::IconType::CLOSE), this);
 
     initWidgets();
 }
@@ -424,6 +466,27 @@ Flyout* Flyout::create(const QString& title,
                        bool isMacInputMethodEnabled)
 {
     FlyoutView* view = new FlyoutView(title, content, icon, image, isClosable);
+    Flyout* flyout = make(view, target, parent, aniType, isDeleteOnClose, isMacInputMethodEnabled);
+
+    if (flyout && view) {
+        connect(view, &FlyoutView::closed, flyout, &Flyout::close);
+    }
+
+    return flyout;
+}
+
+Flyout* Flyout::create(const QString& title,
+                       const QString& content,
+                       Fluent::IconType type,
+                       const QPixmap& image,
+                       bool isClosable,
+                       QWidget* target,
+                       QWidget* parent,
+                       FlyoutAnimationType aniType,
+                       bool isDeleteOnClose,
+                       bool isMacInputMethodEnabled)
+{
+    FlyoutView* view = new FlyoutView(title, content, type, image, isClosable);
     Flyout* flyout = make(view, target, parent, aniType, isDeleteOnClose, isMacInputMethodEnabled);
 
     if (flyout && view) {

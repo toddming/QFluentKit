@@ -1,6 +1,7 @@
 ﻿#include "PagiNation.h"
 #include "Label.h"
 #include "ToolButton.h"
+#include "FluentIcon.h"
 #include <QLayout>
 #include <cmath>
 #include <algorithm>
@@ -79,13 +80,13 @@ void PagiNation::init () {
     // ✅ 不再在init中创建TH_left和TH_right
     // 改为在setWidgetAlign()中创建临时对象
 
-    m_prevFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Begin")), this);
+    m_prevFBtn = new TransparentToolButton(Fluent::icon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Begin")), this);
     m_prevFBtn->setFocusPolicy(Qt::NoFocus);
     m_prevFBtn->setIconSize(QSize(10, 10));
     m_prevFBtn->setFixedSize(m_height, m_height);
     connect(m_prevFBtn, &TransparentToolButton::clicked, this, &PagiNation::toPrev5);
 
-    m_prevBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Previous")), this);
+    m_prevBtn = new TransparentToolButton(Fluent::icon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Previous")), this);
     m_prevBtn->setFocusPolicy(Qt::NoFocus);
     m_prevBtn->setIconSize(QSize(10, 10));
     m_prevBtn->setFixedSize(m_height, m_height);
@@ -102,13 +103,13 @@ void PagiNation::init () {
     m_mainBox->setObjectName("mainBox");
     m_mainBox->setStyleSheet("QFrame#mainBox{margin-left: 4px; margin-right: 4px;}");
 
-    m_nextBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Next")), this);
+    m_nextBtn = new TransparentToolButton(Fluent::icon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("Next")), this);
     m_nextBtn->setFocusPolicy(Qt::NoFocus);
     m_nextBtn->setIconSize(QSize(10, 10));
     m_nextBtn->setFixedSize(m_height, m_height);
     connect(m_nextBtn, &TransparentToolButton::clicked, this, &PagiNation::toNext1);
 
-    m_nextFBtn = new TransparentToolButton(FluentIcon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("End")), this);
+    m_nextFBtn = new TransparentToolButton(Fluent::icon(QString(":/qfluent/images/pagination/%1_{color}.svg").arg("End")), this);
     m_nextFBtn->setFocusPolicy(Qt::NoFocus);
     m_nextFBtn->setIconSize(QSize(10, 10));
     m_nextFBtn->setFixedSize(m_height, m_height);

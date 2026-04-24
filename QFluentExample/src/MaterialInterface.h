@@ -2,8 +2,10 @@
 
 #include <QContextMenuEvent>
 #include "GalleryInterface.h"
+#include "FluentIcon.h"
 #include "QFluent/ImageLabel.h"
 #include "QFluent/Material/AcrylicLabel.h"
+#include "FluentIcon.h"
 
 class MenuLabel;
 class MenuAcrylicLabel;

@@ -1,6 +1,7 @@
 ﻿#include "DialogInputInterface.h"
 
 #include "Theme.h"
+#include "FluentIcon.h"
 #include "QFluent/Label.h"
 #include "QFluent/Flyout.h"
 #include "QFluent/Loading.h"
@@ -73,7 +74,7 @@ DialogInputInterface::DialogInputInterface(QWidget *parent)
 
 void DialogInputInterface::showSimpleFlyout(QWidget* target)
 {
-    Flyout::create("你看", "我有几分有几分有几分像从前?", FluentIcon(Fluent::IconType::LEAF).qicon(), QPixmap(), false, target, this);
+    Flyout::create("你看", "我有几分有几分有几分像从前?", Fluent::icon(Fluent::IconType::LEAF), QPixmap(), false, target, this);
 }
 
 void DialogInputInterface::showComplexFlyout(QWidget* target)
@@ -95,7 +96,7 @@ void DialogInputInterface::showComplexFlyout(QWidget* target)
 void DialogInputInterface::showBottomTeachingTip(QWidget* target)
 {
     TeachingTip::create(target, "iPhone", "iPhone 17 Pro 及 iPhone 17 Pro Max 新登場，由內而外精心設計，創出空前最強 iPhone 型號。熱鍛鋁金屬一體式機身為嶄新設計核心，將效能表現、電池容量以及耐用度極級提升。",
-                        FluentIcon(Fluent::IconType::LEAF).qicon(), QPixmap(), true, -1, TeachingTipTailPosition::BOTTOM, this);
+                        Fluent::icon(Fluent::IconType::LEAF), QPixmap(), true, -1, TeachingTipTailPosition::BOTTOM, this);
 }
 
 void DialogInputInterface::showLeftBottomTeachingTip(QWidget* target)

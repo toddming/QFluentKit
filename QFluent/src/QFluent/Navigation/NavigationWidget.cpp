@@ -148,10 +148,10 @@ void NavigationWidget::setExpandWidth(int width) {
 // NavigationPushButton 实现
 // ============================================================================
 
-NavigationPushButton::NavigationPushButton(const QString &text, const FluentIconBase &icon,
+NavigationPushButton::NavigationPushButton(const QString &text, const QIcon &icon,
                                            bool isSelectable, QWidget* parent)
     : NavigationWidget(isSelectable, parent)
-    , m_fluentIcon(icon.clone())
+    , m_icon(icon)
     , m_text(text)
 {
 }
@@ -165,15 +165,15 @@ void NavigationPushButton::setText(const QString& text) {
     update();
 }
 
-void NavigationPushButton::setFluentIcon(const FluentIconBase &icon)
+void NavigationPushButton::setIcon(const QIcon &icon)
 {
-    m_fluentIcon = icon.clone();
+    m_icon = icon;
     update();
 }
 
-FluentIconBase* NavigationPushButton::fluentIcon() const
+QIcon NavigationPushButton::icon() const
 {
-    return m_fluentIcon.get();
+    return m_icon;
 }
 
 void NavigationPushButton::setIndicatorColor(const QColor& light, const QColor& dark) {
@@ -227,9 +227,8 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
     }
 
     // 绘制图标
-    if (m_fluentIcon) {
-        FluentIconUtils::drawIcon(*m_fluentIcon, &painter,
-                                  QRectF(11.5 + leftMargin, 10, 16, 16));
+    if (!m_icon.isNull()) {
+        m_icon.paint(&painter, QRect(11.5 + leftMargin, 10, 16, 16));
     }
 
     // 绘制文本
@@ -238,7 +237,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 
     painter.setPen(textColor());
 
-    const int textLeft = m_fluentIcon ? 44 + leftMargin : leftMargin + 16;
+    const int textLeft = !m_icon.isNull() ? 44 + leftMargin : leftMargin + 16;
     painter.drawText(QRectF(textLeft, 0, width() - 13 - textLeft - rightMargin, height()),
                      Qt::AlignVCenter, text());
 }
@@ -247,7 +246,7 @@ void NavigationPushButton::paintEvent(QPaintEvent* e) {
 // NavigationToolButton 实现
 // ============================================================================
 
-NavigationToolButton::NavigationToolButton(const FluentIconBase &icon, QWidget* parent)
+NavigationToolButton::NavigationToolButton(const QIcon &icon, QWidget* parent)
     : NavigationPushButton("", icon, false, parent) {
     setFixedSize(40, 36);
     setProperty("isCompacted", false);
@@ -286,7 +285,7 @@ void NavigationSeparator::paintEvent(QPaintEvent* e) {
 // NavigationTreeItem 实现
 // ============================================================================
 
-NavigationTreeItem::NavigationTreeItem(const QString &text, const FluentIconBase &icon,
+NavigationTreeItem::NavigationTreeItem(const QString &text, const QIcon &icon,
                                        bool isSelectable, NavigationTreeWidget* parent)
     : NavigationPushButton(text, icon, isSelectable, parent)
 {
@@ -358,7 +357,7 @@ void NavigationTreeItem::paintEvent(QPaintEvent* e) {
     painter.translate(width() - 20, 18);
     painter.rotate(m_arrowAngle);
 
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::ARROW_DOWN, &painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
 float NavigationTreeItem::arrowAngle() const {
@@ -374,10 +373,10 @@ void NavigationTreeItem::setArrowAngle(float angle) {
 // NavigationTreeWidget 实现
 // ============================================================================
 
-NavigationTreeWidget::NavigationTreeWidget(const QString &text, const FluentIconBase &icon,
+NavigationTreeWidget::NavigationTreeWidget(const QString &text, const QIcon &icon,
                                            bool isSelectable, QWidget* parent)
     : NavigationTreeWidgetBase(isSelectable, parent)
-    , m_fluentIcon(icon.clone())
+    , m_icon(icon)
 {
     m_itemWidget = new NavigationTreeItem(text, icon, isSelectable, this);
     m_vBoxLayout = new QVBoxLayout(this);
@@ -426,17 +425,17 @@ void NavigationTreeWidget::setText(const QString& text) {
     }
 }
 
-void NavigationTreeWidget::setFluentIcon(const FluentIconBase &icon)
+void NavigationTreeWidget::setIcon(const QIcon &icon)
 {
-    m_fluentIcon = icon.clone();
+    m_icon = icon;
     if (m_itemWidget) {
-        m_itemWidget->setFluentIcon(*m_fluentIcon);
+        m_itemWidget->setIcon(icon);
     }
 }
 
-FluentIconBase* NavigationTreeWidget::fluentIcon() const
+QIcon NavigationTreeWidget::icon() const
 {
-    return m_fluentIcon.get();
+    return m_icon;
 }
 
 void NavigationTreeWidget::setIndicatorColor(const QColor& light, const QColor& dark) {
@@ -454,7 +453,7 @@ void NavigationTreeWidget::setFont(const QFont& font) {
 
 NavigationTreeWidget* NavigationTreeWidget::clone() const {
     NavigationTreeWidget* root = new NavigationTreeWidget(
-                text(), *m_fluentIcon, property("isSelectable").toBool(), parentWidget());
+                text(), m_icon, property("isSelectable").toBool(), parentWidget());
 
     root->setSelected(property("isSelected").toBool());
     root->setFixedSize(size());
@@ -477,7 +476,7 @@ int NavigationTreeWidget::suitableWidth() const {
         return 0;
 
     const QMargins m = m_itemWidget->margins();
-    const int leftMargin = m_fluentIcon ? 57 + m.left() : m.left() + 29;
+    const int leftMargin = !m_icon.isNull() ? 57 + m.left() : m.left() + 29;
     const int textWidth = m_itemWidget->fontMetrics().boundingRect(text()).width();
     return leftMargin + textWidth + m.right();
 }

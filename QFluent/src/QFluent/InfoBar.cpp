@@ -70,8 +70,7 @@ void InfoIconWidget::paintEvent(QPaintEvent* event)
     QRectF iconRect(10, 10, 15, 15);
     QString iconPath = QString(":/qfluent/images/info_bar/%1_{color}.svg")
                           .arg(InfoBarManager::toString(m_type));
-    FluentIcon icon(iconPath);
-    icon.render(&painter, iconRect);
+    FluentIconUtils::drawTemplateIcon(iconPath, &painter, iconRect);
 }
 
 // ============================================================================
@@ -109,7 +108,7 @@ InfoBar::InfoBar(InfoBar::Type type,
     // 创建UI组件
     m_titleLabel = new QLabel(this);
     m_contentLabel = new QLabel(this);
-    m_closeButton = new TransparentToolButton(FluentIcon(Fluent::IconType::CLOSE), this);
+    m_closeButton = new TransparentToolButton(Fluent::icon(Fluent::IconType::CLOSE), this);
     m_iconWidget = new InfoIconWidget(type, this);
 
     // 创建布局

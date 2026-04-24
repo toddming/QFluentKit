@@ -32,7 +32,8 @@ private:
 class NavigationBarPushButton : public NavigationPushButton {
     Q_OBJECT
 public:
-    explicit NavigationBarPushButton(const FluentIconBase& icon, const QString& text,
+    explicit NavigationBarPushButton(const QString& text, const QIcon& icon,
+                                     Fluent::IconType iconType = Fluent::IconType::NONE,
                                      bool isSelectable = true, QWidget* parent = nullptr);
 
     void setSelectedColor(const QColor& light, const QColor& dark);
@@ -50,7 +51,7 @@ private:
 
 private:
     IconSlideAnimation *m_iconAni;
-    std::unique_ptr<FluentIconBase> m_fluentIcon;
+    Fluent::IconType m_iconType{Fluent::IconType::NONE};
 
     bool m_isSelectedTextVisible;
     QColor m_lightSelectedColor;
@@ -67,7 +68,7 @@ public:
 
     // 公共方法
     NavigationWidget* widget(const QString& routeKey);
-    void addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
+    void addItem(const QString& routeKey, const QIcon& icon, const QString& text,
                  const std::function<void()>& onClick = nullptr, bool selectable = true,
                  NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 
@@ -75,7 +76,7 @@ public:
                    const std::function<void()>& onClick = nullptr,
                    NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 
-    void insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
+    void insertItem(int index, const QString& routeKey, const QIcon& icon, const QString& text,
                    const std::function<void()>& onClick = nullptr, bool selectable = true,
                    NavigationPanel::ItemPosition position = NavigationPanel::ItemPosition::TOP);
 

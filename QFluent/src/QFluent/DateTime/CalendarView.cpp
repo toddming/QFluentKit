@@ -63,13 +63,24 @@ QPropertyAnimation* ViewScrollBar::ani() const
 }
 
 
-CalendarButton::CalendarButton(const FluentIconBase &icon, QWidget* parent)
+CalendarButton::CalendarButton(const QIcon &icon, QWidget* parent)
     : TransparentToolButton(icon, parent) {
 }
 
 void CalendarButton::paintEvent(QPaintEvent* event)
 {
+    // Temporarily clear the icon so QToolButton::paintEvent doesn't draw it
+    QIcon savedIcon;
+    if (!icon().isNull()) {
+        savedIcon = icon();
+        QToolButton::setIcon(QIcon());
+    }
+
     QToolButton::paintEvent(event);
+
+    if (!savedIcon.isNull()) {
+        QToolButton::setIcon(savedIcon);
+    }
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -85,9 +96,7 @@ void CalendarButton::paintEvent(QPaintEvent* event)
     int y = (height() - h) / 2;
     int x = (width() - w) / 2;
 
-    QHash<QString, QString> attrs;
-    attrs["fill"] = Theme::isDark() ? "#5e5e5e" : "#9c9c9c";
-    FluentIconUtils::drawIcon(*fluentIcon(), &painter, QRectF(x, y, w, h), Fluent::ThemeMode::AUTO, false, attrs);
+    icon().paint(&painter, QRect(x, y, w, h));
 }
 
 
@@ -293,9 +302,9 @@ void ScrollViewBase::mouseReleaseEvent(QMouseEvent* e) {
 CalendarViewBase::CalendarViewBase(QWidget* parent)
     : QFrame(parent),
       m_titleButton(new QPushButton(this)),
-      m_resetButton(new CalendarButton(FluentIcon(Fluent::IconType::CANCEL), this)),
-      m_upButton(new CalendarButton(FluentIcon(Fluent::IconType::CARE_UP_SOLID), this)),
-      m_downButton(new CalendarButton(FluentIcon(Fluent::IconType::CARE_DOWN_SOLID), this)),
+      m_resetButton(new CalendarButton(Fluent::icon(Fluent::IconType::CANCEL), this)),
+      m_upButton(new CalendarButton(Fluent::icon(Fluent::IconType::CARE_UP_SOLID), this)),
+      m_downButton(new CalendarButton(Fluent::icon(Fluent::IconType::CARE_DOWN_SOLID), this)),
       m_scrollView(nullptr),
       m_hBoxLayout(new QHBoxLayout()),
       m_vBoxLayout(new QVBoxLayout(this)) {

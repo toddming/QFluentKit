@@ -3,6 +3,7 @@
 #include <QFontMetrics>
 #include <QMetaEnum>
 
+#include "FluentIcon.h"
 #include "QFluent/ScrollBar.h"
 
 // TrieNode 实现
@@ -69,7 +70,7 @@ void Trie::collectWords(TrieNode* node, const QString& prefix, QVector<QPair<QSt
 IconCard::IconCard(Fluent::IconType icon, const QString &name, QWidget* parent)
     : QFrame(parent), m_icon(icon), m_isSelected(false) {
 
-    m_iconWidget = new IconWidget(FluentIcon(icon), this);
+    m_iconWidget = new IconWidget(Fluent::icon(icon), this);
     m_nameLabel = new QLabel(this);
     m_vBoxLayout = new QVBoxLayout(this);
 
@@ -89,7 +90,7 @@ IconCard::IconCard(Fluent::IconType icon, const QString &name, QWidget* parent)
 
     Theme::onThemeModeChanged(this, [=](Fluent::ThemeMode theme){
          if (m_isSelected) {
-             m_iconWidget->setIconTheme(theme);
+             m_iconWidget->setIcon(Fluent::icon(m_icon, true));
          }
     });
 }
@@ -110,9 +111,9 @@ void IconCard::setSelected(bool isSelected, bool force) {
     m_isSelected = isSelected;
 
     if (!isSelected) {
-        m_iconWidget->setIconTheme(Fluent::ThemeMode::AUTO);
+        m_iconWidget->setIcon(Fluent::icon(m_icon));
     } else {
-        m_iconWidget->setIconTheme(Theme::isDark() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK);
+        m_iconWidget->setIcon(Fluent::icon(m_icon, true));
     }
 
     setProperty("isSelected", isSelected);
@@ -129,7 +130,7 @@ IconInfoPanel::IconInfoPanel(Fluent::IconType icon, QWidget* parent)
     : QFrame(parent) {
 
     m_nameLabel = new QLabel("value", this);
-    m_iconWidget = new IconWidget(FluentIcon(icon), this);
+    m_iconWidget = new IconWidget(Fluent::icon(icon), this);
     m_iconNameTitleLabel = new QLabel("图标名字", this);
     m_iconNameLabel = new QLabel("value", this);
     m_enumNameTitleLabel = new QLabel("枚举成员", this);
@@ -163,7 +164,7 @@ IconInfoPanel::IconInfoPanel(Fluent::IconType icon, QWidget* parent)
 void IconInfoPanel::setIcon(Fluent::IconType icon) {
     static QMap<Fluent::IconType, QString> icons = FluentIconUtils::fluentIconsMap();
 
-    m_iconWidget->setFluentIcon(FluentIcon(icon));
+    m_iconWidget->setIcon(Fluent::icon(icon));
     m_nameLabel->setText(icons.value(icon));
     m_iconNameLabel->setText(icons.value(icon));
     QMetaEnum metaEnum = QMetaEnum::fromType<Fluent::IconType>();

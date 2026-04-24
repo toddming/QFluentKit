@@ -28,7 +28,7 @@ class TabToolButton : public TransparentToolButton
     Q_OBJECT
 
 public:
-    explicit TabToolButton(const FluentIconBase &icon, QWidget *parent = nullptr);
+    explicit TabToolButton(const QIcon &icon, QWidget *parent = nullptr);
     explicit TabToolButton(QWidget *parent = nullptr);
 
 protected:
@@ -44,6 +44,8 @@ class QFLUENT_EXPORT TabItem : public QPushButton
 public:
     explicit TabItem(const QString &text, QWidget *parent = nullptr,
                      const QIcon &icon = QIcon());
+    explicit TabItem(const QString &text, Fluent::IconType type,
+                     QWidget *parent = nullptr);
 
     void slideTo(int x, int duration = 250);
     void setShadowEnabled(bool enabled);
@@ -121,8 +123,14 @@ public:
     TabItem *addTab(const QString &routeKey, const QString &text,
                     const QIcon &icon = QIcon(),
                     std::function<void()> onClick = nullptr);
+    TabItem *addTab(const QString &routeKey, const QString &text,
+                    Fluent::IconType type,
+                    std::function<void()> onClick = nullptr);
     TabItem *insertTab(int index, const QString &routeKey, const QString &text,
                        const QIcon &icon = QIcon(),
+                       std::function<void()> onClick = nullptr);
+    TabItem *insertTab(int index, const QString &routeKey, const QString &text,
+                       Fluent::IconType type,
                        std::function<void()> onClick = nullptr);
     void removeTab(int index);
     void removeTabByKey(const QString &routeKey);

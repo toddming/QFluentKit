@@ -60,7 +60,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.translate(width() / 2, height() / 2);
     painter.rotate(m_angle);
 
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(&painter, QRectF(-5, -5, 9.6, 9.6));
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::ARROW_DOWN, &painter, QRectF(-5, -5, 9.6, 9.6));
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -124,12 +124,21 @@ SpaceWidget::SpaceWidget(QWidget *parent) : QWidget(parent) {
 
 HeaderSettingCard::HeaderSettingCard(const QIcon &icon, const QString &title, const QString &content, QWidget *parent)
     : SettingCard(icon, title, content, parent) {
+    initHeader();
+}
+
+HeaderSettingCard::HeaderSettingCard(Fluent::IconType type, const QString &title, const QString &content, QWidget *parent)
+    : SettingCard(type, title, content, parent) {
+    initHeader();
+}
+
+void HeaderSettingCard::initHeader() {
     m_expandButton = new ExpandButton(this);
 
-    hBoxLayout()->addWidget(m_expandButton, 0, Qt::AlignRight); // Assuming hBoxLayout is from SettingCard
+    hBoxLayout()->addWidget(m_expandButton, 0, Qt::AlignRight);
     hBoxLayout()->addSpacing(8);
 
-    titleLabel()->setObjectName("titleLabel"); // Assuming titleLabel from SettingCard
+    titleLabel()->setObjectName("titleLabel");
     installEventFilter(this);
 }
 
@@ -224,6 +233,22 @@ ExpandSettingCard::ExpandSettingCard(const QIcon &icon, const QString &title, co
     m_scrollWidget = new QFrame(this);
     m_view = new QFrame(m_scrollWidget);
     m_card = new HeaderSettingCard(icon, title, content, this);
+
+    initCard();
+}
+
+ExpandSettingCard::ExpandSettingCard(Fluent::IconType type, const QString &title, const QString &content, QWidget *parent)
+    : QScrollArea(parent),
+    m_isExpand(false) {
+    m_scrollWidget = new QFrame(this);
+    m_view = new QFrame(m_scrollWidget);
+    m_card = new HeaderSettingCard(type, title, content, this);
+
+    initCard();
+}
+
+void ExpandSettingCard::initCard()
+{
 
     m_scrollLayout = new QVBoxLayout(m_scrollWidget);
     m_viewLayout = new QVBoxLayout(m_view);
@@ -346,6 +371,15 @@ void GroupSeparator::paintEvent(QPaintEvent *e) {
 
 ExpandGroupSettingCard::ExpandGroupSettingCard(const QIcon &icon, const QString &title, const QString &content, QWidget *parent)
     : ExpandSettingCard(icon, title, content, parent) {
+    initGroup();
+}
+
+ExpandGroupSettingCard::ExpandGroupSettingCard(Fluent::IconType type, const QString &title, const QString &content, QWidget *parent)
+    : ExpandSettingCard(type, title, content, parent) {
+    initGroup();
+}
+
+void ExpandGroupSettingCard::initGroup() {
     viewLayout()->setContentsMargins(0, 0, 0, 0);
     viewLayout()->setSpacing(0);
 }

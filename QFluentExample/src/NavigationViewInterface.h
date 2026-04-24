@@ -16,7 +16,7 @@ private:
 
     QWidget* createTabWidget();
 
-    void addPage(const QString &routeKey, const QString &text, const FluentIconBase &icon);
+    void addPage(const QString &routeKey, const QString &text, const QIcon &icon);
 
     void addTab();
     void removeTab(int index);

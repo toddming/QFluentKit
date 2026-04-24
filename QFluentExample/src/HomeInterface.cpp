@@ -36,28 +36,28 @@ void BannerWidget::setupUI()
 void BannerWidget::setupLinks()
 {
     m_linkCardView->addCard(
-                FluentIcon(":/res/example.png").icon(),
+                QIcon(":/res/example.png"),
                 "快速开始",
                 "跟着示例,马上让你的 Qt 应用焕然一新",
                 ""
                 );
 
     m_linkCardView->addCard(
-                FluentIcon(Fluent::IconType::GITHUB).qicon(),
+                Fluent::icon(Fluent::IconType::GITHUB),
                 "设计规范",
                 "遵循微软 Fluent Design 系统,提供一致的视觉与交互体验",
                 ""
                 );
 
     m_linkCardView->addCard(
-                FluentIcon(Fluent::IconType::CODE).qicon(),
+                Fluent::icon(Fluent::IconType::CODE),
                 "组件示例",
                 "查看所有控件的实时演示:按钮、导航栏、卡片、消息框等",
                 ""
                 );
 
     m_linkCardView->addCard(
-                FluentIcon(Fluent::IconType::UPDATE).qicon(),
+                Fluent::icon(Fluent::IconType::UPDATE),
                 "安装指南",
                 "支持 Qt 5.15+ Qt6 (MinGW/MSVC),快速集成",
                 ""

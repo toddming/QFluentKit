@@ -37,9 +37,11 @@ public:
     explicit Pivot(QWidget *parent = nullptr);
     ~Pivot() override;
 
-    void addItem(const QString &routeKey, const QString &text, const FluentIconBase &icon);
+    void addItem(const QString &routeKey, const QString &text, const QIcon &icon = {});
+    void addItem(const QString &routeKey, const QString &text, Fluent::IconType type);
     void addWidget(const QString &routeKey, PivotItem *widget);
-    void insertItem(int index, const QString &routeKey, const QString &text, const FluentIconBase &icon);
+    void insertItem(int index, const QString &routeKey, const QString &text, const QIcon &icon = {});
+    void insertItem(int index, const QString &routeKey, const QString &text, Fluent::IconType type);
     void insertWidget(int index, const QString &routeKey, PivotItem *widget);
     void removeWidget(const QString &routeKey);
     void clear();

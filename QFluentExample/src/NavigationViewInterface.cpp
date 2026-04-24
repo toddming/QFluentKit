@@ -34,10 +34,10 @@ QWidget* NavigationViewInterface::createPivotWidget()
 )");
 
     pivot = new Pivot(pivotView);
-    addPage("homePage", "主页", FluentIcon(Fluent::IconType::HOME));
-    addPage("subscribePage", "订阅", FluentIcon(Fluent::IconType::BOOK_SHELF));
-    addPage("historyPage", "历史", FluentIcon(Fluent::IconType::HISTORY));
-    addPage("settingsPage", "设置", FluentIcon(Fluent::IconType::SETTING));
+    addPage("homePage", "主页", Fluent::icon(Fluent::IconType::HOME));
+    addPage("subscribePage", "订阅", Fluent::icon(Fluent::IconType::BOOK_SHELF));
+    addPage("historyPage", "历史", Fluent::icon(Fluent::IconType::HISTORY));
+    addPage("settingsPage", "设置", Fluent::icon(Fluent::IconType::SETTING));
 
     connect(pivot, &Pivot::currentRouteKeyChanged, this, [=](const QString &routeKey){
         pivotStacked->setCurrentWidget(pivotStacked->findChild<QWidget *>(routeKey));
@@ -54,7 +54,7 @@ QWidget* NavigationViewInterface::createPivotWidget()
     return pivotView;
 }
 
-void NavigationViewInterface::addPage(const QString &routeKey, const QString &text, const FluentIconBase &icon)
+void NavigationViewInterface::addPage(const QString &routeKey, const QString &text, const QIcon &icon)
 {
     pivot->addItem(routeKey, text, icon);
 

@@ -1,4 +1,5 @@
 ﻿#include "ToolButton.h"
+#include "FluentIcon.h"
 #include <QPainter>
 #include <QStyleOptionButton>
 #include <QApplication>
@@ -35,28 +36,18 @@ ToolButton::ToolButton(const QIcon &icon, QWidget *parent)
     init();
 }
 
-ToolButton::ToolButton(const FluentIconBase &icon, QWidget *parent)
+ToolButton::ToolButton(Fluent::IconType type, QWidget *parent)
     : QToolButton(parent)
     , m_isPressed(false)
     , m_isHover(false)
-    , m_fluentIcon(icon.clone())
 {
+    setIcon(type);
     init();
 }
 
 void ToolButton::init()
 {
     StyleSheet::registerWidget(this, Fluent::ThemeStyle::BUTTON);
-}
-
-void ToolButton::setFluentIcon(const FluentIconBase &icon)
-{
-    m_fluentIcon = icon.clone();
-}
-
-FluentIconBase* ToolButton::fluentIcon() const
-{
-    return m_fluentIcon.get();
 }
 
 bool ToolButton::isPressed() const
@@ -106,9 +97,21 @@ void ToolButton::leaveEvent(QEvent* event)
 
 void ToolButton::paintEvent(QPaintEvent* event)
 {
+    // Temporarily clear the icon so QToolButton::paintEvent doesn't draw it
+    // (we draw it ourselves via drawIcon with custom opacity)
+    QIcon savedIcon;
+    if (!icon().isNull()) {
+        savedIcon = icon();
+        QToolButton::setIcon(QIcon());
+    }
+
     QToolButton::paintEvent(event);
 
-    if (!m_fluentIcon) return;
+    if (!savedIcon.isNull()) {
+        QToolButton::setIcon(savedIcon);
+    }
+
+    if (savedIcon.isNull()) return;
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -130,48 +133,112 @@ void ToolButton::paintEvent(QPaintEvent* event)
 
 void ToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
-    FluentIconUtils::drawIcon(*m_fluentIcon, painter, rect);
+    icon().paint(painter, rect.toRect());
+}
+
+void ToolButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    QToolButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void ToolButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    QToolButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
 }
 
 // PrimaryToolButton
+PrimaryToolButton::PrimaryToolButton(QWidget *parent)
+    : ToolButton(parent)
+{
+}
+
+PrimaryToolButton::PrimaryToolButton(Fluent::IconType type, QWidget *parent)
+    : ToolButton(parent)
+{
+    setIcon(type); // 自动反转
+}
+
+PrimaryToolButton::PrimaryToolButton(const QIcon &icon, QWidget *parent)
+    : ToolButton(parent)
+{
+    setIcon(icon);
+}
+
+void PrimaryToolButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    ToolButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void PrimaryToolButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    ToolButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
+}
+
 void PrimaryToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
     Q_UNUSED(theme);
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, theme, true);
+    if (m_fluentIcon.hasType()) {
+        m_fluentIcon.reversed().paint(painter, rect.toRect());
+    } else {
+        icon().paint(painter, rect.toRect());
+    }
 }
 
 // ToggleToolButton
-ToggleToolButton::ToggleToolButton(QWidget* parent)
+ToggleToolButton::ToggleToolButton(QWidget *parent)
     : ToolButton(parent)
 {
     setCheckable(true);
     setChecked(false);
 }
 
-ToggleToolButton::ToggleToolButton(const QIcon &icon, QWidget* parent)
-    : ToolButton(icon, parent)
+ToggleToolButton::ToggleToolButton(const QIcon &icon, QWidget *parent)
+    : ToolButton(parent)
 {
     setCheckable(true);
     setChecked(false);
+    setIcon(icon);
 }
 
-ToggleToolButton::ToggleToolButton(const FluentIconBase &icon, QWidget* parent)
-    : ToolButton(icon, parent)
+// 新增：IconType 构造，自动存储正反两套图标
+ToggleToolButton::ToggleToolButton(Fluent::IconType type, QWidget *parent)
+    : ToolButton(parent)
 {
     setCheckable(true);
     setChecked(false);
+    setIcon(type);
 }
 
+void ToggleToolButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    ToolButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void ToggleToolButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    ToolButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
+}
 
 void ToggleToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
-    Fluent::ThemeMode iconTheme;
-    if (!Theme::isDark()) {
-        iconTheme = isChecked() ? Fluent::ThemeMode::DARK : Fluent::ThemeMode::LIGHT;
+    Q_UNUSED(theme);
+    if (m_fluentIcon.hasType()) {
+        (isChecked() ? m_fluentIcon.reversed() : m_fluentIcon).paint(painter, rect.toRect());
     } else {
-        iconTheme = isChecked() ? Fluent::ThemeMode::LIGHT : Fluent::ThemeMode::DARK;
+        icon().paint(painter, rect.toRect());
     }
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, rect, iconTheme);
 }
 
 // PillToolButton
@@ -230,8 +297,16 @@ DropDownToolButtonBase::DropDownToolButtonBase(QWidget *parent)
 
 }
 
-DropDownToolButtonBase::DropDownToolButtonBase(const FluentIconBase &icon, QWidget* parent)
+DropDownToolButtonBase::DropDownToolButtonBase(const QIcon &icon, QWidget* parent)
     : ToolButton(icon, parent)
+    , m_menu(nullptr)
+    , m_arrowAni(new TranslateYAnimation(this))
+{
+
+}
+
+DropDownToolButtonBase::DropDownToolButtonBase(Fluent::IconType type, QWidget* parent)
+    : ToolButton(type, parent)
     , m_menu(nullptr)
     , m_arrowAni(new TranslateYAnimation(this))
 {
@@ -285,12 +360,13 @@ void DropDownToolButtonBase::hideMenu()
 
 void DropDownToolButtonBase::drawDropDownIcon(QPainter* painter, const QRectF& rect)
 {
+    FluentIcon icon(Fluent::IconType::ARROW_DOWN);
     if (Theme::isDark()) {
-        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect);
+        FluentIconUtils::drawIcon(icon, painter, rect);
     } else {
         QHash<QString, QString> attrs;
         attrs["fill"] = "#646464";
-        FluentIconUtils::drawIcon(FluentIcon(Fluent::IconType::ARROW_DOWN), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
+        FluentIconUtils::drawIcon(icon, painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
     }
 }
 
@@ -343,23 +419,60 @@ void DropDownToolButton::paintEvent(QPaintEvent* event)
 
 void DropDownToolButton::drawIcon(QPainter* painter, const QRectF& rect, Fluent::ThemeMode theme)
 {
+    Q_UNUSED(theme);
     QRectF r = rect;
     r.moveLeft(12);
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, r, theme);
+    icon().paint(painter, r.toRect());
 }
 
 // PrimaryDropDownToolButton
+PrimaryDropDownToolButton::PrimaryDropDownToolButton(QWidget *parent)
+    : DropDownToolButton(parent)
+{
+}
+
+PrimaryDropDownToolButton::PrimaryDropDownToolButton(Fluent::IconType type, QWidget *parent)
+    : DropDownToolButton(parent)
+{
+    setIcon(type);
+}
+
+PrimaryDropDownToolButton::PrimaryDropDownToolButton(const QIcon &icon, QWidget *parent)
+    : DropDownToolButton(parent)
+{
+    setIcon(icon);
+}
+
+void PrimaryDropDownToolButton::setIcon(Fluent::IconType type)
+{
+    m_fluentIcon = FluentQIcon(type);
+    DropDownToolButton::setIcon(m_fluentIcon);
+    setProperty("hasIcon", true);
+}
+
+void PrimaryDropDownToolButton::setIcon(const QIcon &icon)
+{
+    m_fluentIcon = FluentQIcon(icon);
+    DropDownToolButton::setIcon(icon);
+    setProperty("hasIcon", !icon.isNull());
+}
+
 void PrimaryDropDownToolButton::drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme)
 {
+    Q_UNUSED(theme);
     QRectF r = rect;
     r.moveLeft(12);
 
-    FluentIconUtils::drawIcon(*fluentIcon(), painter, r, theme, true);
+    if (m_fluentIcon.hasType()) {
+        m_fluentIcon.reversed().paint(painter, r.toRect());
+    } else {
+        icon().paint(painter, r.toRect());
+    }
 }
 
 void PrimaryDropDownToolButton::drawDropDownIcon(QPainter *painter, const QRectF &rect)
 {
-    FluentIcon(Fluent::IconType::ARROW_DOWN).render(painter, rect, Fluent::ThemeMode::AUTO, true);
+    FluentIconUtils::drawThemeIcon(Fluent::IconType::ARROW_DOWN, painter, rect, Fluent::ThemeMode::AUTO, true);
 }
 
 // SplitDropButton
@@ -367,7 +480,7 @@ SplitDropButton::SplitDropButton(QWidget *parent)
     : ToolButton(parent)
     , m_arrowAni(new TranslateYAnimation(this))
 {
-    setFluentIcon(FluentIcon(Fluent::IconType::ARROW_DOWN));
+    setIcon(Fluent::icon(Fluent::IconType::ARROW_DOWN));
     setIconSize(QSize(10, 10));
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 }
@@ -393,7 +506,7 @@ PrimarySplitDropButton::PrimarySplitDropButton(QWidget *parent)
     : PrimaryToolButton(parent)
     , m_arrowAni(new TranslateYAnimation(this))
 {
-    setFluentIcon(FluentIcon(Fluent::IconType::ARROW_DOWN));
+    setIcon(Fluent::icon(Fluent::IconType::ARROW_DOWN, true));
     setIconSize(QSize(10, 10));
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 }
@@ -504,11 +617,11 @@ SplitToolButton::SplitToolButton(const QIcon& icon, QWidget* parent)
     m_button->setIcon(icon);
 }
 
-SplitToolButton::SplitToolButton(const FluentIconBase& icon, QWidget* parent)
+SplitToolButton::SplitToolButton(Fluent::IconType type, QWidget* parent)
     : SplitToolBase(parent)
 {
     init();
-    m_button->setFluentIcon(icon);
+    m_button->setIcon(type);
 }
 
 void SplitToolButton::init()
@@ -538,11 +651,11 @@ PrimarySplitToolButton::PrimarySplitToolButton(const QIcon& icon, QWidget* paren
     m_button->setIcon(icon);
 }
 
-PrimarySplitToolButton::PrimarySplitToolButton(const FluentIconBase& icon, QWidget* parent)
+PrimarySplitToolButton::PrimarySplitToolButton(Fluent::IconType type, QWidget* parent)
     : SplitToolBase(parent)
 {
     init();
-    m_button->setFluentIcon(icon);
+    m_button->setIcon(type);
 }
 
 void PrimarySplitToolButton::init()

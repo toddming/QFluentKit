@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 
 #include "StyleSheet.h"
+#include "FluentIcon.h"
 #include "QFluent/Label.h"
 #include "QFluent/StackedWidget.h"
 #include "QFluent/Navigation/NavigationBar.h"
@@ -42,13 +43,13 @@ void NavbarWidget::initUI()
     stacked->addWidget(createWidget("设置", stacked));
 
     auto *navigationBar = new NavigationBar(this);
-    navigationBar->addItem("1", FluentIcon(Fluent::IconType::HOME), "主页", [stacked](){stacked->setCurrentIndex(0, false);}, true, NavigationPanel::ItemPosition::TOP);
+    navigationBar->addItem("1", Fluent::icon(Fluent::IconType::HOME), "主页", [stacked](){stacked->setCurrentIndex(0, false);}, true, NavigationPanel::ItemPosition::TOP);
     navigationBar->addSeparator();
-    navigationBar->addItem("2", FluentIcon(Fluent::IconType::CHECKBOX), "输入", [stacked](){stacked->setCurrentIndex(1, false);}, true, NavigationPanel::ItemPosition::SCROLL);
-    navigationBar->addItem("3", FluentIcon(Fluent::IconType::DATE_TIME), "日期", [stacked](){stacked->setCurrentIndex(2, false);}, true, NavigationPanel::ItemPosition::SCROLL);
-    navigationBar->addItem("4", FluentIcon(Fluent::IconType::MESSAGE), "信息框", [stacked](){stacked->setCurrentIndex(3, false);}, true, NavigationPanel::ItemPosition::SCROLL);
+    navigationBar->addItem("2", Fluent::icon(Fluent::IconType::CHECKBOX), "输入", [stacked](){stacked->setCurrentIndex(1, false);}, true, NavigationPanel::ItemPosition::SCROLL);
+    navigationBar->addItem("3", Fluent::icon(Fluent::IconType::DATE_TIME), "日期", [stacked](){stacked->setCurrentIndex(2, false);}, true, NavigationPanel::ItemPosition::SCROLL);
+    navigationBar->addItem("4", Fluent::icon(Fluent::IconType::MESSAGE), "信息框", [stacked](){stacked->setCurrentIndex(3, false);}, true, NavigationPanel::ItemPosition::SCROLL);
     navigationBar->addSeparator(NavigationPanel::ItemPosition::BOTTOM);
-    navigationBar->addItem("5", FluentIcon(Fluent::IconType::SETTING), "设置", [stacked](){stacked->setCurrentIndex(4, false);}, true, NavigationPanel::ItemPosition::BOTTOM);
+    navigationBar->addItem("5", Fluent::icon(Fluent::IconType::SETTING), "设置", [stacked](){stacked->setCurrentIndex(4, false);}, true, NavigationPanel::ItemPosition::BOTTOM);
     navigationBar->setCurrentItem("1");
 
     hBoxLayout->addWidget(navigationBar, 0);

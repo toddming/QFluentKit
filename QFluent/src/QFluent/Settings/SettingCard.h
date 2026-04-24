@@ -37,6 +37,8 @@ class QFLUENT_EXPORT SettingCard : public QFrame
 public:
     explicit SettingCard(const QIcon &icon, const QString &title,
                          const QString &content = QString(), QWidget *parent = nullptr);
+    explicit SettingCard(Fluent::IconType type, const QString &title,
+                         const QString &content = QString(), QWidget *parent = nullptr);
 
     void setTitle(const QString &title);
     void setContent(const QString &content);
@@ -52,6 +54,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
+    void initLayout(const QString &content);
     SettingIconWidget *m_iconLabel;
     QLabel *m_titleLabel;
     QLabel *m_contentLabel;
@@ -71,6 +74,11 @@ public:
                              const QString &title,
                              const QString &content = QString(),
                              QWidget *parent = nullptr);
+    explicit PushSettingCard(const QString &buttonText,
+                             Fluent::IconType type,
+                             const QString &title,
+                             const QString &content = QString(),
+                             QWidget *parent = nullptr);
 
     QPushButton *button() const { return m_button; }
 
@@ -78,6 +86,7 @@ signals:
     void clicked();
 
 private:
+    void initPushButton(const QString &buttonText);
     QPushButton *m_button;
 };
 
@@ -90,6 +99,11 @@ class QFLUENT_EXPORT PrimaryPushSettingCard : public PushSettingCard
 public:
     explicit PrimaryPushSettingCard(const QString &buttonText,
                                     const QIcon &icon,
+                                    const QString &title,
+                                    const QString &content = QString(),
+                                    QWidget *parent = nullptr);
+    explicit PrimaryPushSettingCard(const QString &buttonText,
+                                    Fluent::IconType type,
                                     const QString &title,
                                     const QString &content = QString(),
                                     QWidget *parent = nullptr);
@@ -108,6 +122,15 @@ public:
                              const QString &title,
                              const QString &content = QString(),
                              QWidget *parent = nullptr);
+    explicit HyperlinkCard(const QString &url,
+                           const QString &text,
+                           Fluent::IconType type,
+                           const QString &title,
+                           const QString &content = QString(),
+                           QWidget *parent = nullptr);
+
+private:
+    void initHyperlink(const QString &url, const QString &text);
 };
 
 
@@ -118,6 +141,8 @@ class QFLUENT_EXPORT SwitchSettingCard : public SettingCard
 
 public:
     explicit SwitchSettingCard(const QIcon &icon, const QString &title,
+                         const QString &content = QString(), QWidget *parent = nullptr);
+    explicit SwitchSettingCard(Fluent::IconType type, const QString &title,
                          const QString &content = QString(), QWidget *parent = nullptr);
 
     void setValue(bool isChecked);
@@ -133,6 +158,7 @@ private slots:
     void onCheckedChanged(bool isChecked);
 
 private:
+    void initSwitch();
     SwitchButton *m_switchButton;
 };
 
@@ -146,6 +172,8 @@ public:
 
     explicit ComboBoxSettingCard(const QStringList &items, const QIcon &icon, const QString &title,
                                const QString &content = QString(), QWidget *parent = nullptr);
+    explicit ComboBoxSettingCard(const QStringList &items, Fluent::IconType type, const QString &title,
+                               const QString &content = QString(), QWidget *parent = nullptr);
 
     void setValue(int value);
 
@@ -156,5 +184,6 @@ private slots:
     void onCurrentIndexChanged(int);
 
 private:
+    void initComboBox(const QStringList &items);
     ComboBox *m_comboBox;
 };

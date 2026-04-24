@@ -51,11 +51,12 @@ QVariant IconSlideAnimation::animateValue(const QVariant& startValue, const QVar
 }
 
 // NavigationBarPushButton 实现
-NavigationBarPushButton::NavigationBarPushButton(const FluentIconBase& icon, const QString& text,
+NavigationBarPushButton::NavigationBarPushButton(const QString& text, const QIcon& icon,
+                                                 Fluent::IconType iconType,
                                                  bool isSelectable, QWidget* parent)
     : NavigationPushButton(text, icon, isSelectable, parent)
     , m_iconAni(new IconSlideAnimation(this))
-    , m_fluentIcon(icon.clone())
+    , m_iconType(iconType)
     , m_isSelectedTextVisible(true)
     , m_lightSelectedColor(QColor())
     , m_darkSelectedColor(QColor()) {
@@ -138,9 +139,14 @@ void NavigationBarPushButton::drawIcon(QPainter& painter) {
             QHash<QString, QString> attrs;
             attrs["fill"] = Theme::themeColor(Fluent::ThemeColor::PRIMARY).name();
 
-            FluentIconUtils::drawIcon(*m_fluentIcon, &painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
+            if (m_iconType != Fluent::IconType::NONE) {
+                FluentIcon fi(m_iconType);
+                FluentIconUtils::drawIcon(fi, &painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
+            } else {
+                icon().paint(&painter, rect.toRect());
+            }
     } else {
-        FluentIconUtils::drawIcon(*m_fluentIcon, &painter, rect);
+        icon().paint(&painter, rect.toRect());
     }
 }
 
@@ -241,7 +247,7 @@ NavigationWidget* NavigationBar::widget(const QString& routeKey) {
     return m_items[routeKey].widget;
 }
 
-void NavigationBar::addItem(const QString& routeKey, const FluentIconBase& icon, const QString& text,
+void NavigationBar::addItem(const QString& routeKey, const QIcon& icon, const QString& text,
                           const std::function<void()>& onClick, bool selectable,
                           NavigationPanel::ItemPosition position) {
     insertItem(-1, routeKey, icon, text, onClick, selectable, position);
@@ -253,14 +259,14 @@ void NavigationBar::addWidget(const QString& routeKey, NavigationWidget* widget,
     insertWidget(-1, routeKey, widget, onClick, position);
 }
 
-void NavigationBar::insertItem(int index, const QString& routeKey, const FluentIconBase& icon, const QString& text,
+void NavigationBar::insertItem(int index, const QString& routeKey, const QIcon& icon, const QString& text,
                              const std::function<void()>& onClick, bool selectable,
                              NavigationPanel::ItemPosition position) {
     if (m_items.contains(routeKey)) {
         return;
     }
 
-    NavigationBarPushButton* w = new NavigationBarPushButton(icon, text, selectable, this);
+    NavigationBarPushButton* w = new NavigationBarPushButton(text, icon, Fluent::IconType::NONE, selectable, this);
     w->setSelectedColor(m_lightSelectedColor, m_darkSelectedColor);
     insertWidget(index, routeKey, w, onClick, position);
 }

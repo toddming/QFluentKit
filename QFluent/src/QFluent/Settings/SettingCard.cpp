@@ -1,4 +1,5 @@
 ﻿#include "SettingCard.h"
+#include "FluentIcon.h"
 #include <QApplication>
 #include <QStyle>
 #include <QLabel>
@@ -26,6 +27,23 @@ SettingCard::SettingCard(const QIcon &icon, const QString &title,
     , m_contentLabel(new QLabel(content, this))
     , m_hBoxLayout(new QHBoxLayout(this))
     , m_vBoxLayout(new QVBoxLayout)
+{
+    initLayout(content);
+}
+
+SettingCard::SettingCard(Fluent::IconType type, const QString &title,
+                         const QString &content, QWidget *parent)
+    : QFrame(parent)
+    , m_iconLabel(new SettingIconWidget(Fluent::icon(type), this))
+    , m_titleLabel(new QLabel(title, this))
+    , m_contentLabel(new QLabel(content, this))
+    , m_hBoxLayout(new QHBoxLayout(this))
+    , m_vBoxLayout(new QVBoxLayout)
+{
+    initLayout(content);
+}
+
+void SettingCard::initLayout(const QString &content)
 {
     if (content.isEmpty()) {
         m_contentLabel->hide();
@@ -120,6 +138,22 @@ PushSettingCard::PushSettingCard(const QString &buttonText,
     : SettingCard(icon, title, content, parent)
     , m_button(new QPushButton(buttonText, this))
 {
+    initPushButton(buttonText);
+}
+
+PushSettingCard::PushSettingCard(const QString &buttonText,
+                                 Fluent::IconType type,
+                                 const QString &title,
+                                 const QString &content,
+                                 QWidget *parent)
+    : SettingCard(type, title, content, parent)
+    , m_button(new QPushButton(buttonText, this))
+{
+    initPushButton(buttonText);
+}
+
+void PushSettingCard::initPushButton(const QString &buttonText)
+{
     // 添加按钮到布局右侧
     hBoxLayout()->addWidget(m_button, 0, Qt::AlignRight);
     hBoxLayout()->addSpacing(16);
@@ -137,7 +171,16 @@ PrimaryPushSettingCard::PrimaryPushSettingCard(const QString &buttonText,
                                                QWidget *parent)
     : PushSettingCard(buttonText, icon, title, content, parent)
 {
-    // 设置对象名，用于样式表控制
+    button()->setObjectName("primaryButton");
+}
+
+PrimaryPushSettingCard::PrimaryPushSettingCard(const QString &buttonText,
+                                               Fluent::IconType type,
+                                               const QString &title,
+                                               const QString &content,
+                                               QWidget *parent)
+    : PushSettingCard(buttonText, type, title, content, parent)
+{
     button()->setObjectName("primaryButton");
 }
 
@@ -149,6 +192,22 @@ HyperlinkCard::HyperlinkCard(const QString &url,
                              const QString &content,
                              QWidget *parent)
     : SettingCard(icon, title, content, parent)
+{
+    initHyperlink(url, text);
+}
+
+HyperlinkCard::HyperlinkCard(const QString &url,
+                             const QString &text,
+                             Fluent::IconType type,
+                             const QString &title,
+                             const QString &content,
+                             QWidget *parent)
+    : SettingCard(type, title, content, parent)
+{
+    initHyperlink(url, text);
+}
+
+void HyperlinkCard::initHyperlink(const QString &url, const QString &text)
 {
     HyperlinkButton *linkButton = new HyperlinkButton(text, this);
     hBoxLayout()->addWidget(linkButton, 0, Qt::AlignRight);
@@ -169,12 +228,27 @@ SwitchSettingCard::SwitchSettingCard(const QIcon &icon,
                                      const QString &content,
                                      QWidget *parent)
     : SettingCard(icon, title, content, parent)
+    , m_switchButton(new SwitchButton(this))
 {
-    m_switchButton = new SwitchButton("Off", this, SwitchButton::IndicatorPosition::Right);
+    initSwitch();
+}
 
+SwitchSettingCard::SwitchSettingCard(Fluent::IconType type,
+                                     const QString &title,
+                                     const QString &content,
+                                     QWidget *parent)
+    : SettingCard(type, title, content, parent)
+    , m_switchButton(new SwitchButton(this))
+{
+    initSwitch();
+}
+
+void SwitchSettingCard::initSwitch()
+{
     hBoxLayout()->addWidget(m_switchButton, 0, Qt::AlignRight);
     hBoxLayout()->addSpacing(16);
 
+    connect(m_switchButton, &SwitchButton::checkedChanged, this, &SwitchSettingCard::onCheckedChanged);
 }
 
 void SwitchSettingCard::onCheckedChanged(bool isChecked)
@@ -207,6 +281,21 @@ ComboBoxSettingCard::ComboBoxSettingCard(const QStringList &items,
                                          const QString &content,
                                          QWidget *parent)
     : SettingCard(icon, title, content, parent)
+{
+    initComboBox(items);
+}
+
+ComboBoxSettingCard::ComboBoxSettingCard(const QStringList &items,
+                                         Fluent::IconType type,
+                                         const QString &title,
+                                         const QString &content,
+                                         QWidget *parent)
+    : SettingCard(type, title, content, parent)
+{
+    initComboBox(items);
+}
+
+void ComboBoxSettingCard::initComboBox(const QStringList &items)
 {
     m_comboBox = new ComboBox(this);
     m_comboBox->addItems(items);

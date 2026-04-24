@@ -82,7 +82,7 @@ void NavigationPanel::initWidget()
     m_scrollArea->setWidget(m_scrollWidget);
 
     // 创建菜单按钮
-    m_menuButton = new NavigationToolButton(FluentIcon(Fluent::IconType::MENU), this);
+    m_menuButton = new NavigationToolButton(Fluent::icon(Fluent::IconType::MENU), this);
     connect(m_menuButton, &NavigationToolButton::clicked,
             this, &NavigationPanel::toggle);
 
@@ -206,7 +206,7 @@ NavigationUserCard* NavigationPanel::addUserCard(
 
 void NavigationPanel::addItem(
     const QString& routeKey,
-    const FluentIconBase& icon,
+    const QIcon& icon,
     const QString& text,
     const std::function<void()>& onClick,
     bool selectable,
@@ -231,7 +231,7 @@ void NavigationPanel::addWidget(
 void NavigationPanel::insertItem(
     int index,
     const QString& routeKey,
-    const FluentIconBase& icon,
+    const QIcon& icon,
     const QString& text,
     const std::function<void()>& onClick,
     bool selectable,
