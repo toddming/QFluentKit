@@ -10,6 +10,7 @@
 #include <QMovie>
 #include <QPainterPath>
 #include <QVariant>
+#include <QResizeEvent>
 
 // ============================================================================
 // ImageLabel 实现
@@ -95,6 +96,7 @@ void ImageLabel::setImage(const QVariant &image)
     if (!m_image.isNull()) {
         setFixedSize(m_image.size());
     }
+    m_cachedSize = QSize();
     update();
 }
 
@@ -230,19 +232,25 @@ void ImageLabel::paintEvent(QPaintEvent *event)
         path.arcTo(0, 0, d, d, 180, -90);
     }
 
-    // 缩放图像以适应高DPI屏幕
+    // 缩放图像以适应高DPI屏幕（带缓存）
     const qreal dpr = devicePixelRatioF();
-    QImage scaledImage = m_image.scaled(
-        size() * dpr,
-        Qt::IgnoreAspectRatio,
-        Qt::SmoothTransformation
-    );
-    scaledImage.setDevicePixelRatio(dpr);
+    const QSize targetSize = size() * dpr;
+    if (m_cachedSize != targetSize) {
+        m_cachedScaledImage = m_image.scaled(targetSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        m_cachedScaledImage.setDevicePixelRatio(dpr);
+        m_cachedSize = targetSize;
+    }
 
     // 绘制裁剪后的图像
     painter.setPen(Qt::NoPen);
     painter.setClipPath(path);
-    painter.drawImage(rect(), scaledImage);
+    painter.drawImage(rect(), m_cachedScaledImage);
+}
+
+void ImageLabel::resizeEvent(QResizeEvent *event)
+{
+    m_cachedSize = QSize();
+    QLabel::resizeEvent(event);
 }
 
 // 圆角属性访问器
@@ -366,6 +374,7 @@ void AvatarWidget::setBackgroundColor(const QColor &light, const QColor &dark)
 
 void AvatarWidget::setImage(const QVariant &image)
 {
+    m_cachedAvatarSize = QSize();
     ImageLabel::setImage(image);
     setRadius(m_radius); // 重新应用半径以更新尺寸
 }
@@ -389,22 +398,25 @@ void AvatarWidget::drawImageAvatar(QPainter &painter)
     const qreal dpr = devicePixelRatioF();
     const QSize targetSize = size() * (dpr + 0.1);
 
-    // 按比例扩展缩放图像(保持宽高比,填充整个区域)
-    QImage scaledImage = image().scaled(
-        targetSize,
-        Qt::KeepAspectRatioByExpanding,
-        Qt::SmoothTransformation
-    );
-    scaledImage.setDevicePixelRatio(dpr);
+    if (m_cachedAvatarSize != targetSize) {
+        // 按比例扩展缩放图像(保持宽高比,填充整个区域)
+        QImage scaledImage = image().scaled(
+            targetSize,
+            Qt::KeepAspectRatioByExpanding,
+            Qt::SmoothTransformation
+        );
+        scaledImage.setDevicePixelRatio(dpr);
 
-    // 中心裁剪
-    const int iw = scaledImage.width();
-    const int ih = scaledImage.height();
-    const int d = m_radius * 2 * dpr;
-    const int x = (iw - d) / 2;
-    const int y = (ih - d) / 2;
+        // 中心裁剪
+        const int iw = scaledImage.width();
+        const int ih = scaledImage.height();
+        const int d = m_radius * 2 * dpr;
+        const int x = (iw - d) / 2;
+        const int y = (ih - d) / 2;
 
-    QImage croppedImage = scaledImage.copy(x, y, d, d);
+        m_cachedAvatarImage = scaledImage.copy(x, y, d, d);
+        m_cachedAvatarSize = targetSize;
+    }
 
     // 绘制圆形裁剪路径
     QPainterPath path;
@@ -412,7 +424,7 @@ void AvatarWidget::drawImageAvatar(QPainter &painter)
 
     painter.setPen(Qt::NoPen);
     painter.setClipPath(path);
-    painter.drawImage(rect(), croppedImage);
+    painter.drawImage(rect(), m_cachedAvatarImage);
 }
 
 void AvatarWidget::drawTextAvatar(QPainter &painter)

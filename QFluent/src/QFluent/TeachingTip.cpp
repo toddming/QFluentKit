@@ -468,6 +468,8 @@ void TopTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 
 QPoint TopTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->m_target) return QPoint();
+
     QWidget* target = tip->m_target;
     QPoint p = target->mapToGlobal(QPoint(0, target->height()));
     int x = p.x() + target->width() / 2 - tip->sizeHint().width() / 2;
@@ -506,6 +508,8 @@ void BottomTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 
 QPoint BottomTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->m_target) return QPoint();
+
     QWidget* target = tip->m_target;
     QPoint p = target->mapToGlobal(QPoint());
     int x = p.x() + target->width() / 2 - tip->sizeHint().width() / 2;
@@ -549,6 +553,8 @@ void LeftTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 
 QPoint LeftTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->m_target) return QPoint();
+
     QWidget* target = tip->m_target;
     QMargins m = tip->layout()->contentsMargins();
     QPoint p = target->mapToGlobal(QPoint(target->width(), 0));
@@ -593,6 +599,8 @@ void RightTailTeachingTipManager::draw(TeachTipBubble* tip, QPainter& painter)
 
 QPoint RightTailTeachingTipManager::pos(TeachingTip* tip)
 {
+    if (!tip || !tip->m_target) return QPoint();
+
     QWidget* target = tip->m_target;
     QMargins m = tip->layout()->contentsMargins();
     QPoint p = target->mapToGlobal(QPoint(0, 0));

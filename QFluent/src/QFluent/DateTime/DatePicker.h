@@ -3,6 +3,7 @@
 #include "PickerBase.h"
 #include <QDate>
 #include <QCalendar>
+#include <QScopedPointer>
 
 #include "FluentGlobal.h"
 
@@ -54,9 +55,9 @@ protected:
     PickerColumnFormatter* m_dayFormatter;
     
     // 默认 formatter，用于懒加载
-    mutable PickerColumnFormatter* m_defaultYearFormatter;
-    mutable PickerColumnFormatter* m_defaultMonthFormatter;
-    mutable PickerColumnFormatter* m_defaultDayFormatter;
+    mutable QScopedPointer<PickerColumnFormatter> m_defaultYearFormatter;
+    mutable QScopedPointer<PickerColumnFormatter> m_defaultMonthFormatter;
+    mutable QScopedPointer<PickerColumnFormatter> m_defaultDayFormatter;
 };
 
 class QFLUENT_EXPORT DatePicker : public DatePickerBase

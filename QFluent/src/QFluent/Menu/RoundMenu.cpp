@@ -60,7 +60,7 @@ RoundMenu::~RoundMenu()
         QVariant data = item->data(Qt::UserRole);
         if (data.canConvert<RoundMenu *>()) {
             RoundMenu *menu = data.value<RoundMenu *>();
-            if (menu) {
+            if (menu && (!menu->parent() || menu->parent() == this)) {
                 delete menu;
             }
         }

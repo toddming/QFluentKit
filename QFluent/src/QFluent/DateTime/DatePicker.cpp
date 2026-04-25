@@ -35,25 +35,10 @@ DatePickerBase::DatePickerBase(QWidget* parent)
     , m_yearFormatter(nullptr)
     , m_monthFormatter(nullptr)
     , m_dayFormatter(nullptr)
-    , m_defaultYearFormatter(nullptr)
-    , m_defaultMonthFormatter(nullptr)
-    , m_defaultDayFormatter(nullptr)
 {
 }
 
-DatePickerBase::~DatePickerBase()
-{
-    // 清理默认 formatter（如果它们没有父对象）
-    if (m_defaultYearFormatter && !m_defaultYearFormatter->parent()) {
-        delete m_defaultYearFormatter;
-    }
-    if (m_defaultMonthFormatter && !m_defaultMonthFormatter->parent()) {
-        delete m_defaultMonthFormatter;
-    }
-    if (m_defaultDayFormatter && !m_defaultDayFormatter->parent()) {
-        delete m_defaultDayFormatter;
-    }
-}
+DatePickerBase::~DatePickerBase() = default;
 
 void DatePickerBase::setYearFormatter(PickerColumnFormatter* formatter)
 {
@@ -78,9 +63,9 @@ PickerColumnFormatter* DatePickerBase::yearFormatter() const
     
     // 懒加载：只在第一次需要时创建默认 formatter
     if (!m_defaultYearFormatter) {
-        m_defaultYearFormatter = new DigitFormatter();
+        m_defaultYearFormatter.reset(new DigitFormatter());
     }
-    return m_defaultYearFormatter;
+    return m_defaultYearFormatter.data();
 }
 
 PickerColumnFormatter* DatePickerBase::monthFormatter() const
@@ -91,9 +76,9 @@ PickerColumnFormatter* DatePickerBase::monthFormatter() const
     
     // 懒加载：只在第一次需要时创建默认 formatter
     if (!m_defaultMonthFormatter) {
-        m_defaultMonthFormatter = new MonthFormatter();
+        m_defaultMonthFormatter.reset(new MonthFormatter());
     }
-    return m_defaultMonthFormatter;
+    return m_defaultMonthFormatter.data();
 }
 
 PickerColumnFormatter* DatePickerBase::dayFormatter() const
@@ -104,9 +89,9 @@ PickerColumnFormatter* DatePickerBase::dayFormatter() const
     
     // 懒加载：只在第一次需要时创建默认 formatter
     if (!m_defaultDayFormatter) {
-        m_defaultDayFormatter = new DigitFormatter();
+        m_defaultDayFormatter.reset(new DigitFormatter());
     }
-    return m_defaultDayFormatter;
+    return m_defaultDayFormatter.data();
 }
 
 void DatePickerBase::reset()

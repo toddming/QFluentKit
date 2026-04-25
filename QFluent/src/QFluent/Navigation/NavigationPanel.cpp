@@ -470,7 +470,8 @@ void NavigationPanel::expand(bool useAnimation)
         m_displayMode = NavigationPanel::DisplayMode::MENU;
 
         // 从父窗口分离为独立窗口
-        if (m_parentWidget && !m_parentWidget->isWindow()) {
+        QWidget* parent = m_parentWidget;
+        if (parent && !parent->isWindow()) {
             QPoint pos = parentWidget()->pos();
             setParent(window());
             move(pos);
@@ -629,12 +630,14 @@ bool NavigationPanel::eventFilter(QObject* obj, QEvent* event)
 
     if (event->type() == QEvent::MouseButtonRelease) {
         auto* mouseEvent = static_cast<QMouseEvent*>(event);
+    Q_ASSERT(mouseEvent);
         if (!geometry().contains(mouseEvent->pos()) &&
             m_displayMode == NavigationPanel::DisplayMode::MENU) {
             collapse();
         }
     } else if (event->type() == QEvent::Resize) {
         auto* resizeEvent = static_cast<QResizeEvent*>(event);
+    Q_ASSERT(resizeEvent);
         int width = resizeEvent->size().width();
 
         if (width < m_minimumExpandWidth &&
@@ -675,8 +678,9 @@ void NavigationPanel::onExpandAnimationFinished()
         }
 
         // 重新附加到父窗口
-        if (m_parentWidget && !m_parentWidget->isWindow()) {
-            setParent(m_parentWidget);
+        QWidget* parent = m_parentWidget;
+        if (parent && !parent->isWindow()) {
+            setParent(parent);
             move(0, 0);
             show();
         }

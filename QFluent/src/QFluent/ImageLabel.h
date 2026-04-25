@@ -62,6 +62,7 @@ signals:
 protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private slots:
     void onFrameChanged(int frameNumber);
@@ -70,6 +71,8 @@ private:
     void postInit();
 
     QImage m_image;
+    QImage m_cachedScaledImage;
+    QSize m_cachedSize;
     int m_topLeftRadius;
     int m_topRightRadius;
     int m_bottomLeftRadius;
@@ -114,6 +117,8 @@ private:
     void drawTextAvatar(QPainter &painter);
 
     int m_radius;
+    QImage m_cachedAvatarImage;
+    QSize m_cachedAvatarSize;
     QColor m_lightBackgroundColor;
     QColor m_darkBackgroundColor;
 };

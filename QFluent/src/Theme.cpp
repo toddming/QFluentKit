@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QStyleHints>
 #include <QPointer>
+#include <QHash>
+#include <QPair>
 
 #include "Private/ThemePrivate.h"
 
@@ -108,10 +110,18 @@ bool Theme::isDark() {
 
 QFont Theme::font(int fontSize, QFont::Weight weight)
 {
+    static QHash<QPair<int, int>, QFont> fontCache;
+    auto key = qMakePair(fontSize, static_cast<int>(weight));
+    auto it = fontCache.constFind(key);
+    if (it != fontCache.constEnd()) {
+        return it.value();
+    }
+
     QFont font;
     font.setFamilies({"Microsoft YaHei", "PingFang SC", "Segoe UI"});
     font.setPixelSize(fontSize);
     font.setWeight(weight);
+    fontCache.insert(key, font);
     return font;
 }
 
