@@ -630,22 +630,14 @@ bool NavigationPanel::eventFilter(QObject* obj, QEvent* event)
 
     if (event->type() == QEvent::MouseButtonRelease) {
         auto* mouseEvent = static_cast<QMouseEvent*>(event);
-<<<<<<< HEAD
-    Q_ASSERT(mouseEvent);
-=======
         Q_ASSERT(mouseEvent);
->>>>>>> a7b5ee8 (fix: 修复多处内存安全和缓存一致性问题)
         if (!geometry().contains(mouseEvent->pos()) &&
             m_displayMode == NavigationPanel::DisplayMode::MENU) {
             collapse();
         }
     } else if (event->type() == QEvent::Resize) {
         auto* resizeEvent = static_cast<QResizeEvent*>(event);
-<<<<<<< HEAD
-    Q_ASSERT(resizeEvent);
-=======
         Q_ASSERT(resizeEvent);
->>>>>>> a7b5ee8 (fix: 修复多处内存安全和缓存一致性问题)
         int width = resizeEvent->size().width();
 
         if (width < m_minimumExpandWidth &&
