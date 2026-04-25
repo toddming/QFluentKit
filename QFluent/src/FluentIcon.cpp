@@ -7,6 +7,8 @@
 #include <QDomDocument>
 #include <QFont>
 #include <QPainter>
+#include <QApplication>
+#include <QThread>
 
 #include "Theme.h"
 
@@ -57,6 +59,8 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
                                   const QList<int>& indexes,
                                   const QHash<QString, QString>& attributes)
 {
+    Q_ASSERT(qApp && QThread::currentThread() == qApp->thread());
+
     if (iconPath.isEmpty() || !QFile::exists(iconPath) ||
             !iconPath.endsWith(QStringLiteral(".svg"), Qt::CaseInsensitive)) {
         return QString();
@@ -518,17 +522,23 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect,
 
 QIconEngine* FluentIconEngine::clone() const
 {
+    FluentIconEngine* cloned;
     if (m_isColored) {
         if (m_iconType == Fluent::IconType::CUSTOM_PATH) {
-            return new FluentIconEngine(m_templatePath, m_lightColor, m_darkColor, m_isThemeReversed);
+            cloned = new FluentIconEngine(m_templatePath, m_lightColor, m_darkColor, m_isThemeReversed);
+        } else {
+            cloned = new FluentIconEngine(m_iconType, m_lightColor, m_darkColor, m_isThemeReversed);
         }
-        return new FluentIconEngine(m_iconType, m_lightColor, m_darkColor, m_isThemeReversed);
+    } else {
+        if (m_iconType == Fluent::IconType::CUSTOM_PATH) {
+            cloned = new FluentIconEngine(m_templatePath, m_isThemeReversed);
+        } else {
+            cloned = new FluentIconEngine(m_iconType, m_isThemeReversed);
+        }
     }
-
-    if (m_iconType == Fluent::IconType::CUSTOM_PATH) {
-        return new FluentIconEngine(m_templatePath, m_isThemeReversed);
-    }
-    return new FluentIconEngine(m_iconType, m_isThemeReversed);
+    cloned->m_cachedLightPath = m_cachedLightPath;
+    cloned->m_cachedDarkPath = m_cachedDarkPath;
+    return cloned;
 }
 
 QPixmap FluentIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state)

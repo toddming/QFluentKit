@@ -62,7 +62,7 @@ public:
                               Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO);
 
 private:
-    static QHash<QString, QString> themeColorMap();
+    static const QHash<QString, QString>& themeColorMap();
 };
 
 class QFLUENT_EXPORT StyleSheetBase {

@@ -51,9 +51,12 @@ protected:
 
     bool m_isPressed;
     bool m_isHover;
-    FluentQIcon m_fluentIcon;
+
+    const FluentQIcon& fluentIcon() const { return m_fluentIcon; }
+    void setFluentIcon(const FluentQIcon &icon) { m_fluentIcon = icon; }
 
 private:
+    FluentQIcon m_fluentIcon;
     void init();
 };
 
@@ -74,9 +77,6 @@ public:
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect) override;
-
-private:
-    FluentQIcon m_fluentIcon;
 };
 
 // TransparentPushButton
@@ -118,9 +118,6 @@ public:
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect) override;
-
-private:
-    FluentQIcon m_fluentIcon;
 };
 
 // TransparentTogglePushButton
@@ -219,9 +216,6 @@ protected:
     void drawDropDownIcon(QPainter *painter, const QRectF &rect) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void drawIcon(QPainter *painter, const QRectF &rect) override;
-
-private:
-    FluentQIcon m_fluentIcon;
 };
 
 

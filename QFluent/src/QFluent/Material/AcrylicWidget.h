@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QColor>
+#include <memory>
 
 #include "FluentGlobal.h"
 
@@ -87,7 +88,7 @@ protected:
     void drawAcrylic(QPainter *painter);
 
 private:
-    AcrylicBrush *m_acrylicBrush;  ///< 亚克力画刷实例
+    std::unique_ptr<AcrylicBrush> m_acrylicBrush;  ///< 亚克力画刷实例
     int m_blurRadius;               ///< 模糊半径
     QColor m_cachedTintColor;       ///< 缓存的色调颜色，避免重复设置触发重绘
     QColor m_cachedLuminosityColor; ///< 缓存的亮度颜色

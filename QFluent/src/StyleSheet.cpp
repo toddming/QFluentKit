@@ -8,6 +8,7 @@
 #include <QString>
 #include <QEvent>
 #include <QFile>
+#include <QThread>
 #include <memory>
 #include <vector>
 #include <algorithm>
@@ -19,7 +20,9 @@ namespace {
     static int s_cacheVersion = 0;
 }
 
-QHash<QString, QString> StyleSheet::themeColorMap() {
+const QHash<QString, QString>& StyleSheet::themeColorMap() {
+    Q_ASSERT(qApp && QThread::currentThread() == qApp->thread());
+
     // 真正的静态缓存，只在第一次调用时初始化
     static QHash<QString, QString> s_colorMap;
 
@@ -111,6 +114,8 @@ QString StyleSheet::applyThemeColor(const QString& qss) {
 }
 
 QString StyleSheet::styleSheetFromFile(const QString& filePath) {
+    Q_ASSERT(qApp && QThread::currentThread() == qApp->thread());
+
     static QHash<QString, QString> s_cache;
 
     if (s_cache.contains(filePath)) {
@@ -572,7 +577,8 @@ void StyleSheetManager::registerWidget(QWidget* widget,
 
     if (!m_widgets.contains(widget)) {
         connect(widget, &QWidget::destroyed, this, [this, widget]() {
-            deregisterWidget(widget);
+            // Widget is being destroyed — only remove from map, don't call widget methods
+            m_widgets.remove(widget);
         });
 
         auto watcher = new CustomStyleSheetWatcher(widget);
@@ -639,16 +645,9 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
     QList<QWidget*> widgetsToRemove;
     widgetsToRemove.reserve(10);
 
-    QList<QWidget*> widgetKeys = m_widgets.keys();
-    QList<std::shared_ptr<StyleSheetCompose>> widgetValues;
-    widgetValues.reserve(widgetKeys.size());
-    for (const auto& widget : widgetKeys) {
-        widgetValues.append(m_widgets.value(widget));
-    }
-
-    for (int i = 0; i < widgetKeys.size(); ++i) {
-        QWidget* widget = widgetKeys[i];
-        const auto& source = widgetValues[i];
+    for (auto it = m_widgets.constBegin(); it != m_widgets.constEnd(); ++it) {
+        QWidget* widget = it.key();
+        const auto& source = it.value();
 
         if (!widget) {
             widgetsToRemove.append(widget);
@@ -656,11 +655,8 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
         }
 
         if (!lazy || widget->isVisible()) {
-            // 可见或非懒加载模式：立即更新样式表
             StyleSheet::setStyleSheet(widget, source, Theme::themeMode(), false);
         } else {
-            // 懒加载模式 - 设置 dirty 标记，等待 widget 变为可见时更新
-            // 通过 CustomStyleSheetWatcher 的 eventFilter 在 showEvent 时触发更新
             if (auto* watcher = widget->findChild<CustomStyleSheetWatcher*>()) {
                 watcher->markDirty();
             }
@@ -668,6 +664,10 @@ void StyleSheetManager::updateStyleSheet(bool lazy) {
     }
 
     for (QWidget* widget : widgetsToRemove) {
-        deregisterWidget(widget);
+        if (widget) {
+            deregisterWidget(widget);
+        } else {
+            m_widgets.remove(nullptr);
+        }
     }
 }

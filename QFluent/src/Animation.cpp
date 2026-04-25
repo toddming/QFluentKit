@@ -359,7 +359,10 @@ QGraphicsDropShadowEffect *DropShadowAnimation::createShadowEffect() {
 
 bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
     Q_D(DropShadowAnimation);
-    QWidget *p = static_cast<QWidget*>(parent());
+    QWidget *p = qobject_cast<QWidget*>(parent());
+    if (!p) {
+        return QPropertyAnimation::eventFilter(obj, e);
+    }
     if (obj == p && p->isEnabled()) {
         if (e->type() == QEvent::Enter) {
             d->m_isHover = true;
@@ -429,8 +432,8 @@ QVariant PositionObject::value() const {
 
 void PositionObject::setValue(const QVariant &pos) {
     m_position = pos.toPoint();
-    if (parent()) {
-        static_cast<QWidget*>(parent())->update();
+    if (auto* w = qobject_cast<QWidget*>(parent())) {
+        w->update();
     }
 }
 
@@ -442,8 +445,8 @@ QVariant ScaleObject::value() const {
 
 void ScaleObject::setValue(const QVariant &scale) {
     m_scale = scale.toFloat();
-    if (parent()) {
-        static_cast<QWidget*>(parent())->update();
+    if (auto* w = qobject_cast<QWidget*>(parent())) {
+        w->update();
     }
 }
 
@@ -455,8 +458,8 @@ QVariant AngleObject::value() const {
 
 void AngleObject::setValue(const QVariant &angle) {
     m_angle = angle.toFloat();
-    if (parent()) {
-        static_cast<QWidget*>(parent())->update();
+    if (auto* w = qobject_cast<QWidget*>(parent())) {
+        w->update();
     }
 }
 
@@ -468,8 +471,8 @@ QVariant OpacityObject::value() const {
 
 void OpacityObject::setValue(const QVariant &opacity) {
     m_opacity = opacity.toFloat();
-    if (parent()) {
-        static_cast<QWidget*>(parent())->update();
+    if (auto* w = qobject_cast<QWidget*>(parent())) {
+        w->update();
     }
 }
 

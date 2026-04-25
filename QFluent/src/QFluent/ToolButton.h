@@ -47,9 +47,12 @@ protected:
 
     bool m_isPressed;
     bool m_isHover;
-    FluentQIcon m_fluentIcon;
+
+    const FluentQIcon& fluentIcon() const { return m_fluentIcon; }
+    void setFluentIcon(const FluentQIcon &icon) { m_fluentIcon = icon; }
 
 private:
+    FluentQIcon m_fluentIcon;
     void init();
 };
 
@@ -67,9 +70,6 @@ public:
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
-
-private:
-    FluentQIcon m_fluentIcon;
 };
 
 // TransparentToolButton
@@ -96,9 +96,6 @@ public:
 
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
-
-private:
-    FluentQIcon m_fluentIcon;
 };
 
 // TransparentToggleToolButton
@@ -181,9 +178,6 @@ public:
 protected:
     void drawIcon(QPainter *painter, const QRectF &rect, Fluent::ThemeMode theme = Fluent::ThemeMode::AUTO) override;
     void drawDropDownIcon(QPainter *painter, const QRectF &rect) override;
-
-private:
-    FluentQIcon m_fluentIcon;
 };
 
 

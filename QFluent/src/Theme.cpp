@@ -6,6 +6,7 @@
 #include <QPointer>
 #include <QHash>
 #include <QPair>
+#include <QThread>
 
 #include "Private/ThemePrivate.h"
 
@@ -40,7 +41,7 @@ Theme::Theme(QObject* parent) : QObject(parent)
             if (d->m_autoTheme) {
                 self->setThemeMode(Fluent::ThemeMode::AUTO);
             }
-        });
+        }, Qt::QueuedConnection);
     }
 #endif
 }
@@ -110,6 +111,8 @@ bool Theme::isDark() {
 
 QFont Theme::font(int fontSize, QFont::Weight weight)
 {
+    Q_ASSERT(qApp && QThread::currentThread() == qApp->thread());
+
     static QHash<QPair<int, int>, QFont> fontCache;
     auto key = qMakePair(fontSize, static_cast<int>(weight));
     auto it = fontCache.constFind(key);

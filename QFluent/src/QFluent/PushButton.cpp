@@ -192,22 +192,22 @@ PrimaryPushButton::PrimaryPushButton(const QString &text, const QIcon &icon, QWi
 
 void PrimaryPushButton::setIcon(Fluent::IconType type)
 {
-    m_fluentIcon = FluentQIcon(type);
-    PushButton::setIcon(m_fluentIcon);
+    setFluentIcon(FluentQIcon(type));
+    QPushButton::setIcon(fluentIcon());
     setProperty("hasIcon", true);
 }
 
 void PrimaryPushButton::setIcon(const QIcon &icon)
 {
-    m_fluentIcon = FluentQIcon(icon);
-    PushButton::setIcon(icon);
+    setFluentIcon(FluentQIcon(icon));
+    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
 void PrimaryPushButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    if (m_fluentIcon.hasType()) {
-        m_fluentIcon.reversed().paint(painter, rect.toRect());
+    if (fluentIcon().hasType()) {
+        fluentIcon().reversed().paint(painter, rect.toRect());
     } else {
         icon().paint(painter, rect.toRect());
     }
@@ -267,22 +267,22 @@ ToggleButton::ToggleButton(const QString &text, Fluent::IconType type, QWidget *
 
 void ToggleButton::setIcon(Fluent::IconType type)
 {
-    m_fluentIcon = FluentQIcon(type);
-    PushButton::setIcon(m_fluentIcon);
+    setFluentIcon(FluentQIcon(type));
+    QPushButton::setIcon(fluentIcon());
     setProperty("hasIcon", true);
 }
 
 void ToggleButton::setIcon(const QIcon &icon)
 {
-    m_fluentIcon = FluentQIcon(icon);
-    PushButton::setIcon(icon);
+    setFluentIcon(FluentQIcon(icon));
+    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
 void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    if (m_fluentIcon.hasType()) {
-        (isChecked() ? m_fluentIcon.reversed() : m_fluentIcon).paint(painter, rect.toRect());
+    if (fluentIcon().hasType()) {
+        (isChecked() ? fluentIcon().reversed() : fluentIcon()).paint(painter, rect.toRect());
     } else {
         icon().paint(painter, rect.toRect());
     }
@@ -513,22 +513,22 @@ void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
 
 void PrimaryDropDownPushButton::setIcon(Fluent::IconType type)
 {
-    m_fluentIcon = FluentQIcon(type);
-    DropDownButtonBase::setIcon(m_fluentIcon);
+    setFluentIcon(FluentQIcon(type));
+    QPushButton::setIcon(fluentIcon());
     setProperty("hasIcon", true);
 }
 
 void PrimaryDropDownPushButton::setIcon(const QIcon &icon)
 {
-    m_fluentIcon = FluentQIcon(icon);
-    DropDownButtonBase::setIcon(icon);
+    setFluentIcon(FluentQIcon(icon));
+    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
 void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
 {
-    if (m_fluentIcon.hasType()) {
-        m_fluentIcon.reversed().paint(painter, rect.toRect());
+    if (fluentIcon().hasType()) {
+        fluentIcon().reversed().paint(painter, rect.toRect());
     } else {
         icon().paint(painter, rect.toRect());
     }

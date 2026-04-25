@@ -1,5 +1,4 @@
-﻿#ifndef ROUTER_H
-#define ROUTER_H
+﻿#pragma once
 
 #include <QObject>
 #include <QVector>
@@ -97,5 +96,3 @@ private:
     QVector<RouteItem> m_history;
     QHash<StackedWidget*, StackedHistory*> m_stackedHistories;
 };
-
-#endif // ROUTER_H

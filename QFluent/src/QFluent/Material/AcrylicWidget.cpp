@@ -15,21 +15,13 @@ AcrylicWidget::AcrylicWidget(int blurRadius)
     , m_cachedTintColor(Qt::transparent)
     , m_cachedLuminosityColor(Qt::transparent)
 {
-    // 注意：由于 AcrylicBrush 需要一个 QWidget* 作为设备参数
-    // 这里暂时传入 nullptr，子类需要在构造函数中调用 initializeAcrylicBrush
 }
 
-AcrylicWidget::~AcrylicWidget()
-{
-    if (m_acrylicBrush) {
-        delete m_acrylicBrush;
-        m_acrylicBrush = nullptr;
-    }
-}
+AcrylicWidget::~AcrylicWidget() = default;
 
 AcrylicBrush* AcrylicWidget::acrylicBrush() const
 {
-    return m_acrylicBrush;
+    return m_acrylicBrush.get();
 }
 
 void AcrylicWidget::setBlurRadius(int radius)
@@ -59,14 +51,8 @@ void AcrylicWidget::initializeAcrylicBrush(QWidget *device,
         return;
     }
 
-    // 如果已存在画刷实例，先清理
-    if (m_acrylicBrush) {
-        delete m_acrylicBrush;
-        m_acrylicBrush = nullptr;
-    }
-
     // 创建新的亚克力画刷实例
-    m_acrylicBrush = new AcrylicBrush(
+    m_acrylicBrush = std::make_unique<AcrylicBrush>(
         device,
         m_blurRadius,
         tintColor,
