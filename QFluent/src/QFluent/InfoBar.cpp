@@ -577,7 +577,7 @@ bool InfoBarManager::eventFilter(QObject* obj, QEvent* event)
     QSize size;
     if (event->type() == QEvent::Resize) {
         QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
-    Q_ASSERT(resizeEvent);
+        Q_ASSERT(resizeEvent);
         size = resizeEvent->size();
     } else if (event->type() == QEvent::WindowStateChange) {
         size = widget->size();

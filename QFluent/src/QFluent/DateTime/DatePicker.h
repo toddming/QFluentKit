@@ -54,7 +54,7 @@ protected:
     PickerColumnFormatter* m_monthFormatter;
     PickerColumnFormatter* m_dayFormatter;
     
-    // 默认 formatter，用于懒加载
+    // 默认 formatter，用于懒加载（不得设置 parent，由 QScopedPointer 管理生命周期）
     mutable QScopedPointer<PickerColumnFormatter> m_defaultYearFormatter;
     mutable QScopedPointer<PickerColumnFormatter> m_defaultMonthFormatter;
     mutable QScopedPointer<PickerColumnFormatter> m_defaultDayFormatter;

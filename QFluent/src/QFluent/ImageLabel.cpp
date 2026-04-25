@@ -177,6 +177,7 @@ void ImageLabel::onFrameChanged(int frameNumber)
     if (movie()) {
         m_image = movie()->currentImage();
     }
+    m_cachedSize = QSize();
     update();
 }
 
@@ -333,6 +334,7 @@ int AvatarWidget::radius() const
 void AvatarWidget::setRadius(int radius)
 {
     m_radius = radius;
+    m_cachedAvatarSize = QSize();
 
     // 设置字体大小与半径相同
     QFont font = this->font();
