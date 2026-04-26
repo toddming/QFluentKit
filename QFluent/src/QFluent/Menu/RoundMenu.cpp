@@ -220,7 +220,9 @@ void RoundMenu::exec(const QPoint &pos, bool animate, Fluent::MenuAnimation aniT
 
     adjustMenuSize();
 
-    MenuAnimationManager::make(this, aniType)->exec(pos);
+    if (auto* manager = MenuAnimationManager::make(this, aniType)) {
+        manager->exec(pos);
+    }
 
     show();
 

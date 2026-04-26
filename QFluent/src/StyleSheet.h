@@ -51,6 +51,7 @@ public:
 
     // 缓存管理
     static void clearThemeColorCache();
+    static void invalidateFileCache();
 
     // 样式表内容处理
     static QString applyThemeColor(const QString& qss);

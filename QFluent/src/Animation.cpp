@@ -129,6 +129,7 @@ QColor BackgroundColorObject::backgroundColor() const {
 void BackgroundColorObject::setBackgroundColor(const QColor &color) {
     Q_D(BackgroundColorObject);
     d->m_backgroundColor = color;
+    emit backgroundColorChanged(color);
     if (auto widget = qobject_cast<QWidget*>(parent())) {
         widget->update();
     }
@@ -432,6 +433,7 @@ QVariant PositionObject::value() const {
 
 void PositionObject::setValue(const QVariant &pos) {
     m_position = pos.toPoint();
+    emit valueChanged(pos);
     if (auto* w = qobject_cast<QWidget*>(parent())) {
         w->update();
     }
@@ -445,6 +447,7 @@ QVariant ScaleObject::value() const {
 
 void ScaleObject::setValue(const QVariant &scale) {
     m_scale = scale.toFloat();
+    emit valueChanged(scale);
     if (auto* w = qobject_cast<QWidget*>(parent())) {
         w->update();
     }
@@ -458,6 +461,7 @@ QVariant AngleObject::value() const {
 
 void AngleObject::setValue(const QVariant &angle) {
     m_angle = angle.toFloat();
+    emit valueChanged(angle);
     if (auto* w = qobject_cast<QWidget*>(parent())) {
         w->update();
     }
@@ -471,6 +475,7 @@ QVariant OpacityObject::value() const {
 
 void OpacityObject::setValue(const QVariant &opacity) {
     m_opacity = opacity.toFloat();
+    emit valueChanged(opacity);
     if (auto* w = qobject_cast<QWidget*>(parent())) {
         w->update();
     }

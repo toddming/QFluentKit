@@ -620,10 +620,10 @@ void PickerPanel::exec(const QPoint& pos, bool ani)
         return;
     }
     
-    // 删除旧动画对象以防内存泄漏
+    // 安全清理旧动画对象（有 parent，使用 deleteLater 避免与 Qt parent 管理冲突）
     if (m_ani) {
         m_ani->stop();
-        delete m_ani;
+        m_ani->deleteLater();
         m_ani = nullptr;
     }
     
@@ -660,10 +660,10 @@ void PickerPanel::onAniValueChanged(const QVariant& value)
 
 void PickerPanel::onFadeOut()
 {
-    // 删除旧动画对象以防内存泄漏
+    // 安全清理旧动画对象（有 parent，使用 deleteLater 避免与 Qt parent 管理冲突）
     if (m_ani) {
         m_ani->stop();
-        delete m_ani;
+        m_ani->deleteLater();
         m_ani = nullptr;
     }
     

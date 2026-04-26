@@ -16,7 +16,7 @@ class FluentAnimationProperObject;
 class AnimationBasePrivate {
 public:
     AnimationBasePrivate() {}
-    virtual ~AnimationBasePrivate() {}
+    virtual ~AnimationBasePrivate() = default;
 };
 
 // TranslateYAnimationPrivate

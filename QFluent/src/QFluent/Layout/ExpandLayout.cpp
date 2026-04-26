@@ -126,7 +126,7 @@ int ExpandLayout::doLayout(const QRect &rect, bool move) const
 
 bool ExpandLayout::eventFilter(QObject *obj, QEvent *event)
 {
-    if (m_widgets.contains(static_cast<QWidget*>(obj)) && event->type() == QEvent::Resize) {
+    if (auto* widget = qobject_cast<QWidget*>(obj); widget && m_widgets.contains(widget) && event->type() == QEvent::Resize) {
         auto resizeEvent = static_cast<QResizeEvent*>(event);
         QSize delta = resizeEvent->size() - resizeEvent->oldSize();
 

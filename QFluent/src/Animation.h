@@ -90,13 +90,16 @@ protected:
 class QFLUENT_EXPORT BackgroundColorObject : public QObject {
     Q_OBJECT
     Q_DECLARE_PRIVATE(BackgroundColorObject)
-    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
 public:
     explicit BackgroundColorObject(QWidget *parent);
     ~BackgroundColorObject();
 
     QColor backgroundColor() const;
     void setBackgroundColor(const QColor &color);
+
+signals:
+    void backgroundColorChanged(const QColor &color);
 
 private:
     QScopedPointer<BackgroundColorObjectPrivate> d_ptr;
@@ -192,12 +195,15 @@ public:
 // PositionObject
 class PositionObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant position READ value WRITE setValue)
+    Q_PROPERTY(QVariant position READ value WRITE setValue NOTIFY valueChanged)
 public:
     explicit PositionObject(QObject *parent = nullptr);
 
     QVariant value() const override;
     void setValue(const QVariant &pos) override;
+
+signals:
+    void valueChanged(const QVariant &value);
 
 private:
     QPoint m_position;
@@ -206,12 +212,15 @@ private:
 // ScaleObject
 class ScaleObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant scale READ value WRITE setValue)
+    Q_PROPERTY(QVariant scale READ value WRITE setValue NOTIFY valueChanged)
 public:
     explicit ScaleObject(QObject *parent = nullptr);
 
     QVariant value() const override;
     void setValue(const QVariant &scale) override;
+
+signals:
+    void valueChanged(const QVariant &value);
 
 private:
     float m_scale = 1.0f;
@@ -220,12 +229,15 @@ private:
 // AngleObject
 class AngleObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant angle READ value WRITE setValue)
+    Q_PROPERTY(QVariant angle READ value WRITE setValue NOTIFY valueChanged)
 public:
     explicit AngleObject(QObject *parent = nullptr);
 
     QVariant value() const override;
     void setValue(const QVariant &angle) override;
+
+signals:
+    void valueChanged(const QVariant &value);
 
 private:
     float m_angle = 0.0f;
@@ -234,12 +246,15 @@ private:
 // OpacityObject
 class OpacityObject : public FluentAnimationProperObject {
     Q_OBJECT
-    Q_PROPERTY(QVariant opacity READ value WRITE setValue)
+    Q_PROPERTY(QVariant opacity READ value WRITE setValue NOTIFY valueChanged)
 public:
     explicit OpacityObject(QObject *parent = nullptr);
 
     QVariant value() const override;
     void setValue(const QVariant &opacity) override;
+
+signals:
+    void valueChanged(const QVariant &value);
 
 private:
     float m_opacity = 0.0f;

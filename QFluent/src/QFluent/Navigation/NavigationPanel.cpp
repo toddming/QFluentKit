@@ -77,7 +77,7 @@ void NavigationPanel::initWidget()
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setViewportMargins(0, 0, 0, 20);
 
-    m_scrollWidget = new QWidget();
+    m_scrollWidget = new QWidget(m_scrollArea);
     m_scrollWidget->setObjectName(QStringLiteral("scrollWidget"));
     m_scrollArea->setWidget(m_scrollWidget);
 

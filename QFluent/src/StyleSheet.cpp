@@ -18,6 +18,7 @@
 // 文件作用域的缓存版本号，确保 getThemeColorMap 和 clearThemeColorCache 使用同一个变量
 namespace {
     static int s_cacheVersion = 0;
+    static QHash<QString, QString> s_fileCache;
 }
 
 const QHash<QString, QString>& StyleSheet::themeColorMap() {
@@ -57,6 +58,12 @@ void StyleSheet::clearThemeColorCache()
 {
     // 递增版本号以强制缓存更新
     ++s_cacheVersion;
+}
+
+void StyleSheet::invalidateFileCache()
+{
+    s_fileCache.clear();
+    clearThemeColorCache();
 }
 
 QString StyleSheet::applyThemeColor(const QString& qss) {
@@ -116,10 +123,8 @@ QString StyleSheet::applyThemeColor(const QString& qss) {
 QString StyleSheet::styleSheetFromFile(const QString& filePath) {
     Q_ASSERT(qApp && QThread::currentThread() == qApp->thread());
 
-    static QHash<QString, QString> s_cache;
-
-    if (s_cache.contains(filePath)) {
-        return s_cache[filePath];
+    if (s_fileCache.contains(filePath)) {
+        return s_fileCache[filePath];
     }
 
     QFile file(filePath);
@@ -131,7 +136,7 @@ QString StyleSheet::styleSheetFromFile(const QString& filePath) {
     QString content = file.readAll();
     file.close();
 
-    s_cache[filePath] = content;
+    s_fileCache[filePath] = content;
     return content;
 }
 

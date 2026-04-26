@@ -183,14 +183,7 @@ NavigationBar::NavigationBar(QWidget* parent)
     initWidget();
 }
 
-NavigationBar::~NavigationBar() {
-    // 只删除没有 parent 的对象
-    // m_scrollArea, m_vBoxLayout, m_expandAni 有 parent=this，Qt 自动管理
-    // m_scrollLayout 的 parent 是 m_scrollWidget，delete m_scrollWidget 时会自动级联删除
-    delete m_scrollWidget;  // 无 parent，需手动删除（会连带删除 m_scrollLayout）
-    delete m_topLayout;     // 无 parent，需手动删除
-    delete m_bottomLayout;  // 无 parent，需手动删除
-}
+NavigationBar::~NavigationBar() = default;
 
 void NavigationBar::initWidget() {
     this->setAttribute(Qt::WA_StyledBackground);

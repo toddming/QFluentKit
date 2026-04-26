@@ -742,7 +742,8 @@ int NavigationFlyoutMenu::suitableWidth() const {
         }
     }
 
-    QWidget* windowWidget = window()->parentWidget();
+    QWidget* wnd = window();
+    QWidget* windowWidget = wnd ? wnd->parentWidget() : nullptr;
     if (windowWidget) {
         return qMin(windowWidget->width() / 2 - 25, width) + 10;
     }

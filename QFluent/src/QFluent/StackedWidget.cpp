@@ -138,9 +138,10 @@ void PopUpAniStackedWidget::removeWidget(QWidget *widget)
         return;
     }
 
-    // 删除动画对象
+    // 安全删除动画对象（先停止，再延迟删除避免与 Qt parent 管理冲突）
     if (index >= 0 && index < m_animationInfos.size()) {
-        delete m_animationInfos[index].animation;
+        m_animationInfos[index].animation->stop();
+        m_animationInfos[index].animation->deleteLater();
         m_animationInfos.removeAt(index);
     }
 
