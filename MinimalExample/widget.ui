@@ -37,11 +37,8 @@
    </property>
    <item>
     <widget class="CardWidget" name="cardWidget" native="true">
-     <layout class="QVBoxLayout" name="cardLayout">
-      <property name="spacing">
-       <number>16</number>
-      </property>
-      <item alignment="Qt::AlignmentFlag::AlignHCenter">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
        <widget class="PrimaryPushButton" name="pushButton">
         <property name="text">
          <string>欢迎加入QQ群交流: 1084320682</string>
@@ -107,12 +104,67 @@
         </layout>
        </widget>
       </item>
-      <item alignment="Qt::AlignmentFlag::AlignHCenter">
+      <item>
        <widget class="CheckBox" name="darkCheckBox">
         <property name="text">
          <string>深色</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="ComboBox" name="combobox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="EditableComboBox" name="editcombobox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="MultiViewComboBox" name="multiviewcombobox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="ComboBox" name="combobox_model">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="EditableComboBox" name="editcombobox_model">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="MultiViewComboBox" name="multiviewcombobox_model">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -140,6 +192,21 @@
    <class>CheckBox</class>
    <extends>QCheckBox</extends>
    <header>QFluent/CheckBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MultiViewComboBox</class>
+   <extends>QPushButton</extends>
+   <header>QFluent/MultiViewComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QPushButton</extends>
+   <header>QFluent/ComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>EditableComboBox</class>
+   <extends>QLineEdit</extends>
+   <header>QFluent/EditableComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

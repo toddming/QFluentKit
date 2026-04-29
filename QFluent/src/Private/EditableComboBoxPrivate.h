@@ -3,64 +3,57 @@
 #include <QObject>
 #include <QIcon>
 #include <QVariant>
+#include <QList>
+#include <QAbstractItemModel>
 
-#include "QFluent/LineEdit.h"
-#include "QFluent/EditableComboBox.h"
+#include "ComboItemModel.h"
+#include "ComboBoxHelper.h"
+#include "QFluent/Menu/ComboBoxMenu.h"
 
-namespace EditableComboBoxDetail {
-
-struct ComboItem
-{
-    QString text;
-    QIcon icon;
-    QVariant userData;
-    bool isSeparator = false;
-
-    ComboItem(const QString &text = QString(),
-              const QIcon &icon = QIcon(),
-              const QVariant &userData = QVariant())
-        : text(text), icon(icon), userData(userData) {}
-};
-
-} // namespace EditableComboBoxDetail
-
-class QAction;
-class ComboBoxMenu;
-class TranslateYAnimation;
+class LineEditButton;
+class EditableComboBox;
 
 class EditableComboBoxPrivate : public QObject
 {
-    Q_DECLARE_PUBLIC(EditableComboBox)
+    Q_OBJECT
 
 public:
-    explicit EditableComboBoxPrivate(EditableComboBox *parent);
+    EditableComboBoxPrivate(EditableComboBox *q);
+    ~EditableComboBoxPrivate();
 
-    void handleMenuAction(QAction *action);
-    void toggleComboMenu();
-
-    void onClearButtonClicked();
-    void onDropMenuClosed();
-    void onComboTextChanged(const QString &text);
-    void onActivated(const QString &text);
-    void onReturnPressed();
-
-    ComboBoxMenu* createComboMenu();
-    void updateTextState(bool isPlaceholder);
+    void createComboMenu();
     void showComboMenu();
     void closeComboMenu();
+    void toggleComboMenu();
+    void updateTextState();
 
+    void setModel(QAbstractItemModel *model);
+    void connectModel(QAbstractItemModel *model);
+    void disconnectModel(QAbstractItemModel *model);
+
+    QAbstractItemModel *m_model;
+    ComboItemModel *m_internalModel;
+    ComboBoxMenu *m_comboMenu = nullptr;
+    LineEditButton *m_dropButton = nullptr;
+    int m_currentIndex = -1;
+    int m_maxVisibleItems = -1;
+    QString m_placeholderText;
     bool m_isPressed = false;
     bool m_isHover = false;
     bool m_settingCurrentIndex = false;
-    QString m_placeholderText;
-    int m_currentIndex = -1;
-    int m_maxVisibleItems = 10;
 
-    LineEditButton *m_dropButton = nullptr;
-    ComboBoxMenu *m_dropMenu = nullptr;
-    TranslateYAnimation *m_arrowAni = nullptr;
-    QVector<EditableComboBoxDetail::ComboItem> m_items;
+private slots:
+    void onRowsInserted(const QModelIndex &parent, int first, int last);
+    void onRowsRemoved(const QModelIndex &parent, int first, int last);
+    void onModelReset();
+    void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void onMenuAction(int index);
+    void onComboTextChanged(const QString &text);
+    void onClearButtonClicked();
+    void onReturnPressed();
+    void onActivated(const QString &text);
 
-protected:
-    EditableComboBox *q_ptr = nullptr;
+private:
+    EditableComboBox *q_ptr;
+    Q_DECLARE_PUBLIC(EditableComboBox)
 };

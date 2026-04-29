@@ -1,150 +1,215 @@
 #include "ComboBoxPrivate.h"
 #include "QFluent/ComboBox.h"
-#include "QFluent/Menu/ComboBoxMenu.h"
-#include "QFluent/Menu/MenuActionListWidget.h"
-#include "FluentGlobal.h"
 
-#include <QStyle>
-#include <QCursor>
+#include "Animation.h"
+
+#include <QAbstractItemModel>
 #include <QAction>
 #include <QPointer>
+#include <QCursor>
 
-ComboBoxPrivate::ComboBoxPrivate(ComboBox *parent)
-    : QObject(parent)
-    , q_ptr(parent)
-    , m_isPressed(false)
-    , m_isHover(false)
-    , m_placeholderText(QString())
-    , m_currentIndex(-1)
-    , m_maxVisibleItems(10)
+ComboBoxPrivate::ComboBoxPrivate(ComboBox *q)
+    : QObject(q)
+    , q_ptr(q)
 {
+    m_internalModel = new ComboItemModel(this);
+    m_model = m_internalModel;
+    connectModel(m_model);
 }
 
-ComboBoxMenu* ComboBoxPrivate::createComboMenu()
+ComboBoxPrivate::~ComboBoxPrivate() = default;
+
+void ComboBoxPrivate::setModel(QAbstractItemModel *model)
 {
     Q_Q(ComboBox);
 
-    ComboBoxMenu *menu = new ComboBoxMenu("menu", q);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    if (m_maxVisibleItems > 0) {
-        menu->setMaxVisibleItems(m_maxVisibleItems);
+    if (model == m_model)
+        return;
+
+    if (!model) {
+        model = m_internalModel;
     }
-    QPointer<ComboBox> q_ptr = q;
-    for (int i = 0; i < q->count(); ++i) {
-        if (m_items[i].isSeparator) {
-            menu->addSeparator();
+
+    disconnectModel(m_model);
+    m_model = model;
+    connectModel(m_model);
+
+    m_comboMenu = nullptr;
+
+    int oldIndex = m_currentIndex;
+    m_currentIndex = -1;
+    q->setCurrentIndex(-1);
+
+    if (oldIndex != -1) {
+        emit q->currentIndexChanged(-1);
+        emit q->currentTextChanged(QString());
+    }
+}
+
+void ComboBoxPrivate::connectModel(QAbstractItemModel *model)
+{
+    connect(model, &QAbstractItemModel::rowsInserted, this, &ComboBoxPrivate::onRowsInserted);
+    connect(model, &QAbstractItemModel::rowsRemoved, this, &ComboBoxPrivate::onRowsRemoved);
+    connect(model, &QAbstractItemModel::modelReset, this, &ComboBoxPrivate::onModelReset);
+    connect(model, &QAbstractItemModel::dataChanged, this, &ComboBoxPrivate::onDataChanged);
+}
+
+void ComboBoxPrivate::disconnectModel(QAbstractItemModel *model)
+{
+    disconnect(model, &QAbstractItemModel::rowsInserted, this, &ComboBoxPrivate::onRowsInserted);
+    disconnect(model, &QAbstractItemModel::rowsRemoved, this, &ComboBoxPrivate::onRowsRemoved);
+    disconnect(model, &QAbstractItemModel::modelReset, this, &ComboBoxPrivate::onModelReset);
+    disconnect(model, &QAbstractItemModel::dataChanged, this, &ComboBoxPrivate::onDataChanged);
+}
+
+void ComboBoxPrivate::createComboMenu()
+{
+    Q_Q(ComboBox);
+
+    if (m_comboMenu) {
+        m_comboMenu->close();
+        m_comboMenu = nullptr;
+    }
+
+    m_comboMenu = new ComboBoxMenu("menu", q);
+
+    for (int i = 0; i < m_model->rowCount(); ++i) {
+        QModelIndex index = m_model->index(i, 0);
+        bool isSep = m_model->data(index, ComboItemModel::SeparatorRole).toBool();
+
+        if (isSep) {
+            m_comboMenu->addSeparator();
             continue;
         }
-        QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
+
+        QString text = m_model->data(index, Qt::DisplayRole).toString();
+        QIcon icon = m_model->data(index, Qt::DecorationRole).value<QIcon>();
+        QAction *action = new QAction(icon, text, m_comboMenu);
+        if (icon.isNull()) {
+            action = new QAction(text, m_comboMenu);
+        }
+        m_comboMenu->addAction(action);
         action->setData(i);
-        action->setCheckable(true);
-        if (i == m_currentIndex) {
-            action->setChecked(true);
-        }
-        menu->addAction(action);
-        connect(action, &QAction::triggered, q, [q_ptr, action, currentIndex = m_currentIndex]() {
-            if (!q_ptr) return;
-            int index = action->data().toInt();
-            if (index != currentIndex) {
-                q_ptr->setCurrentIndex(index);
-                emit q_ptr->activated(index);
-                emit q_ptr->textActivated(action->text());
-            }
-        });
+        connect(action, &QAction::triggered, this, [this, i]() { onMenuAction(i); });
     }
-    connect(menu, &ComboBoxMenu::closed, q, [q_ptr, this]() {
-        if (!q_ptr) return;
-        QPoint pos = q_ptr->mapFromGlobal(QCursor::pos());
-        if (!q_ptr->rect().contains(pos)) {
-            m_dropMenu = nullptr;
-        }
-    });
-    return menu;
-}
-
-void ComboBoxPrivate::updateTextState(bool isPlaceholder)
-{
-    Q_Q(ComboBox);
-
-    if (q->property("isPlaceholderText").toBool() == isPlaceholder) {
-        return;
-    }
-
-    q->setProperty("isPlaceholderText", isPlaceholder);
-    q->style()->unpolish(q);
-    q->style()->polish(q);
 }
 
 void ComboBoxPrivate::showComboMenu()
 {
     Q_Q(ComboBox);
 
-    if (q->count() == 0) {
+    if (m_model->rowCount() == 0) {
         return;
     }
 
-    m_dropMenu = createComboMenu();
+    createComboMenu();
 
-    if (m_dropMenu->view()->width() < q->width()) {
-        m_dropMenu->view()->setMinimumWidth(q->width());
-        m_dropMenu->adjustMenuSize();
-    }
-
-    if (q->currentIndex() >= 0 && q->currentIndex() < q->count()) {
-        for (QAction *action : m_dropMenu->menuActions()) {
-            if (action->data().toInt() == q->currentIndex()) {
-                m_dropMenu->setDefaultAction(action);
+    if (m_currentIndex >= 0 && m_currentIndex < m_model->rowCount()) {
+        for (QAction *action : m_comboMenu->menuActions()) {
+            if (action->data().toInt() == m_currentIndex) {
+                m_comboMenu->setDefaultAction(action);
                 break;
             }
         }
     }
 
-    int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + q->width() / 2;
-    QPoint pd = q->mapToGlobal(QPoint(x, q->height()));
-    int hd = m_dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
-
-    QPoint pu = q->mapToGlobal(QPoint(x, 0));
-    int hu = m_dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
-
-    if (hd >= hu) {
-        m_dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
-        m_dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
-    } else {
-        m_dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
-        m_dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
-    }
+    ComboBoxHelper::showComboMenu(q, m_comboMenu, m_maxVisibleItems);
 }
 
 void ComboBoxPrivate::closeComboMenu()
 {
-    if (!m_dropMenu) {
+    if (!m_comboMenu) {
         return;
     }
-    m_dropMenu = nullptr;
+    m_comboMenu->close();
+    m_comboMenu = nullptr;
 }
 
 void ComboBoxPrivate::toggleComboMenu()
 {
-    if (m_dropMenu != nullptr) {
+    if (m_comboMenu && m_comboMenu->isVisible()) {
         closeComboMenu();
     } else {
         showComboMenu();
     }
 }
 
-void ComboBoxPrivate::handleMenuAction(QAction *action)
+void ComboBoxPrivate::updateTextState()
 {
     Q_Q(ComboBox);
 
-    int index = action->data().toInt();
-    if (index < 0 || index >= q->count()) {
+    if (m_currentIndex >= 0 && m_currentIndex < m_model->rowCount()) {
+        QModelIndex index = m_model->index(m_currentIndex, 0);
+        QString text = m_model->data(index, Qt::DisplayRole).toString();
+        m_settingCurrentIndex = true;
+        q->setText(text);
+        m_settingCurrentIndex = false;
+    } else {
+        m_settingCurrentIndex = true;
+        q->setText(m_placeholderText);
+        m_settingCurrentIndex = false;
+    }
+}
+
+void ComboBoxPrivate::onRowsInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    Q_Q(ComboBox);
+
+    if (m_currentIndex < 0)
         return;
-    }
 
-    if (index != m_currentIndex) {
-        q->setCurrentIndex(index);
+    if (first <= m_currentIndex) {
+        int count = last - first + 1;
+        m_currentIndex += count;
+        emit q->currentIndexChanged(m_currentIndex);
     }
+}
 
-    emit q->activated(index);
-    emit q->textActivated(q->currentText());
+void ComboBoxPrivate::onRowsRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    Q_Q(ComboBox);
+
+    if (m_currentIndex < 0)
+        return;
+
+    int count = last - first + 1;
+    if (m_currentIndex >= first && m_currentIndex <= last) {
+        m_currentIndex = -1;
+        updateTextState();
+        emit q->currentIndexChanged(-1);
+        emit q->currentTextChanged(QString());
+    } else if (m_currentIndex > last) {
+        m_currentIndex -= count;
+        emit q->currentIndexChanged(m_currentIndex);
+    }
+}
+
+void ComboBoxPrivate::onModelReset()
+{
+    Q_Q(ComboBox);
+
+    m_currentIndex = -1;
+    updateTextState();
+    emit q->currentIndexChanged(-1);
+    emit q->currentTextChanged(QString());
+}
+
+void ComboBoxPrivate::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+{
+    Q_Q(ComboBox);
+
+    if (m_currentIndex >= topLeft.row() && m_currentIndex <= bottomRight.row()) {
+        updateTextState();
+        QModelIndex index = m_model->index(m_currentIndex, 0);
+        emit q->currentTextChanged(m_model->data(index, Qt::DisplayRole).toString());
+    }
+}
+
+void ComboBoxPrivate::onMenuAction(int index)
+{
+    Q_Q(ComboBox);
+    q->setCurrentIndex(index);
+    closeComboMenu();
 }

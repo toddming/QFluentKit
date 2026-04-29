@@ -8,8 +8,11 @@
 
 #include "FluentGlobal.h"
 
-class ComboBoxMenu;
+class QAbstractItemModel;
+class MultiViewComboBoxMenu;
+class ComboItemModel;
 class MultiViewComboBoxPrivate;
+
 class QFLUENT_EXPORT MultiViewComboBox : public QPushButton
 {
     Q_OBJECT
@@ -19,55 +22,53 @@ public:
     explicit MultiViewComboBox(QWidget *parent = nullptr);
     ~MultiViewComboBox() override;
 
-    // 添加项目
+    void setModel(QAbstractItemModel *model);
+    QAbstractItemModel *model() const;
+
     void addItem(const QString &text, const QVariant &userData = QVariant());
     void addItem(const QIcon &icon, const QString &text, const QVariant &userData = QVariant());
     void addItems(const QStringList &texts);
 
-    // 插入项目
     void insertItem(int index, const QString &text, const QVariant &userData = QVariant());
     void insertItem(int index, const QIcon &icon, const QString &text, const QVariant &userData = QVariant());
     void insertItems(int index, const QStringList &texts);
     void insertSeparator(int index);
 
-    // 移除项目
     void removeItem(int index);
     void clear();
 
-    // 选中管理
     void setItemSelected(int index, bool selected);
     bool isItemSelected(int index) const;
     QList<int> selectedIndexes() const;
     QStringList selectedTexts() const;
     QList<QVariant> selectedDatas() const;
 
-    // 最大选择数限制，-1 为不限制
     int maxSelectedCount() const;
     void setMaxSelectedCount(int max);
 
-    // 项目访问
     int count() const;
     QString itemText(int index) const;
     QIcon itemIcon(int index) const;
     QVariant itemData(int index, int role = Qt::UserRole) const;
 
-    // 项目修改
     void setItemText(int index, const QString &text);
     void setItemIcon(int index, const QIcon &icon);
     void setItemData(int index, const QVariant &value, int role = Qt::UserRole);
 
-    // 查找
     int findText(const QString &text, Qt::MatchFlags flags = Qt::MatchExactly | Qt::MatchCaseSensitive) const;
     int findData(const QVariant &data, int role = Qt::UserRole, Qt::MatchFlags flags = Qt::MatchExactly | Qt::MatchCaseSensitive) const;
 
-    // 设置占位文本
     void setPlaceholderText(const QString &text);
     QString placeholderText() const;
+
+    void setText(const QString &text);
 
     void setMaxVisibleItems(int count);
     int maxVisibleItems() const;
 
 signals:
+    void currentIndexChanged(int index);
+    void currentTextChanged(const QString &text);
     void selectionChanged();
     void itemSelected(int index);
     void itemDeselected(int index);

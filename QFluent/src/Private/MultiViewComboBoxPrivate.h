@@ -1,55 +1,56 @@
-﻿#pragma once
+#pragma once
 
 #include <QObject>
 #include <QIcon>
 #include <QVariant>
 #include <QList>
+#include <QAbstractItemModel>
 
-#include "QFluent/MultiViewComboBox.h"
+#include "ComboItemModel.h"
+#include "ComboBoxHelper.h"
+#include "QFluent/Menu/MultiViewComboBoxMenu.h"
 
-namespace MultiViewComboBoxDetail {
-struct ComboItem {
-    QString text;
-    QIcon icon;
-    QVariant userData;
-    bool isSeparator = false;
-
-    ComboItem(const QString &text = "",
-              const QIcon &icon = QIcon(),
-              const QVariant &userData = {})
-        : text(text), icon(icon), userData(userData) {}
-};
-}
-
-class MultiViewComboBoxMenu;
 class TranslateYAnimation;
-class CheckBox;
-class MultiViewComboBoxPrivate : public QObject {
-    Q_DECLARE_PUBLIC(MultiViewComboBox)
+class MultiViewComboBox;
+
+class MultiViewComboBoxPrivate : public QObject
+{
+    Q_OBJECT
 
 public:
-    explicit MultiViewComboBoxPrivate(MultiViewComboBox *parent);
-    void updateText();  // 更新按钮文本
+    MultiViewComboBoxPrivate(MultiViewComboBox *q);
+    ~MultiViewComboBoxPrivate();
 
-    bool m_isPressed = false;
-    bool m_isHover = false;
-    QString m_placeholderText;
-    int m_maxVisibleItems = 10;
-    QList<int> m_selectedIndexes;
-    int m_maxSelectedCount = -1;  // 最大选择数限制，-1 为不限制
-
-    MultiViewComboBoxMenu *m_dropMenu = nullptr;
-    TranslateYAnimation *m_arrowAni = nullptr;
-    QVector<MultiViewComboBoxDetail::ComboItem> m_items;
-
-    MultiViewComboBoxMenu* createComboMenu();
+    void createComboMenu();
     void showComboMenu();
     void closeComboMenu();
     void toggleComboMenu();
+    void updateTextState();
 
-    // 槽函数：处理 CheckBox toggled
-    void handleCheckBoxToggled(int index, bool checked);
+    void setModel(QAbstractItemModel *model);
+    void connectModel(QAbstractItemModel *model);
+    void disconnectModel(QAbstractItemModel *model);
 
-protected:
-    MultiViewComboBox *q_ptr = nullptr;
+    QAbstractItemModel *m_model;
+    ComboItemModel *m_internalModel;
+    MultiViewComboBoxMenu *m_comboMenu = nullptr;
+    TranslateYAnimation *m_arrowAni = nullptr;
+    QList<int> m_selectedIndexes;
+    int m_maxSelectedCount = -1;
+    int m_maxVisibleItems = -1;
+    QString m_placeholderText;
+    bool m_isPressed = false;
+    bool m_isHover = false;
+    bool m_settingCurrentIndex = false;
+
+private slots:
+    void onRowsInserted(const QModelIndex &parent, int first, int last);
+    void onRowsRemoved(const QModelIndex &parent, int first, int last);
+    void onModelReset();
+    void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void onMenuAction(int index, bool checked);
+
+private:
+    MultiViewComboBox *q_ptr;
+    Q_DECLARE_PUBLIC(MultiViewComboBox)
 };

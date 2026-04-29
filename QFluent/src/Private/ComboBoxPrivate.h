@@ -3,55 +3,57 @@
 #include <QObject>
 #include <QIcon>
 #include <QVariant>
+#include <QList>
+#include <QAbstractItemModel>
+#include <QPersistentModelIndex>
 
-#include "QFluent/ComboBox.h"
+#include "ComboItemModel.h"
+#include "ComboBoxHelper.h"
+#include "QFluent/Menu/ComboBoxMenu.h"
 
-namespace ComboBoxDetail {
-
-struct ComboItem
-{
-    QString text;
-    QIcon icon;
-    QVariant userData;
-    bool isSeparator = false;
-
-    ComboItem(const QString &text = QString(),
-              const QIcon &icon = QIcon(),
-              const QVariant &userData = QVariant())
-        : text(text), icon(icon), userData(userData) {}
-};
-
-} // namespace ComboBoxDetail
-
-class QAction;
-class ComboBoxMenu;
 class TranslateYAnimation;
+
+class ComboBox;
 
 class ComboBoxPrivate : public QObject
 {
-    Q_DECLARE_PUBLIC(ComboBox)
+    Q_OBJECT
 
 public:
-    explicit ComboBoxPrivate(ComboBox *parent);
+    ComboBoxPrivate(ComboBox *q);
+    ~ComboBoxPrivate();
 
-    void handleMenuAction(QAction *action);
-
-    ComboBoxMenu* createComboMenu();
-    void updateTextState(bool isPlaceholder);
+    void createComboMenu();
     void showComboMenu();
     void closeComboMenu();
     void toggleComboMenu();
+    void updateTextState();
 
+    void setModel(QAbstractItemModel *model);
+    void connectModel(QAbstractItemModel *model);
+    void disconnectModel(QAbstractItemModel *model);
+
+    QAbstractItemModel *m_model;
+    ComboItemModel *m_internalModel;
+    ComboBoxMenu *m_comboMenu = nullptr;
+    TranslateYAnimation *m_arrowAni = nullptr;
+    int m_currentIndex = -1;
+    int m_maxVisibleItems = -1;
+    QString m_placeholderText;
     bool m_isPressed = false;
     bool m_isHover = false;
-    QString m_placeholderText;
-    int m_currentIndex = -1;
-    int m_maxVisibleItems = 10;
+    bool m_settingCurrentIndex = false;
+    bool m_inserting = false;
+    int m_indexBeforeChange = -1;
 
-    ComboBoxMenu *m_dropMenu = nullptr;
-    TranslateYAnimation *m_arrowAni = nullptr;
-    QVector<ComboBoxDetail::ComboItem> m_items;
+private slots:
+    void onRowsInserted(const QModelIndex &parent, int first, int last);
+    void onRowsRemoved(const QModelIndex &parent, int first, int last);
+    void onModelReset();
+    void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void onMenuAction(int index);
 
-protected:
-    ComboBox *q_ptr = nullptr;
+private:
+    ComboBox *q_ptr;
+    Q_DECLARE_PUBLIC(ComboBox)
 };

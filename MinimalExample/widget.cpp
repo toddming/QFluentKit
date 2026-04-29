@@ -4,6 +4,7 @@
 #include <QButtonGroup>
 #include <QClipboard>
 #include <QApplication>
+#include <QStringListModel>
 
 #include <QFluent/Theme.h>
 #include <QFluent/InfoBar.h>
@@ -50,6 +51,57 @@ Widget::Widget(QWidget *parent)
     connect(ui->darkCheckBox, &CheckBox::clicked, this, [this](bool checked) {
         setDarkTheme(checked);
         Theme::toggleTheme();
+    });
+
+    // ==================== 不使用 Model（便利 API）====================
+
+    // ComboBox - addItem / addItems
+    ui->combobox->addItems({"C++", "Python", "Java", "Rust", "Go"});
+    ui->combobox->setCurrentIndex(0);
+    connect(ui->combobox, &ComboBox::currentIndexChanged, this, [](int index) {
+        qDebug("ComboBox selected: %d", index);
+    });
+
+    // EditableComboBox - addItem / insertSeparator
+    ui->editcombobox->addItems({"Apple", "Banana", "Cherry"});
+    ui->editcombobox->insertSeparator(1);
+    ui->editcombobox->setCurrentIndex(2);
+    connect(ui->editcombobox, &EditableComboBox::currentIndexChanged, this, [](int index) {
+        qDebug("EditableComboBox selected: %d", index);
+    });
+
+    // MultiViewComboBox - addItem / setItemSelected
+    ui->multiviewcombobox->addItems({"Red", "Green", "Blue", "Yellow"});
+    ui->multiviewcombobox->setItemSelected(0, true);
+    ui->multiviewcombobox->setItemSelected(2, true);
+    connect(ui->multiviewcombobox, &MultiViewComboBox::selectionChanged, this, [this]() {
+        qDebug() << "MultiViewComboBox selected:" << ui->multiviewcombobox->selectedTexts();
+    });
+
+    // ==================== 使用 Model ====================
+
+    // ComboBox + QStringListModel
+    auto stringModel = new QStringListModel({"C++", "Python", "Java", "Rust", "Go"}, this);
+    ui->combobox_model->setModel(stringModel);
+    ui->combobox_model->setCurrentIndex(0);
+    connect(ui->combobox_model, &ComboBox::currentIndexChanged, this, [](int index) {
+        qDebug("ComboBox(model) selected: %d", index);
+    });
+
+    // EditableComboBox + QStringListModel
+    auto editModel = new QStringListModel({"Apple", "Banana", "Cherry"}, this);
+    ui->editcombobox_model->setModel(editModel);
+    ui->editcombobox_model->setCurrentIndex(0);
+    connect(ui->editcombobox_model, &EditableComboBox::currentIndexChanged, this, [](int index) {
+        qDebug("EditableComboBox(model) selected: %d", index);
+    });
+
+    // MultiViewComboBox + QStringListModel
+    auto multiModel = new QStringListModel({"Red", "Green", "Blue", "Yellow"}, this);
+    ui->multiviewcombobox_model->setModel(multiModel);
+    ui->multiviewcombobox_model->setItemSelected(1, true);
+    connect(ui->multiviewcombobox_model, &MultiViewComboBox::selectionChanged, this, [this]() {
+        qDebug() << "MultiViewComboBox(model) selected:" << ui->multiviewcombobox_model->selectedTexts();
     });
 }
 

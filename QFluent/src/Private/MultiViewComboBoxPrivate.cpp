@@ -1,142 +1,247 @@
-﻿#include "MultiViewComboBoxPrivate.h"
+#include "MultiViewComboBoxPrivate.h"
 #include "QFluent/MultiViewComboBox.h"
-#include "QFluent/Menu/MultiViewComboBoxMenu.h"
-#include "QFluent/Menu/MenuActionListWidget.h"
-#include "FluentGlobal.h"
 
 #include <QStyle>
 #include <QCursor>
+#include <QAction>
 #include <QPointer>
+#include <QAbstractItemModel>
+#include <algorithm>
 
-MultiViewComboBoxPrivate::MultiViewComboBoxPrivate(MultiViewComboBox *parent)
-    : QObject(parent)
-    , q_ptr(parent)
+MultiViewComboBoxPrivate::MultiViewComboBoxPrivate(MultiViewComboBox *q)
+    : QObject(q)
+    , q_ptr(q)
+    , m_maxSelectedCount(-1)
+    , m_maxVisibleItems(-1)
+    , m_isPressed(false)
+    , m_isHover(false)
 {
+    m_internalModel = new ComboItemModel(this);
+    m_model = m_internalModel;
+    connectModel(m_model);
 }
 
-void MultiViewComboBoxPrivate::updateText()
+MultiViewComboBoxPrivate::~MultiViewComboBoxPrivate() = default;
+
+void MultiViewComboBoxPrivate::setModel(QAbstractItemModel *model)
 {
     Q_Q(MultiViewComboBox);
 
-    if (m_selectedIndexes.isEmpty()) {
-        q->setText(m_placeholderText);
-        q->setProperty("isPlaceholderText", true);
-    } else {
-        QStringList texts;
-        for (int index : m_selectedIndexes) {
-            texts.append(m_items[index].text);
-        }
-        q->setText(texts.join(", "));
-        q->setProperty("isPlaceholderText", false);
+    if (model == m_model)
+        return;
+
+    if (!model) {
+        model = m_internalModel;
     }
 
-    q->style()->unpolish(q);
-    q->style()->polish(q);
+    disconnectModel(m_model);
+    m_model = model;
+    connectModel(m_model);
 
-    auto policy = q->sizePolicy().horizontalPolicy();
-    if (!(policy & QSizePolicy::ExpandFlag) && policy != QSizePolicy::Ignored) {
-        q->adjustSize();
-    }
+    m_comboMenu = nullptr;
+    m_selectedIndexes.clear();
+
+    updateTextState();
+    emit q->currentIndexChanged(-1);
+    emit q->currentTextChanged(QString());
 }
 
-MultiViewComboBoxMenu* MultiViewComboBoxPrivate::createComboMenu()
+void MultiViewComboBoxPrivate::connectModel(QAbstractItemModel *model)
+{
+    connect(model, &QAbstractItemModel::rowsInserted, this, &MultiViewComboBoxPrivate::onRowsInserted);
+    connect(model, &QAbstractItemModel::rowsRemoved, this, &MultiViewComboBoxPrivate::onRowsRemoved);
+    connect(model, &QAbstractItemModel::modelReset, this, &MultiViewComboBoxPrivate::onModelReset);
+    connect(model, &QAbstractItemModel::dataChanged, this, &MultiViewComboBoxPrivate::onDataChanged);
+}
+
+void MultiViewComboBoxPrivate::disconnectModel(QAbstractItemModel *model)
+{
+    disconnect(model, &QAbstractItemModel::rowsInserted, this, &MultiViewComboBoxPrivate::onRowsInserted);
+    disconnect(model, &QAbstractItemModel::rowsRemoved, this, &MultiViewComboBoxPrivate::onRowsRemoved);
+    disconnect(model, &QAbstractItemModel::modelReset, this, &MultiViewComboBoxPrivate::onModelReset);
+    disconnect(model, &QAbstractItemModel::dataChanged, this, &MultiViewComboBoxPrivate::onDataChanged);
+}
+
+void MultiViewComboBoxPrivate::createComboMenu()
 {
     Q_Q(MultiViewComboBox);
 
-    MultiViewComboBoxMenu *menu = new MultiViewComboBoxMenu("menu", q);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    QPointer<MultiViewComboBox> q_ptr = q;
+    if (m_comboMenu) {
+        m_comboMenu->close();
+        m_comboMenu = nullptr;
+    }
 
-    for (int i = 0; i < q->count(); ++i) {
-        if (m_items[i].isSeparator) {
-            menu->addSeparator();
+    m_comboMenu = new MultiViewComboBoxMenu("menu", q);
+
+    for (int i = 0; i < m_model->rowCount(); ++i) {
+        QModelIndex index = m_model->index(i, 0);
+        bool isSep = m_model->data(index, ComboItemModel::SeparatorRole).toBool();
+
+        if (isSep) {
+            m_comboMenu->addSeparator();
             continue;
         }
-        QAction *action = new QAction(m_items[i].icon, m_items[i].text, menu);
-        action->setCheckable(true);
-        action->setChecked(m_selectedIndexes.contains(i));
-        menu->addAction(action);
-        connect(action, &QAction::triggered, q, [this, i](bool checked) {
-            handleCheckBoxToggled(i, checked);
-        });
-    }
 
-    connect(menu, &MultiViewComboBoxMenu::closed, q, [q_ptr, this]() {
-        if (!q_ptr) return;
-        QPoint pos = q_ptr->mapFromGlobal(QCursor::pos());
-        if (!q_ptr->rect().contains(pos)) {
-            m_dropMenu = nullptr;
+        QString text = m_model->data(index, Qt::DisplayRole).toString();
+        QIcon icon = m_model->data(index, Qt::DecorationRole).value<QIcon>();
+        QAction *action = new QAction(icon, text, m_comboMenu);
+        if (icon.isNull()) {
+            action = new QAction(text, m_comboMenu);
         }
-    });
-
-    if (m_maxVisibleItems > 0) {
-        menu->setMaxVisibleItems(m_maxVisibleItems);
+        m_comboMenu->addAction(action);
+        action->setData(i);
+        action->setCheckable(true);
+        if (m_selectedIndexes.contains(i)) {
+            action->setChecked(true);
+        }
+        connect(action, &QAction::triggered, this, [this, i](bool checked) { onMenuAction(i, checked); });
     }
-
-    return menu;
 }
 
 void MultiViewComboBoxPrivate::showComboMenu()
 {
     Q_Q(MultiViewComboBox);
 
-    if (q->count() == 0) {
+    if (m_model->rowCount() == 0) {
         return;
     }
 
-    m_dropMenu = createComboMenu();
-
-    if (m_dropMenu->view()->width() < q->width()) {
-        m_dropMenu->view()->setMinimumWidth(q->width());
-        m_dropMenu->adjustMenuSize();
-    }
-
-    int x = -m_dropMenu->width() / 2 + m_dropMenu->layout()->contentsMargins().left() + q->width() / 2;
-    QPoint pd = q->mapToGlobal(QPoint(x, q->height()));
-    int hd = m_dropMenu->view()->heightForAnimation(pd, Fluent::MenuAnimation::DROP_DOWN);
-
-    QPoint pu = q->mapToGlobal(QPoint(x, 0));
-    int hu = m_dropMenu->view()->heightForAnimation(pu, Fluent::MenuAnimation::PULL_UP);
-
-    if (hd >= hu) {
-        m_dropMenu->view()->adjustSize(pd, Fluent::MenuAnimation::DROP_DOWN);
-        m_dropMenu->exec(pd, true, Fluent::MenuAnimation::DROP_DOWN);
-    } else {
-        m_dropMenu->view()->adjustSize(pu, Fluent::MenuAnimation::PULL_UP);
-        m_dropMenu->exec(pu, true, Fluent::MenuAnimation::PULL_UP);
-    }
+    createComboMenu();
+    ComboBoxHelper::showComboMenu(q, m_comboMenu, m_maxVisibleItems);
 }
 
 void MultiViewComboBoxPrivate::closeComboMenu()
 {
-    if (!m_dropMenu) {
+    if (!m_comboMenu) {
         return;
     }
-    m_dropMenu = nullptr;
+    m_comboMenu->close();
+    m_comboMenu = nullptr;
 }
 
 void MultiViewComboBoxPrivate::toggleComboMenu()
 {
-    if (m_dropMenu != nullptr) {
+    if (m_comboMenu && m_comboMenu->isVisible()) {
         closeComboMenu();
     } else {
         showComboMenu();
     }
 }
 
-void MultiViewComboBoxPrivate::handleCheckBoxToggled(int index, bool checked)
+void MultiViewComboBoxPrivate::updateTextState()
+{
+    Q_Q(MultiViewComboBox);
+
+    if (m_selectedIndexes.isEmpty()) {
+        m_settingCurrentIndex = true;
+        q->setText(m_placeholderText);
+        m_settingCurrentIndex = false;
+    } else {
+        QStringList texts;
+        for (int idx : m_selectedIndexes) {
+            if (idx >= 0 && idx < m_model->rowCount()) {
+                QModelIndex modelIndex = m_model->index(idx, 0);
+                texts << m_model->data(modelIndex, Qt::DisplayRole).toString();
+            }
+        }
+        m_settingCurrentIndex = true;
+        q->setText(texts.join(", "));
+        m_settingCurrentIndex = false;
+    }
+}
+
+void MultiViewComboBoxPrivate::onRowsInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    Q_Q(MultiViewComboBox);
+
+    int count = last - first + 1;
+    for (int i = 0; i < m_selectedIndexes.size(); ++i) {
+        if (m_selectedIndexes[i] >= first) {
+            m_selectedIndexes[i] += count;
+        }
+    }
+    updateTextState();
+}
+
+void MultiViewComboBoxPrivate::onRowsRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    Q_Q(MultiViewComboBox);
+
+    int count = last - first + 1;
+    bool changed = false;
+    QList<int> newSelected;
+    for (int idx : m_selectedIndexes) {
+        if (idx >= first && idx <= last) {
+            changed = true;
+        } else if (idx > last) {
+            newSelected << idx - count;
+        } else {
+            newSelected << idx;
+        }
+    }
+    if (changed) {
+        m_selectedIndexes = newSelected;
+        updateTextState();
+        emit q->selectionChanged();
+    }
+}
+
+void MultiViewComboBoxPrivate::onModelReset()
+{
+    Q_Q(MultiViewComboBox);
+
+    m_selectedIndexes.clear();
+    updateTextState();
+    emit q->currentIndexChanged(-1);
+    emit q->currentTextChanged(QString());
+    emit q->selectionChanged();
+}
+
+void MultiViewComboBoxPrivate::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+{
+    Q_UNUSED(topLeft);
+    Q_UNUSED(bottomRight);
+
+    bool affected = false;
+    for (int idx : m_selectedIndexes) {
+        if (idx >= topLeft.row() && idx <= bottomRight.row()) {
+            affected = true;
+            break;
+        }
+    }
+    if (affected) {
+        updateTextState();
+    }
+}
+
+void MultiViewComboBoxPrivate::onMenuAction(int index, bool checked)
 {
     Q_Q(MultiViewComboBox);
 
     if (checked) {
+        if (m_maxSelectedCount > 0 && m_selectedIndexes.size() >= m_maxSelectedCount) {
+            if (m_comboMenu) {
+                QList<QAction *> actions = m_comboMenu->actions();
+                if (index < actions.size()) {
+                    actions[index]->setChecked(false);
+                }
+            }
+            return;
+        }
         if (!m_selectedIndexes.contains(index)) {
             m_selectedIndexes.append(index);
             std::sort(m_selectedIndexes.begin(), m_selectedIndexes.end());
+            updateTextState();
+            emit q->itemSelected(index);
+            emit q->selectionChanged();
         }
     } else {
-        m_selectedIndexes.removeAll(index);
+        if (m_selectedIndexes.removeOne(index)) {
+            updateTextState();
+            emit q->itemDeselected(index);
+            emit q->selectionChanged();
+        }
     }
-
-    updateText();
-    emit q->selectionChanged();
 }
