@@ -6,6 +6,8 @@
 
 #include <QAbstractItemModel>
 #include <QAction>
+#include <QPointer>
+#include <QCursor>
 
 EditableComboBoxPrivate::EditableComboBoxPrivate(EditableComboBox *q)
     : QObject(q)
@@ -91,6 +93,15 @@ void EditableComboBoxPrivate::createComboMenu()
         action->setData(i);
         connect(action, &QAction::triggered, this, [this, i]() { onMenuAction(i); });
     }
+
+    QPointer<EditableComboBox> qPtr = q;
+    connect(m_comboMenu, &ComboBoxMenu::closed, q, [qPtr, this]() {
+        if (!qPtr) return;
+        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
+        if (!qPtr->rect().contains(pos)) {
+            m_comboMenu = nullptr;
+        }
+    });
 }
 
 void EditableComboBoxPrivate::showComboMenu()
@@ -126,7 +137,7 @@ void EditableComboBoxPrivate::closeComboMenu()
 
 void EditableComboBoxPrivate::toggleComboMenu()
 {
-    if (m_comboMenu && m_comboMenu->isVisible()) {
+    if (m_comboMenu != nullptr) {
         closeComboMenu();
     } else {
         showComboMenu();

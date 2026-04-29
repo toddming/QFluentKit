@@ -75,7 +75,8 @@ PrimaryToolButton:hover,
 ToggleButton:checked:hover,
 ToggleToolButton:checked:hover {
     background-color: --ThemeColorLight1;
-    border: 1px solid --ThemeColorLight2;
+    border-top: 1px solid --ThemeColorLight2;
+    border-right: 1px solid --ThemeColorLight2;
     border-bottom: 1px solid --ThemeColorDark1;
 }
 
@@ -87,7 +88,9 @@ ToggleButton:checked:pressed,
 ToggleToolButton:checked:pressed {
     color: rgba(255, 255, 255, 0.63);
     background-color: --ThemeColorLight3;
-    border: 1px solid --ThemeColorLight3;
+    border-top: 1px solid --ThemeColorLight3;
+    border-right: 1px solid --ThemeColorLight3;
+    border-bottom: 1px solid --ThemeColorLight3;
 }
 
 PrimaryDropDownToolButton:disabled,

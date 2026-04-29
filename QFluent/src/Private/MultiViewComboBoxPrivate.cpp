@@ -96,6 +96,15 @@ void MultiViewComboBoxPrivate::createComboMenu()
         }
         connect(action, &QAction::triggered, this, [this, i](bool checked) { onMenuAction(i, checked); });
     }
+
+    QPointer<MultiViewComboBox> qPtr = q;
+    connect(m_comboMenu, &MultiViewComboBoxMenu::closed, q, [qPtr, this]() {
+        if (!qPtr) return;
+        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
+        if (!qPtr->rect().contains(pos)) {
+            m_comboMenu = nullptr;
+        }
+    });
 }
 
 void MultiViewComboBoxPrivate::showComboMenu()
@@ -121,7 +130,7 @@ void MultiViewComboBoxPrivate::closeComboMenu()
 
 void MultiViewComboBoxPrivate::toggleComboMenu()
 {
-    if (m_comboMenu && m_comboMenu->isVisible()) {
+    if (m_comboMenu != nullptr) {
         closeComboMenu();
     } else {
         showComboMenu();

@@ -92,6 +92,15 @@ void ComboBoxPrivate::createComboMenu()
         action->setData(i);
         connect(action, &QAction::triggered, this, [this, i]() { onMenuAction(i); });
     }
+
+    QPointer<ComboBox> qPtr = q;
+    connect(m_comboMenu, &ComboBoxMenu::closed, q, [qPtr, this]() {
+        if (!qPtr) return;
+        QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
+        if (!qPtr->rect().contains(pos)) {
+            m_comboMenu = nullptr;
+        }
+    });
 }
 
 void ComboBoxPrivate::showComboMenu()
@@ -127,7 +136,7 @@ void ComboBoxPrivate::closeComboMenu()
 
 void ComboBoxPrivate::toggleComboMenu()
 {
-    if (m_comboMenu && m_comboMenu->isVisible()) {
+    if (m_comboMenu != nullptr) {
         closeComboMenu();
     } else {
         showComboMenu();
