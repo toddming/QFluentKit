@@ -391,24 +391,6 @@
         <file>images/tree_view/TreeViewClose_white.svg</file>
         <file>images/tree_view/TreeViewOpen_black.svg</file>
         <file>images/tree_view/TreeViewOpen_white.svg</file>
-        <file>images/window_bar/close_black.svg</file>
-        <file>images/window_bar/close_white.svg</file>
-        <file>images/window_bar/fullscreen_black.svg</file>
-        <file>images/window_bar/fullscreen_white.svg</file>
-        <file>images/window_bar/maximize_black.svg</file>
-        <file>images/window_bar/maximize_white.svg</file>
-        <file>images/window_bar/minimize_black.svg</file>
-        <file>images/window_bar/minimize_white.svg</file>
-        <file>images/window_bar/more-line_black.svg</file>
-        <file>images/window_bar/more-line_white.svg</file>
-        <file>images/window_bar/pin_black.svg</file>
-        <file>images/window_bar/pin_white.svg</file>
-        <file>images/window_bar/pin-fill_black.svg</file>
-        <file>images/window_bar/pin-fill_white.svg</file>
-        <file>images/window_bar/restore_black.svg</file>
-        <file>images/window_bar/restore_white.svg</file>
-        <file>images/window_bar/theme_black.svg</file>
-        <file>images/window_bar/theme_white.svg</file>
         <file>style/dark/button.qss</file>
         <file>style/dark/calendar_picker.qss</file>
         <file>style/dark/card_widget.qss</file>

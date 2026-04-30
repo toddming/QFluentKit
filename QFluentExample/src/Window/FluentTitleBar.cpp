@@ -141,7 +141,7 @@ FluentTitleBar::FluentTitleBar(QWidget *parent)
 
     StyleSheet::registerWidget(this, ":/res/style/{theme}/title_bar.qss");
 
-    const QString fillPath = ":/res/images/window_bar/%1_{color}.svg";
+    const QString fillPath = ":/res/window_bar/%1_{color}.svg";
     _backButton->setIcon(Fluent::icon(Fluent::IconType::LEFT_ARROW));
     _themeButton->setIcon(Fluent::icon(fillPath.arg("theme")));
     _minButton->setIcon(Fluent::icon(fillPath.arg("minimize")));

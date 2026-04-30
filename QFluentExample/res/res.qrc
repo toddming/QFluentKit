@@ -128,6 +128,24 @@
         <file>style/light/view_interface.qss</file>
 		<file>style/light/fluent_window.qss</file>
 		<file>style/light/title_bar.qss</file>
+        <file>window_bar/close_black.svg</file>
+        <file>window_bar/close_white.svg</file>
+        <file>window_bar/fullscreen_black.svg</file>
+        <file>window_bar/fullscreen_white.svg</file>
+        <file>window_bar/maximize_black.svg</file>
+        <file>window_bar/maximize_white.svg</file>
+        <file>window_bar/minimize_black.svg</file>
+        <file>window_bar/minimize_white.svg</file>
+        <file>window_bar/more-line_black.svg</file>
+        <file>window_bar/more-line_white.svg</file>
+        <file>window_bar/pin_black.svg</file>
+        <file>window_bar/pin_white.svg</file>
+        <file>window_bar/pin-fill_black.svg</file>
+        <file>window_bar/pin-fill_white.svg</file>
+        <file>window_bar/restore_black.svg</file>
+        <file>window_bar/restore_white.svg</file>
+        <file>window_bar/theme_black.svg</file>
+        <file>window_bar/theme_white.svg</file>
         <file>avatar.png</file>
         <file>example.png</file>
         <file>header.png</file>
