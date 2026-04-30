@@ -47,7 +47,7 @@ void PivotItem::drawIcon(QPainter* painter, const QRectF& rect)
         painter->setOpacity(0.63);
     }
 
-    icon().paint(painter, rect.toRect());
+    fluentIcon().paint(painter, rect.toRect());
 }
 
 Pivot::Pivot(QWidget *parent)

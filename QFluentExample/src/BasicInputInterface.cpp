@@ -84,7 +84,7 @@ BasicInputInterface::BasicInputInterface(QWidget *parent)
     transparentDropDownToolButton->setMenu(dropDownPushButtonMenu);
     addExampleCard("带下拉菜单的透明工具按钮", transparentDropDownToolButton);
 
-    auto hyperlinkButton = new HyperlinkButton("GitHub", Fluent::icon(Fluent::IconType::LINK), this);
+    auto hyperlinkButton = new HyperlinkButton("GitHub", Fluent::IconType::LINK, this);
     addExampleCard("导航到一个超链接的按钮", hyperlinkButton);
 
     auto radioWidget = new QWidget();

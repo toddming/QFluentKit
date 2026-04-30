@@ -22,7 +22,7 @@ PushButton[hasIcon=false] {
 }
 
 PushButton[hasIcon=true] {
-    padding: 5px 12px 6px 26px;
+    padding: 5px 12px 6px 36px;
 }
 
 DropDownToolButton, PrimaryDropDownToolButton {
@@ -36,7 +36,7 @@ PrimaryDropDownPushButton[hasIcon=false] {
 
 DropDownPushButton[hasIcon=true],
 PrimaryDropDownPushButton[hasIcon=true] {
-    padding: 5px 31px 6px 26px;
+    padding: 5px 31px 6px 36px;
 }
 
 PushButton:hover, ToolButton:hover, ToggleButton:hover, ToggleToolButton:hover {
@@ -151,7 +151,7 @@ HyperlinkButton[hasIcon=false] {
 }
 
 HyperlinkButton[hasIcon=true] {
-    padding: 6px 12px 6px 26px;
+    padding: 6px 12px 6px 36px;
 }
 
 HyperlinkButton:hover {

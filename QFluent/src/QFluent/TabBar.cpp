@@ -32,7 +32,7 @@ void TabToolButton::drawIcon(QPainter *painter, const QRectF &rect,
                              Fluent::ThemeMode theme)
 {
     Q_UNUSED(theme);
-    icon().paint(painter, rect.toRect());
+    fluentIcon().paint(painter, rect.toRect());
 }
 
 // ==================== TabItem ====================

@@ -105,21 +105,9 @@ void PushButton::leaveEvent(QEvent *event)
 
 void PushButton::paintEvent(QPaintEvent *event)
 {
-    // Temporarily clear the icon so QPushButton::paintEvent doesn't draw it
-    // (we draw it ourselves via drawIcon with custom opacity)
-    QIcon savedIcon;
-    if (!icon().isNull()) {
-        savedIcon = icon();
-        QPushButton::setIcon(QIcon());
-    }
-
     QPushButton::paintEvent(event);
 
-    if (!savedIcon.isNull()) {
-        QPushButton::setIcon(savedIcon);
-    }
-
-    if (savedIcon.isNull())
+    if (fluentIcon().isNull())
         return;
 
     QPainter painter(this);
@@ -147,20 +135,18 @@ void PushButton::paintEvent(QPaintEvent *event)
 
 void PushButton::drawIcon(QPainter* painter, const QRectF& rect)
 {
-    icon().paint(painter, rect.toRect());
+    fluentIcon().paint(painter, rect.toRect());
 }
 
 void PushButton::setIcon(Fluent::IconType type)
 {
     m_fluentIcon = FluentQIcon(type);
-    QPushButton::setIcon(m_fluentIcon);
     setProperty("hasIcon", true);
 }
 
 void PushButton::setIcon(const QIcon &icon)
 {
     m_fluentIcon = FluentQIcon(icon);
-    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
@@ -193,14 +179,12 @@ PrimaryPushButton::PrimaryPushButton(const QString &text, const QIcon &icon, QWi
 void PrimaryPushButton::setIcon(Fluent::IconType type)
 {
     setFluentIcon(FluentQIcon(type));
-    QPushButton::setIcon(fluentIcon());
     setProperty("hasIcon", true);
 }
 
 void PrimaryPushButton::setIcon(const QIcon &icon)
 {
     setFluentIcon(FluentQIcon(icon));
-    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
@@ -209,7 +193,7 @@ void PrimaryPushButton::drawIcon(QPainter* painter, const QRectF& rect)
     if (fluentIcon().hasType()) {
         fluentIcon().reversed().paint(painter, rect.toRect());
     } else {
-        icon().paint(painter, rect.toRect());
+        fluentIcon().paint(painter, rect.toRect());
     }
 }
 
@@ -221,7 +205,14 @@ void HyperlinkButton::drawIcon(QPainter* painter, const QRectF& rect)
     if (!isEnabled()) {
         painter->setOpacity(Theme::isDark() ? 0.3628 : 0.36);
     }
-    icon().paint(painter, rect.toRect());
+
+    if (fluentIcon().hasType()) {
+        QHash<QString, QString> attrs;
+        attrs["fill"] = Theme::themeColor(Fluent::ThemeColor::PRIMARY).name();
+        FluentIconUtils::drawIcon(FluentIcon(fluentIcon().iconType()), painter, rect, Fluent::ThemeMode::AUTO, false, attrs);
+    } else {
+        fluentIcon().paint(painter, rect.toRect());
+    }
 }
 
 
@@ -268,14 +259,12 @@ ToggleButton::ToggleButton(const QString &text, Fluent::IconType type, QWidget *
 void ToggleButton::setIcon(Fluent::IconType type)
 {
     setFluentIcon(FluentQIcon(type));
-    QPushButton::setIcon(fluentIcon());
     setProperty("hasIcon", true);
 }
 
 void ToggleButton::setIcon(const QIcon &icon)
 {
     setFluentIcon(FluentQIcon(icon));
-    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
@@ -284,7 +273,7 @@ void ToggleButton::drawIcon(QPainter* painter, const QRectF& rect)
     if (fluentIcon().hasType()) {
         (isChecked() ? fluentIcon().reversed() : fluentIcon()).paint(painter, rect.toRect());
     } else {
-        icon().paint(painter, rect.toRect());
+        fluentIcon().paint(painter, rect.toRect());
     }
 }
 
@@ -514,14 +503,12 @@ void PrimaryDropDownPushButton::mouseReleaseEvent(QMouseEvent *e)
 void PrimaryDropDownPushButton::setIcon(Fluent::IconType type)
 {
     setFluentIcon(FluentQIcon(type));
-    QPushButton::setIcon(fluentIcon());
     setProperty("hasIcon", true);
 }
 
 void PrimaryDropDownPushButton::setIcon(const QIcon &icon)
 {
     setFluentIcon(FluentQIcon(icon));
-    QPushButton::setIcon(icon);
     setProperty("hasIcon", !icon.isNull());
 }
 
@@ -530,7 +517,7 @@ void PrimaryDropDownPushButton::drawIcon(QPainter *painter, const QRectF &rect)
     if (fluentIcon().hasType()) {
         fluentIcon().reversed().paint(painter, rect.toRect());
     } else {
-        icon().paint(painter, rect.toRect());
+        fluentIcon().paint(painter, rect.toRect());
     }
 }
 
