@@ -54,10 +54,47 @@ void OpacityAniStackedWidget::addWidget(QWidget *widget)
     m_animations.append(animation);
 }
 
+void OpacityAniStackedWidget::removeWidget(QWidget *widget)
+{
+    const int index = indexOf(widget);
+    if (index < 0) {
+        return;
+    }
+
+    // 同步移除该页面对应的动画与效果，否则后续 setCurrentIndex 会按页面索引
+    // 取到错位的（甚至已随页面销毁的）effect / animation。
+    if (index < m_animations.size()) {
+        QPropertyAnimation *animation = m_animations.takeAt(index);
+        if (animation) {
+            animation->stop();
+            animation->deleteLater();
+        }
+    }
+    if (index < m_effects.size()) {
+        // effect 的所有权在页面控件上，随页面一起销毁，这里只解除引用
+        m_effects.removeAt(index);
+    }
+
+    // 索引变化后修正待切换目标
+    if (m_nextIndex > index) {
+        --m_nextIndex;
+    } else if (m_nextIndex == index) {
+        m_nextIndex = qMax(0, index - 1);
+    }
+
+    QStackedWidget::removeWidget(widget);
+}
+
 void OpacityAniStackedWidget::setCurrentIndex(int index)
 {
     int currentIdx = currentIndex();
     if (index == currentIdx || index < 0 || index >= count()) {
+        return;
+    }
+
+    // 防御：数组与页面索引可能因外部直接调用基类 removeWidget 而失配
+    if (index >= m_animations.size() || index >= m_effects.size()) {
+        QStackedWidget::setCurrentIndex(index);
         return;
     }
 
@@ -75,6 +112,10 @@ void OpacityAniStackedWidget::setCurrentIndex(int index)
         QStackedWidget::setCurrentIndex(index);
     } else {
         // 后退导航：淡出当前控件
+        if (currentIdx >= m_animations.size() || currentIdx >= m_effects.size()) {
+            QStackedWidget::setCurrentIndex(index);
+            return;
+        }
         animation = m_animations[currentIdx];
         animation->setStartValue(1.0);
         animation->setEndValue(0.0);
@@ -619,16 +660,37 @@ void StackedWidget::setAnimationType(AnimationType type)
     // 断开旧的信号连接
     disconnectSignals();
 
-    // 移除旧的堆叠控件
+    // 取出所有页面，避免它们随旧的堆叠控件一起被销毁
+    QList<QWidget*> pages;
+    pages.reserve(m_view ? m_view->count() : 0);
+
     if (m_view) {
-        m_hBoxLayout->removeWidget(m_view);
-        m_view->deleteLater();
+        QStackedWidget *oldView = m_view;
+        m_view = nullptr;
+
+        while (oldView->count() > 0) {
+            QWidget *page = oldView->widget(0);
+            oldView->removeWidget(page);
+            if (page) {
+                page->setParent(nullptr);   // 脱离旧 view，暂存为隐藏的顶层对象
+                page->hide();
+                pages.append(page);
+            }
+        }
+
+        m_hBoxLayout->removeWidget(oldView);
+        oldView->deleteLater();
     }
 
     // 创建新的堆叠控件
     m_animationType = type;
     m_view = createStackedWidget(type);
     m_hBoxLayout->addWidget(m_view);
+
+    // 把页面迁移到新的堆叠控件中
+    for (QWidget *page : pages) {
+        addWidget(page);
+    }
 
     // 连接新的信号
     connectSignals();
@@ -723,6 +785,15 @@ void StackedWidget::removeWidget(QWidget *widget)
 
     // 根据类型调用相应的方法
     switch (m_animationType) {
+    case AnimationType::Opacity: {
+        // QStackedWidget::removeWidget 不是虚函数，必须经由具体类型调用，
+        // 否则 OpacityAniStackedWidget 内部的 effect/animation 列表不会同步。
+        auto* view = qobject_cast<OpacityAniStackedWidget*>(m_view);
+        if (view) view->removeWidget(widget);
+        else m_view->removeWidget(widget);
+        break;
+    }
+
     case AnimationType::PopUp: {
         auto* view = qobject_cast<PopUpAniStackedWidget*>(m_view);
         if (view) view->removeWidget(widget);

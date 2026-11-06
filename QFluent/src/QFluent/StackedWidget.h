@@ -21,7 +21,7 @@ QT_END_NAMESPACE
 /**
  * @brief 带淡入淡出动画的堆叠控件
  */
-class OpacityAniStackedWidget : public QStackedWidget
+class QFLUENT_EXPORT OpacityAniStackedWidget : public QStackedWidget
 {
     Q_OBJECT
 
@@ -30,6 +30,9 @@ public:
     ~OpacityAniStackedWidget() override = default;
 
     void addWidget(QWidget *widget);
+    // 注意：QStackedWidget::removeWidget 不是虚函数，
+    // 必须通过本类的指针调用才能保持 m_effects / m_animations 与页面索引同步。
+    void removeWidget(QWidget *widget);
     void setCurrentIndex(int index);
     void setCurrentWidget(QWidget *widget);
 
@@ -63,7 +66,7 @@ struct PopUpAniInfo
 /**
  * @brief 带弹出动画的堆叠控件
  */
-class PopUpAniStackedWidget : public QStackedWidget
+class QFLUENT_EXPORT PopUpAniStackedWidget : public QStackedWidget
 {
     Q_OBJECT
 
@@ -109,7 +112,7 @@ private:
 /**
  * @brief 带过渡动画的堆叠控件基类
  */
-class TransitionStackedWidget : public QStackedWidget
+class QFLUENT_EXPORT TransitionStackedWidget : public QStackedWidget
 {
     Q_OBJECT
 
@@ -156,7 +159,7 @@ private slots:
 /**
  * @brief 带入场过渡动画的堆叠控件
  */
-class EntranceTransitionStackedWidget : public TransitionStackedWidget
+class QFLUENT_EXPORT EntranceTransitionStackedWidget : public TransitionStackedWidget
 {
     Q_OBJECT
 
@@ -173,7 +176,7 @@ protected:
 /**
  * @brief 带钻入过渡动画的堆叠控件
  */
-class DrillInTransitionStackedWidget : public TransitionStackedWidget
+class QFLUENT_EXPORT DrillInTransitionStackedWidget : public TransitionStackedWidget
 {
     Q_OBJECT
 
