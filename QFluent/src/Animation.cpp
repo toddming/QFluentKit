@@ -294,7 +294,10 @@ DropShadowAnimation::DropShadowAnimation(QWidget *parent, const QColor &normalCo
     Q_D(DropShadowAnimation);
     d->m_normalColor = normalColor;
     d->m_hoverColor = hoverColor;
-    d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
+    // 不设 QObject 父对象：阴影一旦通过 setGraphicsEffect 安装，所有权就归控件，
+    // 由控件负责销毁。若再挂到本动画名下，本对象析构时会提前删掉它，
+    // 使控件的 graphicsEffect() 变成悬空指针。
+    d->m_shadowEffect = new QGraphicsDropShadowEffect();
     d->m_shadowEffect->setColor(normalColor);
     parent->installEventFilter(this);
 
@@ -302,7 +305,23 @@ DropShadowAnimation::DropShadowAnimation(QWidget *parent, const QColor &normalCo
     connect(this, &QPropertyAnimation::finished, this, &DropShadowAnimation::onAniFinished);
 }
 
-DropShadowAnimation::~DropShadowAnimation() = default;
+DropShadowAnimation::~DropShadowAnimation()
+{
+    Q_D(DropShadowAnimation);
+
+    if (!d->m_shadowEffect) {
+        return;
+    }
+
+    // 已安装到控件上的阴影由控件负责销毁（QWidget 析构时会 delete 它）；
+    // 只有从未安装过的阴影才需要在这里回收，避免泄漏。
+    // 这里只做只读判断，不在析构期调用 setGraphicsEffect（控件可能正在析构）。
+    auto* w = qobject_cast<QWidget*>(parent());
+    if (!w || w->graphicsEffect() != d->m_shadowEffect) {
+        delete d->m_shadowEffect;
+    }
+    d->m_shadowEffect = nullptr;
+}
 
 void DropShadowAnimation::setBlurRadius(int radius) {
     Q_D(DropShadowAnimation);
@@ -345,7 +364,8 @@ QGraphicsDropShadowEffect *DropShadowAnimation::createShadowEffect() {
         return d->m_shadowEffect;
     }
 
-    d->m_shadowEffect = new QGraphicsDropShadowEffect(this);
+    // 同样不设父对象：所有权随 setGraphicsEffect 转交给控件
+    d->m_shadowEffect = new QGraphicsDropShadowEffect();
     d->m_shadowEffect->setOffset(d->m_offset);
     d->m_shadowEffect->setBlurRadius(d->m_blurRadius);
     d->m_shadowEffect->setColor(d->m_normalColor);
@@ -385,15 +405,26 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
 
 void DropShadowAnimation::onAniFinished() {
     Q_D(DropShadowAnimation);
+
+    // 悬停淡入结束：保留阴影，不能摘除（否则悬停过程中阴影就消失了）
+    if (d->m_isHover) {
+        return;
+    }
+
     // 复位阴影颜色，供下次复用
     if (d->m_shadowEffect) {
         d->m_shadowEffect->setColor(d->m_normalColor);
     }
-    // 悬停动画结束后把阴影从控件上摘除
+
+    // 悬停动画结束后把阴影从控件上摘除。
+    // 注意：QWidget::setGraphicsEffect(nullptr) 会 delete 掉当前效果，
+    // 因此必须同时把 m_shadowEffect 置空，否则下次悬停会解引用悬空指针。
     if (auto* w = qobject_cast<QWidget*>(parent())) {
-        w->setGraphicsEffect(nullptr);
+        if (d->m_shadowEffect && w->graphicsEffect() == d->m_shadowEffect) {
+            w->setGraphicsEffect(nullptr);
+        }
     }
-    // 注意：保留 m_shadowEffect 以便下次悬停复用
+    d->m_shadowEffect = nullptr;
 }
 
 // ==================== FluentAnimationProperObject ====================

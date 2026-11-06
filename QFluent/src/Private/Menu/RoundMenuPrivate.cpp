@@ -203,8 +203,11 @@ void RoundMenuPrivate::setShadowEffect(int blurRadius, const QPointF &offset, co
     m_shadowEffect->setOffset(offset);
     m_shadowEffect->setColor(color);
 
-    m_view->setGraphicsEffect(nullptr);
-    m_view->setGraphicsEffect(m_shadowEffect);
+    // 不能先 setGraphicsEffect(nullptr) 再装回去：那一步会 delete 掉 m_shadowEffect
+    // 本身，随后安装的就是悬空指针。效果已安装时只更新属性即可。
+    if (m_view->graphicsEffect() != m_shadowEffect) {
+        m_view->setGraphicsEffect(m_shadowEffect);
+    }
 }
 
 void RoundMenuPrivate::setParentMenu(RoundMenu *parent, QListWidgetItem *item)
