@@ -113,6 +113,10 @@ void MaskDialogBase::setShadowEffect(int blurRadius, const QPoint &offset, const
 {
     Q_D(MaskDialogBase);
 
+    d->m_shadowBlurRadius = blurRadius;
+    d->m_shadowOffset = offset;
+    d->m_shadowColor = color;
+
     // Qt 的 setGraphicsEffect 会自动删除旧效果，直接设置新效果即可
     QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect(d->m_centerWidget);
     shadowEffect->setBlurRadius(blurRadius);
@@ -124,8 +128,15 @@ void MaskDialogBase::setShadowEffect(int blurRadius, const QPoint &offset, const
 
 void MaskDialogBase::showEvent(QShowEvent *event)
 {
+    Q_D(MaskDialogBase);
+
     // 显示时同步目标窗口尺寸
     syncGeometryWithParent();
+
+    // done() 为了让淡出动画干净会摘掉中心控件的阴影，这里恢复它
+    if (d->m_centerWidget && !d->m_centerWidget->graphicsEffect()) {
+        setShadowEffect(d->m_shadowBlurRadius, d->m_shadowOffset, d->m_shadowColor);
+    }
 
     auto *opacityEffect = new QGraphicsOpacityEffect(this);
     setGraphicsEffect(opacityEffect);
