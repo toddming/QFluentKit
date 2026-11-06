@@ -245,7 +245,19 @@ target_link_libraries(MyApp PRIVATE QFluent)
 |------|--------|------|
 | `QFLUENT_INSTALL_TO_QT` | ON | 安装到 Qt 安装目录 |
 | `CMAKE_INSTALL_PREFIX` | 系统默认 | 自定义安装路径 |
+| `QFLUENT_BUILD_TESTS` | 顶层工程时为 ON | 构建 `tests/` 下的单元测试 |
 | `BUILD_QWINDOWKIT` | OFF | 启用 QWindowKit 集成 |
+
+### 运行测试
+
+```bash
+cmake -S . -B build -DQFLUENT_INSTALL_TO_QT=OFF
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+测试覆盖主题色派生、样式表注册与缓存、组件创建销毁，并包含内存占用与
+主题切换耗时检查。测试通过 `offscreen` 平台插件运行，无需显示环境。
 
 ### 可选：启用 QWindowKit 集成
 

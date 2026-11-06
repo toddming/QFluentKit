@@ -244,7 +244,20 @@ target_link_libraries(MyApp PRIVATE QFluent)
 |--------|---------|-------------|
 | `QFLUENT_INSTALL_TO_QT` | ON | Install to Qt installation directory |
 | `CMAKE_INSTALL_PREFIX` | System default | Custom installation path |
+| `QFLUENT_BUILD_TESTS` | ON when top-level | Build the unit tests (`tests/`) |
 | `BUILD_QWINDOWKIT` | OFF | Enable QWindowKit integration |
+
+### Running Tests
+
+```bash
+cmake -S . -B build -DQFLUENT_INSTALL_TO_QT=OFF
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+The test suite covers theme color derivation, style sheet registration and
+caching, and component creation/destruction with memory and theme-switch
+performance checks. It runs headless via the `offscreen` platform plugin.
 
 ### Optional: Enable QWindowKit Integration
 

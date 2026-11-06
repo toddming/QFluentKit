@@ -1,4 +1,4 @@
-﻿#include "AcrylicWidget.h"
+﻿#include "acrylicwidget.h"
 
 #include <QShowEvent>
 

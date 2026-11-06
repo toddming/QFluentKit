@@ -1,5 +1,7 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.16)
 project(QFluent VERSION 0.1.0 LANGUAGES CXX)
+
+include(GNUInstallDirs)
 
 # 支持Qt5和Qt6
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
@@ -49,8 +51,14 @@ add_library(QFluent SHARED ${QFLUENT_CPP_SOURCES})
 
 target_sources(QFluent PRIVATE ${QFLUENT_HEADER_SOURCES})
 
+# 头文件搜索路径：
+#   构建树  —— src/（与源码中的 #include "QFluent/xxx.h"、"Theme.h" 一致）
+#   安装树  —— include/ 与 include/QFluent 两级，因为安装后头文件被摊平到
+#              include/QFluent/ 下，两种包含风格都需要能解析
 target_include_directories(QFluent PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/QFluent>
 )
 target_compile_definitions(QFluent PRIVATE QFLUENT_LIBRARY)
 
@@ -74,8 +82,6 @@ target_link_libraries(QFluent
         Qt${QT_VERSION_MAJOR}::Svg
         Qt${QT_VERSION_MAJOR}::Xml
 )
-
-include(GNUInstallDirs)
 
 # ==================== 安装配置 ====================
 option(QFLUENT_INSTALL_TO_QT "Install QFluent to Qt installation directory" ON)
