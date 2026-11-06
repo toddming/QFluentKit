@@ -18,7 +18,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_subdirectory(QFluent)
-add_subdirectory(QFluentExample)
+
+# 示例程序只在把本工程当作顶层项目时才构建；
+# 作为子目录被其他工程引用时不应引入示例目标。
+if(QFLUENT_IS_TOP_LEVEL)
+    add_subdirectory(QFluentExample)
+endif()
 
 option(QFLUENT_BUILD_TESTS "Build QFluent unit tests" ${QFLUENT_IS_TOP_LEVEL})
 if(QFLUENT_BUILD_TESTS)

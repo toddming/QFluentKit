@@ -75,8 +75,11 @@ else()
     target_sources(QFluent PRIVATE ${RCC_SOURCES})
 endif()
 
+# 公共头文件直接暴露了 QWidget / QColor / QIcon 等 Qt 类型，
+# 因此必须 PUBLIC 链接，否则 find_package(QFluent) 的使用者拿不到 Qt 的
+# include 路径，编译自己的代码时会出现 "QApplication: No such file or directory"。
 target_link_libraries(QFluent
-    PRIVATE
+    PUBLIC
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Svg
@@ -101,8 +104,14 @@ if(QFLUENT_INSTALL_TO_QT)
         get_filename_component(QT_LIB_DIR "${QT_CORE_LOCATION}" DIRECTORY)
         get_filename_component(QT_INSTALL_DIR "${QT_LIB_DIR}" DIRECTORY)
     endif()
-    set(CMAKE_INSTALL_PREFIX "${QT_INSTALL_DIR}" CACHE PATH "Qt installation directory" FORCE)
-    message(STATUS "QFluent will be installed to Qt directory: ${QT_INSTALL_DIR}")
+    # 仅在用户未显式指定安装路径时才回落到 Qt 目录，
+    # 否则会静默覆盖 -DCMAKE_INSTALL_PREFIX，把库装进 Qt 安装目录。
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        set(CMAKE_INSTALL_PREFIX "${QT_INSTALL_DIR}" CACHE PATH "Qt installation directory" FORCE)
+        message(STATUS "QFluent will be installed to Qt directory: ${QT_INSTALL_DIR}")
+    else()
+        message(STATUS "QFluent will be installed to user prefix: ${CMAKE_INSTALL_PREFIX}")
+    endif()
 endif()
 
 # 安装核心头文件
