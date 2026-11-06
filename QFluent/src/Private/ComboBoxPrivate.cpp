@@ -34,7 +34,12 @@ void ComboBoxPrivate::setModel(QAbstractItemModel *model)
     m_model = model;
     connectModel(m_model);
 
-    m_comboMenu = nullptr;
+    // 旧菜单绑定的是旧模型的动作，直接回收，避免残留对象累积
+    if (ComboBoxMenu *old = m_comboMenu) {
+        m_comboMenu = nullptr;
+        old->close();
+        old->deleteLater();
+    }
 
     int oldIndex = m_currentIndex;
     m_currentIndex = -1;
@@ -67,8 +72,11 @@ void ComboBoxPrivate::createComboMenu()
     Q_Q(ComboBox);
 
     if (m_comboMenu) {
-        m_comboMenu->close();
+        // 先置空，避免 close() 触发的 closed 回调再次操作这个指针
+        ComboBoxMenu *old = m_comboMenu;
         m_comboMenu = nullptr;
+        old->close();
+        old->deleteLater();
     }
 
     m_comboMenu = new ComboBoxMenu("menu", q);
@@ -84,10 +92,8 @@ void ComboBoxPrivate::createComboMenu()
 
         QString text = m_model->data(index, Qt::DisplayRole).toString();
         QIcon icon = m_model->data(index, Qt::DecorationRole).value<QIcon>();
-        QAction *action = new QAction(icon, text, m_comboMenu);
-        if (icon.isNull()) {
-            action = new QAction(text, m_comboMenu);
-        }
+        QAction *action = icon.isNull() ? new QAction(text, m_comboMenu)
+                                        : new QAction(icon, text, m_comboMenu);
         m_comboMenu->addAction(action);
         action->setData(i);
         connect(action, &QAction::triggered, this, [this, i]() { onMenuAction(i); });
@@ -95,9 +101,10 @@ void ComboBoxPrivate::createComboMenu()
 
     QPointer<ComboBox> qPtr = q;
     connect(m_comboMenu, &ComboBoxMenu::closed, q, [qPtr, this]() {
-        if (!qPtr) return;
+        if (!qPtr || !m_comboMenu) return;
         QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
         if (!qPtr->rect().contains(pos)) {
+            m_comboMenu->deleteLater();
             m_comboMenu = nullptr;
         }
     });
@@ -130,8 +137,10 @@ void ComboBoxPrivate::closeComboMenu()
     if (!m_comboMenu) {
         return;
     }
-    m_comboMenu->close();
+    ComboBoxMenu *menu = m_comboMenu;
     m_comboMenu = nullptr;
+    menu->close();
+    menu->deleteLater();
 }
 
 void ComboBoxPrivate::toggleComboMenu()

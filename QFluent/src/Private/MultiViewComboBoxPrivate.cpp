@@ -38,7 +38,12 @@ void MultiViewComboBoxPrivate::setModel(QAbstractItemModel *model)
     m_model = model;
     connectModel(m_model);
 
-    m_comboMenu = nullptr;
+    // 旧菜单绑定的是旧模型的动作，直接回收，避免残留对象累积
+    if (MultiViewComboBoxMenu *old = m_comboMenu) {
+        m_comboMenu = nullptr;
+        old->close();
+        old->deleteLater();
+    }
     m_selectedIndexes.clear();
 
     updateTextState();
@@ -67,8 +72,11 @@ void MultiViewComboBoxPrivate::createComboMenu()
     Q_Q(MultiViewComboBox);
 
     if (m_comboMenu) {
-        m_comboMenu->close();
+        // 先置空，避免 close() 触发的 closed 回调再次操作这个指针
+        MultiViewComboBoxMenu *old = m_comboMenu;
         m_comboMenu = nullptr;
+        old->close();
+        old->deleteLater();
     }
 
     m_comboMenu = new MultiViewComboBoxMenu("menu", q);
@@ -84,10 +92,8 @@ void MultiViewComboBoxPrivate::createComboMenu()
 
         QString text = m_model->data(index, Qt::DisplayRole).toString();
         QIcon icon = m_model->data(index, Qt::DecorationRole).value<QIcon>();
-        QAction *action = new QAction(icon, text, m_comboMenu);
-        if (icon.isNull()) {
-            action = new QAction(text, m_comboMenu);
-        }
+        QAction *action = icon.isNull() ? new QAction(text, m_comboMenu)
+                                        : new QAction(icon, text, m_comboMenu);
         m_comboMenu->addAction(action);
         action->setData(i);
         action->setCheckable(true);
@@ -99,9 +105,10 @@ void MultiViewComboBoxPrivate::createComboMenu()
 
     QPointer<MultiViewComboBox> qPtr = q;
     connect(m_comboMenu, &MultiViewComboBoxMenu::closed, q, [qPtr, this]() {
-        if (!qPtr) return;
+        if (!qPtr || !m_comboMenu) return;
         QPoint pos = qPtr->mapFromGlobal(QCursor::pos());
         if (!qPtr->rect().contains(pos)) {
+            m_comboMenu->deleteLater();
             m_comboMenu = nullptr;
         }
     });
@@ -124,8 +131,10 @@ void MultiViewComboBoxPrivate::closeComboMenu()
     if (!m_comboMenu) {
         return;
     }
-    m_comboMenu->close();
+    MultiViewComboBoxMenu *menu = m_comboMenu;
     m_comboMenu = nullptr;
+    menu->close();
+    menu->deleteLater();
 }
 
 void MultiViewComboBoxPrivate::toggleComboMenu()
