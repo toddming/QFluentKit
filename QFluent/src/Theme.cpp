@@ -47,6 +47,12 @@ Theme::Theme(QObject* parent) : QObject(parent)
         Qt::ColorScheme currentScheme = styleHints->colorScheme();
         d->m_sysIsDarkMode = (currentScheme == Qt::ColorScheme::Dark);
 
+        // 默认 m_autoTheme 为 true，此时 isDark() 直接返回 m_sysIsDarkMode，
+        // 而 themeMode() 返回 m_currentTheme。若不同步，深色系统启动时会出现
+        // “isDark() 为真但 QSS 走浅色” 的矛盾状态。
+        d->m_currentTheme = d->m_sysIsDarkMode ? Fluent::ThemeMode::DARK
+                                               : Fluent::ThemeMode::LIGHT;
+
         QPointer<Theme> self = this;
         connect(styleHints, &QStyleHints::colorSchemeChanged, this, [d, self](Qt::ColorScheme scheme) {
             if (!self) {
