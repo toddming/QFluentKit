@@ -43,8 +43,6 @@ void OptionsSettingCard::onButtonClicked(QAbstractButton *button) {
     if (button->text() == m_choiceLabel->text())
         return;
 
-    // QVariant value = button->property(m_configName.toUtf8().constData());
-
     int index = m_buttonGroup->buttons().indexOf(button);
     const QString text = button->text();
     emit optionChanged(index, text);

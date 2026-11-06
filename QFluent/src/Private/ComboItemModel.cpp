@@ -113,7 +113,7 @@ bool ComboItemModel::removeRows(int row, int count, const QModelIndex &parent)
     return true;
 }
 
-// Convenience API
+// 便捷接口
 
 void ComboItemModel::addItem(const QString &text, const QVariant &userData)
 {

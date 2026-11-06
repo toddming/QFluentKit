@@ -331,7 +331,7 @@ void DropShadowAnimation::setColor(const QColor &color) {
 QGraphicsDropShadowEffect *DropShadowAnimation::createShadowEffect() {
     Q_D(DropShadowAnimation);
 
-    // Reuse existing effect if still valid (avoid delete/new on every hover)
+    // 复用仍然有效的阴影对象，避免每次悬停都 delete/new
     if (d->m_shadowEffect) {
         d->m_shadowEffect->setOffset(d->m_offset);
         d->m_shadowEffect->setBlurRadius(d->m_blurRadius);
@@ -385,15 +385,15 @@ bool DropShadowAnimation::eventFilter(QObject *obj, QEvent *e) {
 
 void DropShadowAnimation::onAniFinished() {
     Q_D(DropShadowAnimation);
-    // Reset effect color to normal for next reuse
+    // 复位阴影颜色，供下次复用
     if (d->m_shadowEffect) {
         d->m_shadowEffect->setColor(d->m_normalColor);
     }
-    // Remove effect from widget when hover animation finishes
+    // 悬停动画结束后把阴影从控件上摘除
     if (auto* w = qobject_cast<QWidget*>(parent())) {
         w->setGraphicsEffect(nullptr);
     }
-    // Note: keep m_shadowEffect alive for reuse on next hover
+    // 注意：保留 m_shadowEffect 以便下次悬停复用
 }
 
 // ==================== FluentAnimationProperObject ====================

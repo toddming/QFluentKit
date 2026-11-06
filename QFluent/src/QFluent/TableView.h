@@ -79,10 +79,9 @@ public:
         this->style()->polish(this); // 强制刷新样式
     }
 
-    // 预留接口
+    // 预留接口：当前版本不生效
     void setBorderRadius(int radius) {
         Q_UNUSED(radius);
-        // this->setProperty("lightCustomQss", ...);
     }
 
     void setItemDelegate(TableItemDelegate* delegate) {

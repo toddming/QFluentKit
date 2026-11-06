@@ -135,12 +135,6 @@ void NavigationPanel::initLayout()
     m_topLayout->addWidget(m_menuButton, 0, Qt::AlignTop);
 }
 
-void NavigationPanel::updateAcrylicColor()
-{
-    // 预留亚克力效果实现
-    // TODO: 实现亚克力背景效果
-}
-
 NavigationWidget* NavigationPanel::widget(const QString& routeKey)
 {
     if (!m_items.contains(routeKey)) {
@@ -416,8 +410,8 @@ void NavigationPanel::setMenuButtonVisible(bool isVisible)
 
 void NavigationPanel::setReturnButtonVisible(bool isVisible)
 {
+    // 预留接口：当前版本不创建返回按钮，仅记录状态，避免调用方拿到不一致的查询结果
     m_isReturnButtonVisible = isVisible;
-    // TODO: 实现返回按钮
 }
 
 void NavigationPanel::setCollapsible(bool on)
@@ -445,7 +439,9 @@ void NavigationPanel::setAcrylicEnabled(bool isEnabled)
     }
 
     m_isAcrylicEnabled = isEnabled;
-    setProperty("transparent", canDrawAcrylic());
+    // 通过 QSS 的 NavigationPanel[transparent=true] 规则让背景透出，
+    // 亚克力材质本身由上层窗口提供（见 AcrylicWidget）
+    setProperty("transparent", m_isAcrylicEnabled);
     style()->unpolish(this);
     style()->polish(this);
     update();
@@ -714,30 +710,6 @@ int NavigationPanel::calculateLayoutMinHeight() const
                   m_bottomLayout->count() * m_bottomLayout->spacing();
 
     return 36 + topHeight + bottomHeight + separatorHeight + spacing;
-}
-
-bool NavigationPanel::canDrawAcrylic() const
-{
-    return false; // TODO: 实现亚克力效果检测
-}
-
-void NavigationPanel::paintEvent(QPaintEvent* event)
-{
-    if (!canDrawAcrylic() || m_displayMode != NavigationPanel::DisplayMode::MENU) {
-        QFrame::paintEvent(event);
-        return;
-    }
-
-    // TODO: 实现亚克力背景绘制
-    QPainter painter(this);
-    QPainterPath path;
-    path.setFillRule(Qt::WindingFill);
-    path.addRoundedRect(0, 1, width() - 1, height() - 1, 7, 7);
-    path.addRect(0, 1, 8, height() - 1);
-
-    updateAcrylicColor();
-
-    QFrame::paintEvent(event);
 }
 
 // NavigationItemLayout 实现

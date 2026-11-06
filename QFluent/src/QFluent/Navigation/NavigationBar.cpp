@@ -103,7 +103,7 @@ void NavigationBarPushButton::drawBackground(QPainter& painter) {
         QColor bg = Theme::isDark() ? QColor(255, 255, 255, 42) : Qt::white;
         painter.setBrush(bg);
         painter.drawRoundedRect(rect(), 5, 5);
-        // draw indicator
+        // 绘制选中指示条
         QColor indicatorColor = Theme::themeColor(Fluent::ThemeColor::PRIMARY);
         if (!property("isPressed").toBool()) {
             painter.setBrush(indicatorColor);
@@ -203,7 +203,7 @@ void NavigationBar::initWidget() {
     m_expandAni->setEasingCurve(QEasingCurve::OutQuad);
     m_expandAni->setDuration(150);
 
-    // Initialize layouts
+    // 初始化布局
     m_vBoxLayout->setContentsMargins(0, 5, 0, 5);
     m_topLayout->setContentsMargins(4, 0, 4, 0);
     m_bottomLayout->setContentsMargins(4, 0, 4, 0);
@@ -223,13 +223,13 @@ void NavigationBar::initWidget() {
     m_scrollLayout->setAlignment(Qt::AlignTop);
     m_bottomLayout->setAlignment(Qt::AlignBottom);
 
-    // Register styles
+    // 注册样式表
     StyleSheet::registerWidget(this, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
     StyleSheet::registerWidget(m_scrollWidget, Fluent::ThemeStyle::NAVIGATION_INTERFACE);
 }
 
 void NavigationBar::initLayout() {
-    // Layouts are initialized in initWidget()
+    // 布局在 initWidget() 中初始化
 }
 
 NavigationWidget* NavigationBar::widget(const QString& routeKey) {

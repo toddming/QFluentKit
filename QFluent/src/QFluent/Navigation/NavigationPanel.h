@@ -140,9 +140,12 @@ public:
 
     // 设置属性
     void setMenuButtonVisible(bool isVisible);
+    // 预留接口：当前版本不创建返回按钮，仅记录状态
     void setReturnButtonVisible(bool isVisible);
     void setCollapsible(bool on);
     void setExpandWidth(int width);
+    // 开启后面板背景转为透明（QSS 规则 NavigationPanel[transparent=true]），
+    // 由上层窗口提供亚克力材质
     void setAcrylicEnabled(bool isEnabled);
     bool isAcrylicEnabled() const;
 
@@ -156,7 +159,6 @@ signals:
     void displayModeChanged(NavigationPanel::DisplayMode mode);
 
 protected:
-    void paintEvent(QPaintEvent* event) override;
     bool eventFilter(QObject* obj, QEvent* event) override;
 
 private slots:
@@ -166,7 +168,6 @@ private slots:
 private:
     void initWidget();
     void initLayout();
-    void updateAcrylicColor();
 
     void registerWidget(
         const QString& routeKey,
@@ -182,7 +183,6 @@ private:
 
     void setWidgetCompacted(bool isCompacted);
     int calculateLayoutMinHeight() const;
-    bool canDrawAcrylic() const;
 
     void showFlyoutNavigationMenu(NavigationTreeWidget* widget);
     void adjustFlyoutMenuSize(

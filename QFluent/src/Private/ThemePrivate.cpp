@@ -9,6 +9,12 @@ ThemePrivate::ThemePrivate()
 QColor ThemePrivate::calculateThemeColor(Fluent::ThemeColor type) const {
     Q_Q(const Theme);
 
+    // 主色直接返回原始值：走一遍 HSV 转换会改变 QColor 的色彩空间（Rgb -> Hsv），
+    // 使得 themeColor(PRIMARY) 与 themeColor() 不相等
+    if (type == Fluent::ThemeColor::PRIMARY) {
+        return m_themeColor;
+    }
+
     QColor color = m_themeColor;
     qreal h, s, v, a;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -43,5 +49,11 @@ QColor ThemePrivate::calculateThemeColor(Fluent::ThemeColor type) const {
         }
     }
 
-    return QColor::fromHsvF(h, qMin(s, 1.0), qMin(v, 1.0));
+    // 无彩色（灰、白、黑）时 getHsvF 会把 hue 置为 -1，
+    // 直接传给 fromHsvF 会得到非法颜色，这里归一到 0。
+    if (h < 0.0) {
+        h = 0.0;
+    }
+
+    return QColor::fromHsvF(h, qBound(0.0, s, 1.0), qBound(0.0, v, 1.0));
 }

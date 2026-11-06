@@ -78,7 +78,7 @@ void AcrylicWidget::updateAcrylicColor()
         luminosityColor = QColor(255, 255, 255, 0);
     }
 
-    // Only update if colors actually changed (avoid triggering widget->update() in paintEvent)
+    // 仅在颜色确实变化时更新，避免在 paintEvent 中触发 widget->update()
     if (tintColor != m_cachedTintColor) {
         m_cachedTintColor = tintColor;
         m_acrylicBrush->setTintColor(tintColor);

@@ -20,7 +20,7 @@ public:
     explicit ComboItemModel(QObject *parent = nullptr);
     ~ComboItemModel() override;
 
-    // QAbstractListModel interface
+    // QAbstractListModel 接口实现
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
@@ -28,7 +28,7 @@ public:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    // Convenience API
+    // 便捷接口
     void addItem(const QString &text, const QVariant &userData = QVariant());
     void addItem(const QIcon &icon, const QString &text, const QVariant &userData = QVariant());
     void addItems(const QStringList &texts);

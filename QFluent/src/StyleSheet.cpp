@@ -161,7 +161,12 @@ void StyleSheet::setStyleSheet(QWidget* widget,
 
     if (registerWidget) {
         // 注册到管理器，管理器会负责设置样式表
-        StyleSheetManager::instance()->registerWidget(widget, source);
+        if (auto* manager = StyleSheetManager::instance()) {
+            manager->registerWidget(widget, source);
+            return;
+        }
+        // 管理器已在程序退出阶段销毁，退化为直接设置，避免空指针解引用
+        widget->setStyleSheet(styleSheet(source, theme));
     } else {
         // 直接设置样式表，不注册
         widget->setStyleSheet(styleSheet(source, theme));
@@ -189,8 +194,13 @@ void StyleSheet::addStyleSheet(QWidget* widget,
     }
 
     if (registerWidget) {
-        StyleSheetManager::instance()->registerWidget(widget, source, false);
-        QString qss = styleSheet(StyleSheetManager::instance()->source(widget), theme);
+        auto* manager = StyleSheetManager::instance();
+        if (!manager) {
+            widget->setStyleSheet(widget->styleSheet() + "\n" + styleSheet(source, theme));
+            return;
+        }
+        manager->registerWidget(widget, source, false);
+        QString qss = styleSheet(manager->source(widget), theme);
         widget->setStyleSheet(qss);
     } else {
         const QString& currentQss = widget->styleSheet();
@@ -209,31 +219,47 @@ void StyleSheet::addStyleSheet(QWidget* widget, const QString& source,
 // ==================== StyleSheet 公开便捷方法 ====================
 
 void StyleSheet::registerWidget(QWidget* widget, Fluent::ThemeStyle type, bool reset) {
-    StyleSheetManager::instance()->registerWidget(widget, type, reset);
+    if (auto* manager = StyleSheetManager::instance()) {
+        manager->registerWidget(widget, type, reset);
+    }
 }
 
 void StyleSheet::registerWidget(QWidget* widget, const std::shared_ptr<StyleSheetBase>& source, bool reset) {
-    StyleSheetManager::instance()->registerWidget(widget, source, reset);
+    if (auto* manager = StyleSheetManager::instance()) {
+        manager->registerWidget(widget, source, reset);
+    }
 }
 
 void StyleSheet::registerWidget(QWidget* widget, const QString& templatePath, bool reset) {
-    StyleSheetManager::instance()->registerWidget(widget, std::make_shared<TemplateStyleSheetFile>(templatePath), reset);
+    if (auto* manager = StyleSheetManager::instance()) {
+        manager->registerWidget(widget, std::make_shared<TemplateStyleSheetFile>(templatePath), reset);
+    }
 }
 
 void StyleSheet::deregisterWidget(QWidget* widget) {
-    StyleSheetManager::instance()->deregisterWidget(widget);
+    if (auto* manager = StyleSheetManager::instance()) {
+        manager->deregisterWidget(widget);
+    }
 }
 
 bool StyleSheet::isRegistered(QWidget* widget) {
-    return StyleSheetManager::instance()->isRegistered(widget);
+    if (auto* manager = StyleSheetManager::instance()) {
+        return manager->isRegistered(widget);
+    }
+    return false;
 }
 
 std::shared_ptr<StyleSheetCompose> StyleSheet::source(QWidget* widget) {
-    return StyleSheetManager::instance()->source(widget);
+    if (auto* manager = StyleSheetManager::instance()) {
+        return manager->source(widget);
+    }
+    return std::make_shared<StyleSheetCompose>();
 }
 
 void StyleSheet::updateStyleSheet(bool lazy) {
-    StyleSheetManager::instance()->updateStyleSheet(lazy);
+    if (auto* manager = StyleSheetManager::instance()) {
+        manager->updateStyleSheet(lazy);
+    }
 }
 
 // ==================== StyleSheetBase 实现 ====================
@@ -582,7 +608,7 @@ void StyleSheetManager::registerWidget(QWidget* widget,
 
     if (!m_widgets.contains(widget)) {
         connect(widget, &QWidget::destroyed, this, [this, widget]() {
-            // Widget is being destroyed — only remove from map, don't call widget methods
+            // 控件正在销毁，只从映射表移除，不要再调用控件方法
             m_widgets.remove(widget);
         });
 

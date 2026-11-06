@@ -84,8 +84,6 @@ PlainTextEdit::PlainTextEdit(QWidget *parent)
 
 void PlainTextEdit::contextMenuEvent(QContextMenuEvent *e)
 {
-    // TextEditMenu menu(this);
-    // menu.exec(e->globalPos());
     QPlainTextEdit::contextMenuEvent(e);
 }
 
@@ -104,7 +102,5 @@ TextBrowser::TextBrowser(QWidget *parent)
 
 void TextBrowser::contextMenuEvent(QContextMenuEvent *e)
 {
-    // TextEditMenu menu(this);
-    // menu.exec(e->globalPos());
     QTextBrowser::contextMenuEvent(e);
 }

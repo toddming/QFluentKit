@@ -25,7 +25,6 @@ MenuActionListWidget::MenuActionListWidget(QWidget* parent)
     setIconSize(QSize(14, 14));
 
     setAttribute(Qt::WA_Hover, true);
-    installEventFilter(this);
 }
 
 void MenuActionListWidget::setItemHeight(int height) {

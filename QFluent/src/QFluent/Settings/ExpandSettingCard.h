@@ -91,7 +91,7 @@ public:
     void addWidget(QWidget *widget);
     void setExpand(bool isExpand);
     void toggleExpand();
-    void setValue(const QVariant &value); // Assuming QVariant for generality
+    void setValue(const QVariant &value); // 使用 QVariant 以保持通用性
 
     bool isExpand() const { return m_isExpand; }
 

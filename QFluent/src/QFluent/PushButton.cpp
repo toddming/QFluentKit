@@ -10,7 +10,6 @@
 #include <QPointer>
 
 #include "Theme.h"
-#include "FluentIcon.h"
 #include "StyleSheet.h"
 #include "Animation.h"
 #include "ToolButton.h"
@@ -49,8 +48,6 @@ PushButton::PushButton(const QString &text, Fluent::IconType type, QWidget *pare
 
 void PushButton::init()
 {
-    installEventFilter(this);
-
     StyleSheet::registerWidget(this, Fluent::ThemeStyle::BUTTON);
 
     setProperty("hasIcon", false);

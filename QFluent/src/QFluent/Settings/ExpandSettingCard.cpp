@@ -39,7 +39,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     painter.setPen(Qt::NoPen);
 
-    // draw background
+    // 绘制背景
     int r = Theme::isDark() ? 255 : 0;
     QColor color = Qt::transparent;
 
@@ -56,7 +56,7 @@ void ExpandButton::paintEvent(QPaintEvent *e) {
     painter.setBrush(color);
     painter.drawRoundedRect(rect(), 4, 4);
 
-    // draw icon
+    // 绘制图标
     painter.translate(width() / 2, height() / 2);
     painter.rotate(m_angle);
 
@@ -178,7 +178,7 @@ void HeaderSettingCard::paintEvent(QPaintEvent *e) {
         painter.setBrush(QColor(255, 255, 255, 170));
     }
 
-    ExpandSettingCard *p = qobject_cast<ExpandSettingCard *>(parent()); // Assuming parent is ExpandSettingCard
+    ExpandSettingCard *p = qobject_cast<ExpandSettingCard *>(parent()); // 假定父控件就是 ExpandSettingCard
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
     path.addRoundedRect(QRectF(rect().adjusted(1, 1, -1, -1)), 6, 6);
@@ -296,7 +296,8 @@ void ExpandSettingCard::addWidget(QWidget *widget) {
 }
 
 void ExpandSettingCard::wheelEvent(QWheelEvent *e) {
-    // pass
+    // 吞掉滚轮事件，避免卡片滚动时把滚动传递给父级滚动区域
+    Q_UNUSED(e);
 }
 
 void ExpandSettingCard::setExpand(bool isExpand) {
@@ -349,7 +350,8 @@ void ExpandSettingCard::adjustViewSize() {
 }
 
 void ExpandSettingCard::setValue(const QVariant &value) {
-    // pass
+    // 展开型卡片没有统一的取值语义，由子类自行处理
+    Q_UNUSED(value);
 }
 
 GroupSeparator::GroupSeparator(QWidget *parent) : QWidget(parent) {

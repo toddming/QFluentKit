@@ -130,7 +130,7 @@ void CheckableMenuItemDelegate::paint(QPainter *painter,
 {
     ShortcutMenuItemDelegate::paint(painter, option, index);
 
-    // draw indicator
+    // 绘制选中指示条
     QVariant actionData = index.data(Qt::UserRole);
     if (!actionData.isValid())
         return;

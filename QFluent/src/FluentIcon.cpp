@@ -12,8 +12,13 @@
 
 #include "Theme.h"
 
-// Initialize static cache
-QCache<QString, QByteArray> FluentIconUtils::s_svgCache(500);
+// 初始化静态缓存
+// 注意：QCache 的 maxCost 与 insert() 传入的 cost 必须同一量纲。
+// 这里 cost 是 SVG 字节数，所以 maxCost 也必须是字节预算。
+// 之前设为 500（被误当成"条数"）导致除极少数小图标外全部无法入缓存，
+// 每次绘制都要重新读资源 + 做颜色替换。
+// 352 个图标中位 1.8 KB、最大 10 KB，4 MB 足以容纳全部彩色变体。
+QCache<QString, QByteArray> FluentIconUtils::s_svgCache(4 * 1024 * 1024);
 
 QString FluentIconUtils::iconColor(Fluent::ThemeMode theme, bool reverse)
 {
@@ -66,7 +71,7 @@ QString FluentIconUtils::writeSvg(const QString& iconPath,
         return QString();
     }
 
-    // Generate cache key
+    // 生成缓存键
     QString cacheKey = iconPath;
     cacheKey.reserve(cacheKey.size() + attributes.size() * 32 + indexes.size() * 8);
 
@@ -473,7 +478,7 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect,
 
     painter->save();
 
-    // Apply mode-based opacity
+    // 按模式设置透明度
     switch (mode) {
     case QIcon::Disabled:
         painter->setOpacity(0.5);
@@ -495,7 +500,7 @@ void FluentIconEngine::paint(QPainter* painter, const QRect& rect,
     }
 
     if (m_isColored) {
-        // Determine effective theme for color selection
+        // 确定用于取色的实际主题
         Fluent::ThemeMode effectiveTheme = Fluent::ThemeMode::AUTO;
         if (m_isThemeReversed) {
             effectiveTheme = Theme::isDark()

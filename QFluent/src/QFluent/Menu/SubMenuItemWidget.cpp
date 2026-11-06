@@ -45,7 +45,7 @@ void SubMenuItemWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    // draw right arrow
+    // 绘制右侧箭头
     QRectF arrowRect(width() - 10, height() / 2.0 - 9.0 / 2.0, 9, 9);
     FluentIconUtils::drawThemeIcon(Fluent::IconType::CHEVRON_RIGHT, &painter, arrowRect);
 }

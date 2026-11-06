@@ -214,8 +214,6 @@ void TableItemDelegate::drawCheckBox(QPainter* painter, const QStyleOptionViewIt
         painter->setBrush(Theme::themeColor(Fluent::ThemeColor::PRIMARY));
         painter->drawRoundedRect(rect, r, r);
 
-        // TODO: 绘制具体的对勾图标
-        // 由于原代码中 CheckBoxIcon 未提供定义，这里建议使用 drawPolyline 或 QIcon 绘制
         painter->setPen(isDark ? Qt::black : Qt::white);
         if (checkState == Qt::Checked) {
             // 简单绘制对勾

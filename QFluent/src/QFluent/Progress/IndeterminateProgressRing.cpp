@@ -25,7 +25,7 @@ IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start
     m_spanAngleAniGroup(new QSequentialAnimationGroup(this)),
     m_aniGroup(new QParallelAnimationGroup(this))
 {
-    // Initialize start angle animation
+    // 初始化起始角度动画
     m_startAngleAni1->setDuration(1000);
     m_startAngleAni1->setStartValue(0);
     m_startAngleAni1->setEndValue(450);
@@ -37,7 +37,7 @@ IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start
     m_startAngleAniGroup->addAnimation(m_startAngleAni1);
     m_startAngleAniGroup->addAnimation(m_startAngleAni2);
 
-    // Initialize span angle animation
+    // 初始化跨度角度动画
     m_spanAngleAni1->setDuration(1000);
     m_spanAngleAni1->setStartValue(0);
     m_spanAngleAni1->setEndValue(180);
@@ -62,8 +62,7 @@ IndeterminateProgressRing::IndeterminateProgressRing(QWidget *parent, bool start
 
 IndeterminateProgressRing::~IndeterminateProgressRing()
 {
-    // Qt will automatically clean up child objects (animations with parent set)
-    // No need for manual deletion
+    // 动画对象都设置了父对象，由 Qt 自动回收，无需手动 delete
 }
 
 int IndeterminateProgressRing::startAngle() const

@@ -131,11 +131,11 @@ void RadioButton::drawCircle(QPainter &painter, const QPoint &center, int radius
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
 
-    // Outer circle (border)
+    // 外圈（边框）
     QRectF outerRect(center.x() - radius, center.y() - radius, 2 * radius, 2 * radius);
     path.addEllipse(outerRect);
 
-    // Inner circle (filled)
+    // 内圈（填充）
     int ir = radius - thickness;
     QRectF innerRect(center.x() - ir, center.y() - ir, 2 * ir, 2 * ir);
     QPainterPath innerPath;
@@ -143,11 +143,11 @@ void RadioButton::drawCircle(QPainter &painter, const QPoint &center, int radius
 
     path = path.subtracted(innerPath);
 
-    // Draw outer ring
+    // 绘制外圈
     painter.setPen(Qt::NoPen);
     painter.fillPath(path, borderColor);
 
-    // Fill inner circle
+    // 填充内圈
     painter.fillPath(innerPath, filledColor);
 }
 

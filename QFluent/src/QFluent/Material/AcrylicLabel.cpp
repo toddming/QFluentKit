@@ -337,8 +337,7 @@ void BlurCoverThread::blur(const QString &imagePath, int blurRadius, const QSize
     }
 
     if (isRunning()) {
-        // Thread is already running; it will pick up the new parameters
-        // in the next iteration of the loop. No need to wait().
+        // 线程已在运行，会在下一轮循环里自行读取新的参数，无需 wait()
         return;
     }
     start();
@@ -354,7 +353,7 @@ void BlurCoverThread::run()
             }
         }
 
-        // Clear dirty flag before processing
+        // 处理前先清除脏标记
         m_dirty.store(false);
 
         QString path;
@@ -370,11 +369,11 @@ void BlurCoverThread::run()
         QPixmap pixmap = GaussianBlur::blur(path, radius, 0.85, maxSize);
         emit blurFinished(pixmap);
 
-        // If no new request came in during processing, we're done
+        // 处理期间没有新的请求，本轮结束后退出线程
         if (!m_dirty.load()) {
             return;
         }
-        // Otherwise loop again with the updated parameters
+        // 否则用更新后的参数再循环一次
     }
 }
 
